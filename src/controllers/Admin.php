@@ -19,7 +19,7 @@ class Admin extends Base {
 
 	public function getIndex()
 	{
-		return 'Admin site, home page';
+		return View::make('coanda::admin.home');
 	}
 
 	public function getLogin()
@@ -32,6 +32,8 @@ class Admin extends Base {
 		try
 		{
 			User::login(Input::get('email'), Input::get('password'));
+
+			return Redirect::to(Coanda::adminUrl('/'));
 		}
 		catch(MissingInput $exception)
 		{
