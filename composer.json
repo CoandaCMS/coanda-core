@@ -1,0 +1,24 @@
+{
+    "name": "coandacms/coanda-core",
+    "description": "The basis of the CoandaCMS",
+    "authors": [
+        {
+            "name": "Alex Dover",
+            "email": "me@alexdover.co.uk"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0",
+        "illuminate/support": "4.1.*"
+    },
+    "autoload": {
+        "classmap": [
+            "src/migrations",
+            "src/controllers"
+        ],
+        "psr-0": {
+            "CoandaCMS\\Coanda\\": "src/"
+        }
+    },
+    "minimum-stability": "stable"
+}
