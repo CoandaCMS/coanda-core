@@ -28,7 +28,7 @@ class Coanda {
 	 */
 	public static function isLoggedIn()
 	{
-		User::isLoggedIn();
+		return User::isLoggedIn();
 	}
 
 	/**
@@ -37,7 +37,7 @@ class Coanda {
 	 */
 	public static function currentUser()
 	{
-		User::currentUser();
+		return User::currentUser();
 	}
 
 }
