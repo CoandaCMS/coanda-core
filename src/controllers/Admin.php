@@ -54,4 +54,11 @@ class Admin extends Base {
 		}
 	}
 
+	public function getLogout()
+	{
+		User::logout();
+
+		return Redirect::to(Coanda::adminUrl('/'));
+	}
+
 }

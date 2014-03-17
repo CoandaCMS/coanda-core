@@ -50,4 +50,8 @@ class User {
 		}
 	}
 
+	public static function logout()
+	{
+		return Auth::logout();
+	}
 }
