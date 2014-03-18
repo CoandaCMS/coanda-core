@@ -31,9 +31,11 @@ class CoandaServiceProvider extends ServiceProvider {
 	 */
 	public function register()
 	{
+		$this->app->bind('CoandaCMS\Coanda\Authentication\User', 'CoandaCMS\Coanda\Authentication\Eloquent\User');
+
 		$this->app->bind('coanda', function () {
 
-			return new Coanda();
+			return new Coanda(new \CoandaCMS\Coanda\Authentication\Eloquent\User);
 
 		});
 	}

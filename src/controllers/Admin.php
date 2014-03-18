@@ -3,7 +3,6 @@
 use Input, View, Redirect, Lang;
 
 use Coanda;
-use CoandaCMS\Coanda\Authentication\User;
 
 // Exceptions
 use CoandaCMS\Coanda\Exceptions\MissingInput;
@@ -11,14 +10,22 @@ use CoandaCMS\Coanda\Exceptions\AuthenticationFailed;
 
 class Admin extends Base {
 
-	public function __construct()
+	private $user;
+
+	public function __construct(\CoandaCMS\Coanda\Authentication\User $user)
 	{
+		$this->user = $user;
+
 		$this->beforeFilter('admin_auth', array('except' => array('getLogin', 'postLogin')));
 		$this->beforeFilter('csrf', array('on' => 'post'));
 	}
 
 	public function getIndex()
 	{
+		$page = Page::getById(1);
+
+		dd($page);
+
 		return View::make('coanda::admin.home');
 	}
 
@@ -31,7 +38,7 @@ class Admin extends Base {
 	{
 		try
 		{
-			User::login(Input::get('email'), Input::get('password'));
+			$this->user->login(Input::get('email'), Input::get('password'));
 
 			return Redirect::to(Coanda::adminUrl('/'));
 		}
@@ -58,7 +65,7 @@ class Admin extends Base {
 
 	public function getLogout()
 	{
-		User::logout();
+		$this->user->logout();
 
 		return Redirect::to(Coanda::adminUrl('/'));
 	}

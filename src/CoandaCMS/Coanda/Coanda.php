@@ -2,14 +2,20 @@
 
 use Illuminate\Support\Facades\Config;
 
-use CoandaCMS\Coanda\Authentication\User;
-
 class Coanda {
 
+	/**
+	 * Our user implementation
+	 * @var [type]
+	 */
 	private $user;
 
-	public function __construct()
+	/**
+	 * @param CoandaCMSCoandaAuthenticationUser $user [description]
+	 */
+	public function __construct(\CoandaCMS\Coanda\Authentication\User $user)
 	{
+		$this->user = $user;
 	}
 
 	/**
@@ -26,18 +32,18 @@ class Coanda {
 	 * Checks to see if we have a user
 	 * @return boolean
 	 */
-	public static function isLoggedIn()
+	public function isLoggedIn()
 	{
-		return User::isLoggedIn();
+		return $this->user->isLoggedIn();
 	}
 
 	/**
 	 * Returns the current user
 	 * @return boolean
 	 */
-	public static function currentUser()
+	public function currentUser()
 	{
-		return User::currentUser();
+		return $this->user->currentUser();
 	}
 
 }
