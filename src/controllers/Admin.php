@@ -22,10 +22,6 @@ class Admin extends Base {
 
 	public function getIndex()
 	{
-		$page = Page::getById(1);
-
-		dd($page);
-
 		return View::make('coanda::admin.home');
 	}
 
