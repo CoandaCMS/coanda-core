@@ -17,4 +17,10 @@ interface CoandaModule {
 	 */
 	public function userRoutes();
 
+	/**
+	 * Allow the module to set its own bindings in the IoC
+	 * @param  Illuminate\Foundation\Application $app
+	 */
+	public function bindings($app);
+
 }

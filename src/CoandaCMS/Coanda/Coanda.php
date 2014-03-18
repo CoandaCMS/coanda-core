@@ -118,6 +118,12 @@ class Coanda {
 	public function bindings($app)
 	{
 		$app->bind('CoandaCMS\Coanda\Authentication\User', 'CoandaCMS\Coanda\Authentication\Eloquent\User');
+
+		// Let the module output any front end 'user' routes
+		foreach ($this->modules as $module)
+		{
+			$module->bindings($app);
+		}
 	}
 
 }
