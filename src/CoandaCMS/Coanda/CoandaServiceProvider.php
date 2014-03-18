@@ -20,6 +20,12 @@ class CoandaServiceProvider extends ServiceProvider {
 	{
 		$this->package('dover/coanda');
 
+		// Let the main class load any modules prior to handling the bindings
+		$this->app->make('coanda')->loadModules();
+
+		// Let the main class handles the bindings
+		$this->app->make('coanda')->bindings($this->app);
+
 		$this->app->make('coanda')->filters();
 		$this->app->make('coanda')->routes();
 	}
@@ -30,16 +36,13 @@ class CoandaServiceProvider extends ServiceProvider {
 	 * @return void
 	 */
 	public function register()
-	{
+	{		
 		// Bind our main facade
-		$this->app->bind('coanda', function () {
+		$this->app->singleton('coanda', function () {
 
 			return new Coanda(new \CoandaCMS\Coanda\Authentication\Eloquent\User);
 
 		});
-
-		// Let the main class handles the bindings
-		$this->app->make('coanda')->bindings($this->app);
 	}
 
 	/**

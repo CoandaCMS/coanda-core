@@ -18,4 +18,9 @@ return array(
 	*/
 	'title' => 'Coanda CMS',
 
+
+	'enabled_modules' => [
+			'CoandaCMS\Coanda\Modules\Pages\Pages'
+		]
+
 );

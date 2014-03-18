@@ -1,6 +1,6 @@
 <?php namespace CoandaCMS\Coanda\Controllers;
 
-use Input, View, Redirect, Lang;
+use Input, View, Redirect, Lang, Session;
 
 use Coanda;
 
@@ -27,14 +27,35 @@ class Admin extends Base {
 
 	public function getLogin()
 	{
+		// If the user is logged in, they don't need to see this
+		if ($this->user->isLoggedIn())
+		{
+			return Redirect::to(Coanda::adminUrl('/'));
+		}
+
 		return View::make('coanda::admin.login');
 	}
 
 	public function postLogin()
 	{
+		// If the user is logged in, they don't need to see this
+		if ($this->user->isLoggedIn())
+		{
+			return Redirect::to(Coanda::adminUrl('/'));
+		}
+		
 		try
 		{
 			$this->user->login(Input::get('email'), Input::get('password'));
+
+			if (Session::has('pre_auth_path'))
+			{
+				$redirect_path = Session::get('pre_auth_path');
+
+				Session::forget('pre_auth_path');
+
+				return Redirect::to($redirect_path);
+			}
 
 			return Redirect::to(Coanda::adminUrl('/'));
 		}
