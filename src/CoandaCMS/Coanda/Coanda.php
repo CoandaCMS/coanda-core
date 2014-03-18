@@ -1,6 +1,6 @@
 <?php namespace CoandaCMS\Coanda;
 
-use Illuminate\Support\Facades\Config;
+use App, Route, Config;
 
 class Coanda {
 
@@ -44,6 +44,52 @@ class Coanda {
 	public function currentUser()
 	{
 		return $this->user->currentUser();
+	}
+
+	/**
+	 * Creates all the required filters
+	 * @return
+	 */
+	public function filters()
+	{
+		Route::filter('admin_auth', function()
+		{
+		    if (!App::make('coanda')->isLoggedIn())
+		    {
+		    	return Redirect::to('/' . Config::get('coanda::coanda.admin_path') . '/login');
+		    }
+
+		});
+	}
+
+	/**
+	 * Outputs all the routes, including those added by modules
+	 * @return 
+	 */
+	public function routes()
+	{
+		Route::group(array('prefix' => Config::get('coanda::coanda.admin_path')), function()
+		{
+			Route::get('pages', function () {
+
+				dd('hello!');
+
+			});
+
+			Route::controller('/', 'CoandaCMS\Coanda\Controllers\Admin');
+
+		});
+
+		Route::get('/', function () {
+			
+			echo 'hello!';
+
+		});
+	}
+
+	public function bindings($app)
+	{
+		$app->bind('CoandaCMS\Coanda\Authentication\User', 'CoandaCMS\Coanda\Authentication\Eloquent\User');
 	}
 
 }

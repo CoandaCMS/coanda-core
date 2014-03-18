@@ -20,8 +20,8 @@ class CoandaServiceProvider extends ServiceProvider {
 	{
 		$this->package('dover/coanda');
 
-		include __DIR__.'/../../filters.php';
-		include __DIR__.'/../../routes.php';
+		$this->app->make('coanda')->filters();
+		$this->app->make('coanda')->routes();
 	}
 
 	/**
@@ -31,13 +31,15 @@ class CoandaServiceProvider extends ServiceProvider {
 	 */
 	public function register()
 	{
-		$this->app->bind('CoandaCMS\Coanda\Authentication\User', 'CoandaCMS\Coanda\Authentication\Eloquent\User');
-
+		// Bind our main facade
 		$this->app->bind('coanda', function () {
 
 			return new Coanda(new \CoandaCMS\Coanda\Authentication\Eloquent\User);
 
 		});
+
+		// Let the main class handles the bindings
+		$this->app->make('coanda')->bindings($this->app);
 	}
 
 	/**
