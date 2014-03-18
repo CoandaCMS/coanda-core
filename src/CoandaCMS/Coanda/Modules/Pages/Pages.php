@@ -9,7 +9,7 @@ class Pages implements CoandaModule {
 
 	/**
 	 * Main constructor
-	 * @param CoandaCMSCoandaCoanda $coanda
+	 * @param CoandaCMS\Coanda\Coanda $coanda
 	 */
 	public function __construct(\CoandaCMS\Coanda\Coanda $coanda)
 	{
