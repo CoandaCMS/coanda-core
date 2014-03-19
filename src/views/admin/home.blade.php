@@ -3,13 +3,12 @@
 @section('page_title', 'Home')
 
 @section('content')
-<div class="row">
 
-    <div class="col-md-12">
+<div class="container">
+	<h1>Welcome to Coanda CMS</h1>
 
-        <h1>Admin dashboard</h1>
-
-    </div>
+	<p>Dude, what shall we show here?</p>
 
 </div>
+
 @stop

@@ -23,6 +23,12 @@ class CoandaServiceProvider extends ServiceProvider {
 		// Let the main class load any modules prior to handling the bindings
 		$this->app->make('coanda')->loadModules();
 
+		// Load the page attribute types
+		$this->app->make('coanda')->loadPageAttributeTypes();
+
+		// Load the page types
+		$this->app->make('coanda')->loadPageTypes();
+
 		// Let the main class handles the bindings
 		$this->app->make('coanda')->bindings($this->app);
 

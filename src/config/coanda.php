@@ -19,8 +19,19 @@ return array(
 	'title' => 'Coanda CMS',
 
 
-	'enabled_modules' => [
-			'CoandaCMS\Coanda\Modules\Pages\Pages'
-		]
 
+	'enabled_modules' => [
+
+		],
+
+
+	'page_types' => [
+		'MySite\Coanda\PageTypes\Page',
+		// 'MySite\Coanda\PageTypes\NewsArticle'
+	],
+	
+	'page_attribute_types' => [
+		'CoandaCMS\Coanda\Pages\PageAttributeTypes\Textline',
+		'CoandaCMS\Coanda\Pages\PageAttributeTypes\HTML',
+	]
 );

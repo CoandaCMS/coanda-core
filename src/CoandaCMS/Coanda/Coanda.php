@@ -2,6 +2,9 @@
 
 use App, Route, Config, Redirect, Request, Session;
 
+use CoandaCMS\Coanda\Exceptions\PageTypeNotFound;
+use CoandaCMS\Coanda\Exceptions\PageAttributeTypeNotFound;
+
 class Coanda {
 
 	/**
@@ -11,6 +14,8 @@ class Coanda {
 	private $user;
 
 	private $modules = [];
+
+	private $page_types = [];
 
 	/**
 	 * @param CoandaCMSCoandaAuthenticationUser $user [description]
@@ -93,6 +98,9 @@ class Coanda {
 			// All module admin routes should be wrapper in the auth filter
 			Route::group(array('before' => 'admin_auth'), function()
 			{
+				// Load the pages controller
+				Route::controller('pages', 'CoandaCMS\Coanda\Controllers\Admin\PagesAdminController');
+
 				foreach ($this->modules as $module)
 				{
 					$module->adminRoutes();
@@ -118,6 +126,7 @@ class Coanda {
 	public function bindings($app)
 	{
 		$app->bind('CoandaCMS\Coanda\Authentication\UserInterface', 'CoandaCMS\Coanda\Authentication\Eloquent\EloquentUser');
+		$app->bind('CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface', 'CoandaCMS\Coanda\Pages\Repositories\Eloquent\EloquentPageRepository');
 
 		// Let the module output any front end 'user' routes
 		foreach ($this->modules as $module)
@@ -126,4 +135,54 @@ class Coanda {
 		}
 	}
 
+	public function loadPageTypes()
+	{
+		$page_types = Config::get('coanda::coanda.page_types');
+
+		foreach ($page_types as $page_type)
+		{
+			$type = new $page_type($this);
+
+			// TODO: validate the definition to ensure all the specified page attribute types are available.
+
+			$this->page_types[$type->identifier] = $type;
+		}
+	}
+
+	public function availablePageTypes()
+	{
+		return $this->page_types;
+	}
+
+	public function getPageType($type)
+	{
+		if (array_key_exists($type, $this->page_types))
+		{
+			return $this->page_types[$type];
+		}
+
+		throw new PageTypeNotFound;
+	}
+
+	public function loadPageAttributeTypes()
+	{
+		$page_attribute_types = Config::get('coanda::coanda.page_attribute_types');
+
+		foreach ($page_attribute_types as $page_attribute_type)
+		{
+			$attribute_type = new $page_attribute_type;
+
+			$this->page_attribute_types[$attribute_type->identifier] = $attribute_type;
+		}
+	}
+
+	public function getPageAttributeType($type_identifier)
+	{
+		if (array_key_exists($type_identifier, $this->page_attribute_types))
+		{
+			return $this->page_attribute_types[$type_identifier];
+		}
+
+		throw new PageAttributeTypeNotFound;
+	}
 }
