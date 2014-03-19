@@ -8,11 +8,11 @@ use Coanda;
 use CoandaCMS\Coanda\Exceptions\MissingInput;
 use CoandaCMS\Coanda\Exceptions\AuthenticationFailed;
 
-class Admin extends Base {
+class AdminController extends BaseController {
 
 	private $user;
 
-	public function __construct(\CoandaCMS\Coanda\Authentication\User $user)
+	public function __construct(\CoandaCMS\Coanda\Authentication\UserInterface $user)
 	{
 		$this->user = $user;
 

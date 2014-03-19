@@ -1,6 +1,6 @@
 <?php namespace CoandaCMS\Coanda;
 
-interface CoandaModule {
+interface CoandaModuleProvider {
 
 	/**
 	 * Boot method is called from the service provider, allows the module to do anything it may need to e.g. Add view namespace

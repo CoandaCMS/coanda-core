@@ -2,6 +2,6 @@
 
 use Illuminate\Routing\Controller;
 
-abstract class Base extends Controller {
+abstract class BaseController extends Controller {
 
 }

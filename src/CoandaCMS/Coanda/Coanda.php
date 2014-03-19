@@ -15,7 +15,7 @@ class Coanda {
 	/**
 	 * @param CoandaCMSCoandaAuthenticationUser $user [description]
 	 */
-	public function __construct(\CoandaCMS\Coanda\Authentication\User $user)
+	public function __construct(\CoandaCMS\Coanda\Authentication\UserInterface $user)
 	{
 		$this->user = $user;
 	}
@@ -100,7 +100,7 @@ class Coanda {
 			});
 
 			// We will put the main admin controller outside the group so it can handle its own filters
-			Route::controller('/', 'CoandaCMS\Coanda\Controllers\Admin');
+			Route::controller('/', 'CoandaCMS\Coanda\Controllers\AdminController');
 
 		});
 
@@ -117,7 +117,7 @@ class Coanda {
 	 */
 	public function bindings($app)
 	{
-		$app->bind('CoandaCMS\Coanda\Authentication\User', 'CoandaCMS\Coanda\Authentication\Eloquent\User');
+		$app->bind('CoandaCMS\Coanda\Authentication\UserInterface', 'CoandaCMS\Coanda\Authentication\Eloquent\EloquentUser');
 
 		// Let the module output any front end 'user' routes
 		foreach ($this->modules as $module)

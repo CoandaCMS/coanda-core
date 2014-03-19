@@ -6,9 +6,9 @@ use CoandaCMS\Coanda\Exceptions\MissingInput;
 use CoandaCMS\Coanda\Exceptions\AuthenticationFailed;
 use CoandaCMS\Coanda\Exceptions\NotLoggedIn;
 
-use CoandaCMS\Coanda\Authentication\User as UserInterface;
+use CoandaCMS\Coanda\Authentication\UserInterface;
 
-class User implements UserInterface {
+class EloquentUser implements UserInterface {
 
 	public function isLoggedIn()
 	{

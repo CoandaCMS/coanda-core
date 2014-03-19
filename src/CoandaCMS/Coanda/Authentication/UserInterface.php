@@ -1,6 +1,6 @@
 <?php namespace CoandaCMS\Coanda\Authentication;
 
-interface User {
+interface UserInterface {
 
 	/**
 	 * Check to see if we have a logged in user

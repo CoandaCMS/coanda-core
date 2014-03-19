@@ -40,7 +40,7 @@ class CoandaServiceProvider extends ServiceProvider {
 		// Bind our main facade
 		$this->app->singleton('coanda', function () {
 
-			return new Coanda(new \CoandaCMS\Coanda\Authentication\Eloquent\User);
+			return new Coanda(new \CoandaCMS\Coanda\Authentication\Eloquent\EloquentUser);
 
 		});
 	}
