@@ -13,11 +13,17 @@
 		</div>
 	@endif
 
+	@if (Session::has('error'))
+		<div class="alert alert-danger">
+			Error!
+		</div>
+	@endif
+
 	{{ Form::open(['url' => Coanda::adminUrl('pages/edit/' . $version->page_id . '/' . $version->version)]) }}
 
 		@foreach ($version->attributes as $attribute)
 
-			@include('coanda::admin.pages.pageattributetypes.' . $attribute->type, [ 'attribute' => $attribute ])
+			@include('coanda::admin.pages.pageattributetypes.' . $attribute->type, [ 'attribute' => $attribute, 'invalid' => Session::has('invalid_attributes') ? in_array($attribute->id, Session::get('invalid_attributes')) : false ])
 
 		@endforeach
 

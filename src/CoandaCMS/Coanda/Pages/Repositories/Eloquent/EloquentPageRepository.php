@@ -4,6 +4,8 @@ use Coanda;
 
 use CoandaCMS\Coanda\Exceptions\PageNotFound;
 use CoandaCMS\Coanda\Exceptions\PageVersionNotFound;
+use CoandaCMS\Coanda\Exceptions\AttributeValidationException;
+use CoandaCMS\Coanda\Exceptions\ValidationException;
 
 use CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\Page as PageModel;
 use CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageVersion as PageVersionModel;
@@ -35,7 +37,12 @@ class EloquentPageRepository implements \CoandaCMS\Coanda\Pages\Repositories\Pag
 		return $page;
 	}
 
-
+	/**
+	 * Create a new page of the specified type for the user id
+	 * @param  string $type
+	 * @param  integer $user_id
+	 * @return Page
+	 */
 	public function create($type, $user_id)
 	{
 		// create a page model
@@ -77,6 +84,12 @@ class EloquentPageRepository implements \CoandaCMS\Coanda\Pages\Repositories\Pag
 		return $page;
 	}
 
+	/**
+	 * Gets the draft version
+	 * @param  integer $page_id
+	 * @param  integer $version
+	 * @return Page
+	 */
 	public function getDraftVersion($page_id, $version)
 	{
 		$page = PageModel::find($page_id);
@@ -96,11 +109,31 @@ class EloquentPageRepository implements \CoandaCMS\Coanda\Pages\Repositories\Pag
 		throw new PageNotFound;
 	}
 
+	/**
+	 * Stores the data for the version
+	 * @param  Version $version The version object
+	 * @param  Array $data    All the data to be stored
+	 * @return void
+	 */
 	public function saveDraftVersion($version, $data)
 	{
+		$failed = [];
+
 		foreach ($version->attributes as $attribute)
 		{
-			$attribute->store($data['attribute_' . $attribute->id]);
+			try
+			{
+				$attribute->store($data['attribute_' . $attribute->id]);
+			}
+			catch (AttributeValidationException $exception)
+			{
+				$failed[] = $attribute->id;
+			}
+		}
+
+		if (count($failed) > 0)
+		{
+			throw new ValidationException($failed);
 		}
 	}
 }

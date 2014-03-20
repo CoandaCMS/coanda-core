@@ -5,6 +5,7 @@ use View, App, Coanda, Redirect, Input;
 use CoandaCMS\Coanda\Exceptions\PageTypeNotFound;
 use CoandaCMS\Coanda\Exceptions\PageNotFound;
 use CoandaCMS\Coanda\Exceptions\PageVersionNotFound;
+use CoandaCMS\Coanda\Exceptions\ValidationException;
 
 use CoandaCMS\Coanda\Controllers\BaseController;
 
@@ -83,9 +84,9 @@ class PagesAdminController extends BaseController {
 			// Lets just redirect vack for the moment
 			return Redirect::to(Coanda::adminUrl('pages/edit/' . $page_id . '/' . $version_number))->with('page_saved', true);
 		}
-		catch(ValidationFailedException $exception)
+		catch(ValidationException $exception)
 		{
+			return Redirect::to(Coanda::adminUrl('pages/edit/' . $page_id . '/' . $version_number))->with('error', true)->with('invalid_attributes', $exception->getInvalidFields());
 		}
-
 	}
 }

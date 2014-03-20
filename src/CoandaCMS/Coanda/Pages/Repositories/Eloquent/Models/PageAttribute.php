@@ -23,11 +23,24 @@ class PageAttribute extends Eloquent {
 		return $this->version->page;
 	}
 
+	public function pageType()
+	{
+		return $this->page()->pageType();
+	}
+
 	public function name()
 	{
-		$pageType = $this->page()->pageType();
+		return $this->pageType()->attributes()[$this->identifier]['name'];
+	}
 
-		return $pageType->attributes()[$this->identifier]['name'];
+	public function isRequired()
+	{
+		return $this->pageType()->attributes()[$this->identifier]['required'];
+	}
+
+	public function getIsRequiredAttribute()
+	{
+		return $this->isRequired();
 	}
 
 	public function getNameAttribute()
