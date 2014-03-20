@@ -7,10 +7,6 @@ use CoandaCMS\Coanda\Exceptions\PageAttributeTypeNotFound;
 
 class Coanda {
 
-	/**
-	 * Our user implementation
-	 * @var [type]
-	 */
 	private $user;
 
 	private $modules = [];
@@ -135,6 +131,10 @@ class Coanda {
 		}
 	}
 
+	/**
+	 * Loads all the avaibla page types from the config
+	 * @return void
+	 */
 	public function loadPageTypes()
 	{
 		$page_types = Config::get('coanda::coanda.page_types');
@@ -149,11 +149,20 @@ class Coanda {
 		}
 	}
 
+	/**
+	 * Returns the available page types
+	 * @return Array
+	 */
 	public function availablePageTypes()
 	{
 		return $this->page_types;
 	}
 
+	/**
+	 * Gets a specific page type by identifier
+	 * @param  string $type The identifier of the page type
+	 * @return CoandaCMS\Coanda\Pages\PageTypeInterface
+	 */
 	public function getPageType($type)
 	{
 		if (array_key_exists($type, $this->page_types))
@@ -164,6 +173,10 @@ class Coanda {
 		throw new PageTypeNotFound;
 	}
 
+	/**
+	 * Loads the attributes from the config file
+	 * @return void
+	 */
 	public function loadPageAttributeTypes()
 	{
 		$page_attribute_types = Config::get('coanda::coanda.page_attribute_types');
@@ -176,6 +189,11 @@ class Coanda {
 		}
 	}
 
+	/**
+	 * Get a specific attribute by identifier
+	 * @param  string $type_identifier
+	 * @return CoandaCMS\Coanda\Pages\PageAttributeTypeInterface
+	 */
 	public function getPageAttributeType($type_identifier)
 	{
 		if (array_key_exists($type_identifier, $this->page_attribute_types))
