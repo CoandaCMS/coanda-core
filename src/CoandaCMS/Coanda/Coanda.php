@@ -123,6 +123,7 @@ class Coanda {
 	{
 		$app->bind('CoandaCMS\Coanda\Authentication\UserInterface', 'CoandaCMS\Coanda\Authentication\Eloquent\EloquentUser');
 		$app->bind('CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface', 'CoandaCMS\Coanda\Pages\Repositories\Eloquent\EloquentPageRepository');
+		$app->bind('CoandaCMS\Coanda\Urls\Repositories\UrlRepositoryInterface', 'CoandaCMS\Coanda\Urls\Repositories\Eloquent\EloquentUrlRepository');
 
 		// Let the module output any front end 'user' routes
 		foreach ($this->modules as $module)
