@@ -10,4 +10,8 @@ interface PageRepositoryInterface {
 
 	public function saveDraftVersion($version, $data);
 
+	public function publishVersion($version);
+
+	public function createNewVersion($page_id, $user_id);
+
 }

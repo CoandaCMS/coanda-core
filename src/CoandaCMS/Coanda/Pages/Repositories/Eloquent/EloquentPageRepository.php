@@ -6,6 +6,7 @@ use CoandaCMS\Coanda\Exceptions\PageNotFound;
 use CoandaCMS\Coanda\Exceptions\PageVersionNotFound;
 use CoandaCMS\Coanda\Exceptions\AttributeValidationException;
 use CoandaCMS\Coanda\Exceptions\ValidationException;
+use CoandaCMS\Coanda\Exceptions\PermissionDenied;
 
 use CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\Page as PageModel;
 use CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageVersion as PageVersionModel;
@@ -135,5 +136,66 @@ class EloquentPageRepository implements \CoandaCMS\Coanda\Pages\Repositories\Pag
 		{
 			throw new ValidationException($failed);
 		}
+	}
+
+
+	public function publishVersion($version)
+	{
+		$page = $version->page;
+
+		if ($version->version !== 1)
+		{
+			// set the current published version to be archived
+			$page->currentVersion()->status = 'archived';
+			$page->currentVersion()->save();			
+		}
+
+		// set this version to be published
+		$version->status = 'published';
+		$version->save();
+		
+		// update the page name attribute (via the type)
+		$page->name = $page->pageType()->generateName($version);
+		$page->current_version = $version->version;
+		$page->save();
+	}
+
+	public function createNewVersion($page_id, $user_id)
+	{
+		$page = PageModel::find($page_id);
+		$type = $page->pageType();
+
+		$latest_version = $page->versions()->orderBy('version', 'desc')->first();
+
+		$new_version_number = $latest_version->version + 1;
+
+		// Create the version
+		$version = new PageVersionModel;
+		$version->version = $new_version_number;
+		$version->status = 'draft';
+		$version->created_by = $user_id;
+		$version->edited_by = $user_id;
+
+		$page->versions()->save($version);
+
+		// Add all the attributes..
+		$index = 1;
+
+		foreach ($type->attributes() as $type_attribute)
+		{
+			$page_attribute_type = Coanda::getPageAttributeType($type_attribute['type']);
+
+			$attribute = new PageAttributeModel;
+
+			$attribute->type = $page_attribute_type->identifier;
+			$attribute->identifier = $type_attribute['identifier'];
+			$attribute->order = $index;
+
+			$version->attributes()->save($attribute);
+
+			$index ++;
+		}
+
+		return $new_version_number;
 	}
 }

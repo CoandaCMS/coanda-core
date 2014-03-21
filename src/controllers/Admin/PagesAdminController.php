@@ -6,16 +6,19 @@ use CoandaCMS\Coanda\Exceptions\PageTypeNotFound;
 use CoandaCMS\Coanda\Exceptions\PageNotFound;
 use CoandaCMS\Coanda\Exceptions\PageVersionNotFound;
 use CoandaCMS\Coanda\Exceptions\ValidationException;
+use CoandaCMS\Coanda\Exceptions\PermissionDenied;
 
 use CoandaCMS\Coanda\Controllers\BaseController;
 
 class PagesAdminController extends BaseController {
 
 	private $pageRepository;
+	private $pagePresenter;
 
-	public function __construct(\CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface $pageRepository)
+	public function __construct(\CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface $pageRepository, \CoandaCMS\Coanda\Pages\Presenters\PagePresenter $pagePresenter)
 	{
 		$this->pageRepository = $pageRepository;
+		$this->pagePresenter = $pagePresenter;
 
 		$this->beforeFilter('csrf', array('on' => 'post'));
 	}
@@ -30,8 +33,9 @@ class PagesAdminController extends BaseController {
 		try
 		{
 			$page = $this->pageRepository->find($id);
+			$this->pagePresenter->setModel($page);
 
-			return View::make('coanda::admin.pages.view', ['page' => $page]);			
+			return View::make('coanda::admin.pages.view', ['page' => $this->pagePresenter]);
 		}
 		catch(PageNotFound $exception)
 		{
@@ -47,7 +51,7 @@ class PagesAdminController extends BaseController {
 			$page = $this->pageRepository->create($type, Coanda::currentUser()->id);
 
 			// Redirect to edit (version 1 - which should be the only version, give this is the create method!)
-			return Redirect::to(Coanda::adminUrl('pages/edit/' . $page->id . '/1'));
+			return Redirect::to(Coanda::adminUrl('pages/editversion/' . $page->id . '/1'));
 		}
 		catch (PageTypeNotFound $exception)
 		{
@@ -56,7 +60,22 @@ class PagesAdminController extends BaseController {
 
 	}
 
-	public function getEdit($page_id, $version_number)
+	public function getEdit($page_id)
+	{
+		// create a new version of the page and redirect to edit the version
+		try
+		{
+			$new_version = $this->pageRepository->createNewVersion($page_id, Coanda::currentUser()->id);
+
+			return Redirect::to(Coanda::adminUrl('pages/editversion/' . $page_id . '/' . $new_version));			
+		}
+		catch(PermissionDenied $exception)
+		{
+			dd('permission denied');
+		}
+	}
+
+	public function getEditversion($page_id, $version_number)
 	{
 		try
 		{
@@ -74,19 +93,36 @@ class PagesAdminController extends BaseController {
 		}
 	}
 
-	public function postEdit($page_id, $version_number)
+	public function postEditversion($page_id, $version_number)
 	{
 		try
 		{
 			$version = $this->pageRepository->getDraftVersion($page_id, $version_number);
 			$this->pageRepository->saveDraftVersion($version, Input::all());
 
-			// Lets just redirect vack for the moment
-			return Redirect::to(Coanda::adminUrl('pages/edit/' . $page_id . '/' . $version_number))->with('page_saved', true);
+			// Everything went OK, so now we can determine what to do based on the button
+			if (Input::has('save') && Input::get('save') == 'true')
+			{
+				return Redirect::to(Coanda::adminUrl('pages/editversion/' . $page_id . '/' . $version_number))->with('page_saved', true);			
+			}
+
+			if (Input::has('publish') && Input::get('publish') == 'true')
+			{
+				try
+				{
+					$this->pageRepository->publishVersion($version);
+
+					return Redirect::to(Coanda::adminUrl('pages/view/' . $page_id));
+				}
+				catch(Exception $exception)
+				{
+					dd('huh?');
+				}
+			}
 		}
 		catch(ValidationException $exception)
 		{
-			return Redirect::to(Coanda::adminUrl('pages/edit/' . $page_id . '/' . $version_number))->with('error', true)->with('invalid_attributes', $exception->getInvalidFields());
+			return Redirect::to(Coanda::adminUrl('pages/editversion/' . $page_id . '/' . $version_number))->with('error', true)->with('invalid_attributes', $exception->getInvalidFields());
 		}
 	}
 }

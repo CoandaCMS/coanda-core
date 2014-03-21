@@ -5,6 +5,7 @@ use Eloquent, Coanda;
 class Page extends Eloquent {
 
 	private $pageType;
+	private $currentVersion;
 
 	/**
 	 * The database table used by the model.
@@ -36,6 +37,26 @@ class Page extends Eloquent {
 	public function getTypeNameAttribute()
 	{
 		return $this->typeName();
+	}
+
+	public function currentVersion()
+	{
+		if (!$this->currentVersion)
+		{
+			$this->currentVersion = $this->versions()->whereVersion($this->current_version)->first();
+		}
+
+		return $this->currentVersion;
+	}
+
+	public function getStatusAttribute()
+	{
+		return $this->currentVersion()->status;
+	}
+
+	public function getAttributesAttribute()
+	{
+		return $this->currentVersion()->attributes()->get();
 	}
 
 }

@@ -16,6 +16,11 @@ class PageVersion extends Eloquent {
 		return $this->hasMany('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageAttribute');
 	}
 
+	public function getAttributeByIdentifier($identifier)
+	{
+		return $this->attributes()->whereIdentifier($identifier)->first();
+	}
+
 	public function page()
 	{
 		return $this->belongsTo('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\Page');

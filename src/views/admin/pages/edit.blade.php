@@ -19,15 +19,16 @@
 		</div>
 	@endif
 
-	{{ Form::open(['url' => Coanda::adminUrl('pages/edit/' . $version->page_id . '/' . $version->version)]) }}
+	{{ Form::open(['url' => Coanda::adminUrl('pages/editversion/' . $version->page_id . '/' . $version->version)]) }}
 
 		@foreach ($version->attributes as $attribute)
 
-			@include('coanda::admin.pages.pageattributetypes.' . $attribute->type, [ 'attribute' => $attribute, 'invalid' => Session::has('invalid_attributes') ? in_array($attribute->id, Session::get('invalid_attributes')) : false ])
+			@include('coanda::admin.pages.pageattributetypes.edit.' . $attribute->type, [ 'attribute' => $attribute, 'invalid' => Session::has('invalid_attributes') ? in_array($attribute->id, Session::get('invalid_attributes')) : false ])
 
 		@endforeach
 
-		{{ Form::button('Save', ['type' => 'submit', 'class' => 'btn btn-primary']) }}
+		{{ Form::button('Save', ['name' => 'save', 'value' => 'true', 'type' => 'submit', 'class' => 'btn btn-primary']) }}
+		{{ Form::button('Publish', ['name' => 'publish', 'value' => 'true', 'type' => 'submit', 'class' => 'btn btn-success']) }}
 
 	{{ Form::close() }}
 </div>

@@ -7,4 +7,6 @@ interface PageTypeInterface {
 
 	public function attributes();
 
+	public function generateName($version);
+
 }
