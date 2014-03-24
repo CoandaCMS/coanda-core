@@ -12,13 +12,18 @@ use CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\Page as PageModel;
 use CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageVersion as PageVersionModel;
 use CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageAttribute as PageAttributeModel;
 
-class EloquentPageRepository implements \CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface {
+use CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface;
+use CoandaCMS\Coanda\Urls\Repositories\UrlRepositoryInterface;
+
+class EloquentPageRepository implements PageRepositoryInterface {
 
 	private $model;
+	private $urlRepository;
 
-	public function __construct(PageModel $model)
+	public function __construct(PageModel $model, \CoandaCMS\Coanda\Urls\Repositories\UrlRepositoryInterface $urlRepository)
 	{
 		$this->model = $model;
+		$this->urlRepository = $urlRepository;
 	}
 
 	/**
@@ -128,16 +133,32 @@ class EloquentPageRepository implements \CoandaCMS\Coanda\Pages\Repositories\Pag
 			}
 			catch (AttributeValidationException $exception)
 			{
-				$failed[] = $attribute->id;
+				$failed['attribute_' . $attribute->id] = $exception->getMessage();
 			}
 		}
+
+		// Lets check the requested slug
+		try
+		{
+			$this->urlRepository->canUse($data['slug']);
+			$version->slug = $data['slug'];
+		}
+		catch(\CoandaCMS\Coanda\Urls\Exceptions\InvalidSlug $exception)
+		{
+			$failed['slug'] = 'The slug is not valid';
+		}
+		catch(\CoandaCMS\Coanda\Urls\Exceptions\UrlAlreadyExists $exception)
+		{
+			$failed['slug'] = 'The slug is already in use';
+		}
+
+		$version->save();
 
 		if (count($failed) > 0)
 		{
 			throw new ValidationException($failed);
 		}
 	}
-
 
 	public function publishVersion($version)
 	{
@@ -158,6 +179,9 @@ class EloquentPageRepository implements \CoandaCMS\Coanda\Pages\Repositories\Pag
 		$page->name = $page->pageType()->generateName($version);
 		$page->current_version = $version->version;
 		$page->save();
+
+		// Register the URL for this version with the Url Repo
+		$url = $this->urlRepository->register($version->slug, 'page', $page->id);
 	}
 
 	public function createNewVersion($page_id, $user_id)

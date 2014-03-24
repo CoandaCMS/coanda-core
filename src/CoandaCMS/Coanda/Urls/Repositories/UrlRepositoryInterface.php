@@ -1,13 +1,15 @@
 <?php namespace CoandaCMS\Coanda\Urls\Repositories;
 
-interface URLRepositoryInterface {
+interface UrlRepositoryInterface {
 
 	public function findById($id);
 
-	// public function findBySlug($slug);
+	public function findBySlug($slug);
 
 	public function register($slug, $for, $for_id);
 
 	// public function unRegister($slug);
+
+	public function canUse($slug);
 
 }

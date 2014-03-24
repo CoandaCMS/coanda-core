@@ -18,7 +18,7 @@ class HTML implements PageAttributeTypeInterface {
 		// - Store base64 images into the media library and set data-image-id on the <img tag
 		if ($attribute->is_required && (!$data || $data == ''))
 		{
-			throw new AttributeValidationException;
+			throw new AttributeValidationException($attribute->name . ' is required');
 		}
 
 		$attribute->attribute_data = $data;

@@ -4,6 +4,11 @@ class Slugifier {
 	
 	public function validate($slug)
 	{
+		if ($slug == '')
+		{
+			return false;
+		}
+		
 		if ( preg_match('/^[-a-z0-9]*$/', $slug))
 		{
 			return true;

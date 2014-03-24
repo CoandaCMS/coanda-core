@@ -37,6 +37,8 @@ class CreatePagesTable extends Migration {
 			$table->integer('page_id');
 			$table->integer('version');
 
+			$table->text('slug');
+			
 			$table->string('status')->default('draft'); // draft/published/archived (maybe pending for sign off?)
 
 			$table->integer('created_by');

@@ -113,6 +113,12 @@ class Coanda {
 		{
 			$module->userRoutes();
 		}
+
+		Route::match(array('GET', 'POST'), '{slug}', function($slug)
+		{
+			return Coanda::route($slug);
+
+		});
 	}
 
 	/**
@@ -125,7 +131,7 @@ class Coanda {
 		$app->bind('CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface', 'CoandaCMS\Coanda\Pages\Repositories\Eloquent\EloquentPageRepository');
 		$app->bind('CoandaCMS\Coanda\Urls\Repositories\UrlRepositoryInterface', 'CoandaCMS\Coanda\Urls\Repositories\Eloquent\EloquentUrlRepository');
 
-		// Let the module output any front end 'user' routes
+		// Let the module output any bindings
 		foreach ($this->modules as $module)
 		{
 			$module->bindings($app);
@@ -204,4 +210,37 @@ class Coanda {
 
 		throw new PageAttributeTypeNotFound;
 	}
+
+	public function route($slug)
+	{
+		try
+		{
+			$urlRepository = App::make('CoandaCMS\Coanda\Urls\Repositories\UrlRepositoryInterface');
+			$url = $urlRepository->findBySlug($slug);
+
+			if ($url)
+			{
+				$route_method = camel_case('route_' . $url->urlable_type);
+
+				if (method_exists($this, $route_method))
+				{
+					return $this->$route_method($url->urlable_id);
+				}
+			}
+		}
+		catch(\CoandaCMS\Coanda\Urls\Exceptions\UrlNotFound $exception)
+		{
+			App::abort('404');
+		}
+	}
+
+	public function routePage($id)
+	{
+		return 'Route Page #' . $id;
+	}
+
+	public function routeRedirect($id)
+	{
+		return 'Route Redirect #' . $id;
+	}	
 }

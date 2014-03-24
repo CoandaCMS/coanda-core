@@ -1,6 +1,6 @@
 <?php namespace CoandaCMS\Coanda\Controllers\Admin;
 
-use View, App, Coanda, Redirect, Input;
+use View, App, Coanda, Redirect, Input, Session;
 
 use CoandaCMS\Coanda\Exceptions\PageTypeNotFound;
 use CoandaCMS\Coanda\Exceptions\PageNotFound;
@@ -80,8 +80,9 @@ class PagesAdminController extends BaseController {
 		try
 		{
 			$version = $this->pageRepository->getDraftVersion($page_id, $version_number);
+			$invalid_fields = Session::has('invalid_fields') ? Session::get('invalid_fields') : [];
 
-			return View::make('coanda::admin.pages.edit', ['version' => $version]);
+			return View::make('coanda::admin.pages.edit', ['version' => $version, 'invalid_fields' => $invalid_fields ]);
 		}
 		catch(PageNotFound $exception)
 		{
@@ -122,7 +123,7 @@ class PagesAdminController extends BaseController {
 		}
 		catch(ValidationException $exception)
 		{
-			return Redirect::to(Coanda::adminUrl('pages/editversion/' . $page_id . '/' . $version_number))->with('error', true)->with('invalid_attributes', $exception->getInvalidFields());
+			return Redirect::to(Coanda::adminUrl('pages/editversion/' . $page_id . '/' . $version_number))->with('error', true)->with('invalid_fields', $exception->getInvalidFields())->withInput();
 		}
 	}
 }

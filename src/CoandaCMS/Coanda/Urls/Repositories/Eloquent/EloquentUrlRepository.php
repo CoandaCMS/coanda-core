@@ -4,6 +4,7 @@ use Coanda;
 
 use CoandaCMS\Coanda\Urls\Exceptions\UrlAlreadyExists;
 use CoandaCMS\Coanda\Urls\Exceptions\InvalidSlug;
+use CoandaCMS\Coanda\Urls\Exceptions\UrlNotFound;
 
 use CoandaCMS\Coanda\Urls\Repositories\Eloquent\Models\Url as UrlModel;
 
@@ -25,14 +26,31 @@ class EloquentUrlRepository implements \CoandaCMS\Coanda\Urls\Repositories\UrlRe
 	 */
 	public function findById($id)
 	{
-		$page = $this->model->find($id);
+		$url = $this->model->find($id);
 
-		if (!$page)
+		if (!$url)
 		{
-			throw new UrlNotFound('Page #' . $id . ' not found');
+			throw new UrlNotFound('Url #' . $id . ' not found');
 		}
 		
-		return $page;
+		return $url;
+	}
+
+	/**
+	 * Tries to find the Eloquent URL model by the slug
+	 * @param  integer $id
+	 * @return Array
+	 */
+	public function findBySlug($slug)
+	{
+		$url = $this->model->whereSlug($slug)->first();
+
+		if (!$url)
+		{
+			throw new UrlNotFound('Url for /' . $slug . ' not found');
+		}
+		
+		return $url;
 	}
 
 	public function register($slug, $urlable_type, $urlable_id)
@@ -59,6 +77,22 @@ class EloquentUrlRepository implements \CoandaCMS\Coanda\Urls\Repositories\UrlRe
 		$new_url->save();
 
 		return $new_url;
+	}
+
+	public function canUse($slug)
+	{
+		if (!$this->slugifier->validate($slug))
+		{
+			throw new InvalidSlug('The slug is not valid');
+		}
+
+		// do we already have a record for this slug?
+		$existing = UrlModel::whereSlug($slug)->first();
+
+		if ($existing)
+		{
+			throw new UrlAlreadyExists('The requested URL is already in use.');
+		}
 	}
 
 }

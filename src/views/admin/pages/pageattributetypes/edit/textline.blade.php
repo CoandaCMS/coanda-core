@@ -1,4 +1,9 @@
-<div class="form-group @if ($invalid) has-error @endif">
+<div class="form-group @if (isset($invalid_fields['attribute_' . $attribute->id])) has-error @endif">
 	<label class="control-label" for="attribute_{{ $attribute->id }}">{{ $attribute->name }}</label>
-    <input type="text" class="form-control" id="attribute_{{ $attribute->id }}" name="attribute_{{ $attribute->id }}" value="{{ $attribute->type_data }}">
+    <input type="text" class="form-control" id="attribute_{{ $attribute->id }}" name="attribute_{{ $attribute->id }}" value="{{ Input::old('attribute_' . $attribute->id, $attribute->type_data) }}">
+
+    @if (isset($invalid_fields['attribute_' . $attribute->id]))
+    	<span class="help-block">{{ $invalid_fields['attribute_' . $attribute->id] }}</span>
+    @endif
+
 </div>

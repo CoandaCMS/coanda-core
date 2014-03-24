@@ -11,7 +11,7 @@ class Textline implements PageAttributeTypeInterface {
 		// Is this required?
 		if ($attribute->is_required && (!$data || $data == ''))
 		{
-			throw new AttributeValidationException;
+			throw new AttributeValidationException($attribute->name . ' is required');
 		}
 
 		$attribute->attribute_data = $data;
