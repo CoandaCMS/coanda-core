@@ -138,4 +138,11 @@ class EloquentUrlRepository implements \CoandaCMS\Coanda\Urls\Repositories\UrlRe
 		}
 	}
 
+	public function getForPage($id)
+	{
+		$url = UrlModel::whereUrlableType('page')->whereUrlableId($id)->first();
+
+		return $url->slug;
+	}
+
 }

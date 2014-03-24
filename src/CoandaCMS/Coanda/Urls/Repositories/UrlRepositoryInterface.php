@@ -12,4 +12,6 @@ interface UrlRepositoryInterface {
 
 	public function canUse($slug, $for, $for_id);
 
+	public function getForPage($id);
+
 }

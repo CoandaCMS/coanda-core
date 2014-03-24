@@ -49,7 +49,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 	 * @param  integer $user_id
 	 * @return Page
 	 */
-	public function create($type, $user_id)
+	public function create($type, $user_id, $parent_page_id = false)
 	{
 		// create a page model
 		$page = new PageModel;
@@ -57,6 +57,11 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		$page->created_by = $user_id;
 		$page->edited_by = $user_id;
 		$page->current_version = 1;
+
+		if ($parent_page_id)
+		{
+			$page->parent_page_id = $parent_page_id;
+		}
 
 		$page->save();
 
@@ -140,7 +145,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		// Lets check the requested slug
 		try
 		{
-			$this->urlRepository->canUse($data['slug'], 'page', $version->page->id);
+			$this->urlRepository->canUse($version->base_slug . $data['slug'], 'page', $version->page->id);
 			
 			$version->slug = $data['slug'];
 		}
@@ -182,7 +187,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		$page->save();
 
 		// Register the URL for this version with the Url Repo
-		$url = $this->urlRepository->register($version->slug, 'page', $page->id);
+		$url = $this->urlRepository->register($version->base_slug . $version->slug, 'page', $page->id);
 	}
 
 	public function createNewVersion($page_id, $user_id)

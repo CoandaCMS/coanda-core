@@ -26,4 +26,14 @@ class PageVersion extends Eloquent {
 		return $this->belongsTo('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\Page');
 	}
 
+	public function getBaseSlugAttribute()
+	{
+		if ($this->page->parent)
+		{
+			return $this->page->parent->slug . '/';
+		}
+
+		return '';
+	}
+
 }

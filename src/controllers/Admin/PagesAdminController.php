@@ -43,12 +43,12 @@ class PagesAdminController extends BaseController {
 		}
 	}
 
-	public function getCreate($page_type)
+	public function getCreate($page_type, $parent_page_id = false)
 	{
 		try
 		{
 			$type = Coanda::getPageType($page_type);
-			$page = $this->pageRepository->create($type, Coanda::currentUser()->id);
+			$page = $this->pageRepository->create($type, Coanda::currentUser()->id, $parent_page_id);
 
 			// Redirect to edit (version 1 - which should be the only version, give this is the create method!)
 			return Redirect::to(Coanda::adminUrl('pages/editversion/' . $page->id . '/1'));

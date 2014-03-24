@@ -1,6 +1,6 @@
 <?php namespace CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models;
 
-use Eloquent, Coanda;
+use Eloquent, Coanda, App;
 
 class Page extends Eloquent {
 
@@ -17,6 +17,11 @@ class Page extends Eloquent {
 	public function versions()
 	{
 		return $this->hasMany('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageVersion');
+	}
+
+	public function parent()
+	{
+		return $this->belongsTo('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\Page', 'parent_page_id');
 	}
 
 	public function pageType()
@@ -57,6 +62,15 @@ class Page extends Eloquent {
 	public function getAttributesAttribute()
 	{
 		return $this->currentVersion()->attributes()->get();
+	}
+
+	public function getSlugAttribute()
+	{
+		// This could be an eloquent relationship - but to keep the separation of responsibilities,
+		// the page will get the url repo from the IoC and then request it from that.
+		$urlRepository = App::make('CoandaCMS\Coanda\Urls\Repositories\UrlRepositoryInterface');
+		
+		return $urlRepository->getForPage($this->id);
 	}
 
 }

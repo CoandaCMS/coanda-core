@@ -31,7 +31,7 @@
 			<label class="control-label" for="slug">Slug</label>
 
 			<div class="input-group">
-				<span class="input-group-addon">/parent-pages/</span>
+				<span class="input-group-addon">{{ $version->base_slug }}</span>
 		    	<input type="text" class="form-control" id="slug" name="slug" value="{{ Input::old('slug', $version->slug) }}">
 			</div>
 
