@@ -234,13 +234,24 @@ class Coanda {
 		}
 	}
 
+	public function routeUrl($id)
+	{
+		$urlRepository = App::make('CoandaCMS\Coanda\Urls\Repositories\UrlRepositoryInterface');
+		$url = $urlRepository->findById($id);
+
+		if ($url)
+		{
+			return Redirect::to(url($url->slug));
+		}
+	}
+
 	public function routePage($id)
 	{
-		return 'Route Page #' . $id;
+		return 'Page #' . $id;
 	}
 
 	public function routeRedirect($id)
 	{
-		return 'Route Redirect #' . $id;
+		return 'Redirect #' . $id;
 	}	
 }

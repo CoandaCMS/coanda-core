@@ -10,6 +10,6 @@ interface UrlRepositoryInterface {
 
 	// public function unRegister($slug);
 
-	public function canUse($slug);
+	public function canUse($slug, $for, $for_id);
 
 }

@@ -25,4 +25,5 @@ class PageVersion extends Eloquent {
 	{
 		return $this->belongsTo('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\Page');
 	}
+
 }

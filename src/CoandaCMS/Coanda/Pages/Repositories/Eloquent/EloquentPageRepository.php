@@ -140,7 +140,8 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		// Lets check the requested slug
 		try
 		{
-			$this->urlRepository->canUse($data['slug']);
+			$this->urlRepository->canUse($data['slug'], 'page', $version->page->id);
+			
 			$version->slug = $data['slug'];
 		}
 		catch(\CoandaCMS\Coanda\Urls\Exceptions\InvalidSlug $exception)
@@ -189,6 +190,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		$page = PageModel::find($page_id);
 		$type = $page->pageType();
 
+		$current_version = $page->currentVersion();
 		$latest_version = $page->versions()->orderBy('version', 'desc')->first();
 
 		$new_version_number = $latest_version->version + 1;
@@ -199,6 +201,9 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		$version->status = 'draft';
 		$version->created_by = $user_id;
 		$version->edited_by = $user_id;
+
+		// Get the slug from the current version
+		$version->slug = $current_version->slug;
 
 		$page->versions()->save($version);
 
@@ -214,6 +219,9 @@ class EloquentPageRepository implements PageRepositoryInterface {
 			$attribute->type = $page_attribute_type->identifier;
 			$attribute->identifier = $type_attribute['identifier'];
 			$attribute->order = $index;
+
+			// Copy the attribute data from the current version
+			$attribute->attribute_data = $current_version->getAttributeByIdentifier($type_attribute['identifier'])->attribute_data;
 
 			$version->attributes()->save($attribute);
 
