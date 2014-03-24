@@ -8,7 +8,7 @@ class PagePresenter extends ModelPresenter {
 	{
 		if ($this->model->name !== '')
 		{
-			$this->model->name;
+			return $this->model->name;
 		}
 
 		return Lang::get('coanda::pages.page_name_not_set');
