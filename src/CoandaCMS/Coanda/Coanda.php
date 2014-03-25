@@ -224,9 +224,9 @@ class Coanda {
 
 				if (method_exists($this, $route_method))
 				{
-					return $this->$route_method($url->urlable_id);
+					return $this->$route_method($url);
 				}
-			}
+			}			
 		}
 		catch(\CoandaCMS\Coanda\Urls\Exceptions\UrlNotFound $exception)
 		{
@@ -234,10 +234,10 @@ class Coanda {
 		}
 	}
 
-	public function routeUrl($id)
+	public function routeUrl($url)
 	{
 		$urlRepository = App::make('CoandaCMS\Coanda\Urls\Repositories\UrlRepositoryInterface');
-		$url = $urlRepository->findById($id);
+		$url = $urlRepository->findById($url->urlable_id);
 
 		if ($url)
 		{
@@ -245,13 +245,14 @@ class Coanda {
 		}
 	}
 
-	public function routePage($id)
+	public function routePage($url)
 	{
-		return 'Page #' . $id;
+		return 'Page #' . $url->urlable_id;
 	}
 
-	public function routeRedirect($id)
+	public function routeRedirect($url)
 	{
-		return 'Redirect #' . $id;
-	}	
+		return 'Redirect #' . $url->urlable_id;
+	}
+
 }
