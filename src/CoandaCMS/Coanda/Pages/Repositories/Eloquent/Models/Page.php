@@ -24,6 +24,32 @@ class Page extends Eloquent {
 		return $this->belongsTo('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\Page', 'parent_page_id');
 	}
 
+	public function children()
+	{
+		return $this->hasMany('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\Page', 'parent_page_id');
+	}
+
+	public function parents($parents)
+	{
+		$parent = $this->parent;
+
+		if ($parent)
+		{
+			$parents->prepend($parent);
+
+			return $parent->parents($parents);
+		}
+
+		return $parents;
+	}
+
+	public function getParents()
+	{
+		$collection = new \Illuminate\Database\Eloquent\Collection;
+
+		return $this->parents($collection);
+	}
+
 	public function pageType()
 	{
 		if (!$this->pageType)
