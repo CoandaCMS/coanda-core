@@ -7,6 +7,7 @@ class Page extends Eloquent {
 	private $pageType;
 	private $currentVersion;
 	private $parents;
+	private $children;
 
 	/**
 	 * The database table used by the model.
@@ -27,7 +28,12 @@ class Page extends Eloquent {
 
 	public function children()
 	{
-		return $this->hasMany('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\Page', 'parent_page_id');
+		if (!$this->children)
+		{
+			$this->children = $this->hasMany('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\Page', 'parent_page_id');
+		}
+		
+		return $this->children;
 	}
 
 	public function parents($parents)
