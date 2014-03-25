@@ -20,6 +20,7 @@
 					--}}
 				</li>	
 			@endforeach
+			<li>{{ $page->name }}</li>
 		</ul>
 
 		{{--
