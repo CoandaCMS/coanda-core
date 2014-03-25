@@ -5,7 +5,7 @@
 
 		<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
 		<link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" />
-
+		<link href='http://fonts.googleapis.com/css?family=Roboto+Condensed:400,300,700' rel='stylesheet' type='text/css'>
 		<link rel="stylesheet" href="{{ asset('packages/coanda/summernote/summernote.css') }}">
 		<link rel="stylesheet" href="{{ asset('packages/coanda/css/coanda.css') }}">
 

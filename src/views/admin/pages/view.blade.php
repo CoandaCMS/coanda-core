@@ -123,18 +123,34 @@
 
 	<div class="col-md-4">
 
-		<div class="page-timeline">
-			<h2>Timeline</h2>
+		<div class="page-tabs">
 
-			@foreach (range(1, 20) as $tmp)
-				<div class="media">
-					<img class="pull-left media-object img-circle" width="32" src="https://avatars2.githubusercontent.com/u/1886367?s=460">
-					<div class="media-body">
-						Edited
-						<span class="pull-right">3 days ago</span>
+			<ul class="nav nav-tabs">
+				<li class="active"><a href="#history" data-toggle="tab">History</a></li>
+				<li><a href="#other" data-toggle="tab">Other</a></li>
+			</ul>
+
+			<div class="tab-content">
+				<div class="tab-pane active" id="history">
+
+					<div class="page-timeline">
+						@foreach (range(1, 20) as $tmp)
+							<div class="media">
+								<img class="pull-left media-object img-circle" width="32" src="https://avatars2.githubusercontent.com/u/1886367?s=460">
+								<div class="media-body">
+									Edited
+									<span class="pull-right">3 days ago</span>
+								</div>
+							</div>
+						@endforeach
 					</div>
+
 				</div>
-			@endforeach
+
+				<div class="tab-pane" id="other">
+					Something else
+				</div>
+			</div>
 		</div>
 
 	</div>

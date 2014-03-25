@@ -14,6 +14,7 @@
 </div>
 
 <div class="row">
+
 	<div class="page-name col-md-12">
 
 		<h1 class="pull-left">Pages</h1>
@@ -28,7 +29,7 @@
 <div class="row">
 	<div class="page-options col-md-12">
 		<div class="btn-group">
-			<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+			<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
 				Add new <span class="caret"></span>
 			</button>
 			<ul class="dropdown-menu" role="menu">
@@ -41,19 +42,49 @@
 </div>
 
 <div class="row">
-	<div class="col-md-12">
+	<div class="col-md-8">
 
-		<p>Heading?</p>
+		<div class="page-tabs">
 
-		<table class="table table-striped">
-			@foreach ($pages as $page)
-				<tr>
-					<td><a href="{{ Coanda::adminUrl('pages/view/' . $page->id) }}">{{ $page->name !== '' ? $page->name : 'not set' }}</a></td>
-					<td>{{ $page->status }}</td>
-				</tr>
-			@endforeach
-		</table>
+			<ul class="nav nav-tabs">
+				<li class="active"><a href="#pages" data-toggle="tab">Top level pages</a></li>
+			</ul>
 
+			<div class="tab-content">
+				<div class="tab-pane active" id="subpages">
+					<table class="table table-striped">
+						@foreach ($pages as $page)
+							<tr>
+								<td><a href="{{ Coanda::adminUrl('pages/view/' . $page->id) }}">{{ $page->name !== '' ? $page->name : 'not set' }}</a></td>
+								<td>{{ $page->status }}</td>
+							</tr>
+						@endforeach
+					</table>
+				</div>
+			</div>
+		</div>
+
+	</div>
+
+	<div class="col-md-4">
+
+		<div class="page-tabs">
+
+			<ul class="nav nav-tabs">
+				<li class="active"><a href="#search" data-toggle="tab">Search</a></li>
+				<li><a href="#other" data-toggle="tab">Other</a></li>
+			</ul>
+
+			<div class="tab-content">
+				<div class="tab-pane active" id="search">
+					<input type="text" class="form-control" placeholder="Search pages">
+				</div>
+
+				<div class="tab-pane" id="other">
+					Something else
+				</div>
+			</div>
+		</div>
 	</div>
 </div>
 
