@@ -54,8 +54,15 @@
 				<div class="tab-pane active" id="subpages">
 					<table class="table table-striped">
 						@foreach ($pages as $page)
-							<tr>
-								<td><a href="{{ Coanda::adminUrl('pages/view/' . $page->id) }}">{{ $page->name !== '' ? $page->name : 'not set' }}</a></td>
+							<tr class="status-{{ $page->status }}">
+								<td>
+									@if ($page->status == 'draft')
+										<i class="fa fa-circle-o"></i>
+									@else
+										<i class="fa fa-circle"></i>
+									@endif
+									<a href="{{ Coanda::adminUrl('pages/view/' . $page->id) }}">{{ $page->name !== '' ? $page->name : 'not set' }}</a>
+								</td>
 								<td>{{ $page->status }}</td>
 							</tr>
 						@endforeach

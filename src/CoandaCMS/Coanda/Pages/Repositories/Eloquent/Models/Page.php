@@ -6,6 +6,7 @@ class Page extends Eloquent {
 
 	private $pageType;
 	private $currentVersion;
+	private $parents;
 
 	/**
 	 * The database table used by the model.
@@ -45,9 +46,14 @@ class Page extends Eloquent {
 
 	public function getParents()
 	{
-		$collection = new \Illuminate\Database\Eloquent\Collection;
+		if (!$this->parents)
+		{
+			$this->parents = new \Illuminate\Database\Eloquent\Collection;
 
-		return $this->parents($collection);
+			$this->parents($this->parents);
+		}
+
+		return $this->parents;
 	}
 
 	public function pageType()
