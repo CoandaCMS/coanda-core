@@ -82,6 +82,7 @@ class EloquentUrlRepository implements \CoandaCMS\Coanda\Urls\Repositories\UrlRe
 		// Do we have a record for this urlable_type and urlable_id - if so lets redirect that to this new one
 		$existing_for_type = UrlModel::whereUrlableType($for)->whereUrlableId($for_id)->first();
 
+		// If we have an existing one, which we can overwrite, then do so
 		if ($existing)
 		{
 			$existing->urlable_type = $for;
@@ -102,6 +103,26 @@ class EloquentUrlRepository implements \CoandaCMS\Coanda\Urls\Repositories\UrlRe
 		// If we have an existing url, then set it as a 'redirect' to the new url object
 		if ($existing_for_type)
 		{
+			// We need to update any 'child' urls off the existing url.. e.g top-level/second-level/the-url
+			// NOTE: Need to consider how this would work if there are lots of child urls..
+			$child_urls = UrlModel::where('slug', 'like', $existing_for_type->slug . '/%')->get();
+
+			if ($child_urls->count() > 0)
+			{
+				foreach ($child_urls as $child_url)
+				{
+					$new_child_url = new UrlModel;
+					$new_child_url->slug = str_replace($existing_for_type->slug, $slug, $child_url->slug);
+					$new_child_url->urlable_type = $child_url->urlable_type;
+					$new_child_url->urlable_id = $child_url->urlable_id;
+					$new_child_url->save();
+
+					$child_url->urlable_type = 'url';
+					$child_url->urlable_id = $new_child_url->id;
+					$child_url->save();
+				}
+			}
+
 			$existing_for_type->urlable_type = 'url';
 			$existing_for_type->urlable_id = $existing ? $existing->id : $new_url->id;
 			$existing_for_type->save();
