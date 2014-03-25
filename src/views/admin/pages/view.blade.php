@@ -4,14 +4,12 @@
 
 @section('content')
 
-<?php $parents = $page->getParents(); ?>
-
 <div class="row">
 	<div class="breadcrumb-nav">
 		<ul class="breadcrumb">
 			<li><a href="{{ Coanda::adminUrl('pages') }}">Pages</a></li>
 
-			@foreach ($parents as $parent)
+			@foreach ($page->getParents() as $parent)
 				<li>
 					<a href="{{ Coanda::adminUrl('pages/view/' . $parent->id) }}">{{ $parent->name }}</a>
 					{{--
@@ -24,7 +22,7 @@
 		</ul>
 
 		{{--
-		@foreach ($parents as $parent)
+		@foreach ($page->getParents() as $parent)
 			<div class="sub-pages-expand" id="sub-pages-{{ $parent->id }}">
 				
 				<p>Loading <span class="one">.</span><span class="two">.</span><span class="three">.</span></p>
