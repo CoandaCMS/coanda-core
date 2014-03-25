@@ -5,7 +5,6 @@
 @section('content')
 
 <div class="row">
-
 	<div class="breadcrumb-nav">
 		<ul class="breadcrumb">
 			<li><a href="{{ Coanda::adminUrl('pages') }}">Pages</a></li>
@@ -14,15 +13,11 @@
 </div>
 
 <div class="row">
-
 	<div class="page-name col-md-12">
-
 		<h1 class="pull-left">Pages</h1>
-
 		<div class="page-status pull-right">
 			<span class="label label-default">Total {{ $pages->count() }}</span>
 		</div>
-
 	</div>
 </div>
 
@@ -43,13 +38,10 @@
 
 <div class="row">
 	<div class="col-md-8">
-
 		<div class="page-tabs">
-
 			<ul class="nav nav-tabs">
 				<li class="active"><a href="#pages" data-toggle="tab">Top level pages</a></li>
 			</ul>
-
 			<div class="tab-content">
 				<div class="tab-pane active" id="subpages">
 					<table class="table table-striped">
@@ -63,6 +55,8 @@
 									@endif
 									<a href="{{ Coanda::adminUrl('pages/view/' . $page->id) }}">{{ $page->name !== '' ? $page->name : 'not set' }}</a>
 								</td>
+								<td>{{ $page->type_name }}</td>
+								<td>{{ $page->children->count() }} sub page{{ $page->children->count() !== 1 ? 's' : '' }}</td>
 								<td>{{ $page->status }}</td>
 							</tr>
 						@endforeach
@@ -70,18 +64,13 @@
 				</div>
 			</div>
 		</div>
-
 	</div>
-
 	<div class="col-md-4">
-
 		<div class="page-tabs">
-
 			<ul class="nav nav-tabs">
 				<li class="active"><a href="#search" data-toggle="tab">Search</a></li>
 				<li><a href="#other" data-toggle="tab">Other</a></li>
 			</ul>
-
 			<div class="tab-content">
 				<div class="tab-pane active" id="search">
 					<input type="text" class="form-control" placeholder="Search pages">
