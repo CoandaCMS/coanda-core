@@ -38,7 +38,7 @@
             </div>
 
             <div class="form-actions">
-                <button type="submit" class="btn btn-block btn-lg btn-success">Sign In</button>
+                <button type="submit" class="btn btn-block btn-lg btn-primary">Sign In</button>
             </div>
 
         {{ Form::close() }}
