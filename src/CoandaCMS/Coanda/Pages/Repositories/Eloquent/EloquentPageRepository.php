@@ -43,6 +43,11 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		return $page;
 	}
 
+	public function topLevel()
+	{
+		return PageModel::where('parent_page_id', 0)->get();
+	}
+
 	/**
 	 * Create a new page of the specified type for the user id
 	 * @param  string $type

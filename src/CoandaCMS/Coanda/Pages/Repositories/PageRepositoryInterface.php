@@ -4,6 +4,8 @@ interface PageRepositoryInterface {
 
 	public function find($id);
 
+	public function topLevel();
+
 	public function create($type, $user_id, $parent_page_id);
 
 	public function getDraftVersion($page_id, $version);

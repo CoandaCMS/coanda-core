@@ -1,5 +1,5 @@
 <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
-	<div class="container">
+	<div class="container-fluid">
 		<ul class="nav navbar-nav">
 			<li><a href="{{ Coanda::adminUrl('/') }}">Dashboard</a></li>
 			<li><a href="{{ Coanda::adminUrl('pages') }}">Pages</a></li>

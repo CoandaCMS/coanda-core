@@ -5,6 +5,7 @@
 
 		<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
 		<link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" />
+
 		<link rel="stylesheet" href="{{ asset('packages/coanda/summernote/summernote.css') }}">
 		<link rel="stylesheet" href="{{ asset('packages/coanda/css/coanda.css') }}">
 
@@ -15,7 +16,7 @@
 	@include('coanda::admin.includes.header')
 @endif
 
-<div class="container">
+<div class="container-fluid">
 	@yield('content')
 </div>
 

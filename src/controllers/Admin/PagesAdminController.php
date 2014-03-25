@@ -25,7 +25,9 @@ class PagesAdminController extends BaseController {
 
 	public function getIndex()
 	{
-		return View::make('coanda::admin.pages.index');
+		$pages = $this->pageRepository->topLevel();
+
+		return View::make('coanda::admin.pages.index', [ 'pages' => $pages ]);
 	}
 
 	public function getView($id)
