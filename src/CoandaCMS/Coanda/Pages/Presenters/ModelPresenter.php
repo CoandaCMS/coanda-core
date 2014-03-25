@@ -21,4 +21,14 @@ abstract class ModelPresenter {
 		return $this->model->$attribute;
 	}
 
+	public function __call($method_name, $arguments)
+	{
+		if (method_exists($this, $method_name))
+		{
+			return $this->$method_name($arguments);
+		}
+
+		return $this->model->$method_name($arguments);
+	}
+
 }
