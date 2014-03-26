@@ -1,6 +1,6 @@
-<?php namespace CoandaCMS\Coanda\Authentication;
+<?php namespace CoandaCMS\Coanda\Users\Repositories;
 
-interface UserInterface {
+interface UserRepositoryInterface {
 
 	/**
 	 * Check to see if we have a logged in user
@@ -27,5 +27,10 @@ interface UserInterface {
 	 * @return [type] [description]
 	 */
 	public function logout();
+
+
+	public function find($id);
+
+	public function create();
 
 }

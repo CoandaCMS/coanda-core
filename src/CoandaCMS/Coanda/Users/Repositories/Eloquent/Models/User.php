@@ -1,4 +1,4 @@
-<?php namespace CoandaCMS\Coanda\Authentication\Eloquent\Models;
+<?php namespace CoandaCMS\Coanda\Users\Repositories\Eloquent\Models;
 
 use Eloquent;
 

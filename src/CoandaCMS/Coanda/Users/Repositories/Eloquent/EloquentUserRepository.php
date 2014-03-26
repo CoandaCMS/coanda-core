@@ -1,14 +1,19 @@
-<?php namespace CoandaCMS\Coanda\Authentication\Eloquent;
+<?php namespace CoandaCMS\Coanda\Users\Repositories\Eloquent;
 
-use Auth;
+use Coanda, Auth;
 
-use CoandaCMS\Coanda\Exceptions\MissingInput;
-use CoandaCMS\Coanda\Exceptions\AuthenticationFailed;
-use CoandaCMS\Coanda\Exceptions\NotLoggedIn;
+use CoandaCMS\Coanda\Users\Repositories\Eloquent\Models\User as UserModel;
 
-use CoandaCMS\Coanda\Authentication\UserInterface;
+use CoandaCMS\Coanda\Users\Repositories\UserRepositoryInterface;
 
-class EloquentUser implements UserInterface {
+class EloquentUserRepository implements UserRepositoryInterface {
+
+	private $model;
+
+	public function __construct(UserModel $model)
+	{
+		$this->model = $model;
+	}
 
 	public function isLoggedIn()
 	{
@@ -53,5 +58,27 @@ class EloquentUser implements UserInterface {
 	public function logout()
 	{
 		return Auth::logout();
+	}
+
+	/**
+	 * Tries to find the Eloquent page model by the id
+	 * @param  integer $id
+	 * @return Array
+	 */
+	public function find($id)
+	{
+		$user = $this->model->find($id);
+
+		if (!$user)
+		{
+			throw new UserNotFound('User #' . $id . ' not found');
+		}
+		
+		return $user;
+	}
+
+	public function create()
+	{
+		dd('create user');
 	}
 }

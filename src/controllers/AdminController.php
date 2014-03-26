@@ -12,7 +12,7 @@ class AdminController extends BaseController {
 
 	private $user;
 
-	public function __construct(\CoandaCMS\Coanda\Authentication\UserInterface $user)
+	public function __construct(\CoandaCMS\Coanda\Users\Repositories\UserRepositoryInterface $user)
 	{
 		$this->user = $user;
 

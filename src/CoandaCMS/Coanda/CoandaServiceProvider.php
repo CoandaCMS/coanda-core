@@ -32,6 +32,8 @@ class CoandaServiceProvider extends ServiceProvider {
 		// Let the main class handles the bindings
 		$this->app->make('coanda')->bindings($this->app);
 
+		$this->app->make('coanda')->getUser();
+
 		$this->app->make('coanda')->filters();
 		$this->app->make('coanda')->routes();
 	}
@@ -46,7 +48,7 @@ class CoandaServiceProvider extends ServiceProvider {
 		// Bind our main facade
 		$this->app->singleton('coanda', function () {
 
-			return new Coanda(new \CoandaCMS\Coanda\Authentication\Eloquent\EloquentUser);
+			return new Coanda;
 
 		});
 	}

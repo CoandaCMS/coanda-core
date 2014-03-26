@@ -13,12 +13,9 @@ class Coanda {
 
 	private $page_types = [];
 
-	/**
-	 * @param CoandaCMSCoandaAuthenticationUser $user [description]
-	 */
-	public function __construct(\CoandaCMS\Coanda\Authentication\UserInterface $user)
+	public function getUser()
 	{
-		$this->user = $user;
+		$this->user = App::make('CoandaCMS\Coanda\Users\Repositories\UserRepositoryInterface');
 	}
 
 	/**
@@ -97,6 +94,9 @@ class Coanda {
 				// Load the pages controller
 				Route::controller('pages', 'CoandaCMS\Coanda\Controllers\Admin\PagesAdminController');
 
+				// Load the users controller
+				Route::controller('users', 'CoandaCMS\Coanda\Controllers\Admin\UsersAdminController');
+
 				foreach ($this->modules as $module)
 				{
 					$module->adminRoutes();
@@ -127,7 +127,7 @@ class Coanda {
 	 */
 	public function bindings($app)
 	{
-		$app->bind('CoandaCMS\Coanda\Authentication\UserInterface', 'CoandaCMS\Coanda\Authentication\Eloquent\EloquentUser');
+		$app->bind('CoandaCMS\Coanda\Users\Repositories\UserRepositoryInterface', 'CoandaCMS\Coanda\Users\Repositories\Eloquent\EloquentUserRepository');
 		$app->bind('CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface', 'CoandaCMS\Coanda\Pages\Repositories\Eloquent\EloquentPageRepository');
 		$app->bind('CoandaCMS\Coanda\Urls\Repositories\UrlRepositoryInterface', 'CoandaCMS\Coanda\Urls\Repositories\Eloquent\EloquentUrlRepository');
 
