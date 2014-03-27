@@ -4,6 +4,10 @@ use Eloquent, Coanda, App;
 
 class Page extends Eloquent {
 
+	use \CoandaCMS\Coanda\Core\Presenters\PresentableTrait;
+
+	protected $presenter = 'CoandaCMS\Coanda\Pages\Presenters\Page';
+
 	private $pageType;
 	private $currentVersion;
 	private $parents;

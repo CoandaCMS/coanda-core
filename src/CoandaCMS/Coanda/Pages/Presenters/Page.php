@@ -2,9 +2,9 @@
 
 use Lang;
 
-class PagePresenter extends ModelPresenter {
+class Page extends \CoandaCMS\Coanda\Core\Presenters\Presenter {
 
-	public function getName()
+	public function name()
 	{
 		if ($this->model->name !== '')
 		{
@@ -14,9 +14,14 @@ class PagePresenter extends ModelPresenter {
 		return Lang::get('coanda::pages.page_name_not_set');
 	}
 
-	public function getStatus()
+	public function status()
 	{
 		return Lang::get('coanda::pages.status_' . $this->model->status);
 	}
-	
+
+	public function type()
+	{
+		return $this->model->pageType()->name;
+	}
+
 }

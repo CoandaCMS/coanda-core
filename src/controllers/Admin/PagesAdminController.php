@@ -13,18 +13,21 @@ use CoandaCMS\Coanda\Controllers\BaseController;
 class PagesAdminController extends BaseController {
 
 	private $pageRepository;
-	private $pagePresenter;
 
-	public function __construct(\CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface $pageRepository, \CoandaCMS\Coanda\Pages\Presenters\PagePresenter $pagePresenter)
+	public function __construct(\CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface $pageRepository)
 	{
 		$this->pageRepository = $pageRepository;
-		$this->pagePresenter = $pagePresenter;
 
 		$this->beforeFilter('csrf', array('on' => 'post'));
 	}
 
 	public function getIndex()
 	{
+		if (!Coanda::canAccess('pages'))
+		{
+			throw new PermissionDenied;
+		}
+
 		$pages = $this->pageRepository->topLevel();
 
 		return View::make('coanda::admin.pages.index', [ 'pages' => $pages ]);
@@ -32,12 +35,16 @@ class PagesAdminController extends BaseController {
 
 	public function getView($id)
 	{
+		if (!Coanda::canAccess('pages'))
+		{
+			throw new PermissionDenied;
+		}
+
 		try
 		{
 			$page = $this->pageRepository->find($id);
-			$this->pagePresenter->setModel($page);
 
-			return View::make('coanda::admin.pages.view', ['page' => $this->pagePresenter]);
+			return View::make('coanda::admin.pages.view', ['page' => $page]);
 		}
 		catch(PageNotFound $exception)
 		{

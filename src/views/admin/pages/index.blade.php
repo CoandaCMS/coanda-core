@@ -53,11 +53,11 @@
 									@else
 										<i class="fa fa-circle"></i>
 									@endif
-									<a href="{{ Coanda::adminUrl('pages/view/' . $page->id) }}">{{ $page->name !== '' ? $page->name : 'not set' }}</a>
+									<a href="{{ Coanda::adminUrl('pages/view/' . $page->id) }}">{{ $page->present()->name }}</a>
 								</td>
-								<td>{{ $page->type_name }}</td>
+								<td>{{ $page->present()->type }}</td>
 								<td>{{ $page->children->count() }} sub page{{ $page->children->count() !== 1 ? 's' : '' }}</td>
-								<td>{{ $page->status }}</td>
+								<td>{{ $page->present()->status }}</td>
 							</tr>
 						@endforeach
 					</table>

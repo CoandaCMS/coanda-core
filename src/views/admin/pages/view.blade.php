@@ -11,14 +11,14 @@
 
 			@foreach ($page->getParents() as $parent)
 				<li>
-					<a href="{{ Coanda::adminUrl('pages/view/' . $parent->id) }}">{{ $parent->name }}</a>
+					<a href="{{ Coanda::adminUrl('pages/view/' . $parent->id) }}">{{ $parent->present()->name }}</a>
 					{{--
 					&nbsp;&nbsp;
 					<a href="#sub-pages-{{ $parent->id }}" class="expand"><i class="fa fa-caret-square-o-down"></i></a>
 					--}}
 				</li>	
 			@endforeach
-			<li>{{ $page->name }}</li>
+			<li>{{ $page->present()->name }}</li>
 		</ul>
 
 		{{--
@@ -35,10 +35,10 @@
 
 <div class="row">
 	<div class="page-name col-md-12">
-		<h1 class="pull-left">{{ $page->name }} <small>{{ $page->type_name }}</small></h1>
+		<h1 class="pull-left">{{ $page->present()->name }} <small>{{ $page->present()->type }}</small></h1>
 		<div class="page-status pull-right">
 			<span class="label label-default">Version {{ $page->current_version }}</span>
-			<span class="label @if ($page->status == 'Draft') label-warning @else label-success @endif">{{ $page->status }}</span>
+			<span class="label @if ($page->status == 'Draft') label-warning @else label-success @endif">{{ $page->present()->status }}</span>
 		</div>
 	</div>
 </div>
@@ -84,7 +84,7 @@
 				<div class="tab-pane active" id="subpages">
 
 					@if ($page->parent)
-						<p><i class="fa fa-level-up"></i> <a href="{{ Coanda::adminUrl('pages/view/' . $page->parent->id) }}">Up to {{ $page->parent->name }}</a></p>
+						<p><i class="fa fa-level-up"></i> <a href="{{ Coanda::adminUrl('pages/view/' . $page->parent->id) }}">Up to {{ $page->parent->present()->name }}</a></p>
 					@else
 						<p><i class="fa fa-level-up"></i> <a href="{{ Coanda::adminUrl('pages') }}">Up to Pages</a></p>
 					@endif
@@ -99,11 +99,11 @@
 									@else
 										<i class="fa fa-circle"></i>
 									@endif
-									<a href="{{ Coanda::adminUrl('pages/view/' . $child->id) }}">{{ $child->name == '' ? 'Not set' : $child->name }}</a>
+									<a href="{{ Coanda::adminUrl('pages/view/' . $child->id) }}">{{ $child->present()->name }}</a>
 								</td>
-								<td>{{ $child->type_name }}</td>
+								<td>{{ $child->present()->type }}</td>
 								<td>{{ $child->children->count() }} sub page{{ $child->children->count() !== 1 ? 's' : '' }}</td>
-								<td>{{ $child->status }}</td>
+								<td>{{ $child->present()->status }}</td>
 							</tr>
 						@endforeach
 						</table>
