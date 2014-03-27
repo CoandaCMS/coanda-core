@@ -28,9 +28,17 @@ interface UserRepositoryInterface {
 	 */
 	public function logout();
 
+	public function hasAccessTo($permission, $permission_id = false);
 
 	public function find($id);
 
 	public function create();
+
+	public function groupById($group_id);
+
+	public function groups();
+
+	public function createGroup($data);
+	public function updateGroup($group_id, $data);
 
 }

@@ -46,6 +46,34 @@ class Coanda {
 		return $this->user->currentUser();
 	}
 
+	public function availablePermissions()
+	{
+		return [
+			'pages' => [
+				'name' => 'Pages',
+				'views' => [
+					'create',
+					'edit',
+					'remove',
+					'move'
+				]
+			],
+			'users' => [
+				'name' => 'Users',
+				'views' => [
+					'create',
+					'edit',
+					'remove'
+				]
+			]
+		];
+	}
+
+	public function canAccess($permission, $permission_id = false)
+	{
+		return $this->user->hasAccessTo($permission, $permission_id);
+	}
+
 	/**
 	 * Get all the enabled modules from the config and boots them up. Also adds to modules array for future use.
 	 */

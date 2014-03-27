@@ -3,6 +3,7 @@
 		<ul class="nav navbar-nav">
 			<li><a href="{{ Coanda::adminUrl('/') }}">Dashboard</a></li>
 			<li><a href="{{ Coanda::adminUrl('pages') }}">Pages</a></li>
+			<li><a href="{{ Coanda::adminUrl('users') }}">Users</a></li>
 		</ul>
 
 		<ul class="nav navbar-nav navbar-right">

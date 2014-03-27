@@ -2,6 +2,9 @@
 
 use View, App, Coanda, Redirect, Input, Session;
 
+use CoandaCMS\Coanda\Exceptions\ValidationException;
+use CoandaCMS\Coanda\Users\Exceptions\GroupNotFound;
+
 use CoandaCMS\Coanda\Controllers\BaseController;
 
 class UsersAdminController extends BaseController {
@@ -22,4 +25,72 @@ class UsersAdminController extends BaseController {
 		return View::make('coanda::admin.users.index', [ 'groups' => $groups ]);
 	}
 
+	public function getCreateGroup()
+	{
+		$permissions = Coanda::availablePermissions();
+		$invalid_fields = Session::has('invalid_fields') ? Session::get('invalid_fields') : [];
+
+		return View::make('coanda::admin.users.creategroup', ['permissions' => $permissions, 'invalid_fields' => $invalid_fields ]);
+	}
+
+	public function postCreateGroup()
+	{
+		if (Input::has('cancel'))
+		{
+			return Redirect::to(Coanda::adminUrl('users'));
+		}
+
+		try
+		{
+			$this->userRepository->createGroup(Input::all());
+
+			return Redirect::to(Coanda::adminUrl('users'));
+		}
+		catch(ValidationException $exception)
+		{
+			return Redirect::to(Coanda::adminUrl('users/create-group'))->with('error', true)->with('invalid_fields', $exception->getInvalidFields())->withInput();
+		}
+	}
+
+	public function getEditGroup($group_id)
+	{
+		try
+		{
+			$group = $this->userRepository->groupById($group_id);
+
+			$permissions = Coanda::availablePermissions();
+			$existing_permissions = Input::old('permissions', (array)$group->access_list);
+
+			$invalid_fields = Session::has('invalid_fields') ? Session::get('invalid_fields') : [];
+
+			return View::make('coanda::admin.users.editgroup', ['group' => $group, 'existing_permissions' => $existing_permissions, 'permissions' => $permissions, 'invalid_fields' => $invalid_fields ]);
+		}
+		catch(GroupNotFound $exception)
+		{
+			return Redirect::to(Coanda::adminUrl('users'));
+		}
+	}
+
+	public function postEditGroup($group_id)
+	{
+		try
+		{
+			if (Input::has('cancel'))
+			{
+				return Redirect::to(Coanda::adminUrl('users'));
+			}
+
+			$this->userRepository->updateGroup($group_id, Input::all());
+
+			return Redirect::to(Coanda::adminUrl('users'));			
+		}
+		catch(GroupNotFound $exception)
+		{
+			return Redirect::to(Coanda::adminUrl('users'));
+		}
+		catch(ValidationException $exception)
+		{
+			return Redirect::to(Coanda::adminUrl('users/edit-group/' . $group_id))->with('error', true)->with('invalid_fields', $exception->getInvalidFields())->withInput();
+		}
+	}
 }
