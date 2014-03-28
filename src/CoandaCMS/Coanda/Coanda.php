@@ -176,11 +176,14 @@ class Coanda {
 
 		foreach ($page_types as $page_type)
 		{
-			$type = new $page_type($this);
+			if (class_exists($page_type))
+			{
+				$type = new $page_type($this);
 
-			// TODO: validate the definition to ensure all the specified page attribute types are available.
+				// TODO: validate the definition to ensure all the specified page attribute types are available.
 
-			$this->page_types[$type->identifier] = $type;
+				$this->page_types[$type->identifier] = $type;				
+			}
 		}
 	}
 
