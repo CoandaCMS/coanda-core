@@ -1,6 +1,6 @@
 <?php
 
-class BaseTest extends \Orchestra\Testbench\TestCase {
+abstract class BaseTest extends \Orchestra\Testbench\TestCase {
 
 	public function setUp()
 	{
