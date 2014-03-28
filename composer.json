@@ -11,10 +11,15 @@
         "php": ">=5.4.0",
         "illuminate/support": "4.1.*"
     },
+    "require-dev": {
+        "phpunit/phpunit": "3.7.*",
+        "orchestra/testbench": "2.1.*"
+    },
     "autoload": {
         "classmap": [
             "src/migrations",
-            "src/controllers"
+            "src/controllers",
+            "tests/unit/BaseTest.php"
         ],
         "psr-0": {
             "CoandaCMS\\Coanda\\": "src/"
