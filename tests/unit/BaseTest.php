@@ -12,4 +12,15 @@ abstract class BaseTest extends \Orchestra\Testbench\TestCase {
 	    return array('CoandaCMS\Coanda\CoandaServiceProvider');
 	}
 
+	protected function getPackageAliases()
+	{
+		return array(
+		    'Coanda' => 'CoandaCMS\Coanda\Facades\Coanda'
+		);
+	}
+
+	public function tearDown()
+	{
+		\Mockery::close();
+	}	
 }
