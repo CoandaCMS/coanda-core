@@ -31,16 +31,13 @@ interface UserRepositoryInterface {
 	public function hasAccessTo($permission, $permission_id = false);
 
 	public function find($id);
+	public function createNew($data, $group_id);
+	public function updateExisting($user_id, $data);
 
-	public function create();
-
+	
 	public function groupById($group_id);
-
 	public function groups();
-
 	public function createGroup($data);
 	public function updateGroup($group_id, $data);
-
-	public function createNew($data, $group_id);
 
 }

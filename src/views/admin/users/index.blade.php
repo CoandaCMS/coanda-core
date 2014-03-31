@@ -39,7 +39,7 @@
 						@foreach ($groups as $group)
 							<tr>
 								<td>
-									<i class="fa fa-circle"></i>
+									<i class="fa fa-users"></i>
 									<a href="{{ Coanda::adminUrl('users/group/' . $group->id) }}">{{ $group->name }}</a>
 								</td>
 								<td>{{ $group->users->count() }} user{{ $group->users->count() !== 1 ? 's' : '' }}</td>

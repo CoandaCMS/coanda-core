@@ -4,6 +4,7 @@ use Coanda, Auth, Validator;
 
 use CoandaCMS\Coanda\Exceptions\ValidationException;
 use CoandaCMS\Coanda\Users\Exceptions\GroupNotFound;
+use CoandaCMS\Coanda\Users\Exceptions\UserNotFound;
 
 use CoandaCMS\Coanda\Users\Repositories\Eloquent\Models\User as UserModel;
 use CoandaCMS\Coanda\Users\Repositories\Eloquent\Models\UserGroup as UserGroupModel;
@@ -242,7 +243,7 @@ class EloquentUserRepository implements UserRepositoryInterface {
 		$validation_rules = [
 			'first_name' => 'required',
 			'last_name' => 'required',
-			'email' => 'required|email',
+			'email' => 'required|email|unique:users',
 			'password' => 'required|confirmed'
 		];
 
@@ -258,7 +259,8 @@ class EloquentUserRepository implements UserRepositoryInterface {
 			throw new ValidationException($invalid_fields);
 		}
 
-		$user = new UserModel;
+		// Create the user model and attach it to the group, then return the user.
+		$user = new $this->model;
 		$user->first_name = $data['first_name'];
 		$user->last_name = $data['last_name'];
 		$user->email = $data['email'];
@@ -266,6 +268,50 @@ class EloquentUserRepository implements UserRepositoryInterface {
 		$user->save();
 
 		$group->users()->attach($user->id);
+
+		return $user;
+	}
+
+	public function updateExisting($user_id, $data)
+	{		
+		$user = $this->model->find($user_id);
+
+		if (!$user)
+		{
+			throw new UserNotFound;
+		}
+
+		$invalid_fields = [];
+
+		$validation_rules = [
+			'first_name' => 'required',
+			'last_name' => 'required',
+			'email' => 'required|email|unique:users,email,' . $user->id,
+			'password' => 'confirmed',
+		];
+
+		$validator = Validator::make($data, $validation_rules);
+
+		if ($validator->fails())
+		{
+			foreach ($validator->messages()->getMessages() as $field => $messages)
+			{
+				$invalid_fields[$field] = implode(', ', $messages);
+			}
+
+			throw new ValidationException($invalid_fields);
+		}
+
+		$user->first_name = $data['first_name'];
+		$user->last_name = $data['last_name'];
+		$user->email = $data['email'];
+
+		if ($data['password'] && $data['password'] !== '')
+		{
+			$user->password = \Hash::make($data['password']);	
+		}
+		
+		$user->save();
 
 		return $user;
 	}

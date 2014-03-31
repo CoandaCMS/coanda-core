@@ -17,7 +17,7 @@
 	<div class="page-name col-md-12">
 		<h1 class="pull-left">{{ $group->name }}</h1>
 		<div class="page-status pull-right">
-			<span class="label label-default">Total {{ $group->users->count() }}</span>
+			<span class="label label-default">Users {{ $group->users->count() }}</span>
 		</div>
 	</div>
 </div>
@@ -43,9 +43,10 @@
 							@foreach ($group->users as $user)
 								<tr>
 									<td>
-										<i class="fa fa-circle"></i>
+										<i class="fa fa-user"></i>
 										<a href="{{ Coanda::adminUrl('users/user/' . $user->id) }}">{{ $user->present()->name }}</a>
 									</td>
+									<td>{{ $user->present()->email }}</td>
 									<td class="tight"><a href="{{ Coanda::adminUrl('users/edit-user/' . $user->id) }}"><i class="fa fa-pencil-square-o"></i></a></td>
 								</tr>
 							@endforeach
