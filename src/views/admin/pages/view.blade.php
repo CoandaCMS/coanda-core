@@ -34,7 +34,7 @@
 		<h1 class="pull-left">{{ $page->present()->name }} <small>{{ $page->present()->type }}</small></h1>
 		<div class="page-status pull-right">
 			<span class="label label-default">Version {{ $page->current_version }}</span>
-			<span class="label @if ($page->status == 'Draft') label-warning @else label-success @endif">{{ $page->present()->status }}</span>
+			<span class="label @if ($page->is_draft) label-warning @else label-success @endif">{{ $page->present()->status }}</span>
 		</div>
 	</div>
 </div>
@@ -42,7 +42,11 @@
 <div class="row">
 	<div class="page-options col-md-12">
 		<div class="btn-group">
-			<a href="{{ Coanda::adminUrl('pages/edit/' . $page->id) }}" class="btn btn-primary">New version</a>
+			@if ($page->is_draft)
+				<a href="{{ Coanda::adminUrl('pages/editversion/' . $page->id . '/1') }}" class="btn btn-primary">Continue editing</a>
+			@else
+				<a href="{{ Coanda::adminUrl('pages/edit/' . $page->id) }}" class="btn btn-primary">New version</a>
+			@endif
 			<div class="btn-group">
 				<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
 					More
@@ -121,8 +125,21 @@
 					<table class="table table-striped">
 						@foreach ($page->versions as $version)
 							<tr>
+								<td class="tight">
+									@if ($version->status == 'draft')
+										<a href="{{ Coanda::adminUrl('pages/removeversion/' . $page->id . '/' . $version->version) }}"><i class="fa fa-minus-circle"></i></a>
+									@else
+										<i class="fa fa-minus-circle fa-disabled"></i>
+									@endif
+								</td>
 								<td>#{{ $version->version }}</td>
-								<td>{{ $version->status }}</td>
+								<td>{{ $version->present()->updated_at }}</td>
+								<td>{{ $version->present()->status }}</td>
+								<td class="tight">
+									@if ($version->status == 'draft')
+										<a href="{{ Coanda::adminUrl('pages/editversion/' . $page->id . '/' . $version->version) }}"><i class="fa fa-pencil-square-o"></i></a>
+									@endif
+								</td>
 							</tr>
 						@endforeach
 					</table>

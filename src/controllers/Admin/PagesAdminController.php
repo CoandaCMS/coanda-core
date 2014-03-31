@@ -40,6 +40,11 @@ class PagesAdminController extends BaseController {
 			throw new PermissionDenied;
 		}
 
+		if ($id == 0)
+		{
+			return Redirect::to(Coanda::adminUrl('pages'));
+		}
+
 		try
 		{
 			$page = $this->pageRepository->find($id);
@@ -108,6 +113,24 @@ class PagesAdminController extends BaseController {
 		try
 		{
 			$version = $this->pageRepository->getDraftVersion($page_id, $version_number);
+
+			if (Input::has('discard'))
+			{
+				$parent_page_id = $version->page->parent_page_id;
+
+				$this->pageRepository->discardDraftVersion($version);
+
+				// If this was the first version, then we need to redirect back to the parent
+				if ($version_number == 1)
+				{
+					return Redirect::to(Coanda::adminUrl('pages/view/' . $parent_page_id));
+				}
+				else
+				{
+					return Redirect::to(Coanda::adminUrl('pages/view/' . $page_id));
+				}
+			}
+
 			$this->pageRepository->saveDraftVersion($version, Input::all());
 
 			// Everything went OK, so now we can determine what to do based on the button

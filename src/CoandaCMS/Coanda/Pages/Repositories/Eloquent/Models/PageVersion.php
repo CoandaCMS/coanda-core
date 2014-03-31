@@ -4,12 +4,26 @@ use Eloquent, Coanda;
 
 class PageVersion extends Eloquent {
 
+	use \CoandaCMS\Coanda\Core\Presenters\PresentableTrait;
+
+	protected $presenter = 'CoandaCMS\Coanda\Pages\Presenters\PageVersion';
+
 	/**
 	 * The database table used by the model.
 	 *
 	 * @var string
 	 */
 	protected $table = 'pageversions';
+
+	public function delete()
+	{
+		foreach ($this->attributes()->get() as $attribute)
+		{
+			$attribute->delete();
+		}
+
+		parent::delete();
+	}
 
 	public function attributes()
 	{

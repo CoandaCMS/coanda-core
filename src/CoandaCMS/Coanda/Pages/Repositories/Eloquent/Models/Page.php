@@ -115,4 +115,9 @@ class Page extends Eloquent {
 		return $urlRepository->getForPage($this->id);
 	}
 
+	public function getIsDraftAttribute()
+	{
+		return $this->currentVersion()->status == 'draft';
+	}
+
 }

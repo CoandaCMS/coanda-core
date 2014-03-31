@@ -171,6 +171,19 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		}
 	}
 
+	public function discardDraftVersion($version)
+	{		
+		$page = $version->page;
+
+		$version->delete();
+
+		// If now have no versions, then remove the page too
+		if ($page->versions->count() == 0)
+		{
+			$page->delete();
+		}
+	}
+
 	public function publishVersion($version)
 	{
 		$page = $version->page;
@@ -231,7 +244,9 @@ class EloquentPageRepository implements PageRepositoryInterface {
 			$attribute->order = $index;
 
 			// Copy the attribute data from the current version
-			$attribute->attribute_data = $current_version->getAttributeByIdentifier($type_attribute['identifier'])->attribute_data;
+			$existing_attribute = $current_version->getAttributeByIdentifier($type_attribute['identifier']);
+
+			$attribute->attribute_data = $existing_attribute ? $existing_attribute->attribute_data : '';
 
 			$version->attributes()->save($attribute);
 
