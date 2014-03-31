@@ -16,6 +16,7 @@ class CreateUsergroupsTable extends Migration {
 		{
 			$table->increments('id');
 	        $table->string('name');
+	        $table->text('permissions');
 			$table->timestamps();
 		});
 
@@ -24,7 +25,6 @@ class CreateUsergroupsTable extends Migration {
 			$table->increments('id');
 	        $table->integer('user_id');
 	        $table->integer('user_group_id');
-			$table->timestamps();
 		});
 	}
 
