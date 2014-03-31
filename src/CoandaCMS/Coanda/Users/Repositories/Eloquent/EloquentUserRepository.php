@@ -137,11 +137,6 @@ class EloquentUserRepository implements UserRepositoryInterface {
 		return $user;
 	}
 
-	public function create()
-	{
-		dd('create user');
-	}
-
 	public function groupById($group_id)
 	{
 		$group = UserGroupModel::find($group_id);
@@ -316,4 +311,46 @@ class EloquentUserRepository implements UserRepositoryInterface {
 		return $user;
 	}
 
+	public function addUserToGroup($user_id, $group_id)
+	{
+		$user = $this->model->find($user_id);
+
+		if (!$user)
+		{
+			throw new UserNotFound;
+		}
+
+		$group = UserGroupModel::find($group_id);
+
+		if (!$group)
+		{
+			throw new GroupNotFound;
+		}
+
+		$existing_groups = $user->groups->lists('id');
+
+		if (!in_array($group->id, $existing_groups))
+		{
+			$group->users()->attach($user->id);
+		}
+	}
+
+	public function removeUserFromGroup($user_id, $group_id)
+	{
+		$user = $this->model->find($user_id);
+
+		if (!$user)
+		{
+			throw new UserNotFound;
+		}
+
+		$group = UserGroupModel::find($group_id);
+
+		if (!$group)
+		{
+			throw new GroupNotFound;
+		}
+
+		$group->users()->detach($user->id);
+	}
 }

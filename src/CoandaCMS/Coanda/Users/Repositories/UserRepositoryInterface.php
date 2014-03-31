@@ -34,6 +34,9 @@ interface UserRepositoryInterface {
 	public function createNew($data, $group_id);
 	public function updateExisting($user_id, $data);
 
+	public function addUserToGroup($user_id, $grouo_id);
+	public function removeUserFromGroup($user_id, $grouo_id);
+
 	
 	public function groupById($group_id);
 	public function groups();
