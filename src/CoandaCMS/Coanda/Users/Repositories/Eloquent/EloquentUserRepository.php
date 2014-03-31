@@ -1,6 +1,6 @@
 <?php namespace CoandaCMS\Coanda\Users\Repositories\Eloquent;
 
-use Coanda, Auth;
+use Coanda, Auth, Validator;
 
 use CoandaCMS\Coanda\Exceptions\ValidationException;
 use CoandaCMS\Coanda\Users\Exceptions\GroupNotFound;
@@ -226,5 +226,48 @@ class EloquentUserRepository implements UserRepositoryInterface {
 		$group->name = $data['name'];
 		$group->permissions = json_encode($permissions);
 		$group->save();
-	}	
+	}
+
+	public function createNew($data, $group_id)
+	{
+		$group = UserGroupModel::find($group_id);
+
+		if (!$group)
+		{
+			throw new GroupNotFound;
+		}
+
+		$invalid_fields = [];
+
+		$validation_rules = [
+			'first_name' => 'required',
+			'last_name' => 'required',
+			'email' => 'required|email',
+			'password' => 'required|confirmed'
+		];
+
+		$validator = Validator::make($data, $validation_rules);
+
+		if ($validator->fails())
+		{
+			foreach ($validator->messages()->getMessages() as $field => $messages)
+			{
+				$invalid_fields[$field] = implode(', ', $messages);
+			}
+
+			throw new ValidationException($invalid_fields);
+		}
+
+		$user = new UserModel;
+		$user->first_name = $data['first_name'];
+		$user->last_name = $data['last_name'];
+		$user->email = $data['email'];
+		$user->password = \Hash::make($data['password']);
+		$user->save();
+
+		$group->users()->attach($user->id);
+
+		return $user;
+	}
+
 }

@@ -93,4 +93,56 @@ class UsersAdminController extends BaseController {
 			return Redirect::to(Coanda::adminUrl('users/edit-group/' . $group_id))->with('error', true)->with('invalid_fields', $exception->getInvalidFields())->withInput();
 		}
 	}
+
+	public function getGroup($group_id)
+	{
+		try
+		{
+			$group = $this->userRepository->groupById($group_id);
+
+			return View::make('coanda::admin.users.group', ['group' => $group ]);
+		}
+		catch(GroupNotFound $exception)
+		{
+			return Redirect::to(Coanda::adminUrl('users'));
+		}
+	}
+
+	public function getCreateUser($group_id)
+	{
+		try
+		{
+			$group = $this->userRepository->groupById($group_id);
+			$invalid_fields = Session::has('invalid_fields') ? Session::get('invalid_fields') : [];
+
+			return View::make('coanda::admin.users.createuser', ['group' => $group, 'invalid_fields' => $invalid_fields ]);
+		}
+		catch(GroupNotFound $exception)
+		{
+			return Redirect::to(Coanda::adminUrl('users'));
+		}
+	}
+
+	public function postCreateUser($group_id)
+	{
+		if (Input::has('cancel'))
+		{
+			return Redirect::to(Coanda::adminUrl('users/group/' . $group_id));
+		}
+
+		try
+		{
+			$this->userRepository->createNew(Input::all(), $group_id);
+
+			return Redirect::to(Coanda::adminUrl('users/group/' . $group_id));
+		}
+		catch(ValidationException $exception)
+		{
+			return Redirect::to(Coanda::adminUrl('users/create-user/' . $group_id))->with('error', true)->with('invalid_fields', $exception->getInvalidFields())->withInput();
+		}
+		catch(GroupNotFound $exception)
+		{
+			return Redirect::to(Coanda::adminUrl('users'));
+		}
+	}	
 }
