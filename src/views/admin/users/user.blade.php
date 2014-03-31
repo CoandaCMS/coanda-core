@@ -29,11 +29,11 @@
 	<div class="col-md-8">
 		<div class="page-tabs">
 			<ul class="nav nav-tabs">
-				<li class="active"><a href="#details" data-toggle="tab">Details</a></li>
-				<li><a href="#groups" data-toggle="tab">Groups</a></li>
+				<li {{ $selected_tab == '' || $selected_tab == 'details' ? 'class="active"' : '' }}><a href="#details" data-toggle="tab">Details</a></li>
+				<li {{ $selected_tab == 'groups' ? 'class="active"' : '' }}><a href="#groups" data-toggle="tab">Groups</a></li>
 			</ul>
 			<div class="tab-content">
-				<div class="tab-pane active" id="details">
+				<div class="tab-pane {{ $selected_tab == '' || $selected_tab == 'details' ? 'active' : '' }}" id="details">
 					<table class="table table-striped">
 						<tr>
 							<th>First name</th>
@@ -50,7 +50,7 @@
 					</table>
 				</div>
 
-				<div class="tab-pane" id="groups">
+				<div class="tab-pane {{ $selected_tab == 'groups' ? 'active' : '' }}" id="groups">
 					<h2>Current groups</h2>
 
 					<table class="table table-striped">

@@ -192,7 +192,7 @@ class UsersAdminController extends BaseController {
 		}
 	}
 
-	public function getUser($user_id)
+	public function getUser($user_id, $selected_tab = '')
 	{
 		$last_group_id = Session::get('last_group_view');
 
@@ -200,7 +200,7 @@ class UsersAdminController extends BaseController {
 		{
 			$user = $this->userRepository->find($user_id);
 
-			return View::make('coanda::admin.users.user', ['user' => $user ]);
+			return View::make('coanda::admin.users.user', ['user' => $user, 'selected_tab' => $selected_tab ]);
 		}
 		catch (UserNotFound $exception)
 		{
@@ -214,7 +214,7 @@ class UsersAdminController extends BaseController {
 		{
 			$this->userRepository->addUserToGroup($user_id, $group_id);
 
-			return Redirect::to(Coanda::adminUrl('users/user/' . $user_id));
+			return Redirect::to(Coanda::adminUrl('users/user/' . $user_id . '/groups'));
 		}
 		catch (UserNotFound $exception)
 		{
@@ -232,7 +232,7 @@ class UsersAdminController extends BaseController {
 		{
 			$this->userRepository->removeUserFromGroup($user_id, $group_id);
 
-			return Redirect::to(Coanda::adminUrl('users/user/' . $user_id));
+			return Redirect::to(Coanda::adminUrl('users/user/' . $user_id . '/groups'));
 		}
 		catch (UserNotFound $exception)
 		{
