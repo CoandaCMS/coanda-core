@@ -4,6 +4,10 @@ use Eloquent;
 
 class UserGroup extends Eloquent {
 
+	use \CoandaCMS\Coanda\Core\Presenters\PresentableTrait;
+
+	protected $presenter = 'CoandaCMS\Coanda\Users\Presenters\UserGroup';
+
 	/**
 	 * The database table used by the model.
 	 *

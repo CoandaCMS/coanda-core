@@ -7,6 +7,10 @@ use Illuminate\Auth\Reminders\RemindableInterface;
 
 class User extends Eloquent implements UserInterface, RemindableInterface {
 
+	use \CoandaCMS\Coanda\Core\Presenters\PresentableTrait;
+
+	protected $presenter = 'CoandaCMS\Coanda\Users\Presenters\User';
+
 	/**
 	 * The database table used by the model.
 	 *
