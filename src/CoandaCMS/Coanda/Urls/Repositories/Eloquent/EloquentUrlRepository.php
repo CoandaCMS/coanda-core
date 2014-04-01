@@ -62,7 +62,7 @@ class EloquentUrlRepository implements \CoandaCMS\Coanda\Urls\Repositories\UrlRe
 		}
 
 		// do we already have a record for this slug?
-		$existing = UrlModel::whereSlug($slug)->first();
+		$existing = $this->model->whereSlug($slug)->first();
 
 		if ($existing)
 		{
@@ -80,7 +80,7 @@ class EloquentUrlRepository implements \CoandaCMS\Coanda\Urls\Repositories\UrlRe
 		}
 
 		// Do we have a record for this urlable_type and urlable_id - if so lets redirect that to this new one
-		$existing_for_type = UrlModel::whereUrlableType($for)->whereUrlableId($for_id)->first();
+		$existing_for_type = $this->model->whereUrlableType($for)->whereUrlableId($for_id)->first();
 
 		// If we have an existing one, which we can overwrite, then do so
 		if ($existing)
