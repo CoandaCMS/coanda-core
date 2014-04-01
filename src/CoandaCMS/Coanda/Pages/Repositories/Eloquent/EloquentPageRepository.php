@@ -43,6 +43,10 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		return $page;
 	}
 
+	/**
+	 * Get all the top level pages
+	 * @return [type] [description]
+	 */
 	public function topLevel()
 	{
 		return PageModel::where('parent_page_id', 0)->get();
@@ -171,8 +175,13 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		}
 	}
 
+	/**
+	 * Discards a draft version, if there are no versions left, it will remove the page too
+	 * @param  CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageVersion $version
+	 * @return void
+	 */
 	public function discardDraftVersion($version)
-	{		
+	{
 		$page = $version->page;
 
 		$version->delete();
@@ -184,6 +193,11 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		}
 	}
 
+	/**
+	 * Makes the current version published
+	 * @param  CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageVersion $version The version to be published
+	 * @return void
+	 */
 	public function publishVersion($version)
 	{
 		$page = $version->page;
@@ -208,6 +222,12 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		$url = $this->urlRepository->register($version->base_slug . $version->slug, 'page', $page->id);
 	}
 
+	/**
+	 * Creates a new version for the page_id and the user_id
+	 * @param  integer $page_id The id of the page you would like a new version of
+	 * @param  integer $user_id The user id for the user who is creating the page
+	 * @return integer          The version of the version created.
+	 */
 	public function createNewVersion($page_id, $user_id)
 	{
 		$page = PageModel::find($page_id);

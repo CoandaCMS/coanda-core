@@ -20,16 +20,28 @@ class Page extends Eloquent {
 	 */
 	protected $table = 'pages';
 
+	/**
+	 * Get the versions for this page
+	 * @return \Illuminate\Database\Eloquent\Collection
+	 */
 	public function versions()
 	{
 		return $this->hasMany('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageVersion');
 	}
 
+	/**
+	 * Returns the parent page for this page
+	 * @return CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\Page [description]
+	 */
 	public function parent()
 	{
 		return $this->belongsTo('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\Page', 'parent_page_id');
 	}
 
+	/**
+	 * Returns all the children of this page
+	 * @return \Illuminate\Database\Eloquent\Collection
+	 */
 	public function children()
 	{
 		if (!$this->children)
@@ -40,6 +52,11 @@ class Page extends Eloquent {
 		return $this->children;
 	}
 
+	/**
+	 * Recursive method to get the parents of the page
+	 * @param  \Illuminate\Database\Eloquent\Collection $parents
+	 * @return \Illuminate\Database\Eloquent\Collection
+	 */
 	public function parents($parents)
 	{
 		$parent = $this->parent;
@@ -54,6 +71,10 @@ class Page extends Eloquent {
 		return $parents;
 	}
 
+	/**
+	 * Recursively call the parents method
+	 * @return \Illuminate\Database\Eloquent\Collection
+	 */
 	public function getParents()
 	{
 		if (!$this->parents)
@@ -66,6 +87,10 @@ class Page extends Eloquent {
 		return $this->parents;
 	}
 
+	/**
+	 * Get the page type for this page
+	 * @return CoandaCMS\Coanda\Pages\PageTypeInterface [description]
+	 */
 	public function pageType()
 	{
 		if (!$this->pageType)
@@ -76,16 +101,28 @@ class Page extends Eloquent {
 		return $this->pageType;
 	}
 
+	/**
+	 * Gets the name of the type
+	 * @return srting
+	 */
 	public function typeName()
 	{
 		return $this->pageType()->name;
 	}
 
+	/**
+	 * Calls the typeName method
+	 * @return string
+	 */
 	public function getTypeNameAttribute()
 	{
 		return $this->typeName();
 	}
 
+	/**
+	 * Returns the current version object for this page
+	 * @return CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageVersion
+	 */
 	public function currentVersion()
 	{
 		if (!$this->currentVersion)
@@ -96,16 +133,28 @@ class Page extends Eloquent {
 		return $this->currentVersion;
 	}
 
+	/**
+	 * Get the status of the current version
+	 * @return string
+	 */
 	public function getStatusAttribute()
 	{
 		return $this->currentVersion()->status;
 	}
 
+	/**
+	 * Return all the attributes for the current version
+	 * @return Illuminate\Database\Eloquent\Collection
+	 */
 	public function getAttributesAttribute()
 	{
 		return $this->currentVersion()->attributes()->get();
 	}
 
+	/**
+	 * Returns the slug for this page
+	 * @return CoandaCMS\Coanda\Urls\Repositories\Eloquent\Models\Url
+	 */
 	public function getSlugAttribute()
 	{
 		// This could be an eloquent relationship - but to keep the separation of responsibilities,
@@ -115,9 +164,12 @@ class Page extends Eloquent {
 		return $urlRepository->getForPage($this->id);
 	}
 
+	/**
+	 * Check if the status of the current version is a draft
+	 * @return boolean
+	 */
 	public function getIsDraftAttribute()
 	{
 		return $this->currentVersion()->status == 'draft';
 	}
-
 }

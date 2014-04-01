@@ -25,21 +25,38 @@ class PageVersion extends Eloquent {
 		parent::delete();
 	}
 
+	/**
+	 * Returns all the attributes for the page
+	 * @return
+	 */
 	public function attributes()
 	{
 		return $this->hasMany('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageAttribute');
 	}
 
+	/**
+	 * Returns a specific attribute by the identifier
+	 * @param  string $identifier The attribute you would like
+	 * @return
+	 */
 	public function getAttributeByIdentifier($identifier)
 	{
 		return $this->attributes()->whereIdentifier($identifier)->first();
 	}
 
+	/**
+	 * Gets the page for this version
+	 * @return CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\Page The page
+	 */
 	public function page()
 	{
 		return $this->belongsTo('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\Page');
 	}
 
+	/**
+	 * Get the base slug for this version
+	 * @return string the slug
+	 */
 	public function getBaseSlugAttribute()
 	{
 		if ($this->page->parent)
