@@ -77,16 +77,24 @@ class PagesAdminController extends BaseController {
 
 	public function getEdit($page_id)
 	{
-		// create a new version of the page and redirect to edit the version
 		try
 		{
-			$new_version = $this->pageRepository->createNewVersion($page_id, Coanda::currentUser()->id);
+			$existing_drafts = $this->pageRepository->draftsForUser($page_id, Coanda::currentUser()->id);	
 
-			return Redirect::to(Coanda::adminUrl('pages/editversion/' . $page_id . '/' . $new_version));			
-		}
-		catch(PermissionDenied $exception)
+			if ($existing_drafts->count() > 0)
+			{
+				return Redirect::to(Coanda::adminUrl('pages/existing-drafts/' . $page_id));
+			}
+			else
+			{
+				$new_version = $this->pageRepository->createNewVersion($page_id, Coanda::currentUser()->id);
+
+				return Redirect::to(Coanda::adminUrl('pages/editversion/' . $page_id . '/' . $new_version));
+			}
+		}		
+		catch(PageNotFound $exception)
 		{
-			dd('permission denied');
+			return Redirect::to(Coanda::adminUrl('pages'));
 		}
 	}
 
@@ -99,11 +107,11 @@ class PagesAdminController extends BaseController {
 
 			return View::make('coanda::admin.pages.edit', ['version' => $version, 'invalid_fields' => $invalid_fields ]);
 		}
-		catch(PageNotFound $exception)
+		catch (PageNotFound $exception)
 		{
 			return Redirect::to(Coanda::adminUrl('pages'));
 		}
-		catch(PageVersionNotFound $exception)
+		catch (PageVersionNotFound $exception)
 		{
 			return Redirect::to(Coanda::adminUrl('pages/view/' . $page_id));
 		}
@@ -152,7 +160,7 @@ class PagesAdminController extends BaseController {
 				return Redirect::to(Coanda::adminUrl('pages/view/' . $page_id));
 			}
 		}
-		catch(ValidationException $exception)
+		catch (ValidationException $exception)
 		{
 			if (Input::has('save_exit') && Input::get('save_exit') == 'true')
 			{
@@ -173,13 +181,48 @@ class PagesAdminController extends BaseController {
 
 			return Redirect::to(Coanda::adminUrl('pages/view/' . $page_id));	
 		}
-		catch(PageNotFound $exception)
+		catch (PageNotFound $exception)
 		{
 			return Redirect::to(Coanda::adminUrl('pages'));
 		}
-		catch(PageVersionNotFound $exception)
+		catch (PageVersionNotFound $exception)
 		{
 			return Redirect::to(Coanda::adminUrl('pages/view/' . $page_id));
 		}
+	}
+
+	public function getExistingDrafts($page_id)
+	{
+		try
+		{		
+			$page = $this->pageRepository->find($page_id);
+			$drafts = $this->pageRepository->draftsForUser($page_id, Coanda::currentUser()->id);
+
+			return View::make('coanda::admin.pages.existingdrafts', ['page' => $page, 'drafts' => $drafts ]);
+		}
+		catch (PageNotFound $exception)
+		{
+			return Redirect::to(Coanda::adminUrl('pages'));
+		}
+	}
+
+	public function postExistingDrafts($page_id)
+	{
+		try
+		{
+			if (Input::has('new_version') && Input::get('new_version') == 'true')
+			{
+				$page = $this->pageRepository->find($page_id);
+
+				$new_version = $this->pageRepository->createNewVersion($page->id, Coanda::currentUser()->id);
+
+				return Redirect::to(Coanda::adminUrl('pages/editversion/' . $page_id . '/' . $new_version));
+			}
+		}
+		catch (PageNotFound $exception)
+		{
+			return Redirect::to(Coanda::adminUrl('pages'));
+		}
+
 	}
 }

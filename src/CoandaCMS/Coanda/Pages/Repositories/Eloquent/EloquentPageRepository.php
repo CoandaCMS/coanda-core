@@ -223,6 +223,18 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		}
 	}
 
+	public function draftsForUser($page_id, $user_id)
+	{
+		$page = PageModel::find($page_id);
+
+		if ($page)
+		{
+			return $page->versions()->whereStatus('draft')->whereCreatedBy($user_id)->get();
+		}
+
+		throw new PageNotFound;
+	}
+
 	/**
 	 * Makes the current version published
 	 * @param  CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageVersion $version The version to be published

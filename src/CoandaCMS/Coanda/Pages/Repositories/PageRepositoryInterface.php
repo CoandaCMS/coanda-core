@@ -16,6 +16,8 @@ interface PageRepositoryInterface {
 
 	public function discardDraftVersion($version);
 
+	public function draftsForUser($page_id, $user_id);
+
 	public function publishVersion($version);
 
 	public function createNewVersion($page_id, $user_id);
