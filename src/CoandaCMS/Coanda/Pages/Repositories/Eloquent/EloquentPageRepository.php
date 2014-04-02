@@ -269,6 +269,10 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		// Get the slug from the current version
 		$version->slug = $current_version->slug;
 
+		// Carry over the meta
+		$version->meta_page_title = $current_version->meta_page_title;
+		$version->meta_description = $current_version->meta_description;
+
 		$page->versions()->save($version);
 
 		// Add all the attributes..
