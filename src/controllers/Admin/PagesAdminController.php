@@ -159,4 +159,24 @@ class PagesAdminController extends BaseController {
 			return Redirect::to(Coanda::adminUrl('pages/editversion/' . $page_id . '/' . $version_number))->with('error', true)->with('invalid_fields', $exception->getInvalidFields())->withInput();
 		}
 	}
+
+	public function getRemoveversion($page_id, $version_number)
+	{
+		try
+		{
+			$version = $this->pageRepository->getDraftVersion($page_id, $version_number);
+
+			$this->pageRepository->discardDraftVersion($version);
+
+			return Redirect::to(Coanda::adminUrl('pages/view/' . $page_id));	
+		}
+		catch(PageNotFound $exception)
+		{
+			return Redirect::to(Coanda::adminUrl('pages'));
+		}
+		catch(PageVersionNotFound $exception)
+		{
+			return Redirect::to(Coanda::adminUrl('pages/view/' . $page_id));
+		}
+	}
 }
