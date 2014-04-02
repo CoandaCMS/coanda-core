@@ -155,10 +155,10 @@
 				<li><a href="#history" data-toggle="tab">History</a></li>
 			</ul>
 			<div class="tab-content">
-				<div class="tab-pane" id="contributors">
+				<div class="tab-pane active" id="contributors">
 					Show users involved in this...
 				</div>
-				<div class="tab-pane active" id="history">
+				<div class="tab-pane" id="history">
 					<div class="page-timeline">
 						@foreach ($history as $history)
 							<p>User #{{ $history->user_id }} - {{ $history->action }} - {{ $history->data }}, {{ $history->present()->created_at }}</p>
