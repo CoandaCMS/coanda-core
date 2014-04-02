@@ -44,6 +44,14 @@
 
 				@include('coanda::admin.pages.pageattributetypes.edit.' . $attribute->type, [ 'attribute' => $attribute, 'invalid_fields' => $invalid_fields ])
 
+				@if ($attribute->generates_slug)
+					@section('footer')
+						<script type="text/javascript">
+							$('#slug').slugify('#attribute_{{ $attribute->id }}');
+						</script>
+					@append
+				@endif
+
 			@endforeach
 
 			{{ Form::button('Save', ['name' => 'save', 'value' => 'true', 'type' => 'submit', 'class' => 'btn btn-default']) }}

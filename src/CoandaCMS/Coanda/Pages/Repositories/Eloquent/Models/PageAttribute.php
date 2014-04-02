@@ -58,6 +58,18 @@ class PageAttribute extends Eloquent {
 		return $this->pageType()->attributes()[$this->identifier]['required'];
 	}
 
+	public function generatesSlug()
+	{
+		$attribute_definition = $this->pageType()->attributes()[$this->identifier];
+
+		return isset($attribute_definition['generates_slug']) && $attribute_definition['generates_slug'] == true;
+	}
+
+	public function getGeneratesSlugAttribute()
+	{
+		return $this->generatesSlug();
+	}
+
 	/**
 	 * Calls the isRequired method
 	 * @return boolean
