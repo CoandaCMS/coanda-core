@@ -172,6 +172,13 @@ class EloquentPageRepository implements PageRepositoryInterface {
 			$failed['slug'] = 'The slug is already in use';
 		}
 
+		// Get the meta
+		if ($version->page->show_meta)
+		{
+			$version->meta_page_title = $data['meta_page_title'];
+			$version->meta_description = $data['meta_description'];
+		}
+
 		$version->save();
 
 		if (count($failed) > 0)

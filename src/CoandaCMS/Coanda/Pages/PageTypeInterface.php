@@ -9,4 +9,6 @@ interface PageTypeInterface {
 
 	public function generateName($version);
 
+	public function showMeta();
+
 }

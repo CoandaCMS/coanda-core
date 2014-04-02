@@ -172,4 +172,11 @@ class Page extends Eloquent {
 	{
 		return $this->currentVersion()->status == 'draft';
 	}
+
+	public function getShowMetaAttribute()
+	{
+		$type = $this->pageType();
+
+		return $type->showMeta();
+	}
 }

@@ -38,6 +38,9 @@ class CreatePagesTable extends Migration {
 			$table->integer('version');
 
 			$table->text('slug');
+
+			$table->string('meta_page_title');
+			$table->text('meta_description');
 			
 			$table->string('status')->default('draft'); // draft/published/archived (maybe pending for sign off?)
 
