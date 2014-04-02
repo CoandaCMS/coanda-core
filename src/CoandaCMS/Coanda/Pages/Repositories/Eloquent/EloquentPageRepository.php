@@ -104,7 +104,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		}
 
 		// Log the history
-		$this->historyRepository->add('pages', $page->id, Coanda::currentUser()->id, 'Created initial version');
+		$this->historyRepository->add('pages', $page->id, Coanda::currentUser()->id, 'initial_version');
 
 		return $page;
 	}
@@ -190,7 +190,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		$page = $version->page;
 
 		// Log the history
-		$this->historyRepository->add('pages', $page->id, Coanda::currentUser()->id, 'Version #' . $version->version . ' discarded');
+		$this->historyRepository->add('pages', $page->id, Coanda::currentUser()->id, 'discard_version', ['version' => $version->version]);
 
 		$version->delete();
 
@@ -198,7 +198,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		if ($page->versions->count() == 0)
 		{
 			// Log the history
-			$this->historyRepository->add('pages', $page->id, Coanda::currentUser()->id, 'Page removed, no versions left!');
+			$this->historyRepository->add('pages', $page->id, Coanda::currentUser()->id, 'page_deleted');
 
 			$page->delete();
 		}
@@ -233,7 +233,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		$url = $this->urlRepository->register($version->base_slug . $version->slug, 'page', $page->id);
 
 		// Log the history
-		$this->historyRepository->add('pages', $page->id, Coanda::currentUser()->id, 'Published version #' . $version->version);
+		$this->historyRepository->add('pages', $page->id, Coanda::currentUser()->id, 'publish_version', ['version' => (int)$version->version]);
 	}
 
 	/**
@@ -288,7 +288,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		}
 
 		// Log the history
-		$this->historyRepository->add('pages', $page_id, Coanda::currentUser()->id, 'Created version #' . $new_version_number);
+		$this->historyRepository->add('pages', $page_id, Coanda::currentUser()->id, 'new_version', ['version' => $new_version_number]);
 
 		return $new_version_number;
 	}

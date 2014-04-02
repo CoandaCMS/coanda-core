@@ -22,13 +22,14 @@ class EloquentHistoryRepository implements HistoryRepositoryInterface {
 	 * @param integer $user_id
 	 * @param mixed $data
 	 */
-	public function add($for, $for_id, $user_id, $data)
+	public function add($for, $for_id, $user_id, $action, $data = '')
 	{
 		$history = new $this->model;
 		$history->for = $for;
 		$history->for_id = $for_id;
 		$history->user_id = $user_id;
-		$history->data = $data;
+		$history->action = $action;
+		$history->data = is_array($data) ? json_encode($data) : $data;
 
 		$history->save();
 

@@ -18,6 +18,7 @@ class CreateHistoryTable extends Migration {
 	        $table->string('for');
 	        $table->integer('for_id');
 	        $table->integer('user_id');
+	        $table->string('action');
 	        $table->text('data');
 			$table->timestamps();
 		});
