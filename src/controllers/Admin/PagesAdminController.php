@@ -137,7 +137,7 @@ class PagesAdminController extends BaseController {
 			// Everything went OK, so now we can determine what to do based on the button
 			if (Input::has('save') && Input::get('save') == 'true')
 			{
-				return Redirect::to(Coanda::adminUrl('pages/editversion/' . $page_id . '/' . $version_number))->with('page_saved', true);			
+				return Redirect::to(Coanda::adminUrl('pages/editversion/' . $page_id . '/' . $version_number))->with('page_saved', true);
 			}
 
 			if (Input::has('save_exit') && Input::get('save_exit') == 'true')
@@ -147,16 +147,9 @@ class PagesAdminController extends BaseController {
 
 			if (Input::has('publish') && Input::get('publish') == 'true')
 			{
-				try
-				{
-					$this->pageRepository->publishVersion($version);
+				$this->pageRepository->publishVersion($version);
 
-					return Redirect::to(Coanda::adminUrl('pages/view/' . $page_id));
-				}
-				catch(Exception $exception)
-				{
-					dd('huh?');
-				}
+				return Redirect::to(Coanda::adminUrl('pages/view/' . $page_id));
 			}
 		}
 		catch(ValidationException $exception)
@@ -165,7 +158,7 @@ class PagesAdminController extends BaseController {
 			{
 				return Redirect::to(Coanda::adminUrl('pages/view/' . $page_id));
 			}
-			
+
 			return Redirect::to(Coanda::adminUrl('pages/editversion/' . $page_id . '/' . $version_number))->with('error', true)->with('invalid_fields', $exception->getInvalidFields())->withInput();
 		}
 	}
