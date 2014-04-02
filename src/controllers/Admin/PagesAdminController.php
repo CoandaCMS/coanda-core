@@ -48,8 +48,9 @@ class PagesAdminController extends BaseController {
 		try
 		{
 			$page = $this->pageRepository->find($id);
+			$history = $this->pageRepository->history($page->id);
 
-			return View::make('coanda::admin.pages.view', ['page' => $page]);
+			return View::make('coanda::admin.pages.view', ['page' => $page, 'history' => $history]);
 		}
 		catch(PageNotFound $exception)
 		{

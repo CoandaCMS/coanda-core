@@ -18,4 +18,6 @@ interface PageRepositoryInterface {
 
 	public function createNewVersion($page_id, $user_id);
 
+	public function history($page_id);
+
 }

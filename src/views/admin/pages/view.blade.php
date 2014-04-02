@@ -45,7 +45,7 @@
 			@if ($page->is_draft)
 				<a href="{{ Coanda::adminUrl('pages/editversion/' . $page->id . '/1') }}" class="btn btn-primary">Continue editing</a>
 			@else
-				<a href="{{ Coanda::adminUrl('pages/edit/' . $page->id) }}" class="btn btn-primary">New version</a>
+				<a href="{{ Coanda::adminUrl('pages/edit/' . $page->id) }}" class="btn btn-primary">Edit</a>
 			@endif
 			<div class="btn-group">
 				<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
@@ -157,14 +157,8 @@
 			<div class="tab-content">
 				<div class="tab-pane active" id="history">
 					<div class="page-timeline">
-						@foreach (range(1, 20) as $tmp)
-							<div class="media">
-								<img class="pull-left media-object img-circle" width="32" src="https://avatars2.githubusercontent.com/u/1886367?s=460">
-								<div class="media-body">
-									Edited
-									<span class="pull-right">3 days ago</span>
-								</div>
-							</div>
+						@foreach ($history as $history)
+							<p>User #{{ $history->user_id }} - {{ $history->data }}, {{ $history->present()->created_at }}</p>
 						@endforeach
 					</div>
 				</div>

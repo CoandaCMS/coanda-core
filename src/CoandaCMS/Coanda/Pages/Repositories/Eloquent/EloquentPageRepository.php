@@ -19,11 +19,13 @@ class EloquentPageRepository implements PageRepositoryInterface {
 
 	private $model;
 	private $urlRepository;
+	private $historyRepository;
 
-	public function __construct(PageModel $model, \CoandaCMS\Coanda\Urls\Repositories\UrlRepositoryInterface $urlRepository)
+	public function __construct(PageModel $model, \CoandaCMS\Coanda\Urls\Repositories\UrlRepositoryInterface $urlRepository, \CoandaCMS\Coanda\History\Repositories\HistoryRepositoryInterface $historyRepository)
 	{
 		$this->model = $model;
 		$this->urlRepository = $urlRepository;
+		$this->historyRepository = $historyRepository;
 	}
 
 	/**
@@ -49,7 +51,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 	 */
 	public function topLevel()
 	{
-		return PageModel::where('parent_page_id', 0)->get();
+		return $this->model->where('parent_page_id', 0)->get();
 	}
 
 	/**
@@ -100,6 +102,9 @@ class EloquentPageRepository implements PageRepositoryInterface {
 
 			$index ++;
 		}
+
+		// Log the history
+		$this->historyRepository->add('pages', $page->id, Coanda::currentUser()->id, 'Created initial version');
 
 		return $page;
 	}
@@ -184,11 +189,17 @@ class EloquentPageRepository implements PageRepositoryInterface {
 	{
 		$page = $version->page;
 
+		// Log the history
+		$this->historyRepository->add('pages', $page->id, Coanda::currentUser()->id, 'Version #' . $version->version . ' discarded');
+
 		$version->delete();
 
 		// If now have no versions, then remove the page too
 		if ($page->versions->count() == 0)
 		{
+			// Log the history
+			$this->historyRepository->add('pages', $page->id, Coanda::currentUser()->id, 'Page removed, no versions left!');
+
 			$page->delete();
 		}
 	}
@@ -220,6 +231,9 @@ class EloquentPageRepository implements PageRepositoryInterface {
 
 		// Register the URL for this version with the Url Repo
 		$url = $this->urlRepository->register($version->base_slug . $version->slug, 'page', $page->id);
+
+		// Log the history
+		$this->historyRepository->add('pages', $page->id, Coanda::currentUser()->id, 'Published version #' . $version->version);
 	}
 
 	/**
@@ -273,6 +287,14 @@ class EloquentPageRepository implements PageRepositoryInterface {
 			$index ++;
 		}
 
+		// Log the history
+		$this->historyRepository->add('pages', $page_id, Coanda::currentUser()->id, 'Created version #' . $new_version_number);
+
 		return $new_version_number;
+	}
+
+	public function history($page_id)
+	{
+		return $this->historyRepository->get('pages', $page_id);
 	}
 }
