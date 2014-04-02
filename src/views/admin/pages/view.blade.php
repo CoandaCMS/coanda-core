@@ -94,7 +94,7 @@
 						@foreach ($page->children as $child)
 							<tr class="status-{{ $child->status }}">
 								<td>
-									@if ($child->status == 'draft')
+									@if ($child->is_draft)
 										<i class="fa fa-circle-o"></i>
 									@else
 										<i class="fa fa-circle"></i>
@@ -104,6 +104,13 @@
 								<td>{{ $child->present()->type }}</td>
 								<td>{{ $child->children->count() }} sub page{{ $child->children->count() !== 1 ? 's' : '' }}</td>
 								<td>{{ $child->present()->status }}</td>
+								<td class="tight">
+									@if ($child->is_draft)
+										<a href="{{ Coanda::adminUrl('pages/editversion/' . $child->id . '/1') }}"><i class="fa fa-pencil-square-o"></i></a>
+									@else
+										<a href="{{ Coanda::adminUrl('pages/edit/' . $child->id) }}"><i class="fa fa-pencil-square-o"></i></a>
+									@endif
+								</td>
 							</tr>
 						@endforeach
 						</table>
@@ -139,7 +146,6 @@
 								</td>
 								<td>#{{ $version->version }}</td>
 								<td>{{ $version->present()->updated_at }}</td>
-								<td>{{ $version->present()->status }}</td>
 								<td class="tight">
 									@if ($version->status == 'draft')
 										<a href="{{ Coanda::adminUrl('pages/editversion/' . $page->id . '/' . $version->version) }}"><i class="fa fa-pencil-square-o"></i></a>
