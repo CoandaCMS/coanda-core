@@ -10,6 +10,8 @@ interface PageRepositoryInterface {
 
 	public function getDraftVersion($page_id, $version);
 
+	public function getVersionByPreviewKey($preview_key);
+
 	public function saveDraftVersion($version, $data);
 
 	public function discardDraftVersion($version);

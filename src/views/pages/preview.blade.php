@@ -1,0 +1,1 @@
+Preview version #{{ $version->version }} of page #{{ $version->page_id }}

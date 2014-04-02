@@ -134,6 +134,18 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		throw new PageNotFound;
 	}
 
+	public function getVersionByPreviewKey($preview_key)
+	{
+		$version = PageVersionModel::wherePreviewKey($preview_key)->whereStatus('draft')->first();
+
+		if (!$version)
+		{
+			throw new PageVersionNotFound;
+		}
+
+		return $version;
+	}
+
 	/**
 	 * Stores the data for the version
 	 * @param  Version $version The version object

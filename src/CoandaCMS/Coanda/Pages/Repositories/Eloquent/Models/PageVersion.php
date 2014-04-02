@@ -15,6 +15,16 @@ class PageVersion extends Eloquent {
 	 */
 	protected $table = 'pageversions';
 
+	public function save(array $options = [])
+	{
+		if (!$this->preview_key)
+		{
+			$this->preview_key = md5($this->page_id . '-' . $this->version . '-' . time());
+		}
+
+		parent::save($options);
+	}
+
 	public function delete()
 	{
 		foreach ($this->attributes()->get() as $attribute)

@@ -136,6 +136,9 @@ class Coanda {
 
 		});
 
+		// Front end routes for Pages (preview etc)
+		Route::controller('pages', 'CoandaCMS\Coanda\Controllers\PagesController');
+
 		// Let the module output any front end 'user' routes
 		foreach ($this->modules as $module)
 		{
