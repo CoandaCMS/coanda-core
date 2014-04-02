@@ -140,6 +140,11 @@ class PagesAdminController extends BaseController {
 				return Redirect::to(Coanda::adminUrl('pages/editversion/' . $page_id . '/' . $version_number))->with('page_saved', true);			
 			}
 
+			if (Input::has('save_exit') && Input::get('save_exit') == 'true')
+			{
+				return Redirect::to(Coanda::adminUrl('pages/view/' . $page_id));
+			}
+
 			if (Input::has('publish') && Input::get('publish') == 'true')
 			{
 				try
@@ -156,6 +161,11 @@ class PagesAdminController extends BaseController {
 		}
 		catch(ValidationException $exception)
 		{
+			if (Input::has('save_exit') && Input::get('save_exit') == 'true')
+			{
+				return Redirect::to(Coanda::adminUrl('pages/view/' . $page_id));
+			}
+			
 			return Redirect::to(Coanda::adminUrl('pages/editversion/' . $page_id . '/' . $version_number))->with('error', true)->with('invalid_fields', $exception->getInvalidFields())->withInput();
 		}
 	}
