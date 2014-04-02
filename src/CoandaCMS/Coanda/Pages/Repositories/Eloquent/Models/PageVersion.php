@@ -41,7 +41,7 @@ class PageVersion extends Eloquent {
 	 */
 	public function attributes()
 	{
-		return $this->hasMany('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageAttribute');
+		return $this->hasMany('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageAttribute')->orderBy('order', 'asc');
 	}
 
 	/**
@@ -75,6 +75,55 @@ class PageVersion extends Eloquent {
 		}
 
 		return '';
+	}
+
+	public function checkAttributes()
+	{
+		$pageType = $this->page->pageType();
+		$attribute_definition_list = $pageType->attributes();
+
+		$existing_attributes = [];
+
+		// Do all the existing attributes still exist on the definition?
+		foreach ($this->attributes()->get() as $attribute)
+		{
+			if (!array_key_exists($attribute->identifier, $attribute_definition_list))
+			{
+				// This attribute is no longer in the definition, so lets remove it
+				$attribute->delete();
+			}
+			else
+			{
+				$existing_attributes[$attribute->identifier] = $attribute;
+			}
+		}
+
+		$index = 1;
+
+		foreach ($attribute_definition_list as $attribute_identifier => $definition)
+		{
+			if (!in_array($attribute_identifier, array_keys($existing_attributes)))
+			{
+				// We need to add this new attribute
+				$page_attribute_type = Coanda::getPageAttributeType($definition['type']);
+
+				$new_attribute = new \CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageAttribute;
+
+				$new_attribute->type = $page_attribute_type->identifier;
+				$new_attribute->identifier = $definition['identifier'];
+				$new_attribute->order = $index;
+
+				$this->attributes()->save($new_attribute);
+			}
+			else
+			{
+				// Update the order on the existing attribute (in case we have added another one)
+				$existing_attributes[$attribute_identifier]->order = $index;
+				$existing_attributes[$attribute_identifier]->save();				
+			}
+
+			$index ++;
+		}
 	}
 
 }

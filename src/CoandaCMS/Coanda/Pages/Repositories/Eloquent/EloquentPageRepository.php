@@ -125,6 +125,9 @@ class EloquentPageRepository implements PageRepositoryInterface {
 
 			if ($version)
 			{
+				// Let the version update/check its attributes against the definition (which might have changed)
+				$version->checkAttributes();
+
 				return $version;
 			}
 

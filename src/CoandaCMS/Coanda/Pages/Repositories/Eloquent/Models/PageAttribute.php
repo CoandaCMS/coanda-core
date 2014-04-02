@@ -46,7 +46,9 @@ class PageAttribute extends Eloquent {
 	 */
 	public function name()
 	{
-		return $this->pageType()->attributes()[$this->identifier]['name'];
+		$attributes = $this->pageType()->attributes();
+
+		return isset($attributes[$this->identifier]) ? $attributes[$this->identifier]['name'] : $this->identifier;
 	}
 
 	/**
@@ -55,12 +57,21 @@ class PageAttribute extends Eloquent {
 	 */
 	public function isRequired()
 	{
-		return $this->pageType()->attributes()[$this->identifier]['required'];
+		$attributes = $this->pageType()->attributes();
+
+		return isset($attributes[$this->identifier]['required']) ? $attributes[$this->identifier]['required'] : false;
 	}
 
 	public function generatesSlug()
 	{
-		$attribute_definition = $this->pageType()->attributes()[$this->identifier];
+		$attributes = $this->pageType()->attributes();
+
+		if (!isset($attributes[$this->identifier]))
+		{
+			return false;
+		}
+
+		$attribute_definition = $attributes[$this->identifier];
 
 		return isset($attribute_definition['generates_slug']) && $attribute_definition['generates_slug'] == true;
 	}
