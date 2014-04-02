@@ -113,11 +113,16 @@
 				</div>
 				<div class="tab-pane" id="content">
 
-					@foreach ($page->attributes as $attribute)
-
-						@include('coanda::admin.pages.pageattributetypes.view.' . $attribute->type, [ 'attribute' => $attribute ])
-
-					@endforeach
+					<table class="table table-striped">
+						@foreach ($page->attributes as $attribute)
+						<tr>
+							<td class="tight">{{ $attribute->name }}</td>
+							<td>
+								@include('coanda::admin.pages.pageattributetypes.view.' . $attribute->type, [ 'attribute' => $attribute ])
+							</td>
+						</tr>
+						@endforeach
+					</table>
 
 				</div>
 				<div class="tab-pane" id="versions">
