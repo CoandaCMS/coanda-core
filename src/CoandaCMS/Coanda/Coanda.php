@@ -261,6 +261,10 @@ class Coanda {
 				{
 					return $this->$route_method($url);
 				}
+				else
+				{
+					throw new \Exception('No method exists to route this type of URL: "' . $url->urlable_type . '"');
+				}
 			}			
 		}
 		catch(\CoandaCMS\Coanda\Urls\Exceptions\UrlNotFound $exception)
@@ -269,7 +273,7 @@ class Coanda {
 		}
 	}
 
-	public function routeUrl($url)
+	public function routeRedirect($url)
 	{
 		$urlRepository = App::make('CoandaCMS\Coanda\Urls\Repositories\UrlRepositoryInterface');
 		$url = $urlRepository->findById($url->urlable_id);
@@ -285,9 +289,14 @@ class Coanda {
 		return 'Page #' . $url->urlable_id;
 	}
 
-	public function routeRedirect($url)
+	public function routePromo($url)
 	{
-		return 'Redirect #' . $url->urlable_id;
+		return 'Promo URL #' . $url->urlable_id;
+	}
+
+	public function routePagetrashed($url)
+	{
+		App::abort('404');
 	}
 
 }

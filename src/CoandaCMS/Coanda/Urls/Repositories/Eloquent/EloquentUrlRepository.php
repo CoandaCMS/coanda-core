@@ -73,7 +73,7 @@ class EloquentUrlRepository implements \CoandaCMS\Coanda\Urls\Repositories\UrlRe
 			}
 
 			// If the existing one is a url, then we can overwrite it, otherwise it is alreay taken.
-			if ($existing->urlable_type !== 'url')
+			if ($existing->urlable_type !== 'redirect')
 			{
 				throw new UrlAlreadyExists('The requested URL is already in use.');
 			}
@@ -117,13 +117,13 @@ class EloquentUrlRepository implements \CoandaCMS\Coanda\Urls\Repositories\UrlRe
 					$new_child_url->urlable_id = $child_url->urlable_id;
 					$new_child_url->save();
 
-					$child_url->urlable_type = 'url';
+					$child_url->urlable_type = 'redirect';
 					$child_url->urlable_id = $new_child_url->id;
 					$child_url->save();
 				}
 			}
 
-			$existing_for_type->urlable_type = 'url';
+			$existing_for_type->urlable_type = 'redirect';
 			$existing_for_type->urlable_id = $existing ? $existing->id : $new_url->id;
 			$existing_for_type->save();
 		}
@@ -150,7 +150,7 @@ class EloquentUrlRepository implements \CoandaCMS\Coanda\Urls\Repositories\UrlRe
 			}
 
 			// If the exisitng type is a url, then it can be overwritten (otherwise this would be 'reserved' forever)
-			if ($existing->urlable_type == 'url')
+			if ($existing->urlable_type == 'redirect')
 			{
 				return true;
 			}
