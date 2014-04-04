@@ -149,7 +149,7 @@ class Coanda {
 		{
 			return Coanda::route($slug);
 
-		})->where('slug', '[\/_\-\_A-Za-z]+');
+		})->where('slug', '[\/_\-\_A-Za-z0-9]+');
 	}
 
 	/**
