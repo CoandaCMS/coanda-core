@@ -15,14 +15,19 @@ class CreatePagesTable extends Migration {
 		Schema::create('pages', function ($table) {
 
 			$table->increments('id');
+
 			$table->string('type');
 			$table->string('name');
 
+			$table->string('path');
 			$table->integer('parent_page_id');
+
 			$table->integer('order');
 			$table->string('remote_id'); // Used to mark any imported pages/content
 
 			$table->integer('current_version');
+
+			$table->integer('is_trashed');
 
 			$table->integer('created_by');
 			$table->integer('edited_by');

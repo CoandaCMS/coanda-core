@@ -24,4 +24,8 @@ interface PageRepositoryInterface {
 
 	public function history($page_id);
 
+	public function deletePage($page_id, $permanent = false);
+
+	public function trashed();
+
 }

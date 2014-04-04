@@ -14,4 +14,6 @@ interface UrlRepositoryInterface {
 
 	public function getForPage($id);
 
+	public function updateSubTree($slug, $new_for);
+
 }

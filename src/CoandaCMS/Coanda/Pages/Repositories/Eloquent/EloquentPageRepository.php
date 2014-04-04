@@ -71,7 +71,13 @@ class EloquentPageRepository implements PageRepositoryInterface {
 
 		if ($parent_page_id)
 		{
-			$page->parent_page_id = $parent_page_id;
+			$parent_page = $this->model->find($parent_page_id);
+
+			if ($parent_page)
+			{
+				$page->parent_page_id = $parent_page->id;
+				$page->path = $parent_page->path . '/' . $parent_page->id . '/';
+			}
 		}
 
 		$page->save();
@@ -334,5 +340,42 @@ class EloquentPageRepository implements PageRepositoryInterface {
 	public function history($page_id)
 	{
 		return $this->historyRepository->get('pages', $page_id);
+	}
+
+	public function deletePage($page_id, $permanent = false)
+	{
+		$page = $this->model->find($page_id);
+
+		if (!$page)
+		{
+			throw new PageNotFound;
+		}
+
+		if ($permanent)
+		{
+			dd('perm delete');
+		}
+
+		if (!$page->is_trashed)
+		{
+			$page->is_trashed = true;
+			$page->save();
+
+			$this->deleteSubTree($page->path);
+
+			$url_id = $this->urlRepository->getForPage($page->id);
+			
+			$this->urlRepository->updateSubTree($url_id, 'pagetrashed');
+		}
+	}
+
+	private function deleteSubTree($path)
+	{
+		$this->model->where('path', 'like', $path . '%')->update(['is_trashed' => true]);
+	}
+
+	public function trashed()
+	{
+		return $this->model->whereIsTrashed(true)->get();
 	}
 }

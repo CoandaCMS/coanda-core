@@ -194,7 +194,7 @@ class PagesAdminController extends BaseController {
 	public function getExistingDrafts($page_id)
 	{
 		try
-		{		
+		{
 			$page = $this->pageRepository->find($page_id);
 			$drafts = $this->pageRepository->draftsForUser($page_id, Coanda::currentUser()->id);
 
@@ -223,6 +223,43 @@ class PagesAdminController extends BaseController {
 		{
 			return Redirect::to(Coanda::adminUrl('pages'));
 		}
+	}
 
+	public function getDelete($page_id)
+	{
+		try
+		{
+			$page = $this->pageRepository->find($page_id);
+
+			return View::make('coanda::admin.pages.delete', ['page' => $page ]);
+		}
+		catch (PageNotFound $exception)
+		{
+			return Redirect::to(Coanda::adminUrl('pages'));
+		}
+	}
+
+	public function postDelete($page_id)
+	{
+		try
+		{
+			$page = $this->pageRepository->find($page_id);
+			$parent_page_id = $page->parent_page_id;
+
+			$this->pageRepository->deletePage($page_id);
+
+			return Redirect::to(Coanda::adminUrl('pages/view/' . $parent_page_id));
+		}
+		catch (PageNotFound $exception)
+		{
+			return Redirect::to(Coanda::adminUrl('pages'));
+		}
+	}
+
+	public function getTrash()
+	{
+		$pages = $this->pageRepository->trashed();
+
+		return View::make('coanda::admin.pages.trash', ['pages' => $pages ]);
 	}
 }

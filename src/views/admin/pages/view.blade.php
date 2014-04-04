@@ -5,11 +5,16 @@
 @section('content')
 
 <div class="row">
+
 	<div class="breadcrumb-nav">
+		<div class="pull-right">
+			<a href="{{ Coanda::adminUrl('pages/trash') }}">Trash</a>
+		</div>
+
 		<ul class="breadcrumb">
 			<li><a href="{{ Coanda::adminUrl('pages') }}">Pages</a></li>
 
-			@foreach ($page->getParents() as $parent)
+			@foreach ($page->parents() as $parent)
 				<li>
 					<a href="{{ Coanda::adminUrl('pages/view/' . $parent->id) }}">{{ $parent->present()->name }}</a>
 					&nbsp;&nbsp;
@@ -19,7 +24,7 @@
 			<li>{{ $page->present()->name }}</li>
 		</ul>
 
-		@foreach ($page->getParents() as $parent)
+		@foreach ($page->parents() as $parent)
 			<div class="sub-pages-expand" id="sub-pages-{{ $parent->id }}">
 				
 				<p>Loading <span class="one">.</span><span class="two">.</span><span class="three">.</span></p>
@@ -31,10 +36,15 @@
 
 <div class="row">
 	<div class="page-name col-md-12">
-		<h1 class="pull-left">{{ $page->present()->name }} <small>{{ $page->present()->type }}</small></h1>
+		<h1 class="pull-left">@if ($page->is_trashed) [Trashed] @endif {{ $page->present()->name }} <small>{{ $page->present()->type }}</small></h1>
 		<div class="page-status pull-right">
 			<span class="label label-default">Version {{ $page->current_version }}</span>
-			<span class="label @if ($page->is_draft) label-warning @else label-success @endif">{{ $page->present()->status }}</span>
+
+			@if ($page->is_trashed)
+				<span class="label label-danger">{{ $page->present()->status }}</span>
+			@else
+				<span class="label @if ($page->is_draft) label-warning @else label-success @endif">{{ $page->present()->status }}</span>
+			@endif
 		</div>
 	</div>
 </div>
@@ -42,23 +52,28 @@
 <div class="row">
 	<div class="page-options col-md-12">
 		<div class="btn-group">
-			@if ($page->is_draft)
-				<a href="{{ Coanda::adminUrl('pages/editversion/' . $page->id . '/1') }}" class="btn btn-primary">Continue editing</a>
+			@if ($page->is_trashed)
+				<a href="{{ Coanda::adminUrl('pages/restore/' . $page->id) }}" class="btn btn-primary">Restore</a>
 			@else
-				<a href="{{ Coanda::adminUrl('pages/edit/' . $page->id) }}" class="btn btn-primary">Edit</a>
+				@if ($page->is_draft)
+					<a href="{{ Coanda::adminUrl('pages/editversion/' . $page->id . '/1') }}" class="btn btn-primary">Continue editing</a>
+				@else
+					<a href="{{ Coanda::adminUrl('pages/edit/' . $page->id) }}" class="btn btn-primary">Edit</a>
+				@endif
+				<div class="btn-group">
+					<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+						More
+						<span class="caret"></span>
+					</button>
+					<ul class="dropdown-menu">
+						<li><a href="{{ Coanda::adminUrl('pages/delete/' . $page->id) }}">Delete</a></li>
+						<li><a href="#">More option 2</a></li>
+						<li><a href="#">More option 3</a></li>
+					</ul>
+				</div>
 			@endif
-			<div class="btn-group">
-				<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-					More
-					<span class="caret"></span>
-				</button>
-				<ul class="dropdown-menu">
-					<li><a href="#">More option 1</a></li>
-					<li><a href="#">More option 2</a></li>
-					<li><a href="#">More option 3</a></li>
-				</ul>
-			</div>
 		</div>
+		@if (!$page->is_trashed)
 		<div class="btn-group">
 			<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
 				Add sub page <span class="caret"></span>
@@ -69,6 +84,7 @@
 				@endforeach
 			</ul>
 		</div>
+		@endif
 	</div>
 </div>
 
@@ -93,6 +109,11 @@
 						<table class="table table-striped">
 						@foreach ($page->children as $child)
 							<tr class="status-{{ $child->status }}">
+
+								@if (!$page->is_trashed)
+									<td class="tight"><input type="checkbox"></td>
+								@endif
+
 								<td>
 									@if ($child->is_draft)
 										<i class="fa fa-circle-o"></i>
@@ -104,13 +125,16 @@
 								<td>{{ $child->present()->type }}</td>
 								<td>{{ $child->children->count() }} sub page{{ $child->children->count() !== 1 ? 's' : '' }}</td>
 								<td>{{ $child->present()->status }}</td>
-								<td class="tight">
-									@if ($child->is_draft)
-										<a href="{{ Coanda::adminUrl('pages/editversion/' . $child->id . '/1') }}"><i class="fa fa-pencil-square-o"></i></a>
-									@else
-										<a href="{{ Coanda::adminUrl('pages/edit/' . $child->id) }}"><i class="fa fa-pencil-square-o"></i></a>
-									@endif
-								</td>
+
+								@if (!$page->is_trashed)
+									<td class="tight">
+										@if ($child->is_draft)
+											<a href="{{ Coanda::adminUrl('pages/editversion/' . $child->id . '/1') }}"><i class="fa fa-pencil-square-o"></i></a>
+										@else
+											<a href="{{ Coanda::adminUrl('pages/edit/' . $child->id) }}"><i class="fa fa-pencil-square-o"></i></a>
+										@endif
+									</td>
+								@endif
 							</tr>
 						@endforeach
 						</table>
@@ -138,7 +162,7 @@
 						@foreach ($page->versions as $version)
 							<tr>
 								<td class="tight">
-									@if ($version->status == 'draft')
+									@if ($version->status == 'draft' && !$page->is_trashed)
 										<a href="{{ Coanda::adminUrl('pages/removeversion/' . $page->id . '/' . $version->version) }}"><i class="fa fa-minus-circle"></i></a>
 									@else
 										<i class="fa fa-minus-circle fa-disabled"></i>
@@ -147,8 +171,10 @@
 								<td>#{{ $version->version }}</td>
 								<td>{{ $version->present()->updated_at }}</td>
 								<td class="tight">
-									@if ($version->status == 'draft')
-										<a href="{{ Coanda::adminUrl('pages/editversion/' . $page->id . '/' . $version->version) }}"><i class="fa fa-pencil-square-o"></i></a>
+									@if (!$page->is_trashed)
+										@if ($version->status == 'draft')
+											<a href="{{ Coanda::adminUrl('pages/editversion/' . $page->id . '/' . $version->version) }}"><i class="fa fa-pencil-square-o"></i></a>
+										@endif
 									@endif
 								</td>
 							</tr>

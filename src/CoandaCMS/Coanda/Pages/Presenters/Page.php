@@ -16,6 +16,11 @@ class Page extends \CoandaCMS\Coanda\Core\Presenters\Presenter {
 
 	public function status()
 	{
+		if ($this->model->is_trashed)
+		{
+			return 'Trashed';
+		}
+		
 		return Lang::get('coanda::pages.status_' . $this->model->status);
 	}
 

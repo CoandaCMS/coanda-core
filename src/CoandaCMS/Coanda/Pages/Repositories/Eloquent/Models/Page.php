@@ -46,42 +46,43 @@ class Page extends Eloquent {
 	{
 		if (!$this->children)
 		{
-			$this->children = $this->hasMany('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\Page', 'parent_page_id');
+			if ($this->is_trashed)
+			{
+				$this->children = $this->hasMany('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\Page', 'parent_page_id');
+			}
+			else
+			{
+				$this->children = $this->hasMany('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\Page', 'parent_page_id')->whereIsTrashed(0);	
+			}
 		}
 		
 		return $this->children;
 	}
 
-	/**
-	 * Recursive method to get the parents of the page
-	 * @param  \Illuminate\Database\Eloquent\Collection $parents
-	 * @return \Illuminate\Database\Eloquent\Collection
-	 */
-	public function parents($parents)
+	public function pathArray()
 	{
-		$parent = $this->parent;
-
-		if ($parent)
-		{
-			$parents->prepend($parent);
-
-			return $parent->parents($parents);
-		}
-
-		return $parents;
+		return explode('/', $this->path);
 	}
 
 	/**
-	 * Recursively call the parents method
+	 * Loop through the path and build up the collection of parents
 	 * @return \Illuminate\Database\Eloquent\Collection
 	 */
-	public function getParents()
+	public function parents()
 	{
 		if (!$this->parents)
 		{
 			$this->parents = new \Illuminate\Database\Eloquent\Collection;
 
-			$this->parents($this->parents);
+			foreach ($this->pathArray() as $parent_id)
+			{
+				$parent = $this->find($parent_id);
+
+				if ($parent)
+				{
+					$this->parents->add($parent);					
+				}
+			}
 		}
 
 		return $this->parents;
@@ -178,5 +179,22 @@ class Page extends Eloquent {
 		$type = $this->pageType();
 
 		return $type->showMeta();
+	}
+
+	public function canRestore()
+	{
+		$parent = $this->parent;
+
+		if ($parent && $parent->is_trashed)
+		{
+			return false;
+		}
+
+		return true;
+	}
+
+	public function getCanRestoreAttribute()
+	{
+		return $this->canRestore();
 	}
 }

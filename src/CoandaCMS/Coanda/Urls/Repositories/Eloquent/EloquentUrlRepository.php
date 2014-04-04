@@ -166,4 +166,13 @@ class EloquentUrlRepository implements \CoandaCMS\Coanda\Urls\Repositories\UrlRe
 		return $url->slug;
 	}
 
+	public function updateSubTree($slug, $new_for)
+	{
+		// Update the specific match for this slug
+		$this->model->whereSlug($slug)->update(['urlable_type' => $new_for]);
+
+		// Update all the records 'below' this slug
+		$this->model->where('slug', 'like', $slug . '/%')->update(['urlable_type' => $new_for]);
+	}
+
 }
