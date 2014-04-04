@@ -51,40 +51,53 @@
 
 <div class="row">
 	<div class="page-options col-md-12">
-		<div class="btn-group">
-			@if ($page->is_trashed)
-				<a href="{{ Coanda::adminUrl('pages/restore/' . $page->id) }}" class="btn btn-primary">Restore</a>
-			@else
-				@if ($page->is_draft)
-					<a href="{{ Coanda::adminUrl('pages/editversion/' . $page->id . '/1') }}" class="btn btn-primary">Continue editing</a>
-				@else
-					<a href="{{ Coanda::adminUrl('pages/edit/' . $page->id) }}" class="btn btn-primary">Edit</a>
-				@endif
+
+		<div class="row">
+			<div class="col-md-10">
 				<div class="btn-group">
-					<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-						More
-						<span class="caret"></span>
-					</button>
-					<ul class="dropdown-menu">
-						<li><a href="{{ Coanda::adminUrl('pages/delete/' . $page->id) }}">Delete</a></li>
-						<li><a href="#">More option 2</a></li>
-						<li><a href="#">More option 3</a></li>
-					</ul>
+					@if ($page->is_trashed)
+						<a href="{{ Coanda::adminUrl('pages/restore/' . $page->id) }}" class="btn btn-primary">Restore</a>
+					@else
+						@if ($page->is_draft)
+							<a href="{{ Coanda::adminUrl('pages/editversion/' . $page->id . '/1') }}" class="btn btn-primary">Continue editing</a>
+						@else
+							<a href="{{ Coanda::adminUrl('pages/edit/' . $page->id) }}" class="btn btn-primary">Edit</a>
+						@endif
+						<div class="btn-group">
+							<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+								More
+								<span class="caret"></span>
+							</button>
+							<ul class="dropdown-menu">
+								<li><a href="{{ Coanda::adminUrl('pages/delete/' . $page->id) }}">Delete</a></li>
+								<li><a href="#">More option 2</a></li>
+								<li><a href="#">More option 3</a></li>
+							</ul>
+						</div>
+					@endif
 				</div>
-			@endif
+				@if (!$page->is_trashed)
+					<div class="btn-group">
+						<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+							Add sub page <span class="caret"></span>
+						</button>
+						<ul class="dropdown-menu" role="menu">
+							@foreach (Coanda::availablePageTypes() as $page_type)
+								<li><a href="{{ Coanda::adminUrl('pages/create/' . $page_type->identifier . '/' . $page->id) }}">{{ $page_type->name }}</a></li>
+							@endforeach
+						</ul>
+					</div>
+				@endif
+			</div>
+			<div class="col-md-2">
+				@if (!$page->is_trashed && !$page->is_draft)				
+					<div class="input-group">
+						<input type="text" class="form-control select-all" readonly value="{{ url($page->slug) }}">
+						<span class="input-group-addon"><a class="new-window" href="{{ url($page->slug) }}"><i class="fa fa-share-square-o"></i></a></span>
+					</div>
+				@endif
+			</div>
 		</div>
-		@if (!$page->is_trashed)
-		<div class="btn-group">
-			<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-				Add sub page <span class="caret"></span>
-			</button>
-			<ul class="dropdown-menu" role="menu">
-				@foreach (Coanda::availablePageTypes() as $page_type)
-					<li><a href="{{ Coanda::adminUrl('pages/create/' . $page_type->identifier . '/' . $page->id) }}">{{ $page_type->name }}</a></li>
-				@endforeach
-			</ul>
-		</div>
-		@endif
 	</div>
 </div>
 

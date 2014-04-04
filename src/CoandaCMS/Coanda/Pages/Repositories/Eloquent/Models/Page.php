@@ -9,6 +9,7 @@ class Page extends Eloquent {
 	protected $presenter = 'CoandaCMS\Coanda\Pages\Presenters\Page';
 
 	private $pageType;
+	private $slug;
 	private $currentVersion;
 	private $parents;
 	private $children;
@@ -158,16 +159,21 @@ class Page extends Eloquent {
 	 */
 	public function getSlugAttribute()
 	{
-		$urlRepository = App::make('CoandaCMS\Coanda\Urls\Repositories\UrlRepositoryInterface');
+		if (!$this->slug)
+		{
+			$urlRepository = App::make('CoandaCMS\Coanda\Urls\Repositories\UrlRepositoryInterface');
 
-		try
-		{
-			return $urlRepository->findFor('page', $this->id)->slug;
+			try
+			{
+				$this->slug = $urlRepository->findFor('page', $this->id)->slug;
+			}
+			catch(\CoandaCMS\Coanda\Urls\Exceptions\UrlNotFound $exception)
+			{
+				$this->slug = '';
+			}
 		}
-		catch(\CoandaCMS\Coanda\Urls\Exceptions\UrlNotFound $exception)
-		{
-			return '';
-		}
+
+		return $this->slug;
 	}
 
 	/**
