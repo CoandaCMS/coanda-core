@@ -13,7 +13,4 @@ interface UrlRepositoryInterface {
 	public function canUse($slug, $for, $for_id);
 
 	public function getForPage($id);
-
-	public function updateSubTree($slug, $new_for);
-
 }

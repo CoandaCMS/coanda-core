@@ -180,21 +180,4 @@ class Page extends Eloquent {
 
 		return $type->showMeta();
 	}
-
-	public function canRestore()
-	{
-		$parent = $this->parent;
-
-		if ($parent && $parent->is_trashed)
-		{
-			return false;
-		}
-
-		return true;
-	}
-
-	public function getCanRestoreAttribute()
-	{
-		return $this->canRestore();
-	}
 }

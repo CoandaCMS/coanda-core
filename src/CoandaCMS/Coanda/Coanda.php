@@ -293,10 +293,4 @@ class Coanda {
 	{
 		return 'Promo URL #' . $url->urlable_id;
 	}
-
-	public function routePagetrashed($url)
-	{
-		App::abort('404');
-	}
-
 }

@@ -262,4 +262,43 @@ class PagesAdminController extends BaseController {
 
 		return View::make('coanda::admin.pages.trash', ['pages' => $pages ]);
 	}
+
+	public function getRestore($page_id)
+	{
+		try
+		{
+			// Get the page to be restored
+			$page = $this->pageRepository->find($page_id);
+
+			if (!$page->is_trashed)
+			{
+				return Redirect::to(Coanda::adminUrl('pages/view/' . $page->id));
+			}
+
+			// Get all the parent pages which would have to be restored too
+			$trashed_parents = $this->pageRepository->trashedParentsForPage($page->id);
+
+			return View::make('coanda::admin.pages.restore', ['page' => $page, 'trashed_parents' => $trashed_parents ]);
+		}
+		catch (PageNotFound $exception)
+		{
+			return Redirect::to(Coanda::adminUrl('pages'));
+		}
+	}
+
+	public function postRestore($page_id)
+	{
+		try
+		{
+			$restore_sub_pages = Input::has('restore_sub_pages') && Input::get('restore_sub_pages') == 'yes';
+
+			$this->pageRepository->restore($page_id, $restore_sub_pages);
+
+			return Redirect::to(Coanda::adminUrl('pages/view/' . $page_id));
+		}
+		catch (PageNotFound $exception)
+		{
+			return Redirect::to(Coanda::adminUrl('pages'));
+		}
+	}
 }

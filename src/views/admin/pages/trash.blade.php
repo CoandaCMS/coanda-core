@@ -48,16 +48,11 @@
 								</td>
 								<td>{{ $page->present()->type }}</td>
 								<td>
-									/
 									@foreach ($page->parents() as $parent)
 										<a href="{{ Coanda::adminUrl('pages/view/' . $parent->id) }}">{{ $parent->present()->name }}</a> /
 									@endforeach									
 								</td>
-								<td>
-									@if ($page->can_restore)
-										Restore?
-									@endif
-								</td>
+								<td><a href="{{ Coanda::adminUrl('pages/restore/' . $page->id) }}">Restore</a></td>
 							</tr>
 						@endforeach
 						</table>

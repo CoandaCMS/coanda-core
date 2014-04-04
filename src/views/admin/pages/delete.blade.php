@@ -9,7 +9,7 @@
 		<ul class="breadcrumb">
 			<li><a href="{{ Coanda::adminUrl('pages') }}">Pages</a></li>
 
-			@foreach ($page->getParents() as $parent)
+			@foreach ($page->parents() as $parent)
 				<li>
 					<a href="{{ Coanda::adminUrl('pages/view/' . $parent->id) }}">{{ $parent->present()->name }}</a>
 					&nbsp;&nbsp;
@@ -19,7 +19,7 @@
 			<li>{{ $page->present()->name }}</li>
 		</ul>
 
-		@foreach ($page->getParents() as $parent)
+		@foreach ($page->parents() as $parent)
 			<div class="sub-pages-expand" id="sub-pages-{{ $parent->id }}">
 				
 				<p>Loading <span class="one">.</span><span class="two">.</span><span class="three">.</span></p>

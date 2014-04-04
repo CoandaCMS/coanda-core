@@ -19,6 +19,18 @@ class EloquentUrlRepository implements \CoandaCMS\Coanda\Urls\Repositories\UrlRe
 		$this->slugifier = $slugifier;
 	}
 
+	public function find($for, $for_id)
+	{
+		$url = $this->model->whereUrlableType($for)->whereUrlableId($for_id)->first();
+
+		if ($url)
+		{
+			return $url;
+		}
+
+		throw new UrlNotFound('Url not found');		
+	}
+
 	/**
 	 * Tries to find the Eloquent URL model by the id
 	 * @param  integer $id
@@ -165,14 +177,4 @@ class EloquentUrlRepository implements \CoandaCMS\Coanda\Urls\Repositories\UrlRe
 
 		return $url->slug;
 	}
-
-	public function updateSubTree($slug, $new_for)
-	{
-		// Update the specific match for this slug
-		$this->model->whereSlug($slug)->update(['urlable_type' => $new_for]);
-
-		// Update all the records 'below' this slug
-		$this->model->where('slug', 'like', $slug . '/%')->update(['urlable_type' => $new_for]);
-	}
-
 }

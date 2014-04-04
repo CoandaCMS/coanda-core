@@ -361,21 +361,69 @@ class EloquentPageRepository implements PageRepositoryInterface {
 			$page->is_trashed = true;
 			$page->save();
 
-			$this->deleteSubTree($page->path);
-
-			$url_id = $this->urlRepository->getForPage($page->id);
-			
-			$this->urlRepository->updateSubTree($url_id, 'pagetrashed');
+			$this->deleteSubTree($page);
 		}
 	}
 
-	private function deleteSubTree($path)
+	private function deleteSubTree($page)
 	{
-		$this->model->where('path', 'like', $path . '%')->update(['is_trashed' => true]);
+		$this->model->where('path', 'like', $page->path . '%')->update(['is_trashed' => true]);
 	}
 
 	public function trashed()
 	{
 		return $this->model->whereIsTrashed(true)->get();
+	}
+
+	public function trashedParentsForPage($page_id)
+	{
+		$trashed_parents = new \Illuminate\Database\Eloquent\Collection;
+
+		$page = $this->model->find($page_id);
+
+		if ($page)
+		{
+			foreach ($page->parents() as $parent)
+			{
+				if ($parent->is_trashed)
+				{
+					$trashed_parents->add($parent);
+				}
+			}
+		}
+
+		return $trashed_parents;
+	}
+
+	public function restore($page_id, $restore_sub_pages = false)
+	{
+		$page = $this->model->find($page_id);
+
+		if (!$page)
+		{
+			throw new PageNotFound;
+		}
+
+		// Do we have a parent page and does it need to be restored?
+		$parent = $page->parent;
+
+		if ($parent && $parent->is_trashed)
+		{
+			$this->restore($parent->id);
+		}
+
+		// Now we can update this page
+		$page->is_trashed = false;
+		$page->save();
+
+		if ($restore_sub_pages)
+		{
+			$this->restoreSubTree($page->path);
+		}
+	}
+
+	public function restoreSubTree($path)
+	{
+		$this->model->where('path', 'like', $path . '%')->update(['is_trashed' => false]);
 	}
 }

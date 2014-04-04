@@ -28,4 +28,8 @@ interface PageRepositoryInterface {
 
 	public function trashed();
 
+	public function trashedParentsForPage($page_id);
+
+	public function restore($page_id, $restore_sub_pages);
+
 }
