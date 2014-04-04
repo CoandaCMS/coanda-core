@@ -45,6 +45,18 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		return $page;
 	}
 
+	public function findById($id)
+	{
+		$page = $this->model->find($id);
+
+		if (!$page)
+		{
+			throw new PageNotFound('Page #' . $id . ' not found');
+		}
+		
+		return $page;
+	}
+
 	/**
 	 * Get all the top level pages
 	 * @return [type] [description]
