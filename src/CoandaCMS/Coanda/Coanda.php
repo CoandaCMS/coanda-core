@@ -309,4 +309,15 @@ class Coanda {
 	{
 		return 'Promo URL #' . $url->urlable_id;
 	}
+
+	public function routeWildcard($wildcard_url)
+	{
+		$urlRepository = App::make('CoandaCMS\Coanda\Urls\Repositories\UrlRepositoryInterface');
+		$url = $urlRepository->findById($wildcard_url->urlable_id);
+
+		if ($url)
+		{
+			return Redirect::to(url(str_replace($wildcard_url->slug, $url->slug, Request::path())));
+		}
+	}
 }

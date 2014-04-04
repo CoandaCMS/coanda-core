@@ -55,14 +55,27 @@ class EloquentUrlRepository implements \CoandaCMS\Coanda\Urls\Repositories\UrlRe
 	 */
 	public function findBySlug($slug)
 	{
+		// Can we match this slug directly?
 		$url = $this->model->whereSlug($slug)->first();
 
-		if (!$url)
+		if ($url)
 		{
-			throw new UrlNotFound('Url for /' . $slug . ' not found');
+			return $url;
 		}
-		
-		return $url;
+
+		$slug_parts = explode('/', $slug);
+
+		foreach ($slug_parts as $slug_part)
+		{
+			$url = $this->model->whereSlug($slug_part)->whereUrlableType('wildcard')->first();
+
+			if ($url)
+			{
+				return $url;
+			}
+		}
+
+		throw new UrlNotFound('Url for /' . $slug . ' not found');
 	}
 
 	public function register($slug, $for, $for_id)
