@@ -19,7 +19,7 @@ class EloquentUrlRepository implements \CoandaCMS\Coanda\Urls\Repositories\UrlRe
 		$this->slugifier = $slugifier;
 	}
 
-	public function find($for, $for_id)
+	public function findFor($for, $for_id)
 	{
 		$url = $this->model->whereUrlableType($for)->whereUrlableId($for_id)->first();
 
@@ -169,12 +169,5 @@ class EloquentUrlRepository implements \CoandaCMS\Coanda\Urls\Repositories\UrlRe
 
 			throw new UrlAlreadyExists('The requested URL is already in use.');
 		}
-	}
-
-	public function getForPage($id)
-	{
-		$url = UrlModel::whereUrlableType('page')->whereUrlableId($id)->first();
-
-		return $url->slug;
 	}
 }

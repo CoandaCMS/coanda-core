@@ -158,11 +158,16 @@ class Page extends Eloquent {
 	 */
 	public function getSlugAttribute()
 	{
-		// This could be an eloquent relationship - but to keep the separation of responsibilities,
-		// the page will get the url repo from the IoC and then request it from that.
 		$urlRepository = App::make('CoandaCMS\Coanda\Urls\Repositories\UrlRepositoryInterface');
-		
-		return $urlRepository->getForPage($this->id);
+
+		try
+		{
+			return $urlRepository->findFor('page', $this->id)->slug;
+		}
+		catch(\CoandaCMS\Coanda\Urls\Exceptions\UrlNotFound $exception)
+		{
+			return '';
+		}
 	}
 
 	/**
