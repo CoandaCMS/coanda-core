@@ -286,7 +286,23 @@ class Coanda {
 
 	public function routePage($url)
 	{
-		return 'Page #' . $url->urlable_id;
+		$pageRepository = App::make('CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface');
+
+		try
+		{
+			$page = $pageRepository->findById($url->urlable_id);	
+
+			if ($page->is_trashed)
+			{
+				App::abort('404');
+			}
+
+			return 'View page: ' . $page->present()->name;
+		}
+		catch(\CoandaCMS\Coanda\Exceptions\PageNotFound $exception)
+		{
+			App::abort('404');
+		}
 	}
 
 	public function routePromo($url)
