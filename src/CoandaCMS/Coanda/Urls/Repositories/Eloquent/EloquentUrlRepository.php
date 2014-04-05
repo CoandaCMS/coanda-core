@@ -104,56 +104,40 @@ class EloquentUrlRepository implements \CoandaCMS\Coanda\Urls\Repositories\UrlRe
 			}
 		}
 
-		// Do we have a record for this urlable_type and urlable_id - if so lets redirect that to this new one
-		$existing_for_type = $this->model->whereUrlableType($for)->whereUrlableId($for_id)->first();
+		// Do we have a record for this urlable_type and urlable_id
+		$current_url = $this->model->whereUrlableType($for)->whereUrlableId($for_id)->first();
 
-		// If we have an existing one, which we can overwrite, then do so
-		if ($existing)
+		$url = $existing ? $existing : false;
+
+		// If we don't have a URL, then create a new one
+		if (!$url)
 		{
-			$existing->urlable_type = $for;
-			$existing->urlable_id = $for_id;
-
-			$existing->save();
+			$url = new UrlModel;
+			$url->slug = $slug;			
 		}
-		else
-		{
-			$new_url = new UrlModel;
-			$new_url->slug = $slug;
-			$new_url->urlable_type = $for;
-			$new_url->urlable_id = $for_id;
 
-			$new_url->save();
-		}
+		$url->urlable_type = $for;
+		$url->urlable_id = $for_id;
+
+		$url->save();
 
 		// If we have an existing url, then set it as a 'redirect' to the new url object
-		if ($existing_for_type)
+		if ($current_url)
 		{
-			// We need to update any 'child' urls off the existing url.. e.g top-level/second-level/the-url
-			// NOTE: Need to consider how this would work if there are lots of child urls..
-			$child_urls = UrlModel::where('slug', 'like', $existing_for_type->slug . '/%')->get();
+			// Update any child URL's to have the new slug
+			$this->updateSubTree($current_url->slug, $slug);
 
-			if ($child_urls->count() > 0)
-			{
-				foreach ($child_urls as $child_url)
-				{
-					$new_child_url = new UrlModel;
-					$new_child_url->slug = str_replace($existing_for_type->slug, $slug, $child_url->slug);
-					$new_child_url->urlable_type = $child_url->urlable_type;
-					$new_child_url->urlable_id = $child_url->urlable_id;
-					$new_child_url->save();
-
-					$child_url->urlable_type = 'redirect';
-					$child_url->urlable_id = $new_child_url->id;
-					$child_url->save();
-				}
-			}
-
-			$existing_for_type->urlable_type = 'redirect';
-			$existing_for_type->urlable_id = $existing ? $existing->id : $new_url->id;
-			$existing_for_type->save();
+			$current_url->urlable_type = 'wilcard';
+			$current_url->urlable_id = $url->id;
+			$current_url->save();
 		}
 
 		return true;
+	}
+
+	private function updateSubTree($slug, $new_slug)
+	{
+		$this->model->where('slug', 'like', $slug . '/%')->update(['slug' => \DB::raw("REPLACE(slug, '" . $slug . "', '" . $new_slug . "')")]);
 	}
 
 	public function canUse($slug, $for, $for_id)
