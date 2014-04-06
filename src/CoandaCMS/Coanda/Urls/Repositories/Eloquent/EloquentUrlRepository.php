@@ -63,16 +63,19 @@ class EloquentUrlRepository implements \CoandaCMS\Coanda\Urls\Repositories\UrlRe
 			return $url;
 		}
 
-		$slug_parts = explode('/', $slug);
-
-		foreach ($slug_parts as $slug_part)
+		if (strpos($slug, '/'))
 		{
-			$url = $this->model->whereSlug($slug_part)->whereUrlableType('wildcard')->first();
+			$slug_parts = explode('/', $slug);
 
-			if ($url)
+			foreach ($slug_parts as $slug_part)
 			{
-				return $url;
-			}
+				$url = $this->model->whereSlug($slug_part)->whereUrlableType('wildcard')->first();
+
+				if ($url)
+				{
+					return $url;
+				}
+			}			
 		}
 
 		throw new UrlNotFound('Url for /' . $slug . ' not found');
