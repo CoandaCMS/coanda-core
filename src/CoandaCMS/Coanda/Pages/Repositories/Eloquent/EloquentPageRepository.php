@@ -130,7 +130,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 
 		foreach ($type->attributes() as $type_attribute)
 		{
-			$page_attribute_type = Coanda::getPageAttributeType($type_attribute['type']);
+			$page_attribute_type = Coanda::module('pages')->getPageAttributeType($type_attribute['type']);
 
 			$attribute = new PageAttributeModel;
 
@@ -347,7 +347,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 
 		foreach ($type->attributes() as $type_attribute)
 		{
-			$page_attribute_type = Coanda::getPageAttributeType($type_attribute['type']);
+			$page_attribute_type = Coanda::module('pages')->getPageAttributeType($type_attribute['type']);
 
 			$attribute = new PageAttributeModel;
 

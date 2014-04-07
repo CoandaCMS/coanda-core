@@ -65,7 +65,7 @@ class SetupCommand extends Command {
 
         try
         {
-            $type = Coanda::getPageType($page_type);
+            $type = Coanda::module('pages')->getPageType($page_type);
 
             foreach (range(0, rand(2, 20)) as $index)
             {

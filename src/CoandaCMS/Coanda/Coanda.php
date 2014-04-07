@@ -80,7 +80,7 @@ class Coanda {
 				$module = new $enabled_module($this);
 				$module->boot($this);
 
-				$this->modules[] = $module;
+				$this->modules[$module->name] = $module;
 			}
 		}
 	}
@@ -158,80 +158,9 @@ class Coanda {
 		}
 	}
 
-	/**
-	 * Loads all the avaibla page types from the config
-	 * @return void
-	 */
-	public function loadPageTypes()
+	public function module($module)
 	{
-		$page_types = Config::get('coanda::coanda.page_types');
-
-		foreach ($page_types as $page_type)
-		{
-			if (class_exists($page_type))
-			{
-				$type = new $page_type($this);
-
-				// TODO: validate the definition to ensure all the specified page attribute types are available.
-
-				$this->page_types[$type->identifier] = $type;				
-			}
-		}
-	}
-
-	/**
-	 * Returns the available page types
-	 * @return Array
-	 */
-	public function availablePageTypes()
-	{
-		return $this->page_types;
-	}
-
-	/**
-	 * Gets a specific page type by identifier
-	 * @param  string $type The identifier of the page type
-	 * @return CoandaCMS\Coanda\Pages\PageTypeInterface
-	 */
-	public function getPageType($type)
-	{
-		if (array_key_exists($type, $this->page_types))
-		{
-			return $this->page_types[$type];
-		}
-
-		throw new PageTypeNotFound;
-	}
-
-	/**
-	 * Loads the attributes from the config file
-	 * @return void
-	 */
-	public function loadPageAttributeTypes()
-	{
-		$page_attribute_types = Config::get('coanda::coanda.page_attribute_types');
-
-		foreach ($page_attribute_types as $page_attribute_type)
-		{
-			$attribute_type = new $page_attribute_type;
-
-			$this->page_attribute_types[$attribute_type->identifier] = $attribute_type;
-		}
-	}
-
-	/**
-	 * Get a specific attribute by identifier
-	 * @param  string $type_identifier
-	 * @return CoandaCMS\Coanda\Pages\PageAttributeTypeInterface
-	 */
-	public function getPageAttributeType($type_identifier)
-	{
-		if (array_key_exists($type_identifier, $this->page_attribute_types))
-		{
-			return $this->page_attribute_types[$type_identifier];
-		}
-
-		throw new PageAttributeTypeNotFound;
+		return $this->modules[$module];
 	}
 
 	public function addRouter($for, $closure)

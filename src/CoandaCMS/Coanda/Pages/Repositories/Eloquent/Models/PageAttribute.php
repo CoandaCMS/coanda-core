@@ -105,7 +105,7 @@ class PageAttribute extends Eloquent {
 	 */
 	public function type()
 	{
-		return Coanda::getPageAttributeType($this->type);
+		return Coanda::module('pages')->getPageAttributeType($this->type);
 	}
 
 	/**

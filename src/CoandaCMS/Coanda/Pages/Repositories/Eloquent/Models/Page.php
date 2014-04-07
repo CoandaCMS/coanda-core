@@ -130,7 +130,7 @@ class Page extends Eloquent {
 	{
 		if (!$this->pageType)
 		{
-			$this->pageType = Coanda::getPageType($this->type);
+			$this->pageType = Coanda::module('pages')->getPageType($this->type);
 		}
 
 		return $this->pageType;
