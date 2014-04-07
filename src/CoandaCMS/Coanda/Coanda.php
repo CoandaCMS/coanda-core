@@ -11,6 +11,12 @@ class Coanda {
 	private $modules = [];
 	private $page_types = [];
 	private $permissions = [];
+	private $urlRepository;
+
+	public function boot()
+	{
+		$this->urlRepository = App::make('CoandaCMS\Coanda\Urls\Repositories\UrlRepositoryInterface');
+	}
 
     public function getUser()
 	{
@@ -172,8 +178,7 @@ class Coanda {
 	{
 		try
 		{
-			$urlRepository = App::make('CoandaCMS\Coanda\Urls\Repositories\UrlRepositoryInterface');
-			$url = $urlRepository->findBySlug($slug);
+			$url = $this->urlRepository->findBySlug($slug);
 
 			if ($url)
 			{
@@ -201,8 +206,7 @@ class Coanda {
 
 	public function routeRedirect($url)
 	{
-		$urlRepository = App::make('CoandaCMS\Coanda\Urls\Repositories\UrlRepositoryInterface');
-		$url = $urlRepository->findById($url->urlable_id);
+		$url = $this->urlRepository->findById($url->urlable_id);
 
 		if ($url)
 		{
@@ -212,8 +216,7 @@ class Coanda {
 
 	public function routeWildcard($wildcard_url)
 	{
-		$urlRepository = App::make('CoandaCMS\Coanda\Urls\Repositories\UrlRepositoryInterface');
-		$url = $urlRepository->findById($wildcard_url->urlable_id);
+		$url = $this->urlRepository->findById($wildcard_url->urlable_id);
 
 		if ($url)
 		{

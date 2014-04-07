@@ -34,6 +34,9 @@ class CoandaServiceProvider extends ServiceProvider {
 
 		// Add the routes
 		$this->app->make('coanda')->routes();
+
+		// Boot up coanda...
+		$this->app->make('coanda')->boot();
 	}
 
 	/**
