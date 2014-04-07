@@ -33,6 +33,16 @@ class PagesAdminController extends BaseController {
 		return View::make('coanda::admin.pages.index', [ 'pages' => $pages ]);
 	}
 
+	public function postIndex()
+	{
+		if (!Input::has('remove_page_list') || count(Input::get('remove_page_list')) == 0)
+		{
+			return Redirect::to(Coanda::adminUrl('pages'));
+		}
+
+		return Redirect::to(Coanda::adminUrl('pages/confirm-delete'))->with('remove_page_list', Input::get('remove_page_list'));
+	}
+
 	public function getView($id)
 	{
 		if (!Coanda::canAccess('pages'))
