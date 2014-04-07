@@ -49,45 +49,49 @@
 			<div class="tab-content">
 				<div class="tab-pane active" id="subpages">
 
-					@if (Session::has('ordering_updated'))
-						<div class="alert alert-success">
-							Ordering updated
-						</div>
+					@if ($pages->count() > 0)
+						@if (Session::has('ordering_updated'))
+							<div class="alert alert-success">
+								Ordering updated
+							</div>
+						@endif
+
+						{{ Form::open(['url' => Coanda::adminUrl('pages')]) }}
+							<table class="table table-striped">
+								@foreach ($pages as $page)
+									<tr class="status-{{ $page->status }}">
+										<td class="tight"><input type="checkbox" name="remove_page_list[]" value="{{ $page->id }}"></td>
+										<td>
+											@if ($page->is_draft)
+												<i class="fa fa-circle-o"></i>
+											@else
+												<i class="fa fa-circle"></i>
+											@endif
+											<a href="{{ Coanda::adminUrl('pages/view/' . $page->id) }}">{{ $page->present()->name }}</a>
+										</td>
+										<td>{{ $page->present()->type }}</td>
+										<td>{{ $page->children->count() }} sub page{{ $page->children->count() !== 1 ? 's' : '' }}</td>
+										<td>{{ $page->present()->status }}</td>
+										<td class="order-column">{{ Form::text('ordering[' . $page->id . ']', $page->order, ['class' => 'form-control input-sm']) }}</td>
+										<td class="tight">
+											@if ($page->is_draft)
+												<a href="{{ Coanda::adminUrl('pages/editversion/' . $page->id . '/1') }}"><i class="fa fa-pencil-square-o"></i></a>
+											@else
+												<a href="{{ Coanda::adminUrl('pages/edit/' . $page->id) }}"><i class="fa fa-pencil-square-o"></i></a>
+											@endif
+										</td>
+									</tr>
+								@endforeach
+							</table>
+
+							<div class="buttons">
+								{{ Form::button('Update ordering', ['name' => 'update_order', 'value' => 'true', 'type' => 'submit', 'class' => 'pull-right btn btn-default']) }}
+								{{ Form::button('Delete selected', ['name' => 'delete_selected', 'value' => 'true', 'type' => 'submit', 'class' => 'btn btn-danger']) }}
+							</div>
+						{{ Form::close() }}
+					@else
+						<p>Your site doesn't have any pages yet!</p>
 					@endif
-
-					{{ Form::open(['url' => Coanda::adminUrl('pages')]) }}
-						<table class="table table-striped">
-							@foreach ($pages as $page)
-								<tr class="status-{{ $page->status }}">
-									<td class="tight"><input type="checkbox" name="remove_page_list[]" value="{{ $page->id }}"></td>
-									<td>
-										@if ($page->is_draft)
-											<i class="fa fa-circle-o"></i>
-										@else
-											<i class="fa fa-circle"></i>
-										@endif
-										<a href="{{ Coanda::adminUrl('pages/view/' . $page->id) }}">{{ $page->present()->name }}</a>
-									</td>
-									<td>{{ $page->present()->type }}</td>
-									<td>{{ $page->children->count() }} sub page{{ $page->children->count() !== 1 ? 's' : '' }}</td>
-									<td>{{ $page->present()->status }}</td>
-									<td class="order-column">{{ Form::text('ordering[' . $page->id . ']', $page->order, ['class' => 'form-control input-sm']) }}</td>
-									<td class="tight">
-										@if ($page->is_draft)
-											<a href="{{ Coanda::adminUrl('pages/editversion/' . $page->id . '/1') }}"><i class="fa fa-pencil-square-o"></i></a>
-										@else
-											<a href="{{ Coanda::adminUrl('pages/edit/' . $page->id) }}"><i class="fa fa-pencil-square-o"></i></a>
-										@endif
-									</td>
-								</tr>
-							@endforeach
-						</table>
-
-						<div class="buttons">
-							{{ Form::button('Update ordering', ['name' => 'update_order', 'value' => 'true', 'type' => 'submit', 'class' => 'pull-right btn btn-default']) }}
-							{{ Form::button('Delete selected', ['name' => 'delete_selected', 'value' => 'true', 'type' => 'submit', 'class' => 'btn btn-danger']) }}
-						</div>
-					{{ Form::close() }}
 				</div>
 			</div>
 		</div>

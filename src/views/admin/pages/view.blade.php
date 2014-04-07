@@ -159,14 +159,14 @@
 								</tr>
 							@endforeach
 							</table>
+
+							<div class="buttons">
+								{{ Form::button('Update ordering', ['name' => 'update_order', 'value' => 'true', 'type' => 'submit', 'class' => 'pull-right btn btn-default']) }}
+								{{ Form::button('Delete selected', ['name' => 'delete_selected', 'value' => 'true', 'type' => 'submit', 'class' => 'btn btn-danger']) }}
+							</div>
 						@else
 							<p>This page doesn't have any sub pages</p>
 						@endif
-
-						<div class="buttons">
-							{{ Form::button('Update ordering', ['name' => 'update_order', 'value' => 'true', 'type' => 'submit', 'class' => 'pull-right btn btn-default']) }}
-							{{ Form::button('Delete selected', ['name' => 'delete_selected', 'value' => 'true', 'type' => 'submit', 'class' => 'btn btn-danger']) }}
-						</div>
 
 					{{ Form::close() }}
 				</div>
