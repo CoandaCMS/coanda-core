@@ -8,12 +8,11 @@ use CoandaCMS\Coanda\Exceptions\PageAttributeTypeNotFound;
 class Coanda {
 
 	private $user;
-
 	private $modules = [];
-
 	private $page_types = [];
+	private $permissions = [];
 
-	public function getUser()
+    public function getUser()
 	{
 		$this->user = App::make('CoandaCMS\Coanda\Users\Repositories\UserRepositoryInterface');
 	}
@@ -48,25 +47,15 @@ class Coanda {
 
 	public function availablePermissions()
 	{
-		return [
-			'pages' => [
-				'name' => 'Pages',
-				'views' => [
-					'create',
-					'edit',
-					'remove',
-					'move'
-				]
-			],
-			'users' => [
-				'name' => 'Users',
-				'views' => [
-					'create',
-					'edit',
-					'remove'
-				]
-			]
-		];
+		return $this->permissions;
+	}
+
+	public function addModulePermissions($module, $module_name, $views)
+	{
+		$this->permissions[$module] = [
+										'name' => $module_name,
+										'views' => $views
+									];
 	}
 
 	public function canAccess($permission, $permission_id = false)
@@ -81,12 +70,18 @@ class Coanda {
 	{
 		$enabled_modules = Config::get('coanda::coanda.enabled_modules');
 
+		// Add the pages module in...
+		$enabled_modules[] = 'CoandaCMS\Coanda\Pages\PagesModuleProvider';
+
 		foreach ($enabled_modules as $enabled_module)
 		{
-			$module = new $enabled_module($this);
-			$module->boot();
+			if (class_exists($enabled_module))
+			{
+				$module = new $enabled_module($this);
+				$module->boot($this);
 
-			$this->modules[] = $module;
+				$this->modules[] = $module;
+			}
 		}
 	}
 
@@ -119,9 +114,6 @@ class Coanda {
 			// All module admin routes should be wrapper in the auth filter
 			Route::group(array('before' => 'admin_auth'), function()
 			{
-				// Load the pages controller
-				Route::controller('pages', 'CoandaCMS\Coanda\Controllers\Admin\PagesAdminController');
-
 				// Load the users controller
 				Route::controller('users', 'CoandaCMS\Coanda\Controllers\Admin\UsersAdminController');
 
@@ -135,9 +127,6 @@ class Coanda {
 			Route::controller('/', 'CoandaCMS\Coanda\Controllers\AdminController');
 
 		});
-
-		// Front end routes for Pages (preview etc)
-		Route::controller('pages', 'CoandaCMS\Coanda\Controllers\PagesController');
 
 		// Let the module output any front end 'user' routes
 		foreach ($this->modules as $module)
@@ -159,7 +148,6 @@ class Coanda {
 	public function bindings($app)
 	{
 		$app->bind('CoandaCMS\Coanda\Users\Repositories\UserRepositoryInterface', 'CoandaCMS\Coanda\Users\Repositories\Eloquent\EloquentUserRepository');
-		$app->bind('CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface', 'CoandaCMS\Coanda\Pages\Repositories\Eloquent\EloquentPageRepository');
 		$app->bind('CoandaCMS\Coanda\Urls\Repositories\UrlRepositoryInterface', 'CoandaCMS\Coanda\Urls\Repositories\Eloquent\EloquentUrlRepository');
 		$app->bind('CoandaCMS\Coanda\History\Repositories\HistoryRepositoryInterface', 'CoandaCMS\Coanda\History\Repositories\Eloquent\EloquentHistoryRepository');
 
@@ -246,6 +234,11 @@ class Coanda {
 		throw new PageAttributeTypeNotFound;
 	}
 
+	public function addRouter($for, $closure)
+	{
+		$this->routers[$for] = $closure;
+	}
+
 	public function route($slug)
 	{
 		try
@@ -260,6 +253,10 @@ class Coanda {
 				if (method_exists($this, $route_method))
 				{
 					return $this->$route_method($url);
+				}
+				else if(array_key_exists($url->urlable_type, $this->routers))
+				{
+					return $this->routers[$url->urlable_type]($url);
 				}
 				else
 				{
@@ -282,32 +279,6 @@ class Coanda {
 		{
 			return Redirect::to(url($url->slug));
 		}
-	}
-
-	public function routePage($url)
-	{
-		$pageRepository = App::make('CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface');
-
-		try
-		{
-			$page = $pageRepository->findById($url->urlable_id);	
-
-			if ($page->is_trashed)
-			{
-				App::abort('404');
-			}
-
-			return 'View page: ' . $page->present()->name;
-		}
-		catch(\CoandaCMS\Coanda\Exceptions\PageNotFound $exception)
-		{
-			App::abort('404');
-		}
-	}
-
-	public function routePromo($url)
-	{
-		return 'Promo URL #' . $url->urlable_id;
 	}
 
 	public function routeWildcard($wildcard_url)
