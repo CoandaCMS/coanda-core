@@ -140,7 +140,7 @@ class EloquentUrlRepository implements \CoandaCMS\Coanda\Urls\Repositories\UrlRe
 
 	private function updateSubTree($slug, $new_slug)
 	{
-		$this->model->where('slug', 'like', $slug . '/%')->update(['slug' => \DB::raw("REPLACE(slug, '" . $slug . "', '" . $new_slug . "')")]);
+		$this->model->where('slug', 'like', $slug . '/%')->update(['slug' => \DB::raw("REPLACE(slug, '" . $slug . "/', '" . $new_slug . "/')")]);
 	}
 
 	public function delete($for, $for_id)
