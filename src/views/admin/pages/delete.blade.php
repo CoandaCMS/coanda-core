@@ -46,7 +46,7 @@
 	</div>
 
 	@if ($page->children->count() > 0)
-		<p><i class="fa fa-info-circle"></i> Deleting this page will also delete {{ $page->children->count() }} sub page{{ $page->children->count() != 1 ? 's' : '' }}</p>
+		<p><i class="fa fa-info-circle"></i> Deleting this page will also delete {{ $page->subTreeCount() }} sub page{{ $page->subTreeCount() != 1 ? 's' : '' }}</p>
 	@endif
 
 	<div class="row">

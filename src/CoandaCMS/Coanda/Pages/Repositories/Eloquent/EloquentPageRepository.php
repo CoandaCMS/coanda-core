@@ -111,7 +111,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 			if ($parent_page)
 			{
 				$page->parent_page_id = $parent_page->id;
-				$page->path = $parent_page->path . '/' . $parent_page->id . '/';
+				$page->path = $parent_page->path . $parent_page->id . '/';
 			}
 		}
 
@@ -145,7 +145,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		}
 
 		// Log the history
-		$this->historyRepository->add('pages', $page->id, Coanda::currentUser()->id, 'initial_version');
+		$this->historyRepository->add('pages', $page->id, $user_id, 'initial_version');
 
 		return $page;
 	}
@@ -308,7 +308,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		$url = $this->urlRepository->register($version->base_slug . $version->slug, 'page', $page->id);
 
 		// Log the history
-		$this->historyRepository->add('pages', $page->id, Coanda::currentUser()->id, 'publish_version', ['version' => (int)$version->version]);
+		// $this->historyRepository->add('pages', $page->id, Coanda::currentUser()->id, 'publish_version', ['version' => (int)$version->version]);
 	}
 
 	/**
@@ -424,9 +424,11 @@ class EloquentPageRepository implements PageRepositoryInterface {
 
 	private function deleteSubTree($page, $permanent = false)
 	{
+		$base_path = $page->path == '' ? '/' : $page->path;
+
 		if ($permanent)
 		{
-			$pages = $this->model->where('path', 'like', $page->path . '%')->get();
+			$pages = $this->model->where('path', 'like', $base_path . $page->id . '/%')->get();
 
 			foreach ($pages as $page)
 			{
@@ -437,7 +439,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		}
 		else
 		{
-			$this->model->where('path', 'like', $page->path . '%')->update(['is_trashed' => true]);		
+			$this->model->where('path', 'like', $base_path . $page->id . '/%')->update(['is_trashed' => true]);		
 		}
 	}
 

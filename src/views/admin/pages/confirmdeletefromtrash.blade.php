@@ -1,6 +1,6 @@
 @extends('coanda::admin.layout.main')
 
-@section('page_title', 'Confirm delete')
+@section('page_title', 'Confirm removal from trash')
 
 @section('content')
 
@@ -8,14 +8,14 @@
 	<div class="breadcrumb-nav">
 		<ul class="breadcrumb">
 			<li><a href="{{ Coanda::adminUrl('pages') }}">Pages</a></li>
-			<li>Confirm deletion</li>
+			<li>Confirm removal from trash</li>
 		</ul>
 	</div>
 </div>
 
 <div class="row">
 	<div class="page-name col-md-12">
-		<h1 class="pull-left">Confirm deletion <small>Pages</small></h1>
+		<h1 class="pull-left">Confirm removal from trash <small>Pages</small></h1>
 	</div>
 </div>
 
@@ -24,7 +24,7 @@
 	</div>
 </div>
 
-{{ Form::open(['url' => Coanda::adminUrl('pages/confirm-delete')]) }}
+{{ Form::open(['url' => Coanda::adminUrl('pages/confirm-delete-from-trash')]) }}
 <div class="row">
 	<div class="col-md-12">
 		<div class="page-tabs">
@@ -35,7 +35,7 @@
 				<div class="tab-pane active" id="trashedpages">
 
 					<div class="alert alert-danger">
-						<i class="fa fa-exclamation-triangle"></i> Are you sure you want to delete the following pages? Please note that any sub pages will also be removed.
+						<i class="fa fa-exclamation-triangle"></i> Are you sure you want to permantley delete the following pages? Please note that any sub pages will also be removed.
 					</div>
 
 					@if ($pages->count() > 0)
@@ -63,9 +63,7 @@
 						@endforeach
 						</table>
 
-						<input type="hidden" value="{{ $previous_page_id }}" name="previous_page_id">
-
-						{{ Form::button('I understand, please delete them', ['name' => 'permanent_remove', 'value' => 'true', 'type' => 'submit', 'class' => 'btn btn-danger']) }}
+						{{ Form::button('I understand, please delete these pages permanently', ['name' => 'permanent_remove', 'value' => 'true', 'type' => 'submit', 'class' => 'btn btn-danger']) }}
 					@endif
 				</div>
 			</div>

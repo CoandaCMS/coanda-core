@@ -13,6 +13,7 @@ class Page extends Eloquent {
 	private $currentVersion;
 	private $parents;
 	private $children;
+	private $subTreeCount;
 
 	/**
 	 * The database table used by the model.
@@ -72,12 +73,29 @@ class Page extends Eloquent {
 
 	public function subTreeCount()
 	{
-		return Page::where('path', 'like', $this->path . $this->id . '/%')->count();
+		if (!$this->subTreeCount)
+		{
+			$path = $this->path == '' ? '/' : $this->path;
+
+			$this->subTreeCount = Page::where('path', 'like', $path . $this->id . '/%')->count();
+		}
+
+		return $this->subTreeCount;
 	}
 
 	public function pathArray()
 	{
 		return explode('/', $this->path);
+	}
+
+	public function depth()
+	{
+		return count($this->pathArray());
+	}
+
+	public function getDepthAttribute()
+	{
+		return $this->depth();
 	}
 
 	/**

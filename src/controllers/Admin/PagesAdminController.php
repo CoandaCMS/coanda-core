@@ -58,6 +58,60 @@ class PagesAdminController extends BaseController {
 		}
 	}
 
+	public function postView($id)
+	{
+		if ($id == 0)
+		{
+			return Redirect::to(Coanda::adminUrl('pages'));
+		}
+
+		if (!Input::has('remove_page_list') || count(Input::get('remove_page_list')) == 0)
+		{
+			return Redirect::to(Coanda::adminUrl('pages/view/' . $id));
+		}
+
+		return Redirect::to(Coanda::adminUrl('pages/confirm-delete'))->with('remove_page_list', Input::get('remove_page_list'))->with('previous_page_id', $id);
+	}
+
+	public function getConfirmDelete()
+	{
+		$previous_page_id = Session::get('previous_page_id', 0);
+
+		if (!Session::has('remove_page_list') || count(Session::get('remove_page_list')) == 0)
+		{
+			if (!$previous_page_id)
+			{
+				return Redirect::to(Coanda::adminUrl('pages'));
+			}
+
+			return Redirect::to(Coanda::adminUrl('pages/view/' . $previous_page_id));
+		}
+
+		$pages = $this->pageRepository->findByIds(Session::get('remove_page_list'));
+
+		return View::make('coanda::admin.pages.confirmdelete', ['pages' => $pages, 'previous_page_id' => $previous_page_id]);
+
+	}
+
+	public function postConfirmDelete()
+	{
+		$previous_page_id = Input::get('previous_page_id');
+
+		if (!$previous_page_id)
+		{
+			$previous_page_id = 0;
+		}
+
+		if (!Input::has('confirmed_remove_list') || count(Input::get('confirmed_remove_list')) == 0)
+		{
+			return Redirect::to(Coanda::adminUrl('pages/view/' . $previous_page_id));
+		}
+
+		$this->pageRepository->deletePages(Input::get('confirmed_remove_list'));
+
+		return Redirect::to(Coanda::adminUrl('pages/view/' . $previous_page_id));
+	}
+
 	public function getCreate($page_type, $parent_page_id = false)
 	{
 		try
@@ -270,10 +324,10 @@ class PagesAdminController extends BaseController {
 			return Redirect::to(Coanda::adminUrl('pages/trash'));
 		}
 
-		return Redirect::to(Coanda::adminUrl('pages/confirm-delete'))->with('confirm_permanent_remove_list', Input::get('permanent_remove_list'));
+		return Redirect::to(Coanda::adminUrl('pages/confirm-delete-from-trash'))->with('confirm_permanent_remove_list', Input::get('permanent_remove_list'));
 	}
 
-	public function getConfirmDelete()
+	public function getConfirmDeleteFromTrash()
 	{
 		if (!Session::has('confirm_permanent_remove_list') || count(Session::get('confirm_permanent_remove_list')) == 0)
 		{
@@ -282,10 +336,10 @@ class PagesAdminController extends BaseController {
 
 		$pages = $this->pageRepository->findByIds(Session::get('confirm_permanent_remove_list'));
 
-		return View::make('coanda::admin.pages.confirmdelete', ['pages' => $pages ]);
+		return View::make('coanda::admin.pages.confirmdeletefromtrash', ['pages' => $pages ]);
 	}
 
-	public function postConfirmDelete()
+	public function postConfirmDeleteFromTrash()
 	{
 		if (!Input::has('confirmed_remove_list') || count(Input::get('confirmed_remove_list')) == 0)
 		{
