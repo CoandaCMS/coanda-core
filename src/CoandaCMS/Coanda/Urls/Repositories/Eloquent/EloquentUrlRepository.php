@@ -130,7 +130,7 @@ class EloquentUrlRepository implements \CoandaCMS\Coanda\Urls\Repositories\UrlRe
 			// Update any child URL's to have the new slug
 			$this->updateSubTree($current_url->slug, $slug);
 
-			$current_url->urlable_type = 'wilcard';
+			$current_url->urlable_type = 'wildcard';
 			$current_url->urlable_id = $url->id;
 			$current_url->save();
 		}
