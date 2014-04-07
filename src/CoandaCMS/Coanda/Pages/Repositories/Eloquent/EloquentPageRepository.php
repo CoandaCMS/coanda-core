@@ -86,7 +86,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 	 */
 	public function topLevel()
 	{
-		return $this->model->where('parent_page_id', 0)->get();
+		return $this->model->where('parent_page_id', 0)->whereIsTrashed(false)->get();
 	}
 
 	/**
