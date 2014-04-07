@@ -8,7 +8,7 @@
 
 	<div class="breadcrumb-nav">
 		<div class="pull-right">
-			<a href="{{ Coanda::adminUrl('pages/trash') }}">Trash</a>
+			<a href="{{ Coanda::adminUrl('pages/trash') }}" class="trash-icon"><i class="fa fa-trash-o"></i> Trash</a>
 		</div>
 
 		<ul class="breadcrumb">
