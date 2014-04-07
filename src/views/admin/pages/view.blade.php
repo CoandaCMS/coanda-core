@@ -17,13 +17,16 @@
 			@foreach ($page->parents() as $parent)
 				<li>
 					<a href="{{ Coanda::adminUrl('pages/view/' . $parent->id) }}">{{ $parent->present()->name }}</a>
+					{{--
 					&nbsp;&nbsp;
 					<a href="#sub-pages-{{ $parent->id }}" class="expand"><i class="fa fa-caret-square-o-down"></i></a>
+					--}}
 				</li>	
 			@endforeach
 			<li>{{ $page->present()->name }}</li>
 		</ul>
 
+		{{--
 		@foreach ($page->parents() as $parent)
 			<div class="sub-pages-expand" id="sub-pages-{{ $parent->id }}">
 				
@@ -31,6 +34,7 @@
 
 			</div>
 		@endforeach
+		--}}
 	</div>
 </div>
 
