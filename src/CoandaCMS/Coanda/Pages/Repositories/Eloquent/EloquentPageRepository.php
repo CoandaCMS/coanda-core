@@ -57,7 +57,6 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		return $page;
 	}
 
-
 	public function findByIds($ids)
 	{
 		$pages = new \Illuminate\Database\Eloquent\Collection;
@@ -86,7 +85,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 	 */
 	public function topLevel()
 	{
-		return $this->model->where('parent_page_id', 0)->whereIsTrashed(false)->get();
+		return $this->model->where('parent_page_id', 0)->whereIsTrashed(false)->orderBy('order', 'asc')->get();
 	}
 
 	/**
@@ -498,5 +497,13 @@ class EloquentPageRepository implements PageRepositoryInterface {
 	public function restoreSubTree($path)
 	{
 		$this->model->where('path', 'like', $path . '%')->update(['is_trashed' => false]);
+	}
+
+	public function updateOrdering($new_orders)
+	{
+		foreach ($new_orders as $page_id => $new_order)
+		{
+			$this->model->whereId($page_id)->update(['order' => $new_order]);
+		}
 	}
 }

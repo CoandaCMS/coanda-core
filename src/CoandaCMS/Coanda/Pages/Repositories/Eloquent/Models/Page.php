@@ -60,11 +60,11 @@ class Page extends Eloquent {
 		{
 			if ($this->is_trashed)
 			{
-				$this->children = $this->hasMany('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\Page', 'parent_page_id');
+				$this->children = $this->hasMany('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\Page', 'parent_page_id')->orderBy('order', 'asc');
 			}
 			else
 			{
-				$this->children = $this->hasMany('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\Page', 'parent_page_id')->whereIsTrashed(0);	
+				$this->children = $this->hasMany('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\Page', 'parent_page_id')->orderBy('order', 'asc')->whereIsTrashed(0);	
 			}
 		}
 		
