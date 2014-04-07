@@ -112,6 +112,12 @@
 			<div class="tab-content">
 				<div class="tab-pane active" id="subpages">
 
+					@if (Session::has('ordering_updated'))
+						<div class="alert alert-success">
+							Ordering updated
+						</div>
+					@endif
+
 					{{ Form::open(['url' => Coanda::adminUrl('pages/view/' . $page->id)]) }}
 
 						@if ($page->parent)
@@ -140,7 +146,7 @@
 									<td>{{ $child->present()->type }}</td>
 									<td>{{ $child->children->count() }} sub page{{ $child->children->count() !== 1 ? 's' : '' }}</td>
 									<td>{{ $child->present()->status }}</td>
-
+									<td class="order-column">{{ Form::text('ordering[' . $child->id . ']', $child->order, ['class' => 'form-control input-sm']) }}</td>
 									@if (!$page->is_trashed)
 										<td class="tight">
 											@if ($child->is_draft)
@@ -157,7 +163,10 @@
 							<p>This page doesn't have any sub pages</p>
 						@endif
 
-						{{ Form::button('Delete selected', ['name' => 'delete_selected', 'value' => 'true', 'type' => 'submit', 'class' => 'btn btn-danger']) }}
+						<div class="buttons">
+							{{ Form::button('Update ordering', ['name' => 'update_order', 'value' => 'true', 'type' => 'submit', 'class' => 'pull-right btn btn-default']) }}
+							{{ Form::button('Delete selected', ['name' => 'delete_selected', 'value' => 'true', 'type' => 'submit', 'class' => 'btn btn-danger']) }}
+						</div>
 
 					{{ Form::close() }}
 				</div>

@@ -35,12 +35,23 @@ class PagesAdminController extends BaseController {
 
 	public function postIndex()
 	{
-		if (!Input::has('remove_page_list') || count(Input::get('remove_page_list')) == 0)
+		// Did we hit the delete button?
+		if (Input::has('delete_selected') && Input::get('delete_selected') == 'true')
 		{
-			return Redirect::to(Coanda::adminUrl('pages'));
+			if (!Input::has('remove_page_list') || count(Input::get('remove_page_list')) == 0)
+			{
+				return Redirect::to(Coanda::adminUrl('pages'));
+			}
+
+			return Redirect::to(Coanda::adminUrl('pages/confirm-delete'))->with('remove_page_list', Input::get('remove_page_list'));
 		}
 
-		return Redirect::to(Coanda::adminUrl('pages/confirm-delete'))->with('remove_page_list', Input::get('remove_page_list'));
+		if (Input::has('update_order') && Input::get('update_order') == 'true')
+		{
+			$this->pageRepository->updateOrdering(Input::get('ordering'));
+
+			return Redirect::to(Coanda::adminUrl('pages'))->with('ordering_updated', true);
+		}
 	}
 
 	public function getView($id)
@@ -75,12 +86,23 @@ class PagesAdminController extends BaseController {
 			return Redirect::to(Coanda::adminUrl('pages'));
 		}
 
-		if (!Input::has('remove_page_list') || count(Input::get('remove_page_list')) == 0)
+		// Did we hit the delete button?
+		if (Input::has('delete_selected') && Input::get('delete_selected') == 'true')
 		{
-			return Redirect::to(Coanda::adminUrl('pages/view/' . $id));
+			if (!Input::has('remove_page_list') || count(Input::get('remove_page_list')) == 0)
+			{
+				return Redirect::to(Coanda::adminUrl('pages/view/' . $id));
+			}
+
+			return Redirect::to(Coanda::adminUrl('pages/confirm-delete'))->with('remove_page_list', Input::get('remove_page_list'))->with('previous_page_id', $id);
 		}
 
-		return Redirect::to(Coanda::adminUrl('pages/confirm-delete'))->with('remove_page_list', Input::get('remove_page_list'))->with('previous_page_id', $id);
+		if (Input::has('update_order') && Input::get('update_order') == 'true')
+		{
+			$this->pageRepository->updateOrdering(Input::get('ordering'));
+
+			return Redirect::to(Coanda::adminUrl('pages/view/' . $id))->with('ordering_updated', true);
+		}
 	}
 
 	public function getConfirmDelete()

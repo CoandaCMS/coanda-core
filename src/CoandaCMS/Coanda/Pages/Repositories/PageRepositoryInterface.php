@@ -38,4 +38,6 @@ interface PageRepositoryInterface {
 
 	public function restore($page_id, $restore_sub_pages);
 
+	public function updateOrdering($new_orders);
+
 }
