@@ -51,6 +51,13 @@ class CoandaServiceProvider extends ServiceProvider {
 			return new Coanda;
 
 		});
+
+		$this->app['coanda.setup'] = $this->app->share(function($app)
+		{
+		    return new \CoandaCMS\Coanda\Commands\SetupCommand($app);
+		});
+
+		$this->commands('coanda.setup');
 	}
 
 	/**
