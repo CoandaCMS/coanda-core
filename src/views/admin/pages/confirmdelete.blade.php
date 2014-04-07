@@ -1,6 +1,6 @@
 @extends('coanda::admin.layout.main')
 
-@section('page_title', 'Trash')
+@section('page_title', 'Confirm delete')
 
 @section('content')
 
@@ -8,62 +8,62 @@
 	<div class="breadcrumb-nav">
 		<ul class="breadcrumb">
 			<li><a href="{{ Coanda::adminUrl('pages') }}">Pages</a></li>
-			<li>Trash</li>
+			<li>Confirm deletion</li>
 		</ul>
 	</div>
 </div>
 
 <div class="row">
 	<div class="page-name col-md-12">
-		<h1 class="pull-left">Trash <small>Pages</small></h1>
+		<h1 class="pull-left">Confirm deletion <small>Pages</small></h1>
 	</div>
 </div>
 
 <div class="row">
 	<div class="page-options col-md-12">
-		<a href="{{ Coanda::adminUrl('pages/empty-trash') }}" class="btn btn-primary">Empty trash</a>
 	</div>
 </div>
 
-{{ Form::open(['url' => Coanda::adminUrl('pages/trash')]) }}
+{{ Form::open(['url' => Coanda::adminUrl('pages/confirm-delete')]) }}
 <div class="row">
 	<div class="col-md-12">
 		<div class="page-tabs">
 			<ul class="nav nav-tabs">
-				<li class="active"><a href="#trashedpages" data-toggle="tab">Trashed pages</a></li>
+				<li class="active"><a href="#trashedpages" data-toggle="tab">Pages</a></li>
 			</ul>
 			<div class="tab-content">
 				<div class="tab-pane active" id="trashedpages">
+
+					<div class="alert alert-danger">
+						<i class="fa fa-exclamation-triangle"></i> Are you sure you want to permantley delete the following pages? Please note that any sub pages will also be removed.
+					</div>
 
 					@if ($pages->count() > 0)
 						<table class="table table-striped">
 						@foreach ($pages as $page)
 							<tr class="status-{{ $page->status }}">
-								<td class="tight">
-									<input type="checkbox" name="permanent_remove_list[]" value="{{ $page->id }}">
-								</td>
 								<td>
+									<input type="hidden" name="confirmed_remove_list[]" value="{{ $page->id }}">
+
 									@if ($page->is_draft)
 										<i class="fa fa-circle-o"></i>
 									@else
 										<i class="fa fa-circle"></i>
 									@endif
-									<a href="{{ Coanda::adminUrl('pages/view/' . $page->id) }}">{{ $page->present()->name }}</a>
+									{{ $page->present()->name }}
 								</td>
 								<td>{{ $page->present()->type }}</td>
+								<td><span class="label label-danger">{{ $page->subTreeCount() }}</span> sub pages will also be removed</td>
 								<td>
 									@foreach ($page->parents() as $parent)
-										<a href="{{ Coanda::adminUrl('pages/view/' . $parent->id) }}">{{ $parent->present()->name }}</a> /
+										{{ $parent->present()->name }} /
 									@endforeach									
 								</td>
-								<td><a href="{{ Coanda::adminUrl('pages/restore/' . $page->id) }}">Restore</a></td>
 							</tr>
 						@endforeach
 						</table>
 
-						{{ Form::button('Delete permanently', ['name' => 'permanent_remove', 'value' => 'true', 'type' => 'submit', 'class' => 'btn btn-danger']) }}
-					@else
-						<p>There are no trashed pages.</p>
+						{{ Form::button('I understand, please delete these pages permanently', ['name' => 'permanent_remove', 'value' => 'true', 'type' => 'submit', 'class' => 'btn btn-danger']) }}
 					@endif
 				</div>
 			</div>

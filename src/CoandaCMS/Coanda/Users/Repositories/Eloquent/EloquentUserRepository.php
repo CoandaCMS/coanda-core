@@ -93,7 +93,7 @@ class EloquentUserRepository implements UserRepositoryInterface {
 
 			foreach ($access_list as $module => $access)
 			{
-				// This is a wilcard, they can see anything with this.
+				// This is a wildcard, they can see anything with this.
 				if ($access == '*')
 				{
 					return true;

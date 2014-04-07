@@ -6,6 +6,8 @@ interface PageRepositoryInterface {
 
 	public function findById($id);
 
+	public function findByIds($ids);
+
 	public function topLevel();
 
 	public function create($type, $user_id, $parent_page_id);
@@ -27,6 +29,8 @@ interface PageRepositoryInterface {
 	public function history($page_id);
 
 	public function deletePage($page_id, $permanent = false);
+
+	public function deletePages($pages_ids, $permanent = false);
 
 	public function trashed();
 

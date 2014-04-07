@@ -21,6 +21,16 @@ class Page extends Eloquent {
 	 */
 	protected $table = 'pages';
 
+	public function delete()
+	{
+		foreach ($this->versions() as $version)
+		{
+			$version->delete();
+		}
+
+		parent::delete();
+	}
+
 	/**
 	 * Get the versions for this page
 	 * @return \Illuminate\Database\Eloquent\Collection
@@ -58,6 +68,11 @@ class Page extends Eloquent {
 		}
 		
 		return $this->children;
+	}
+
+	public function subTreeCount()
+	{
+		return Page::where('path', 'like', $this->path . $this->id . '/%')->count();
 	}
 
 	public function pathArray()

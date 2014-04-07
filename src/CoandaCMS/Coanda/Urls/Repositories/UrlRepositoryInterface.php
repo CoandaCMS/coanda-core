@@ -10,5 +10,7 @@ interface UrlRepositoryInterface {
 
 	public function register($slug, $for, $for_id);
 
+	public function delete($for, $for_id);
+
 	public function canUse($slug, $for, $for_id);
 }

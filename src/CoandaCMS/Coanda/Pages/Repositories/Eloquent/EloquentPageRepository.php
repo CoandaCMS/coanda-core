@@ -57,6 +57,29 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		return $page;
 	}
 
+
+	public function findByIds($ids)
+	{
+		$pages = new \Illuminate\Database\Eloquent\Collection;
+
+		if (!is_array($ids))
+		{
+			return $pages;
+		}
+
+		foreach ($ids as $id)
+		{
+			$page = $this->model->find($id);
+
+			if ($page)
+			{
+				$pages->add($page);
+			}
+		}
+
+		return $pages;
+	}
+
 	/**
 	 * Get all the top level pages
 	 * @return [type] [description]
@@ -365,21 +388,57 @@ class EloquentPageRepository implements PageRepositoryInterface {
 
 		if ($permanent)
 		{
-			dd('perm delete');
+			$this->urlRepository->delete('page', $page->id);
+
+			$this->deleteSubTree($page, true);
+			$page->delete();
 		}
-
-		if (!$page->is_trashed)
+		else
 		{
-			$page->is_trashed = true;
-			$page->save();
+			if (!$page->is_trashed)
+			{
+				$page->is_trashed = true;
+				$page->save();
 
-			$this->deleteSubTree($page);
+				$this->deleteSubTree($page, false);
+			}
 		}
 	}
 
-	private function deleteSubTree($page)
+	public function deletePages($page_ids, $permanent = false)
 	{
-		$this->model->where('path', 'like', $page->path . '%')->update(['is_trashed' => true]);
+		if (count($page_ids) > 0)
+		{
+			foreach ($page_ids as $page_id)
+			{
+				try
+				{
+					$this->deletePage($page_id, $permanent);
+				}
+				catch (PageNotFound $exception)
+				{
+				}
+			}
+		}
+	}
+
+	private function deleteSubTree($page, $permanent = false)
+	{
+		if ($permanent)
+		{
+			$pages = $this->model->where('path', 'like', $page->path . '%')->get();
+
+			foreach ($pages as $page)
+			{
+				$this->urlRepository->delete('page', $page->id);
+
+				$page->delete();	
+			}
+		}
+		else
+		{
+			$this->model->where('path', 'like', $page->path . '%')->update(['is_trashed' => true]);		
+		}
 	}
 
 	public function trashed()
