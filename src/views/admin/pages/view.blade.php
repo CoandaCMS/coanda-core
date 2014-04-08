@@ -205,6 +205,7 @@
 								<td class="tight">
 									@if (!$page->is_trashed)
 										@if ($version->status == 'draft')
+											<a class="new-window" href="{{ url($version->present()->preview_url) }}"><i class="fa fa-share-square-o"></i></a>
 											<a href="{{ Coanda::adminUrl('pages/editversion/' . $page->id . '/' . $version->version) }}"><i class="fa fa-pencil-square-o"></i></a>
 										@endif
 									@endif
