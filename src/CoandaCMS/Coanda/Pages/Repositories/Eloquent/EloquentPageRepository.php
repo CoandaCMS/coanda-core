@@ -83,9 +83,9 @@ class EloquentPageRepository implements PageRepositoryInterface {
 	 * Get all the top level pages
 	 * @return [type] [description]
 	 */
-	public function topLevel()
+	public function topLevel($per_page = 10)
 	{
-		return $this->model->where('parent_page_id', 0)->whereIsTrashed(false)->orderBy('order', 'asc')->get();
+		return $this->model->where('parent_page_id', 0)->whereIsTrashed(false)->orderBy('order', 'asc')->paginate($per_page);
 	}
 
 	/**

@@ -8,7 +8,7 @@ interface PageRepositoryInterface {
 
 	public function findByIds($ids);
 
-	public function topLevel();
+	public function topLevel($per_page);
 
 	public function create($type, $user_id, $parent_page_id);
 

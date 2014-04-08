@@ -28,7 +28,9 @@ class PagesAdminController extends BaseController {
 			throw new PermissionDenied;
 		}
 
-		$pages = $this->pageRepository->topLevel();
+		$per_page = 10;
+
+		$pages = $this->pageRepository->topLevel($per_page);
 
 		return View::make('coanda::admin.pages.index', [ 'pages' => $pages ]);
 	}
