@@ -130,9 +130,9 @@
 							<p><i class="fa fa-level-up"></i> <a href="{{ Coanda::adminUrl('pages') }}">Up to Pages</a></p>
 						@endif
 
-						@if ($page->children->count() > 0)
+						@if ($children->count() > 0)
 							<table class="table table-striped">
-							@foreach ($page->children as $child)
+							@foreach ($children as $child)
 								<tr class="status-{{ $child->status }}">
 
 									@if (!$page->is_trashed)
@@ -163,6 +163,8 @@
 								</tr>
 							@endforeach
 							</table>
+
+							{{ $children->links() }}
 
 							<div class="buttons">
 								{{ Form::button('Update ordering', ['name' => 'update_order', 'value' => 'true', 'type' => 'submit', 'class' => 'pull-right btn btn-default']) }}

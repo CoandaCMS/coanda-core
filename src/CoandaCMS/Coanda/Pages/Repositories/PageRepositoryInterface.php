@@ -10,6 +10,8 @@ interface PageRepositoryInterface {
 
 	public function topLevel($per_page);
 
+	public function subPages($page_id, $per_page);
+
 	public function create($type, $user_id, $parent_page_id);
 
 	public function getDraftVersion($page_id, $version);

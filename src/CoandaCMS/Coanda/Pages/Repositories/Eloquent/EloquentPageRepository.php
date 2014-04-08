@@ -88,6 +88,11 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		return $this->model->where('parent_page_id', 0)->whereIsTrashed(false)->orderBy('order', 'asc')->paginate($per_page);
 	}
 
+	public function subPages($page_id, $per_page)
+	{
+		return $this->model->where('parent_page_id', $page_id)->whereIsTrashed(false)->orderBy('order', 'asc')->paginate($per_page);
+	}
+
 	/**
 	 * Create a new page of the specified type for the user id
 	 * @param  string $type
