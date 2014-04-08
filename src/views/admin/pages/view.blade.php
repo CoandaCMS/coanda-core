@@ -109,9 +109,9 @@
 	<div class="col-md-8">
 		<div class="page-tabs">
 			<ul class="nav nav-tabs">
-				<li class="active"><a href="#subpages" data-toggle="tab">Sub pages</a></li>
+				<li class="active"><a href="#subpages" data-toggle="tab">Sub pages ({{ $children->getTotal() }})</a></li>
 				<li><a href="#content" data-toggle="tab">Content</a></li>
-				<li><a href="#versions" data-toggle="tab">Versions</a></li>
+				<li><a href="#versions" data-toggle="tab">Versions ({{ $page->versions->count() }})</a></li>
 			</ul>
 			<div class="tab-content">
 				<div class="tab-pane active" id="subpages">
