@@ -226,14 +226,44 @@
 			</ul>
 			<div class="tab-content">
 				<div class="tab-pane active" id="contributors">
-					Show users involved in this...
+					<table class="table table-striped table-history">
+						@foreach ($contributors as $contributor)
+							<tr>
+								<td class="tight"><img src="{{ $contributor->avatar }}" class="img-circle" width="45"></td>
+								<td>{{ $contributor->present()->name }}</td>
+							</tr>
+						@endforeach
+					</table>
 				</div>
 				<div class="tab-pane" id="history">
-					<div class="page-timeline">
+					<table class="table table-striped table-history">
 						@foreach ($history as $history)
-							<p>User #{{ $history->user_id }} - {{ $history->action }} - {{ $history->data }}, {{ $history->present()->created_at }}</p>
+							<tr>
+								<td class="tight"><img src="{{ $history->user->avatar }}" class="img-circle" width="45"></td>
+								<td>{{ $history->user->present()->name }}</td>
+								<td>
+									@if ($history->action == 'initial_version')
+										- created the page
+									@endif
+
+									@if ($history->action == 'new_version')
+										- created version #{{ $history->action_data->version }}
+									@endif
+
+									@if ($history->action == 'discard_version')
+										- discarded version #{{ $history->action_data->version }}
+									@endif
+
+									@if ($history->action == 'publish_version')
+										- published version #{{ $history->action_data->version }}
+									@endif
+								</td>
+								<td>{{ $history->present()->created_at }}</td>
+							</tr>
 						@endforeach
-					</div>
+					</table>
+
+					<a href="{{ Coanda::adminUrl('pages/history/' . $page->id)}}">View all history</a>
 				</div>
 			</div>
 		</div>

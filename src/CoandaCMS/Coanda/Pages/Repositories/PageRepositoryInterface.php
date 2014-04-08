@@ -30,6 +30,8 @@ interface PageRepositoryInterface {
 
 	public function history($page_id);
 
+	public function contributors($page_id);
+
 	public function deletePage($page_id, $permanent = false);
 
 	public function deletePages($pages_ids, $permanent = false);

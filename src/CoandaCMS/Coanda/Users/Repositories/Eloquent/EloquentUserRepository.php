@@ -353,4 +353,26 @@ class EloquentUserRepository implements UserRepositoryInterface {
 
 		$group->users()->detach($user->id);
 	}
+
+	public function getByIds($ids)
+	{
+		$users = new \Illuminate\Database\Eloquent\Collection;
+
+		if (!is_array($ids))
+		{
+			return $users;
+		}
+
+		foreach ($ids as $id)
+		{
+			$user = $this->model->find($id);
+
+			if ($user)
+			{
+				$users->add($user);
+			}
+		}
+
+		return $users;
+	}
 }

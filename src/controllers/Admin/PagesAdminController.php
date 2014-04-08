@@ -70,12 +70,14 @@ class PagesAdminController extends BaseController {
 
 		try
 		{
-			$page = $this->pageRepository->find($id);
-			$per_page = 10;
-			$children = $this->pageRepository->subPages($page->id, $per_page);
-			$history = $this->pageRepository->history($page->id);
+			$view_data = [
+							'page' => $this->pageRepository->find($id),
+							'children' => $this->pageRepository->subPages($id, 10),
+							'history' => $this->pageRepository->history($id, 5),
+							'contributors' => $this->pageRepository->contributors($id)
+						];
 
-			return View::make('coanda::admin.pages.view', ['page' => $page, 'children' => $children, 'history' => $history]);
+			return View::make('coanda::admin.pages.view', $view_data);
 		}
 		catch(PageNotFound $exception)
 		{

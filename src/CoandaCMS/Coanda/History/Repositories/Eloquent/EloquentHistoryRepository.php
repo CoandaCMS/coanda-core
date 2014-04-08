@@ -42,9 +42,16 @@ class EloquentHistoryRepository implements HistoryRepositoryInterface {
 	 * @param  integer $for_id
 	 * @return
 	 */
-	public function get($for, $for_id)
+	public function get($for, $for_id, $limit = false)
 	{
-		return $this->model->whereFor($for)->whereForId($for_id)->orderBy('created_at', 'desc')->get();
+		return $this->model->whereFor($for)->whereForId($for_id)->orderBy('created_at', 'desc')->take($limit)->get();
+	}
+
+	public function users($for, $for_id)
+	{
+		$userRepository = \App::make('CoandaCMS\Coanda\Users\Repositories\UserRepositoryInterface');
+
+		return $userRepository->getByIds($this->model->whereFor($for)->whereForId($for_id)->groupBy('user_id')->lists('user_id'));
 	}
 
 }

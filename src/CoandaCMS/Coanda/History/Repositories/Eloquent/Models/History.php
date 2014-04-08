@@ -14,4 +14,28 @@ class History extends Eloquent {
 	 * @var string
 	 */
 	protected $table = 'history';
+
+	public function user()
+	{
+		$userRepository = \App::make('CoandaCMS\Coanda\Users\Repositories\UserRepositoryInterface');
+
+		return $userRepository->find($this->user_id);
+	}
+
+	public function getUserAttribute()
+	{
+		return $this->user();
+	}
+
+	public function actionData()
+	{
+		$array = json_decode($this->data);
+		
+		return !$array ? $this->data : $array;
+	}
+
+	public function getActionDataAttribute()
+	{
+		return $this->actionData();
+	}
 }

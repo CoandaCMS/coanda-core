@@ -43,7 +43,7 @@
 							@foreach ($group->users as $user)
 								<tr>
 									<td>
-										<i class="fa fa-user"></i>
+										<img src="{{ $user->avatar }}" class="img-circle" width="30">
 										<a href="{{ Coanda::adminUrl('users/user/' . $user->id) }}">{{ $user->present()->name }}</a>
 									</td>
 									<td>{{ $user->present()->email }}</td>

@@ -7,7 +7,7 @@
 		</ul>
 
 		<ul class="nav navbar-nav navbar-right">
-			<li><a href="{{ Coanda::adminUrl('logout') }}"><span class="glyphicon glyphicon-user"></span> Log out</a></li>
+			<li><a href="{{ Coanda::adminUrl('logout') }}"><img src="{{ Coanda::currentUser()->avatar }}" class="img-circle" width="20"> Log out</a></li>
 		</ul>
 	</div>
 </nav>

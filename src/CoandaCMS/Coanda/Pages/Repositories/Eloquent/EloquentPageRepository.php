@@ -312,7 +312,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		$url = $this->urlRepository->register($version->base_slug . $version->slug, 'page', $page->id);
 
 		// Log the history
-		// $this->historyRepository->add('pages', $page->id, Coanda::currentUser()->id, 'publish_version', ['version' => (int)$version->version]);
+		$this->historyRepository->add('pages', $page->id, Coanda::currentUser()->id, 'publish_version', ['version' => (int)$version->version]);
 	}
 
 	/**
@@ -376,9 +376,14 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		return $new_version_number;
 	}
 
-	public function history($page_id)
+	public function history($page_id, $limit = 10)
 	{
-		return $this->historyRepository->get('pages', $page_id);
+		return $this->historyRepository->get('pages', $page_id, $limit);
+	}
+
+	public function contributors($page_id)
+	{
+		return $this->historyRepository->users('pages', $page_id);
 	}
 
 	public function deletePage($page_id, $permanent = false)

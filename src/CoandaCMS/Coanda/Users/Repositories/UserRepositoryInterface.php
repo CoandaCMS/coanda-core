@@ -36,11 +36,12 @@ interface UserRepositoryInterface {
 
 	public function addUserToGroup($user_id, $grouo_id);
 	public function removeUserFromGroup($user_id, $grouo_id);
-
 	
 	public function groupById($group_id);
 	public function groups();
 	public function createGroup($data);
 	public function updateGroup($group_id, $data);
+
+	public function getByIds($ids);
 
 }

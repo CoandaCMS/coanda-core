@@ -82,4 +82,14 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 
 		return $unassigned_groups;
 	}
+
+	public function avatar()
+	{
+		return 'http://www.gravatar.com/avatar/' . md5($this->email) . '?d=mm';
+	}
+
+	public function getAvatarAttribute()
+	{
+		return $this->avatar();
+	}
 }
