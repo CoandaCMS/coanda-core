@@ -401,6 +401,8 @@ class EloquentPageRepository implements PageRepositoryInterface {
 
 			$this->deleteSubTree($page, true);
 			$page->delete();
+
+			$this->historyRepository->add('pages', $page->id, Coanda::currentUser()->id, 'deleted');
 		}
 		else
 		{
@@ -410,6 +412,8 @@ class EloquentPageRepository implements PageRepositoryInterface {
 				$page->save();
 
 				$this->deleteSubTree($page, false);
+
+				$this->historyRepository->add('pages', $page->id, Coanda::currentUser()->id, 'trashed');
 			}
 		}
 	}
@@ -502,6 +506,8 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		{
 			$this->restoreSubTree($page->path);
 		}
+
+		$this->historyRepository->add('pages', $page->id, Coanda::currentUser()->id, 'restored');
 	}
 
 	public function restoreSubTree($path)
@@ -514,6 +520,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		foreach ($new_orders as $page_id => $new_order)
 		{
 			$this->model->whereId($page_id)->update(['order' => $new_order]);
+			$this->historyRepository->add('pages', $page_id, Coanda::currentUser()->id, 'order_changed', ['new_order' => $new_order]);
 		}
 	}
 }

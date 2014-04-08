@@ -257,6 +257,18 @@
 									@if ($history->action == 'publish_version')
 										- published version #{{ $history->action_data->version }}
 									@endif
+
+									@if ($history->action == 'order_changed')
+										- order changed to {{ $history->action_data->new_order }}
+									@endif
+
+									@if ($history->action == 'restored')
+										- restored
+									@endif
+
+									@if ($history->action == 'trashed')
+										- moved to the trash
+									@endif
 								</td>
 								<td>{{ $history->present()->created_at }}</td>
 							</tr>
