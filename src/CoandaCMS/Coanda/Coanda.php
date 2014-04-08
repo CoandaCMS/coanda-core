@@ -76,6 +76,9 @@ class Coanda {
 	{
 		$enabled_modules = Config::get('coanda::coanda.enabled_modules');
 
+		// Add the users module in...
+		$enabled_modules[] = 'CoandaCMS\Coanda\Users\UsersModuleProvider';
+
 		// Add the pages module in...
 		$enabled_modules[] = 'CoandaCMS\Coanda\Pages\PagesModuleProvider';
 
@@ -120,9 +123,6 @@ class Coanda {
 			// All module admin routes should be wrapper in the auth filter
 			Route::group(array('before' => 'admin_auth'), function()
 			{
-				// Load the users controller
-				Route::controller('users', 'CoandaCMS\Coanda\Controllers\Admin\UsersAdminController');
-
 				foreach ($this->modules as $module)
 				{
 					$module->adminRoutes();
@@ -153,7 +153,6 @@ class Coanda {
 	 */
 	public function bindings($app)
 	{
-		$app->bind('CoandaCMS\Coanda\Users\Repositories\UserRepositoryInterface', 'CoandaCMS\Coanda\Users\Repositories\Eloquent\EloquentUserRepository');
 		$app->bind('CoandaCMS\Coanda\Urls\Repositories\UrlRepositoryInterface', 'CoandaCMS\Coanda\Urls\Repositories\Eloquent\EloquentUrlRepository');
 		$app->bind('CoandaCMS\Coanda\History\Repositories\HistoryRepositoryInterface', 'CoandaCMS\Coanda\History\Repositories\Eloquent\EloquentHistoryRepository');
 
