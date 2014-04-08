@@ -70,22 +70,23 @@ class Coanda {
 	 */
 	public function loadModules()
 	{
+		$core_modules = [
+			'CoandaCMS\Coanda\Users\UsersModuleProvider',
+			'CoandaCMS\Coanda\Pages\PagesModuleProvider'
+		];
+
 		$enabled_modules = Config::get('coanda::coanda.enabled_modules');
 
-		// Add the users module in...
-		$enabled_modules[] = 'CoandaCMS\Coanda\Users\UsersModuleProvider';
+		$modules = array_merge($core_modules, $enabled_modules);
 
-		// Add the pages module in...
-		$enabled_modules[] = 'CoandaCMS\Coanda\Pages\PagesModuleProvider';
-
-		foreach ($enabled_modules as $enabled_module)
+		foreach ($modules as $module)
 		{
-			if (class_exists($enabled_module))
+			if (class_exists($module))
 			{
-				$module = new $enabled_module($this);
-				$module->boot($this);
+				$enabled_module = new $module($this);
+				$enabled_module->boot($this);
 
-				$this->modules[$module->name] = $module;
+				$this->modules[$enabled_module->name] = $enabled_module;
 			}
 		}
 	}
