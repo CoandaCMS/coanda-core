@@ -2,11 +2,23 @@
 
 use CoandaCMS\Coanda\Exceptions\AttributeValidationException;
 
+/**
+ * Class HTML
+ * @package CoandaCMS\Coanda\Pages\PageAttributeTypes
+ */
 class HTML implements PageAttributeTypeInterface {
 
-	public $identifier = 'html';
+    /**
+     * @var string
+     */
+    public $identifier = 'html';
 
-	public function store($attribute, $data)
+    /**
+     * @param Attribute $attribute
+     * @param Array $data
+     * @throws \CoandaCMS\Coanda\Exceptions\AttributeValidationException
+     */
+    public function store($attribute, $data)
 	{
 		if ($data == '<p><br></p>')
 		{
@@ -25,7 +37,11 @@ class HTML implements PageAttributeTypeInterface {
 		$attribute->save();
 	}
 
-	public function data($attribute)
+    /**
+     * @param Attribute $attribute
+     * @return mixed
+     */
+    public function data($attribute)
 	{
 		return $attribute->attribute_data;
 	}

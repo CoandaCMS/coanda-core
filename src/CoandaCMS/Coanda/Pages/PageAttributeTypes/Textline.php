@@ -2,11 +2,23 @@
 
 use CoandaCMS\Coanda\Exceptions\AttributeValidationException;
 
+/**
+ * Class Textline
+ * @package CoandaCMS\Coanda\Pages\PageAttributeTypes
+ */
 class Textline implements PageAttributeTypeInterface {
 
-	public $identifier = 'textline';
+    /**
+     * @var string
+     */
+    public $identifier = 'textline';
 
-	public function store($attribute, $data)
+    /**
+     * @param Attribute $attribute
+     * @param Array $data
+     * @throws \CoandaCMS\Coanda\Exceptions\AttributeValidationException
+     */
+    public function store($attribute, $data)
 	{
 		// Is this required?
 		if ($attribute->is_required && (!$data || $data == ''))
@@ -18,7 +30,11 @@ class Textline implements PageAttributeTypeInterface {
 		$attribute->save();
 	}
 
-	public function data($attribute)
+    /**
+     * @param Attribute $attribute
+     * @return mixed
+     */
+    public function data($attribute)
 	{
 		return $attribute->attribute_data;
 	}

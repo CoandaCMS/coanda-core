@@ -1,47 +1,144 @@
 <?php namespace CoandaCMS\Coanda\Pages\Repositories;
 
+/**
+ * Interface PageRepositoryInterface
+ * @package CoandaCMS\Coanda\Pages\Repositories
+ */
 interface PageRepositoryInterface {
 
-	public function find($id);
+    /**
+     * @param $id
+     * @return mixed
+     */
+    public function find($id);
 
-	public function findById($id);
+    /**
+     * @param $id
+     * @return mixed
+     */
+    public function findById($id);
 
-	public function findByIds($ids);
+    /**
+     * @param $ids
+     * @return mixed
+     */
+    public function findByIds($ids);
 
-	public function topLevel($per_page);
+    /**
+     * @param $per_page
+     * @return mixed
+     */
+    public function topLevel($per_page);
 
-	public function subPages($page_id, $per_page);
+    /**
+     * @param $page_id
+     * @param $per_page
+     * @return mixed
+     */
+    public function subPages($page_id, $per_page);
 
-	public function create($type, $user_id, $parent_page_id);
+    /**
+     * @param $type
+     * @param $user_id
+     * @param $parent_page_id
+     * @return mixed
+     */
+    public function create($type, $user_id, $parent_page_id);
 
-	public function getDraftVersion($page_id, $version);
+    /**
+     * @param $page_id
+     * @param $version
+     * @return mixed
+     */
+    public function getDraftVersion($page_id, $version);
 
-	public function getVersionByPreviewKey($preview_key);
+    /**
+     * @param $preview_key
+     * @return mixed
+     */
+    public function getVersionByPreviewKey($preview_key);
 
-	public function saveDraftVersion($version, $data);
+    /**
+     * @param $version
+     * @param $data
+     * @return mixed
+     */
+    public function saveDraftVersion($version, $data);
 
-	public function discardDraftVersion($version);
+    /**
+     * @param $version
+     * @return mixed
+     */
+    public function discardDraftVersion($version);
 
-	public function draftsForUser($page_id, $user_id);
+    /**
+     * @param $page_id
+     * @param $user_id
+     * @return mixed
+     */
+    public function draftsForUser($page_id, $user_id);
 
-	public function publishVersion($version);
+    /**
+     * @param $version
+     * @return mixed
+     */
+    public function publishVersion($version);
 
-	public function createNewVersion($page_id, $user_id);
+    /**
+     * @param $page_id
+     * @param $user_id
+     * @return mixed
+     */
+    public function createNewVersion($page_id, $user_id);
 
-	public function history($page_id);
+    /**
+     * @param $page_id
+     * @return mixed
+     */
+    public function history($page_id);
 
-	public function contributors($page_id);
+    /**
+     * @param $page_id
+     * @return mixed
+     */
+    public function contributors($page_id);
 
-	public function deletePage($page_id, $permanent = false);
+    /**
+     * @param $page_id
+     * @param bool $permanent
+     * @return mixed
+     */
+    public function deletePage($page_id, $permanent = false);
 
-	public function deletePages($pages_ids, $permanent = false);
+    /**
+     * @param $pages_ids
+     * @param bool $permanent
+     * @return mixed
+     */
+    public function deletePages($pages_ids, $permanent = false);
 
-	public function trashed();
+    /**
+     * @return mixed
+     */
+    public function trashed();
 
-	public function trashedParentsForPage($page_id);
+    /**
+     * @param $page_id
+     * @return mixed
+     */
+    public function trashedParentsForPage($page_id);
 
-	public function restore($page_id, $restore_sub_pages);
+    /**
+     * @param $page_id
+     * @param $restore_sub_pages
+     * @return mixed
+     */
+    public function restore($page_id, $restore_sub_pages);
 
-	public function updateOrdering($new_orders);
+    /**
+     * @param $new_orders
+     * @return mixed
+     */
+    public function updateOrdering($new_orders);
 
 }

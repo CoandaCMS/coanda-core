@@ -2,6 +2,10 @@
 
 use CoandaCMS\Coanda\Core\Presenters\Exceptions\PresenterException;
 
+/**
+ * Class PresentableTrait
+ * @package CoandaCMS\Coanda\Core\Presenters
+ */
 trait PresentableTrait {
 
 	/**

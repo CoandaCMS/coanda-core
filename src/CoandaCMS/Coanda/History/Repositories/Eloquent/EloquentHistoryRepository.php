@@ -6,11 +6,21 @@ use CoandaCMS\Coanda\History\Repositories\HistoryRepositoryInterface;
 
 use CoandaCMS\Coanda\History\Repositories\Eloquent\Models\History as HistoryModel;
 
+/**
+ * Class EloquentHistoryRepository
+ * @package CoandaCMS\Coanda\History\Repositories\Eloquent
+ */
 class EloquentHistoryRepository implements HistoryRepositoryInterface {
 
-	private $model;
+    /**
+     * @var Models\History
+     */
+    private $model;
 
-	public function __construct(HistoryModel $model)
+    /**
+     * @param HistoryModel $model
+     */
+    public function __construct(HistoryModel $model)
 	{
 		$this->model = $model;
 	}
@@ -47,7 +57,12 @@ class EloquentHistoryRepository implements HistoryRepositoryInterface {
 		return $this->model->whereFor($for)->whereForId($for_id)->orderBy('created_at', 'desc')->take($limit)->get();
 	}
 
-	public function users($for, $for_id)
+    /**
+     * @param $for
+     * @param $for_id
+     * @return mixed
+     */
+    public function users($for, $for_id)
 	{
 		$userRepository = \App::make('CoandaCMS\Coanda\Users\Repositories\UserRepositoryInterface');
 

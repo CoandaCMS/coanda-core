@@ -2,11 +2,21 @@
 
 use Route, App, Config;
 
+/**
+ * Class UsersModuleProvider
+ * @package CoandaCMS\Coanda\Users
+ */
 class UsersModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 
-	public $name = 'users';
+    /**
+     * @var string
+     */
+    public $name = 'users';
 
-	public function boot($coanda)
+    /**
+     * @param \CoandaCMS\Coanda\Coanda $coanda
+     */
+    public function boot(\CoandaCMS\Coanda\Coanda $coanda)
 	{
 		// Add the permissions
 		$views = [
@@ -18,17 +28,26 @@ class UsersModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		$coanda->addModulePermissions('users', 'Users', $views);
 	}
 
-	public function adminRoutes()
+    /**
+     *
+     */
+    public function adminRoutes()
 	{
 		// Load the users controller
 		Route::controller('users', 'CoandaCMS\Coanda\Controllers\Admin\UsersAdminController');
 	}
 
-	public function userRoutes()
+    /**
+     *
+     */
+    public function userRoutes()
 	{
 	}
 
-	public function bindings($app)
+    /**
+     * @param \Illuminate\Foundation\Application $app
+     */
+    public function bindings(\Illuminate\Foundation\Application $app)
 	{
 		$app->bind('CoandaCMS\Coanda\Users\Repositories\UserRepositoryInterface', 'CoandaCMS\Coanda\Users\Repositories\Eloquent\EloquentUserRepository');
 	}

@@ -2,11 +2,18 @@
 
 use Eloquent, Coanda;
 
+/**
+ * Class PageVersion
+ * @package CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models
+ */
 class PageVersion extends Eloquent {
 
 	use \CoandaCMS\Coanda\Core\Presenters\PresentableTrait;
 
-	protected $presenter = 'CoandaCMS\Coanda\Pages\Presenters\PageVersion';
+    /**
+     * @var string
+     */
+    protected $presenter = 'CoandaCMS\Coanda\Pages\Presenters\PageVersion';
 
 	/**
 	 * The database table used by the model.
@@ -15,7 +22,10 @@ class PageVersion extends Eloquent {
 	 */
 	protected $table = 'pageversions';
 
-	public function save(array $options = [])
+    /**
+     * @param array $options
+     */
+    public function save(array $options = [])
 	{
 		if (!$this->preview_key)
 		{
@@ -25,7 +35,10 @@ class PageVersion extends Eloquent {
 		parent::save($options);
 	}
 
-	public function delete()
+    /**
+     *
+     */
+    public function delete()
 	{
 		foreach ($this->attributes()->get() as $attribute)
 		{
@@ -77,7 +90,10 @@ class PageVersion extends Eloquent {
 		return '';
 	}
 
-	public function checkAttributes()
+    /**
+     *
+     */
+    public function checkAttributes()
 	{
 		$pageType = $this->page->pageType();
 		$attribute_definition_list = $pageType->attributes();

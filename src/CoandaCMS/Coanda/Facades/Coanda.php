@@ -2,6 +2,10 @@
 
 use Illuminate\Support\Facades\Facade;
 
+/**
+ * Class Coanda
+ * @package CoandaCMS\Coanda\Facades
+ */
 class Coanda extends Facade {
 
 	/**

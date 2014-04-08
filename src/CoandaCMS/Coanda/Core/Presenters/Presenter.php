@@ -1,8 +1,15 @@
 <?php namespace CoandaCMS\Coanda\Core\Presenters;
 
+/**
+ * Class Presenter
+ * @package CoandaCMS\Coanda\Core\Presenters
+ */
 abstract class Presenter {
 
-	protected $date_format = 'd/m/Y H:i';
+    /**
+     * @var string
+     */
+    protected $date_format = 'd/m/Y H:i';
 
 	/**
 	 * @var mixed
@@ -33,17 +40,27 @@ abstract class Presenter {
 		return $this->model->{$property};
 	}
 
-	public function updated_at()
+    /**
+     * @return string
+     */
+    public function updated_at()
 	{
 		return $this->format_date('updated_at');
 	}
 
-	public function created_at()
+    /**
+     * @return string
+     */
+    public function created_at()
 	{
 		return $this->format_date('created_at');
 	}
 
-	public function format_date($property)
+    /**
+     * @param $property
+     * @return string
+     */
+    public function format_date($property)
 	{
 		if ($this->model->$property && method_exists($this->model->$property, 'format'))
 		{

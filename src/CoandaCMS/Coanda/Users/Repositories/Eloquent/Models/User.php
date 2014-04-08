@@ -5,11 +5,18 @@ use Eloquent;
 use Illuminate\Auth\UserInterface;
 use Illuminate\Auth\Reminders\RemindableInterface;
 
+/**
+ * Class User
+ * @package CoandaCMS\Coanda\Users\Repositories\Eloquent\Models
+ */
 class User extends Eloquent implements UserInterface, RemindableInterface {
 
 	use \CoandaCMS\Coanda\Core\Presenters\PresentableTrait;
 
-	protected $presenter = 'CoandaCMS\Coanda\Users\Presenters\User';
+    /**
+     * @var string
+     */
+    protected $presenter = 'CoandaCMS\Coanda\Users\Presenters\User';
 
 	/**
 	 * The database table used by the model.
@@ -55,17 +62,26 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 		return $this->email;
 	}
 
-	public function groups()
+    /**
+     * @return mixed
+     */
+    public function groups()
 	{
 		return $this->belongsToMany('CoandaCMS\Coanda\Users\Repositories\Eloquent\Models\UserGroup');
 	}
 
-	public function getUnassignedGroupsAttribute()
+    /**
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function getUnassignedGroupsAttribute()
 	{
 		return $this->unassigned_groups();
 	}
 
-	public function unassigned_groups()
+    /**
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function unassigned_groups()
 	{
 		$unassigned_groups = new \Illuminate\Database\Eloquent\Collection;
 		$groups = UserGroup::get();
@@ -83,12 +99,18 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 		return $unassigned_groups;
 	}
 
-	public function avatar()
+    /**
+     * @return string
+     */
+    public function avatar()
 	{
 		return 'http://www.gravatar.com/avatar/' . md5($this->email) . '?d=mm';
 	}
 
-	public function getAvatarAttribute()
+    /**
+     * @return string
+     */
+    public function getAvatarAttribute()
 	{
 		return $this->avatar();
 	}

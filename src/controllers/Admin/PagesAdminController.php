@@ -10,18 +10,32 @@ use CoandaCMS\Coanda\Exceptions\PermissionDenied;
 
 use CoandaCMS\Coanda\Controllers\BaseController;
 
+/**
+ * Class PagesAdminController
+ * @package CoandaCMS\Coanda\Controllers\Admin
+ */
 class PagesAdminController extends BaseController {
 
-	private $pageRepository;
+    /**
+     * @var \CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface
+     */
+    private $pageRepository;
 
-	public function __construct(\CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface $pageRepository)
+    /**
+     * @param CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface $pageRepository
+     */
+    public function __construct(\CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface $pageRepository)
 	{
 		$this->pageRepository = $pageRepository;
 
 		$this->beforeFilter('csrf', array('on' => 'post'));
 	}
 
-	public function getIndex()
+    /**
+     * @return mixed
+     * @throws \CoandaCMS\Coanda\Exceptions\PermissionDenied
+     */
+    public function getIndex()
 	{
 		if (!Coanda::canAccess('pages'))
 		{
@@ -35,7 +49,10 @@ class PagesAdminController extends BaseController {
 		return View::make('coanda::admin.pages.index', [ 'pages' => $pages ]);
 	}
 
-	public function postIndex()
+    /**
+     * @return mixed
+     */
+    public function postIndex()
 	{
 		// Did we hit the delete button?
 		if (Input::has('delete_selected') && Input::get('delete_selected') == 'true')
@@ -56,7 +73,12 @@ class PagesAdminController extends BaseController {
 		}
 	}
 
-	public function getView($id)
+    /**
+     * @param $id
+     * @return mixed
+     * @throws \CoandaCMS\Coanda\Exceptions\PermissionDenied
+     */
+    public function getView($id)
 	{
 		if (!Coanda::canAccess('pages'))
 		{
@@ -85,7 +107,11 @@ class PagesAdminController extends BaseController {
 		}
 	}
 
-	public function postView($id)
+    /**
+     * @param $id
+     * @return mixed
+     */
+    public function postView($id)
 	{
 		if ($id == 0)
 		{
@@ -111,7 +137,10 @@ class PagesAdminController extends BaseController {
 		}
 	}
 
-	public function getConfirmDelete()
+    /**
+     * @return mixed
+     */
+    public function getConfirmDelete()
 	{
 		$previous_page_id = Session::get('previous_page_id', 0);
 
@@ -131,7 +160,10 @@ class PagesAdminController extends BaseController {
 
 	}
 
-	public function postConfirmDelete()
+    /**
+     * @return mixed
+     */
+    public function postConfirmDelete()
 	{
 		$previous_page_id = Input::get('previous_page_id');
 
@@ -150,7 +182,12 @@ class PagesAdminController extends BaseController {
 		return Redirect::to(Coanda::adminUrl('pages/view/' . $previous_page_id));
 	}
 
-	public function getCreate($page_type, $parent_page_id = false)
+    /**
+     * @param $page_type
+     * @param bool $parent_page_id
+     * @return mixed
+     */
+    public function getCreate($page_type, $parent_page_id = false)
 	{
 		try
 		{
@@ -167,7 +204,11 @@ class PagesAdminController extends BaseController {
 
 	}
 
-	public function getEdit($page_id)
+    /**
+     * @param $page_id
+     * @return mixed
+     */
+    public function getEdit($page_id)
 	{
 		try
 		{
@@ -190,7 +231,12 @@ class PagesAdminController extends BaseController {
 		}
 	}
 
-	public function getEditversion($page_id, $version_number)
+    /**
+     * @param $page_id
+     * @param $version_number
+     * @return mixed
+     */
+    public function getEditversion($page_id, $version_number)
 	{
 		try
 		{
@@ -209,7 +255,12 @@ class PagesAdminController extends BaseController {
 		}
 	}
 
-	public function postEditversion($page_id, $version_number)
+    /**
+     * @param $page_id
+     * @param $version_number
+     * @return mixed
+     */
+    public function postEditversion($page_id, $version_number)
 	{
 		try
 		{
@@ -263,7 +314,12 @@ class PagesAdminController extends BaseController {
 		}
 	}
 
-	public function getRemoveversion($page_id, $version_number)
+    /**
+     * @param $page_id
+     * @param $version_number
+     * @return mixed
+     */
+    public function getRemoveversion($page_id, $version_number)
 	{
 		try
 		{
@@ -283,7 +339,11 @@ class PagesAdminController extends BaseController {
 		}
 	}
 
-	public function getExistingDrafts($page_id)
+    /**
+     * @param $page_id
+     * @return mixed
+     */
+    public function getExistingDrafts($page_id)
 	{
 		try
 		{
@@ -298,7 +358,11 @@ class PagesAdminController extends BaseController {
 		}
 	}
 
-	public function postExistingDrafts($page_id)
+    /**
+     * @param $page_id
+     * @return mixed
+     */
+    public function postExistingDrafts($page_id)
 	{
 		try
 		{
@@ -317,7 +381,11 @@ class PagesAdminController extends BaseController {
 		}
 	}
 
-	public function getDelete($page_id)
+    /**
+     * @param $page_id
+     * @return mixed
+     */
+    public function getDelete($page_id)
 	{
 		try
 		{
@@ -331,7 +399,11 @@ class PagesAdminController extends BaseController {
 		}
 	}
 
-	public function postDelete($page_id)
+    /**
+     * @param $page_id
+     * @return mixed
+     */
+    public function postDelete($page_id)
 	{
 		try
 		{
@@ -348,14 +420,20 @@ class PagesAdminController extends BaseController {
 		}
 	}
 
-	public function getTrash()
+    /**
+     * @return mixed
+     */
+    public function getTrash()
 	{
 		$pages = $this->pageRepository->trashed();
 
 		return View::make('coanda::admin.pages.trash', ['pages' => $pages ]);
 	}
 
-	public function postTrash()
+    /**
+     * @return mixed
+     */
+    public function postTrash()
 	{
 		if (!Input::has('permanent_remove_list') || count(Input::get('permanent_remove_list')) == 0)
 		{
@@ -365,7 +443,10 @@ class PagesAdminController extends BaseController {
 		return Redirect::to(Coanda::adminUrl('pages/confirm-delete-from-trash'))->with('confirm_permanent_remove_list', Input::get('permanent_remove_list'));
 	}
 
-	public function getConfirmDeleteFromTrash()
+    /**
+     * @return mixed
+     */
+    public function getConfirmDeleteFromTrash()
 	{
 		if (!Session::has('confirm_permanent_remove_list') || count(Session::get('confirm_permanent_remove_list')) == 0)
 		{
@@ -377,7 +458,10 @@ class PagesAdminController extends BaseController {
 		return View::make('coanda::admin.pages.confirmdeletefromtrash', ['pages' => $pages ]);
 	}
 
-	public function postConfirmDeleteFromTrash()
+    /**
+     * @return mixed
+     */
+    public function postConfirmDeleteFromTrash()
 	{
 		if (!Input::has('confirmed_remove_list') || count(Input::get('confirmed_remove_list')) == 0)
 		{
@@ -389,7 +473,11 @@ class PagesAdminController extends BaseController {
 		return Redirect::to(Coanda::adminUrl('pages/trash'));
 	}
 
-	public function getRestore($page_id)
+    /**
+     * @param $page_id
+     * @return mixed
+     */
+    public function getRestore($page_id)
 	{
 		try
 		{
@@ -412,7 +500,11 @@ class PagesAdminController extends BaseController {
 		}
 	}
 
-	public function postRestore($page_id)
+    /**
+     * @param $page_id
+     * @return mixed
+     */
+    public function postRestore($page_id)
 	{
 		try
 		{

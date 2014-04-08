@@ -2,9 +2,16 @@
 
 use Lang;
 
+/**
+ * Class User
+ * @package CoandaCMS\Coanda\Users\Presenters
+ */
 class User extends \CoandaCMS\Coanda\Core\Presenters\Presenter {
 
-	public function name()
+    /**
+     * @return string
+     */
+    public function name()
 	{
 		return $this->model->first_name . ' ' . $this->model->last_name;
 	}

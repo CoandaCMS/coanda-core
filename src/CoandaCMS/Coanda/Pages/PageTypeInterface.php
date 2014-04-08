@@ -1,14 +1,28 @@
 <?php namespace CoandaCMS\Coanda\Pages;
 
+/**
+ * Interface PageTypeInterface
+ * @package CoandaCMS\Coanda\Pages
+ */
 interface PageTypeInterface {
 	
 	// public $name;
 	// public $identifier;
 
-	public function attributes();
+    /**
+     * @return mixed
+     */
+    public function attributes();
 
-	public function generateName($version);
+    /**
+     * @param $version
+     * @return mixed
+     */
+    public function generateName($version);
 
-	public function showMeta();
+    /**
+     * @return mixed
+     */
+    public function showMeta();
 
 }

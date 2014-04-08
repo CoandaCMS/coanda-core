@@ -2,11 +2,18 @@
 
 use Eloquent, Coanda, App;
 
+/**
+ * Class History
+ * @package CoandaCMS\Coanda\History\Repositories\Eloquent\Models
+ */
 class History extends Eloquent {
 
 	use \CoandaCMS\Coanda\Core\Presenters\PresentableTrait;
 
-	protected $presenter = 'CoandaCMS\Coanda\History\Presenters\History';
+    /**
+     * @var string
+     */
+    protected $presenter = 'CoandaCMS\Coanda\History\Presenters\History';
 
 	/**
 	 * The database table used by the model.
@@ -15,26 +22,38 @@ class History extends Eloquent {
 	 */
 	protected $table = 'history';
 
-	public function user()
+    /**
+     * @return mixed
+     */
+    public function user()
 	{
 		$userRepository = \App::make('CoandaCMS\Coanda\Users\Repositories\UserRepositoryInterface');
 
 		return $userRepository->find($this->user_id);
 	}
 
-	public function getUserAttribute()
+    /**
+     * @return mixed
+     */
+    public function getUserAttribute()
 	{
 		return $this->user();
 	}
 
-	public function actionData()
+    /**
+     * @return mixed
+     */
+    public function actionData()
 	{
 		$array = json_decode($this->data);
 		
 		return !$array ? $this->data : $array;
 	}
 
-	public function getActionDataAttribute()
+    /**
+     * @return mixed
+     */
+    public function getActionDataAttribute()
 	{
 		return $this->actionData();
 	}

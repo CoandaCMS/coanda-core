@@ -11,21 +11,38 @@ use CoandaCMS\Coanda\Users\Repositories\Eloquent\Models\UserGroup as UserGroupMo
 
 use CoandaCMS\Coanda\Users\Repositories\UserRepositoryInterface;
 
+/**
+ * Class EloquentUserRepository
+ * @package CoandaCMS\Coanda\Users\Repositories\Eloquent
+ */
 class EloquentUserRepository implements UserRepositoryInterface {
 
-	private $model;
+    /**
+     * @var Models\User
+     */
+    private $model;
 
-	public function __construct(UserModel $model)
+    /**
+     * @param UserModel $model
+     */
+    public function __construct(UserModel $model)
 	{
 		$this->model = $model;
 	}
 
-	public function isLoggedIn()
+    /**
+     * @return mixed
+     */
+    public function isLoggedIn()
 	{
 		return Auth::check();
 	}
-	
-	public function currentUser()
+
+    /**
+     * @return mixed
+     * @throws NotLoggedIn
+     */
+    public function currentUser()
 	{
 		if (Auth::check())
 		{
@@ -35,7 +52,13 @@ class EloquentUserRepository implements UserRepositoryInterface {
 		throw new NotLoggedIn('Call to currentUser when user is not logged in.');
 	}
 
-	public function login($username, $password)
+    /**
+     * @param string $username
+     * @param string $password
+     * @throws MissingInput
+     * @throws AuthenticationFailed
+     */
+    public function login($username, $password)
 	{		
 		$missing_fields = [];
 
@@ -60,12 +83,20 @@ class EloquentUserRepository implements UserRepositoryInterface {
 		}
 	}
 
-	public function logout()
+    /**
+     * @return mixed
+     */
+    public function logout()
 	{
 		return Auth::logout();
 	}
 
-	public function hasAccessTo($permission, $permission_id = false)
+    /**
+     * @param $permission
+     * @param bool $permission_id
+     * @return bool
+     */
+    public function hasAccessTo($permission, $permission_id = false)
 	{
 		// Get all the groups for the user
 		$user = Coanda::currentUser();
@@ -137,7 +168,12 @@ class EloquentUserRepository implements UserRepositoryInterface {
 		return $user;
 	}
 
-	public function groupById($group_id)
+    /**
+     * @param $group_id
+     * @return mixed
+     * @throws \CoandaCMS\Coanda\Users\Exceptions\GroupNotFound
+     */
+    public function groupById($group_id)
 	{
 		$group = UserGroupModel::find($group_id);
 
@@ -149,12 +185,19 @@ class EloquentUserRepository implements UserRepositoryInterface {
 		throw new GroupNotFound;
 	}
 
-	public function groups()
+    /**
+     * @return mixed
+     */
+    public function groups()
 	{
 		return UserGroupModel::get();
 	}
 
-	public function createGroup($data)
+    /**
+     * @param $data
+     * @throws \CoandaCMS\Coanda\Exceptions\ValidationException
+     */
+    public function createGroup($data)
 	{
 		$invalid_fields = [];
 
@@ -186,7 +229,13 @@ class EloquentUserRepository implements UserRepositoryInterface {
 		$user_group->save();
 	}
 
-	public function updateGroup($group_id, $data)
+    /**
+     * @param $group_id
+     * @param $data
+     * @throws \CoandaCMS\Coanda\Exceptions\ValidationException
+     * @throws \CoandaCMS\Coanda\Users\Exceptions\GroupNotFound
+     */
+    public function updateGroup($group_id, $data)
 	{
 		$group = UserGroupModel::find($group_id);
 
@@ -224,7 +273,14 @@ class EloquentUserRepository implements UserRepositoryInterface {
 		$group->save();
 	}
 
-	public function createNew($data, $group_id)
+    /**
+     * @param $data
+     * @param $group_id
+     * @return mixed
+     * @throws \CoandaCMS\Coanda\Exceptions\ValidationException
+     * @throws \CoandaCMS\Coanda\Users\Exceptions\GroupNotFound
+     */
+    public function createNew($data, $group_id)
 	{
 		$group = UserGroupModel::find($group_id);
 
@@ -267,7 +323,14 @@ class EloquentUserRepository implements UserRepositoryInterface {
 		return $user;
 	}
 
-	public function updateExisting($user_id, $data)
+    /**
+     * @param $user_id
+     * @param $data
+     * @return mixed
+     * @throws \CoandaCMS\Coanda\Exceptions\ValidationException
+     * @throws \CoandaCMS\Coanda\Users\Exceptions\UserNotFound
+     */
+    public function updateExisting($user_id, $data)
 	{		
 		$user = $this->model->find($user_id);
 
@@ -311,7 +374,13 @@ class EloquentUserRepository implements UserRepositoryInterface {
 		return $user;
 	}
 
-	public function addUserToGroup($user_id, $group_id)
+    /**
+     * @param $user_id
+     * @param $group_id
+     * @throws \CoandaCMS\Coanda\Users\Exceptions\GroupNotFound
+     * @throws \CoandaCMS\Coanda\Users\Exceptions\UserNotFound
+     */
+    public function addUserToGroup($user_id, $group_id)
 	{
 		$user = $this->model->find($user_id);
 
@@ -335,7 +404,13 @@ class EloquentUserRepository implements UserRepositoryInterface {
 		}
 	}
 
-	public function removeUserFromGroup($user_id, $group_id)
+    /**
+     * @param $user_id
+     * @param $group_id
+     * @throws \CoandaCMS\Coanda\Users\Exceptions\GroupNotFound
+     * @throws \CoandaCMS\Coanda\Users\Exceptions\UserNotFound
+     */
+    public function removeUserFromGroup($user_id, $group_id)
 	{
 		$user = $this->model->find($user_id);
 
@@ -354,7 +429,11 @@ class EloquentUserRepository implements UserRepositoryInterface {
 		$group->users()->detach($user->id);
 	}
 
-	public function getByIds($ids)
+    /**
+     * @param $ids
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function getByIds($ids)
 	{
 		$users = new \Illuminate\Database\Eloquent\Collection;
 

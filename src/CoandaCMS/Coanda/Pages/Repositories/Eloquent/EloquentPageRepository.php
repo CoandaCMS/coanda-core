@@ -6,34 +6,50 @@ use CoandaCMS\Coanda\Exceptions\PageNotFound;
 use CoandaCMS\Coanda\Exceptions\PageVersionNotFound;
 use CoandaCMS\Coanda\Exceptions\AttributeValidationException;
 use CoandaCMS\Coanda\Exceptions\ValidationException;
-use CoandaCMS\Coanda\Exceptions\PermissionDenied;
 
 use CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\Page as PageModel;
 use CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageVersion as PageVersionModel;
 use CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageAttribute as PageAttributeModel;
 
 use CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface;
-use CoandaCMS\Coanda\Urls\Repositories\UrlRepositoryInterface;
 
+/**
+ * Class EloquentPageRepository
+ * @package CoandaCMS\Coanda\Pages\Repositories\Eloquent
+ */
 class EloquentPageRepository implements PageRepositoryInterface {
 
-	private $model;
-	private $urlRepository;
-	private $historyRepository;
+    /**
+     * @var Models\Page
+     */
+    private $model;
+    /**
+     * @var \CoandaCMS\Coanda\Urls\Repositories\UrlRepositoryInterface
+     */
+    private $urlRepository;
+    /**
+     * @var \CoandaCMS\Coanda\History\Repositories\HistoryRepositoryInterface
+     */
+    private $historyRepository;
 
-	public function __construct(PageModel $model, \CoandaCMS\Coanda\Urls\Repositories\UrlRepositoryInterface $urlRepository, \CoandaCMS\Coanda\History\Repositories\HistoryRepositoryInterface $historyRepository)
+    /**
+     * @param PageModel $model
+     * @param CoandaCMS\Coanda\Urls\Repositories\UrlRepositoryInterface $urlRepository
+     * @param CoandaCMS\Coanda\History\Repositories\HistoryRepositoryInterface $historyRepository
+     */
+    public function __construct(PageModel $model, \CoandaCMS\Coanda\Urls\Repositories\UrlRepositoryInterface $urlRepository, \CoandaCMS\Coanda\History\Repositories\HistoryRepositoryInterface $historyRepository)
 	{
 		$this->model = $model;
 		$this->urlRepository = $urlRepository;
 		$this->historyRepository = $historyRepository;
 	}
 
-	/**
-	 * Tries to find the Eloquent page model by the id
-	 * @param  integer $id
-	 * @return Array
-	 */
-	public function find($id)
+    /**
+     * @param $id
+     * @return mixed
+     * @throws \CoandaCMS\Coanda\Exceptions\PageNotFound
+     */
+    public function find($id)
 	{
 		$page = $this->model->find($id);
 
@@ -45,7 +61,12 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		return $page;
 	}
 
-	public function findById($id)
+    /**
+     * @param $id
+     * @return mixed
+     * @throws \CoandaCMS\Coanda\Exceptions\PageNotFound
+     */
+    public function findById($id)
 	{
 		$page = $this->model->find($id);
 
@@ -57,7 +78,11 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		return $page;
 	}
 
-	public function findByIds($ids)
+    /**
+     * @param $ids
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function findByIds($ids)
 	{
 		$pages = new \Illuminate\Database\Eloquent\Collection;
 
@@ -79,27 +104,32 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		return $pages;
 	}
 
-	/**
-	 * Get all the top level pages
-	 * @return [type] [description]
-	 */
-	public function topLevel($per_page = 10)
+    /**
+     * @param int $per_page
+     * @return mixed
+     */
+    public function topLevel($per_page = 10)
 	{
 		return $this->model->where('parent_page_id', 0)->whereIsTrashed(false)->orderBy('order', 'asc')->paginate($per_page);
 	}
 
-	public function subPages($page_id, $per_page)
+    /**
+     * @param $page_id
+     * @param $per_page
+     * @return mixed
+     */
+    public function subPages($page_id, $per_page)
 	{
 		return $this->model->where('parent_page_id', $page_id)->whereIsTrashed(false)->orderBy('order', 'asc')->paginate($per_page);
 	}
 
-	/**
-	 * Create a new page of the specified type for the user id
-	 * @param  string $type
-	 * @param  integer $user_id
-	 * @return Page
-	 */
-	public function create($type, $user_id, $parent_page_id = false)
+    /**
+     * @param $type
+     * @param $user_id
+     * @param bool $parent_page_id
+     * @return PageModel
+     */
+    public function create($type, $user_id, $parent_page_id = false)
 	{
 		// create a page model
 		$page = new PageModel;
@@ -154,13 +184,14 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		return $page;
 	}
 
-	/**
-	 * Gets the draft version
-	 * @param  integer $page_id
-	 * @param  integer $version
-	 * @return Page
-	 */
-	public function getDraftVersion($page_id, $version)
+    /**
+     * @param $page_id
+     * @param $version
+     * @return mixed
+     * @throws \CoandaCMS\Coanda\Exceptions\PageNotFound
+     * @throws \CoandaCMS\Coanda\Exceptions\PageVersionNotFound
+     */
+    public function getDraftVersion($page_id, $version)
 	{
 		$page = PageModel::find($page_id);
 
@@ -182,7 +213,12 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		throw new PageNotFound;
 	}
 
-	public function getVersionByPreviewKey($preview_key)
+    /**
+     * @param $preview_key
+     * @return mixed
+     * @throws \CoandaCMS\Coanda\Exceptions\PageVersionNotFound
+     */
+    public function getVersionByPreviewKey($preview_key)
 	{
 		$version = PageVersionModel::wherePreviewKey($preview_key)->whereStatus('draft')->first();
 
@@ -194,13 +230,12 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		return $version;
 	}
 
-	/**
-	 * Stores the data for the version
-	 * @param  Version $version The version object
-	 * @param  Array $data    All the data to be stored
-	 * @return void
-	 */
-	public function saveDraftVersion($version, $data)
+    /**
+     * @param $version
+     * @param $data
+     * @throws \CoandaCMS\Coanda\Exceptions\ValidationException
+     */
+    public function saveDraftVersion($version, $data)
 	{
 		$failed = [];
 
@@ -247,12 +282,10 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		}
 	}
 
-	/**
-	 * Discards a draft version, if there are no versions left, it will remove the page too
-	 * @param  CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageVersion $version
-	 * @return void
-	 */
-	public function discardDraftVersion($version)
+    /**
+     * @param $version
+     */
+    public function discardDraftVersion($version)
 	{
 		$page = $version->page;
 
@@ -271,7 +304,13 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		}
 	}
 
-	public function draftsForUser($page_id, $user_id)
+    /**
+     * @param $page_id
+     * @param $user_id
+     * @return mixed
+     * @throws \CoandaCMS\Coanda\Exceptions\PageNotFound
+     */
+    public function draftsForUser($page_id, $user_id)
 	{
 		$page = PageModel::find($page_id);
 
@@ -283,12 +322,10 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		throw new PageNotFound;
 	}
 
-	/**
-	 * Makes the current version published
-	 * @param  CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageVersion $version The version to be published
-	 * @return void
-	 */
-	public function publishVersion($version)
+    /**
+     * @param $version
+     */
+    public function publishVersion($version)
 	{
 		$page = $version->page;
 
@@ -315,13 +352,12 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		$this->historyRepository->add('pages', $page->id, Coanda::currentUser()->id, 'publish_version', ['version' => (int)$version->version]);
 	}
 
-	/**
-	 * Creates a new version for the page_id and the user_id
-	 * @param  integer $page_id The id of the page you would like a new version of
-	 * @param  integer $user_id The user id for the user who is creating the page
-	 * @return integer          The version of the version created.
-	 */
-	public function createNewVersion($page_id, $user_id)
+    /**
+     * @param $page_id
+     * @param $user_id
+     * @return mixed
+     */
+    public function createNewVersion($page_id, $user_id)
 	{
 		$page = PageModel::find($page_id);
 		$type = $page->pageType();
@@ -376,17 +412,31 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		return $new_version_number;
 	}
 
-	public function history($page_id, $limit = 10)
+    /**
+     * @param $page_id
+     * @param int $limit
+     * @return mixed
+     */
+    public function history($page_id, $limit = 10)
 	{
 		return $this->historyRepository->get('pages', $page_id, $limit);
 	}
 
-	public function contributors($page_id)
+    /**
+     * @param $page_id
+     * @return mixed
+     */
+    public function contributors($page_id)
 	{
 		return $this->historyRepository->users('pages', $page_id);
 	}
 
-	public function deletePage($page_id, $permanent = false)
+    /**
+     * @param $page_id
+     * @param bool $permanent
+     * @throws \CoandaCMS\Coanda\Exceptions\PageNotFound
+     */
+    public function deletePage($page_id, $permanent = false)
 	{
 		$page = $this->model->find($page_id);
 
@@ -418,7 +468,11 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		}
 	}
 
-	public function deletePages($page_ids, $permanent = false)
+    /**
+     * @param $page_ids
+     * @param bool $permanent
+     */
+    public function deletePages($page_ids, $permanent = false)
 	{
 		if (count($page_ids) > 0)
 		{
@@ -435,7 +489,11 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		}
 	}
 
-	private function deleteSubTree($page, $permanent = false)
+    /**
+     * @param $page
+     * @param bool $permanent
+     */
+    private function deleteSubTree($page, $permanent = false)
 	{
 		$base_path = $page->path == '' ? '/' : $page->path;
 
@@ -456,12 +514,19 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		}
 	}
 
-	public function trashed()
+    /**
+     * @return mixed
+     */
+    public function trashed()
 	{
 		return $this->model->whereIsTrashed(true)->get();
 	}
 
-	public function trashedParentsForPage($page_id)
+    /**
+     * @param $page_id
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function trashedParentsForPage($page_id)
 	{
 		$trashed_parents = new \Illuminate\Database\Eloquent\Collection;
 
@@ -481,7 +546,12 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		return $trashed_parents;
 	}
 
-	public function restore($page_id, $restore_sub_pages = false)
+    /**
+     * @param $page_id
+     * @param bool $restore_sub_pages
+     * @throws \CoandaCMS\Coanda\Exceptions\PageNotFound
+     */
+    public function restore($page_id, $restore_sub_pages = false)
 	{
 		$page = $this->model->find($page_id);
 
@@ -510,12 +580,18 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		$this->historyRepository->add('pages', $page->id, Coanda::currentUser()->id, 'restored');
 	}
 
-	public function restoreSubTree($path)
+    /**
+     * @param $path
+     */
+    public function restoreSubTree($path)
 	{
 		$this->model->where('path', 'like', $path . '%')->update(['is_trashed' => false]);
 	}
 
-	public function updateOrdering($new_orders)
+    /**
+     * @param $new_orders
+     */
+    public function updateOrdering($new_orders)
 	{
 		foreach ($new_orders as $page_id => $new_order)
 		{

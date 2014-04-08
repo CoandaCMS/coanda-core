@@ -8,18 +8,38 @@ use CoandaCMS\Coanda\Urls\Exceptions\UrlNotFound;
 
 use CoandaCMS\Coanda\Urls\Repositories\Eloquent\Models\Url as UrlModel;
 
+/**
+ * Class EloquentUrlRepository
+ * @package CoandaCMS\Coanda\Urls\Repositories\Eloquent
+ */
 class EloquentUrlRepository implements \CoandaCMS\Coanda\Urls\Repositories\UrlRepositoryInterface {
 
-	private $model;
-	private $slugifier;
+    /**
+     * @var Models\Url
+     */
+    private $model;
+    /**
+     * @var \CoandaCMS\Coanda\Urls\Slugifier
+     */
+    private $slugifier;
 
-	public function __construct(UrlModel $model, \CoandaCMS\Coanda\Urls\Slugifier $slugifier)
+    /**
+     * @param UrlModel $model
+     * @param CoandaCMS\Coanda\Urls\Slugifier $slugifier
+     */
+    public function __construct(UrlModel $model, \CoandaCMS\Coanda\Urls\Slugifier $slugifier)
 	{
 		$this->model = $model;
 		$this->slugifier = $slugifier;
 	}
 
-	public function findFor($for, $for_id)
+    /**
+     * @param $for
+     * @param $for_id
+     * @return mixed
+     * @throws \CoandaCMS\Coanda\Urls\Exceptions\UrlNotFound
+     */
+    public function findFor($for, $for_id)
 	{
 		$url = $this->model->whereUrlableType($for)->whereUrlableId($for_id)->first();
 
@@ -81,7 +101,15 @@ class EloquentUrlRepository implements \CoandaCMS\Coanda\Urls\Repositories\UrlRe
 		throw new UrlNotFound('Url for /' . $slug . ' not found');
 	}
 
-	public function register($slug, $for, $for_id)
+    /**
+     * @param $slug
+     * @param $for
+     * @param $for_id
+     * @return bool
+     * @throws \CoandaCMS\Coanda\Urls\Exceptions\UrlAlreadyExists
+     * @throws \CoandaCMS\Coanda\Urls\Exceptions\InvalidSlug
+     */
+    public function register($slug, $for, $for_id)
 	{
 		// Is this a valid slug?
 		if (!$this->slugifier->validate($slug))
@@ -138,12 +166,20 @@ class EloquentUrlRepository implements \CoandaCMS\Coanda\Urls\Repositories\UrlRe
 		return true;
 	}
 
-	private function updateSubTree($slug, $new_slug)
+    /**
+     * @param $slug
+     * @param $new_slug
+     */
+    private function updateSubTree($slug, $new_slug)
 	{
 		$this->model->where('slug', 'like', $slug . '/%')->update(['slug' => \DB::raw("REPLACE(slug, '" . $slug . "/', '" . $new_slug . "/')")]);
 	}
 
-	public function delete($for, $for_id)
+    /**
+     * @param $for
+     * @param $for_id
+     */
+    public function delete($for, $for_id)
 	{
 		$url = $this->model->whereUrlableType($for)->whereUrlableId($for_id)->first();
 
@@ -153,7 +189,15 @@ class EloquentUrlRepository implements \CoandaCMS\Coanda\Urls\Repositories\UrlRe
 		}
 	}
 
-	public function canUse($slug, $for, $for_id)
+    /**
+     * @param $slug
+     * @param $for
+     * @param $for_id
+     * @return bool
+     * @throws \CoandaCMS\Coanda\Urls\Exceptions\UrlAlreadyExists
+     * @throws \CoandaCMS\Coanda\Urls\Exceptions\InvalidSlug
+     */
+    public function canUse($slug, $for, $for_id)
 	{
 		if (!$this->slugifier->validate($slug))
 		{

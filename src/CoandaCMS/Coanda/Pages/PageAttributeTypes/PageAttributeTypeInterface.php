@@ -1,5 +1,9 @@
 <?php namespace CoandaCMS\Coanda\Pages\PageAttributeTypes;
 
+/**
+ * Interface PageAttributeTypeInterface
+ * @package CoandaCMS\Coanda\Pages\PageAttributeTypes
+ */
 interface PageAttributeTypeInterface {
 
 	/**

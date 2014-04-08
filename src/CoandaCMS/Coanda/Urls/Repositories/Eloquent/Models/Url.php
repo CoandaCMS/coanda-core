@@ -2,8 +2,15 @@
 
 use Eloquent;
 
+/**
+ * Class Url
+ * @package CoandaCMS\Coanda\Urls\Repositories\Eloquent\Models
+ */
 class Url extends Eloquent {
-	
-	protected $table = 'urls';
+
+    /**
+     * @var string
+     */
+    protected $table = 'urls';
 
 }

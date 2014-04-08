@@ -8,25 +8,41 @@ use CoandaCMS\Coanda\Users\Exceptions\UserNotFound;
 
 use CoandaCMS\Coanda\Controllers\BaseController;
 
+/**
+ * Class UsersAdminController
+ * @package CoandaCMS\Coanda\Controllers\Admin
+ */
 class UsersAdminController extends BaseController {
 
-	private $userRepository;
+    /**
+     * @var \CoandaCMS\Coanda\Users\Repositories\UserRepositoryInterface
+     */
+    private $userRepository;
 
-	public function __construct(\CoandaCMS\Coanda\Users\Repositories\UserRepositoryInterface $userRepository)
+    /**
+     * @param CoandaCMS\Coanda\Users\Repositories\UserRepositoryInterface $userRepository
+     */
+    public function __construct(\CoandaCMS\Coanda\Users\Repositories\UserRepositoryInterface $userRepository)
 	{
 		$this->userRepository = $userRepository;
 
 		$this->beforeFilter('csrf', array('on' => 'post'));
 	}
 
-	public function getIndex()
+    /**
+     * @return mixed
+     */
+    public function getIndex()
 	{
 		$groups = $this->userRepository->groups();
 
 		return View::make('coanda::admin.users.index', [ 'groups' => $groups ]);
 	}
 
-	public function getCreateGroup()
+    /**
+     * @return mixed
+     */
+    public function getCreateGroup()
 	{
 		$permissions = Coanda::availablePermissions();
 		$invalid_fields = Session::has('invalid_fields') ? Session::get('invalid_fields') : [];
@@ -34,7 +50,10 @@ class UsersAdminController extends BaseController {
 		return View::make('coanda::admin.users.creategroup', ['permissions' => $permissions, 'invalid_fields' => $invalid_fields ]);
 	}
 
-	public function postCreateGroup()
+    /**
+     * @return mixed
+     */
+    public function postCreateGroup()
 	{
 		if (Input::has('cancel'))
 		{
@@ -53,7 +72,11 @@ class UsersAdminController extends BaseController {
 		}
 	}
 
-	public function getEditGroup($group_id)
+    /**
+     * @param $group_id
+     * @return mixed
+     */
+    public function getEditGroup($group_id)
 	{
 		try
 		{
@@ -72,7 +95,11 @@ class UsersAdminController extends BaseController {
 		}
 	}
 
-	public function postEditGroup($group_id)
+    /**
+     * @param $group_id
+     * @return mixed
+     */
+    public function postEditGroup($group_id)
 	{
 		try
 		{
@@ -95,7 +122,11 @@ class UsersAdminController extends BaseController {
 		}
 	}
 
-	public function getGroup($group_id)
+    /**
+     * @param $group_id
+     * @return mixed
+     */
+    public function getGroup($group_id)
 	{
 		try
 		{
@@ -111,7 +142,11 @@ class UsersAdminController extends BaseController {
 		}
 	}
 
-	public function getCreateUser($group_id)
+    /**
+     * @param $group_id
+     * @return mixed
+     */
+    public function getCreateUser($group_id)
 	{
 		try
 		{
@@ -126,7 +161,11 @@ class UsersAdminController extends BaseController {
 		}
 	}
 
-	public function postCreateUser($group_id)
+    /**
+     * @param $group_id
+     * @return mixed
+     */
+    public function postCreateUser($group_id)
 	{
 		if (Input::has('cancel'))
 		{
@@ -147,9 +186,13 @@ class UsersAdminController extends BaseController {
 		{
 			return Redirect::to(Coanda::adminUrl('users'));
 		}
-	}	
+	}
 
-	public function getEditUser($user_id)
+    /**
+     * @param $user_id
+     * @return mixed
+     */
+    public function getEditUser($user_id)
 	{
 		try
 		{
@@ -165,7 +208,11 @@ class UsersAdminController extends BaseController {
 		}
 	}
 
-	public function postEditUser($user_id)
+    /**
+     * @param $user_id
+     * @return mixed
+     */
+    public function postEditUser($user_id)
 	{
 		$last_group_id = Session::get('last_group_view');
 
@@ -192,7 +239,12 @@ class UsersAdminController extends BaseController {
 		}
 	}
 
-	public function getUser($user_id, $selected_tab = '')
+    /**
+     * @param $user_id
+     * @param string $selected_tab
+     * @return mixed
+     */
+    public function getUser($user_id, $selected_tab = '')
 	{
 		$last_group_id = Session::get('last_group_view');
 
@@ -208,7 +260,12 @@ class UsersAdminController extends BaseController {
 		}
 	}
 
-	public function getAddToGroup($user_id, $group_id)
+    /**
+     * @param $user_id
+     * @param $group_id
+     * @return mixed
+     */
+    public function getAddToGroup($user_id, $group_id)
 	{
 		try
 		{
@@ -226,7 +283,12 @@ class UsersAdminController extends BaseController {
 		}
 	}
 
-	public function getRemoveFromGroup($user_id, $group_id)
+    /**
+     * @param $user_id
+     * @param $group_id
+     * @return mixed
+     */
+    public function getRemoveFromGroup($user_id, $group_id)
 	{
 		try
 		{

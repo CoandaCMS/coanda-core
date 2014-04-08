@@ -2,18 +2,43 @@
 
 use Eloquent, Coanda, App;
 
+/**
+ * Class Page
+ * @package CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models
+ */
 class Page extends Eloquent {
 
 	use \CoandaCMS\Coanda\Core\Presenters\PresentableTrait;
 
-	protected $presenter = 'CoandaCMS\Coanda\Pages\Presenters\Page';
+    /**
+     * @var string
+     */
+    protected $presenter = 'CoandaCMS\Coanda\Pages\Presenters\Page';
 
-	private $pageType;
-	private $slug;
-	private $currentVersion;
-	private $parents;
-	private $children;
-	private $subTreeCount;
+    /**
+     * @var
+     */
+    private $pageType;
+    /**
+     * @var
+     */
+    private $slug;
+    /**
+     * @var
+     */
+    private $currentVersion;
+    /**
+     * @var
+     */
+    private $parents;
+    /**
+     * @var
+     */
+    private $children;
+    /**
+     * @var
+     */
+    private $subTreeCount;
 
 	/**
 	 * The database table used by the model.
@@ -22,7 +47,10 @@ class Page extends Eloquent {
 	 */
 	protected $table = 'pages';
 
-	public function delete()
+    /**
+     *
+     */
+    public function delete()
 	{
 		foreach ($this->versions() as $version)
 		{
@@ -71,7 +99,10 @@ class Page extends Eloquent {
 		return $this->children;
 	}
 
-	public function subTreeCount()
+    /**
+     * @return mixed
+     */
+    public function subTreeCount()
 	{
 		if (!$this->subTreeCount)
 		{
@@ -83,17 +114,26 @@ class Page extends Eloquent {
 		return $this->subTreeCount;
 	}
 
-	public function pathArray()
+    /**
+     * @return array
+     */
+    public function pathArray()
 	{
 		return explode('/', $this->path);
 	}
 
-	public function depth()
+    /**
+     * @return int
+     */
+    public function depth()
 	{
 		return count($this->pathArray());
 	}
 
-	public function getDepthAttribute()
+    /**
+     * @return int
+     */
+    public function getDepthAttribute()
 	{
 		return $this->depth();
 	}
@@ -218,7 +258,10 @@ class Page extends Eloquent {
 		return $this->currentVersion()->status == 'draft';
 	}
 
-	public function getShowMetaAttribute()
+    /**
+     * @return mixed
+     */
+    public function getShowMetaAttribute()
 	{
 		$type = $this->pageType();
 

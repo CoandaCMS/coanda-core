@@ -2,9 +2,16 @@
 
 use Lang;
 
+/**
+ * Class UserGroup
+ * @package CoandaCMS\Coanda\Users\Presenters
+ */
 class UserGroup extends \CoandaCMS\Coanda\Core\Presenters\Presenter {
 
-	public function permissions()
+    /**
+     * @return array|string
+     */
+    public function permissions()
 	{
 		$access_list = $this->model->access_list;
 		

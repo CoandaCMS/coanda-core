@@ -1,16 +1,50 @@
 <?php namespace CoandaCMS\Coanda\Urls\Repositories;
 
+/**
+ * Interface UrlRepositoryInterface
+ * @package CoandaCMS\Coanda\Urls\Repositories
+ */
 interface UrlRepositoryInterface {
 
-	public function findFor($for, $for_id);
+    /**
+     * @param $for
+     * @param $for_id
+     * @return mixed
+     */
+    public function findFor($for, $for_id);
 
-	public function findById($id);
+    /**
+     * @param $id
+     * @return mixed
+     */
+    public function findById($id);
 
-	public function findBySlug($slug);
+    /**
+     * @param $slug
+     * @return mixed
+     */
+    public function findBySlug($slug);
 
-	public function register($slug, $for, $for_id);
+    /**
+     * @param $slug
+     * @param $for
+     * @param $for_id
+     * @return mixed
+     */
+    public function register($slug, $for, $for_id);
 
-	public function delete($for, $for_id);
+    /**
+     * @param $for
+     * @param $for_id
+     * @return mixed
+     */
+    public function delete($for, $for_id);
 
-	public function canUse($slug, $for, $for_id);
+    /**
+     * @param $slug
+     * @param $for
+     * @param $for_id
+     * @return mixed
+     */
+    public function canUse($slug, $for, $for_id);
 }

@@ -2,9 +2,16 @@
 
 use Lang;
 
+/**
+ * Class Page
+ * @package CoandaCMS\Coanda\Pages\Presenters
+ */
 class Page extends \CoandaCMS\Coanda\Core\Presenters\Presenter {
 
-	public function name()
+    /**
+     * @return mixed
+     */
+    public function name()
 	{
 		if ($this->model->name !== '')
 		{
@@ -14,7 +21,10 @@ class Page extends \CoandaCMS\Coanda\Core\Presenters\Presenter {
 		return Lang::get('coanda::pages.page_name_not_set');
 	}
 
-	public function status()
+    /**
+     * @return string
+     */
+    public function status()
 	{
 		if ($this->model->is_trashed)
 		{
@@ -24,7 +34,10 @@ class Page extends \CoandaCMS\Coanda\Core\Presenters\Presenter {
 		return Lang::get('coanda::pages.status_' . $this->model->status);
 	}
 
-	public function type()
+    /**
+     * @return mixed
+     */
+    public function type()
 	{
 		return $this->model->pageType()->name;
 	}

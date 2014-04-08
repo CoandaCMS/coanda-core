@@ -1,8 +1,16 @@
 <?php namespace CoandaCMS\Coanda\Urls;
 
+/**
+ * Class Slugifier
+ * @package CoandaCMS\Coanda\Urls
+ */
 class Slugifier {
-	
-	public function validate($slug)
+
+    /**
+     * @param $slug
+     * @return bool
+     */
+    public function validate($slug)
 	{
 		if ($slug == '')
 		{
@@ -17,7 +25,11 @@ class Slugifier {
 		return false;
 	}
 
-	public static function convert($text)
+    /**
+     * @param $text
+     * @return mixed|string
+     */
+    public static function convert($text)
 	{
 		// Reference: http://stackoverflow.com/questions/3371697/replacing-accented-characters-php
 		$replace_list = array('Š'=>'S', 'š'=>'s', 'Ž'=>'Z', 'ž'=>'z', 'À'=>'A', 'Á'=>'A', 'Â'=>'A', 'Ã'=>'A', 'Ä'=>'A', 'Å'=>'A', 'Æ'=>'A', 'Ç'=>'C', 'È'=>'E', 'É'=>'E',

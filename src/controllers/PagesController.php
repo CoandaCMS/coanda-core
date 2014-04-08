@@ -4,16 +4,30 @@ use View, Redirect;
 
 use CoandaCMS\Coanda\Exceptions\PageVersionNotFound;
 
+/**
+ * Class PagesController
+ * @package CoandaCMS\Coanda\Controllers
+ */
 class PagesController extends BaseController {
 
-	private $pageRepository;
+    /**
+     * @var \CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface
+     */
+    private $pageRepository;
 
-	public function __construct(\CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface $pageRepository)
+    /**
+     * @param \CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface $pageRepository
+     */
+    public function __construct(\CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface $pageRepository)
 	{
 		$this->pageRepository = $pageRepository;
 	}
 
-	public function getPreview($preview_key)
+    /**
+     * @param $preview_key
+     * @return mixed
+     */
+    public function getPreview($preview_key)
 	{
 		try
 		{

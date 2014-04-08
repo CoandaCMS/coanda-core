@@ -1,5 +1,9 @@
 <?php namespace CoandaCMS\Coanda\Users\Repositories;
 
+/**
+ * Interface UserRepositoryInterface
+ * @package CoandaCMS\Coanda\Users\Repositories
+ */
 interface UserRepositoryInterface {
 
 	/**
@@ -28,20 +32,75 @@ interface UserRepositoryInterface {
 	 */
 	public function logout();
 
-	public function hasAccessTo($permission, $permission_id = false);
+    /**
+     * @param $permission
+     * @param bool $permission_id
+     * @return mixed
+     */
+    public function hasAccessTo($permission, $permission_id = false);
 
-	public function find($id);
-	public function createNew($data, $group_id);
-	public function updateExisting($user_id, $data);
+    /**
+     * @param $id
+     * @return mixed
+     */
+    public function find($id);
 
-	public function addUserToGroup($user_id, $grouo_id);
-	public function removeUserFromGroup($user_id, $grouo_id);
-	
-	public function groupById($group_id);
-	public function groups();
-	public function createGroup($data);
-	public function updateGroup($group_id, $data);
+    /**
+     * @param $data
+     * @param $group_id
+     * @return mixed
+     */
+    public function createNew($data, $group_id);
 
-	public function getByIds($ids);
+    /**
+     * @param $user_id
+     * @param $data
+     * @return mixed
+     */
+    public function updateExisting($user_id, $data);
+
+    /**
+     * @param $user_id
+     * @param $grouo_id
+     * @return mixed
+     */
+    public function addUserToGroup($user_id, $grouo_id);
+
+    /**
+     * @param $user_id
+     * @param $grouo_id
+     * @return mixed
+     */
+    public function removeUserFromGroup($user_id, $grouo_id);
+
+    /**
+     * @param $group_id
+     * @return mixed
+     */
+    public function groupById($group_id);
+
+    /**
+     * @return mixed
+     */
+    public function groups();
+
+    /**
+     * @param $data
+     * @return mixed
+     */
+    public function createGroup($data);
+
+    /**
+     * @param $group_id
+     * @param $data
+     * @return mixed
+     */
+    public function updateGroup($group_id, $data);
+
+    /**
+     * @param $ids
+     * @return mixed
+     */
+    public function getByIds($ids);
 
 }

@@ -2,9 +2,16 @@
 
 use Eloquent, Coanda;
 
+/**
+ * Class PageAttribute
+ * @package CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models
+ */
 class PageAttribute extends Eloquent {
 
-	public $timestamps = false;
+    /**
+     * @var bool
+     */
+    public $timestamps = false;
 
 	/**
 	 * The database table used by the model.
@@ -62,7 +69,10 @@ class PageAttribute extends Eloquent {
 		return isset($attributes[$this->identifier]['required']) ? $attributes[$this->identifier]['required'] : false;
 	}
 
-	public function generatesSlug()
+    /**
+     * @return bool
+     */
+    public function generatesSlug()
 	{
 		$attributes = $this->pageType()->attributes();
 
@@ -76,7 +86,10 @@ class PageAttribute extends Eloquent {
 		return isset($attribute_definition['generates_slug']) && $attribute_definition['generates_slug'] == true;
 	}
 
-	public function getGeneratesSlugAttribute()
+    /**
+     * @return bool
+     */
+    public function getGeneratesSlugAttribute()
 	{
 		return $this->generatesSlug();
 	}

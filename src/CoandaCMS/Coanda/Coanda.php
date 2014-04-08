@@ -5,15 +5,33 @@ use App, Route, Config, Redirect, Request, Session;
 use CoandaCMS\Coanda\Exceptions\PageTypeNotFound;
 use CoandaCMS\Coanda\Exceptions\PageAttributeTypeNotFound;
 
+/**
+ * Class Coanda
+ * @package CoandaCMS\Coanda
+ */
 class Coanda {
 
-	private $user;
-	private $modules = [];
-	private $page_types = [];
-	private $permissions = [];
-	private $urlRepository;
+    /**
+     * @var
+     */
+    private $user;
+    /**
+     * @var array
+     */
+    private $modules = [];
+    /**
+     * @var array
+     */
+    private $permissions = [];
+    /**
+     * @var
+     */
+    private $urlRepository;
 
-	public function boot($app)
+    /**
+     * @param \Illuminate\Foundation\Application $app
+     */
+    public function boot(\Illuminate\Foundation\Application $app)
 	{
 		$this->urlRepository = $app->make('CoandaCMS\Coanda\Urls\Repositories\UrlRepositoryInterface');
 		$this->user = $app->make('CoandaCMS\Coanda\Users\Repositories\UserRepositoryInterface');
@@ -47,12 +65,20 @@ class Coanda {
 		return $this->user->currentUser();
 	}
 
-	public function availablePermissions()
+    /**
+     * @return array
+     */
+    public function availablePermissions()
 	{
 		return $this->permissions;
 	}
 
-	public function addModulePermissions($module, $module_name, $views)
+    /**
+     * @param $module
+     * @param $module_name
+     * @param $views
+     */
+    public function addModulePermissions($module, $module_name, $views)
 	{
 		$this->permissions[$module] = [
 										'name' => $module_name,
@@ -60,7 +86,12 @@ class Coanda {
 									];
 	}
 
-	public function canAccess($permission, $permission_id = false)
+    /**
+     * @param $permission
+     * @param bool $permission_id
+     * @return mixed
+     */
+    public function canAccess($permission, $permission_id = false)
 	{
 		return $this->user->hasAccessTo($permission, $permission_id);
 	}
@@ -93,7 +124,6 @@ class Coanda {
 
 	/**
 	 * Creates all the required filters
-	 * @return
 	 */
 	public function filters()
 	{
@@ -111,7 +141,6 @@ class Coanda {
 
 	/**
 	 * Outputs all the routes, including those added by modules
-	 * @return 
 	 */
 	public function routes()
 	{
@@ -160,17 +189,30 @@ class Coanda {
 		}
 	}
 
-	public function module($module)
+    /**
+     * @param $module
+     * @return mixed
+     */
+    public function module($module)
 	{
 		return $this->modules[$module];
 	}
 
-	public function addRouter($for, $closure)
+    /**
+     * @param $for
+     * @param $closure
+     */
+    public function addRouter($for, $closure)
 	{
 		$this->routers[$for] = $closure;
 	}
 
-	public function route($slug)
+    /**
+     * @param $slug
+     * @return mixed
+     * @throws \Exception
+     */
+    public function route($slug)
 	{
 		try
 		{
@@ -200,7 +242,11 @@ class Coanda {
 		}
 	}
 
-	public function routeRedirect($url)
+    /**
+     * @param $url
+     * @return mixed
+     */
+    public function routeRedirect($url)
 	{
 		$url = $this->urlRepository->findById($url->urlable_id);
 
@@ -210,7 +256,11 @@ class Coanda {
 		}
 	}
 
-	public function routeWildcard($wildcard_url)
+    /**
+     * @param $wildcard_url
+     * @return mixed
+     */
+    public function routeWildcard($wildcard_url)
 	{
 		$url = $this->urlRepository->findById($wildcard_url->urlable_id);
 

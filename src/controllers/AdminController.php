@@ -8,11 +8,21 @@ use Coanda;
 use CoandaCMS\Coanda\Exceptions\MissingInput;
 use CoandaCMS\Coanda\Exceptions\AuthenticationFailed;
 
+/**
+ * Class AdminController
+ * @package CoandaCMS\Coanda\Controllers
+ */
 class AdminController extends BaseController {
 
-	private $user;
+    /**
+     * @var \CoandaCMS\Coanda\Users\Repositories\UserRepositoryInterface
+     */
+    private $user;
 
-	public function __construct(\CoandaCMS\Coanda\Users\Repositories\UserRepositoryInterface $user)
+    /**
+     * @param CoandaCMS\Coanda\Users\Repositories\UserRepositoryInterface $user
+     */
+    public function __construct(\CoandaCMS\Coanda\Users\Repositories\UserRepositoryInterface $user)
 	{
 		$this->user = $user;
 
@@ -20,12 +30,18 @@ class AdminController extends BaseController {
 		$this->beforeFilter('csrf', array('on' => 'post'));
 	}
 
-	public function getIndex()
+    /**
+     * @return mixed
+     */
+    public function getIndex()
 	{
 		return View::make('coanda::admin.home');
 	}
 
-	public function getLogin()
+    /**
+     * @return mixed
+     */
+    public function getLogin()
 	{
 		// If the user is logged in, they don't need to see this
 		if ($this->user->isLoggedIn())
@@ -36,7 +52,10 @@ class AdminController extends BaseController {
 		return View::make('coanda::admin.login');
 	}
 
-	public function postLogin()
+    /**
+     * @return mixed
+     */
+    public function postLogin()
 	{
 		// If the user is logged in, they don't need to see this
 		if ($this->user->isLoggedIn())
@@ -80,7 +99,10 @@ class AdminController extends BaseController {
 		}
 	}
 
-	public function getLogout()
+    /**
+     * @return mixed
+     */
+    public function getLogout()
 	{
 		$this->user->logout();
 

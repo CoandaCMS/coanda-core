@@ -5,14 +5,30 @@ use Route, App, Config;
 use CoandaCMS\Coanda\Exceptions\PageTypeNotFound;
 use CoandaCMS\Coanda\Exceptions\PageAttributeTypeNotFound;
 
+/**
+ * Class PagesModuleProvider
+ * @package CoandaCMS\Coanda\Pages
+ */
 class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 
-	public $name = 'pages';
+    /**
+     * @var string
+     */
+    public $name = 'pages';
 
-	private $page_types = [];
-	private $page_attribute_types = [];
+    /**
+     * @var array
+     */
+    private $page_types = [];
+    /**
+     * @var array
+     */
+    private $page_attribute_types = [];
 
-	public function boot($coanda)
+    /**
+     * @param \CoandaCMS\Coanda\Coanda $coanda
+     */
+    public function boot(\CoandaCMS\Coanda\Coanda $coanda)
 	{
 		// Add the permissions
 		$views = [
@@ -82,12 +98,12 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		return $this->page_types;
 	}
 
-	/**
-	 * Gets a specific page type by identifier
-	 * @param  string $type The identifier of the page type
-	 * @return CoandaCMS\Coanda\Pages\PageTypeInterface
-	 */
-	public function getPageType($type)
+    /**
+     * @param $type
+     * @return mixed
+     * @throws \CoandaCMS\Coanda\Exceptions\PageTypeNotFound
+     */
+    public function getPageType($type)
 	{
 		if (array_key_exists($type, $this->page_types))
 		{
@@ -97,12 +113,13 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		throw new PageTypeNotFound;
 	}
 
-	/**
-	 * Get a specific attribute by identifier
-	 * @param  string $type_identifier
-	 * @return CoandaCMS\Coanda\Pages\PageAttributeTypeInterface
-	 */
-	public function getPageAttributeType($type_identifier)
+
+    /**
+     * @param $type_identifier
+     * @return mixed
+     * @throws \CoandaCMS\Coanda\Exceptions\PageAttributeTypeNotFound
+     */
+    public function getPageAttributeType($type_identifier)
 	{
 		if (array_key_exists($type_identifier, $this->page_attribute_types))
 		{
@@ -113,20 +130,29 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 	}
 
 
-
-	public function adminRoutes()
+    /**
+     *
+     */
+    public function adminRoutes()
 	{
 		// Load the pages controller
 		Route::controller('pages', 'CoandaCMS\Coanda\Controllers\Admin\PagesAdminController');
 	}
 
-	public function userRoutes()
+    /**
+     *
+     */
+    public function userRoutes()
 	{
 		// Front end routes for Pages (preview etc)
 		Route::controller('pages', 'CoandaCMS\Coanda\Controllers\PagesController');
 	}
 
-	public function bindings($app)
+    /**
+     * @param \Illuminate\Foundation\Application $app
+     * @return mixed
+     */
+    public function bindings(\Illuminate\Foundation\Application $app)
 	{
 		$app->bind('CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface', 'CoandaCMS\Coanda\Pages\Repositories\Eloquent\EloquentPageRepository');
 	}
