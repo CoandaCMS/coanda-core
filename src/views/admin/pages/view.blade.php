@@ -74,8 +74,6 @@
 							</button>
 							<ul class="dropdown-menu">
 								<li><a href="{{ Coanda::adminUrl('pages/delete/' . $page->id) }}">Delete</a></li>
-								<li><a href="#">More option 2</a></li>
-								<li><a href="#">More option 3</a></li>
 							</ul>
 						</div>
 					@endif
