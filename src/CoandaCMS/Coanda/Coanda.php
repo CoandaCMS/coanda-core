@@ -13,14 +13,10 @@ class Coanda {
 	private $permissions = [];
 	private $urlRepository;
 
-	public function boot()
+	public function boot($app)
 	{
-		$this->urlRepository = App::make('CoandaCMS\Coanda\Urls\Repositories\UrlRepositoryInterface');
-	}
-
-    public function getUser()
-	{
-		$this->user = App::make('CoandaCMS\Coanda\Users\Repositories\UserRepositoryInterface');
+		$this->urlRepository = $app->make('CoandaCMS\Coanda\Urls\Repositories\UrlRepositoryInterface');
+		$this->user = $app->make('CoandaCMS\Coanda\Users\Repositories\UserRepositoryInterface');
 	}
 
 	/**

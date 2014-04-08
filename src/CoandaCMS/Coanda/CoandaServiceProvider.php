@@ -26,9 +26,6 @@ class CoandaServiceProvider extends ServiceProvider {
 		// Let the main class handles the bindings
 		$this->app->make('coanda')->bindings($this->app);
 
-		// Get the current user
-		$this->app->make('coanda')->getUser();
-
 		// Add any filters
 		$this->app->make('coanda')->filters();
 
@@ -36,7 +33,7 @@ class CoandaServiceProvider extends ServiceProvider {
 		$this->app->make('coanda')->routes();
 
 		// Boot up coanda...
-		$this->app->make('coanda')->boot();
+		$this->app->make('coanda')->boot($this->app);
 	}
 
 	/**
