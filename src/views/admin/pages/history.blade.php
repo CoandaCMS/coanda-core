@@ -19,14 +19,15 @@
                 <a href="{{ Coanda::adminUrl('pages/view/' . $parent->id) }}">{{ $parent->present()->name }}</a>
             </li>
             @endforeach
-            <li>{{ $page->present()->name }}</li>
+            <li><a href="{{ Coanda::adminUrl('pages/view/' . $page->id) }}">{{ $page->present()->name }}</a></li>
+            <li>History</li>
         </ul>
     </div>
 </div>
 
 <div class="row">
     <div class="page-name col-md-12">
-        <h1 class="pull-left">History for "@if ($page->is_trashed) [Trashed] @endif <a href="{{ Coanda::adminUrl('pages/view/' . $page->id) }}">{{ $page->present()->name }}</a>" <small>{{ $page->present()->type }}</small></h1>
+        <h1 class="pull-left">History for "<a href="{{ Coanda::adminUrl('pages/view/' . $page->id) }}">{{ $page->present()->name }}</a>" <small>{{ $page->present()->type }}</small></h1>
         <div class="page-status pull-right">
             <span class="label label-default">Version {{ $page->current_version }}</span>
 
