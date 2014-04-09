@@ -8,6 +8,8 @@ use CoandaCMS\Coanda\Exceptions\PageVersionNotFound;
 use CoandaCMS\Coanda\Exceptions\ValidationException;
 use CoandaCMS\Coanda\Exceptions\PermissionDenied;
 
+use CoandaCMS\Coanda\Pages\Exceptions\PublishHandlerException;
+
 use CoandaCMS\Coanda\Controllers\BaseController;
 
 /**
@@ -243,7 +245,11 @@ class PagesAdminController extends BaseController {
 			$version = $this->pageRepository->getDraftVersion($page_id, $version_number);
 			$invalid_fields = Session::has('invalid_fields') ? Session::get('invalid_fields') : [];
 
-			return View::make('coanda::admin.pages.edit', ['version' => $version, 'invalid_fields' => $invalid_fields ]);
+			$publish_handlers = Coanda::module('pages')->publishHandlers();
+
+			$publish_handler_invalid_fields = Session::has('publish_handler_invalid_fields') ? Session::get('publish_handler_invalid_fields') : [];
+
+			return View::make('coanda::admin.pages.edit', ['version' => $version, 'invalid_fields' => $invalid_fields, 'publish_handler_invalid_fields' => $publish_handler_invalid_fields, 'publish_handlers' => $publish_handlers ]);
 		}
 		catch (PageNotFound $exception)
 		{
@@ -298,9 +304,21 @@ class PagesAdminController extends BaseController {
 
 			if (Input::has('publish') && Input::get('publish') == 'true')
 			{
-				$this->pageRepository->publishVersion($version);
+				try
+				{
+					$redirect = $this->pageRepository->publishVersion($version, Input::get('publish_handler'));
 
-				return Redirect::to(Coanda::adminUrl('pages/view/' . $page_id));
+					if ($redirect)
+					{
+						return Redirect::to($redirect);
+					}
+
+					return Redirect::to(Coanda::adminUrl('pages/view/' . $page_id));					
+				}
+				catch (PublishHandlerException $exception)
+				{
+					return Redirect::to(Coanda::adminUrl('pages/editversion/' . $page_id . '/' . $version_number))->with('error', true)->with('invalid_publish_handler', true)->with('publish_handler_invalid_fields', $exception->getInvalidFields());
+				}
 			}
 		}
 		catch (ValidationException $exception)

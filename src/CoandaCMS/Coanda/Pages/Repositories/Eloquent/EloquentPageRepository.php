@@ -6,6 +6,7 @@ use CoandaCMS\Coanda\Exceptions\PageNotFound;
 use CoandaCMS\Coanda\Exceptions\PageVersionNotFound;
 use CoandaCMS\Coanda\Exceptions\AttributeValidationException;
 use CoandaCMS\Coanda\Exceptions\ValidationException;
+use CoandaCMS\Coanda\Pages\Exceptions\PublishHandlerException;
 
 use CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\Page as PageModel;
 use CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageVersion as PageVersionModel;
@@ -325,31 +326,20 @@ class EloquentPageRepository implements PageRepositoryInterface {
     /**
      * @param $version
      */
-    public function publishVersion($version)
+    public function publishVersion($version, $publish_handler)
 	{
-		$page = $version->page;
+		$publish_handler = Coanda::module('pages')->getPublishHandler($publish_handler);
 
-		if ($version->version !== 1)
+		if (!$publish_handler)
 		{
-			// set the current published version to be archived
-			$page->currentVersion()->status = 'archived';
-			$page->currentVersion()->save();			
+			dd('no publish handler for: ' . $publish_handler);
 		}
 
-		// set this version to be published
-		$version->status = 'published';
-		$version->save();
-		
-		// update the page name attribute (via the type)
-		$page->name = $page->pageType()->generateName($version);
-		$page->current_version = $version->version;
-		$page->save();
+		// Validate the publish handler - this can throw an exception if needs be!
+		$publish_handler->validate($version);
 
-		// Register the URL for this version with the Url Repo
-		$url = $this->urlRepository->register($version->base_slug . $version->slug, 'page', $page->id);
-
-		// Log the history
-		$this->historyRepository->add('pages', $page->id, Coanda::currentUser()->id, 'publish_version', ['version' => (int)$version->version]);
+		// Return the result of the publish handler - this should be a redirect URL of null/false as required.
+		return $publish_handler->execute($version, $this->urlRepository, $this->historyRepository);
 	}
 
     /**

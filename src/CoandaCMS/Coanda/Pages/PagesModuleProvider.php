@@ -26,6 +26,11 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
     private $page_attribute_types = [];
 
     /**
+     * @var array
+     */
+    private $publish_handlers = [];
+
+    /**
      * @param \CoandaCMS\Coanda\Coanda $coanda
      */
     public function boot(\CoandaCMS\Coanda\Coanda $coanda)
@@ -87,6 +92,25 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 
 			$this->page_attribute_types[$attribute_type->identifier] = $attribute_type;
 		}
+
+		// Load the publish handlers
+		$core_publish_handlers = [
+			'CoandaCMS\Coanda\Pages\PublishHandlers\Immediate' // Make sure this one is always added (TODO: Consider removing this as 'core')
+		];
+
+		$enabled_publish_handlers = Config::get('coanda::coanda.publish_handlers');
+
+		$publish_handlers = array_merge($core_publish_handlers, $enabled_publish_handlers);
+
+		foreach ($publish_handlers as $publish_handler)
+		{
+			if (class_exists($publish_handler))
+			{
+				$handler = new $publish_handler;
+
+				$this->publish_handlers[$handler->identifier] = $handler;
+			}
+		}
 	}
 
 	/**
@@ -129,6 +153,15 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		throw new PageAttributeTypeNotFound;
 	}
 
+	public function publishHandlers()
+	{
+		return $this->publish_handlers;
+	}
+
+	public function getPublishHandler($identifier)
+	{
+		return $this->publish_handlers[$identifier];
+	}
 
     /**
      *
@@ -156,5 +189,4 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 	{
 		$app->bind('CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface', 'CoandaCMS\Coanda\Pages\Repositories\Eloquent\EloquentPageRepository');
 	}
-
 }

@@ -10,20 +10,9 @@ return array(
 	*/
 	'admin_path' => 'admin',
 
-	/*
-	|--------------------------------------------------------------------------
-	| Site title
-	|--------------------------------------------------------------------------
-	|
-	*/
-	'title' => 'Coanda CMS',
-
-
-
 	'enabled_modules' => [
 
 		],
-
 
 	'page_types' => [
 		'MySite\Coanda\PageTypes\Page',
@@ -33,5 +22,9 @@ return array(
 	'page_attribute_types' => [
 		'CoandaCMS\Coanda\Pages\PageAttributeTypes\Textline',
 		'CoandaCMS\Coanda\Pages\PageAttributeTypes\HTML',
+	],
+
+	'publish_handlers' => [
 	]
+	
 );

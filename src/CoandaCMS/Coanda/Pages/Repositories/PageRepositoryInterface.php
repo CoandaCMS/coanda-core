@@ -82,7 +82,7 @@ interface PageRepositoryInterface {
      * @param $version
      * @return mixed
      */
-    public function publishVersion($version);
+    public function publishVersion($version, $publish_handler);
 
     /**
      * @param $page_id

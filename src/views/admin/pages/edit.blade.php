@@ -54,10 +54,37 @@
 
 			@endforeach
 
-			{{ Form::button('Save', ['name' => 'save', 'value' => 'true', 'type' => 'submit', 'class' => 'btn btn-default']) }}
-			{{ Form::button('Save & Exit', ['name' => 'save_exit', 'value' => 'true', 'type' => 'submit', 'class' => 'btn btn-default']) }}
-			{{ Form::button('Publish', ['name' => 'publish', 'value' => 'true', 'type' => 'submit', 'class' => 'btn btn-success']) }}
-			{{ Form::button('Discard draft', ['name' => 'discard', 'value' => 'true', 'type' => 'submit', 'class' => 'btn btn-default']) }}
+			<div class="buttons">
+				{{ Form::button('Save', ['name' => 'save', 'value' => 'true', 'type' => 'submit', 'class' => 'btn btn-default']) }}
+				{{ Form::button('Save & Exit', ['name' => 'save_exit', 'value' => 'true', 'type' => 'submit', 'class' => 'btn btn-default']) }}
+				{{ Form::button('Discard draft', ['name' => 'discard', 'value' => 'true', 'type' => 'submit', 'class' => 'btn btn-default']) }}
+			</div>
+
+			<div class="publish-options">
+
+				@if (count($publish_handlers) > 1)
+					<h2>Publish options</h2>
+					@foreach ($publish_handlers as $publish_handler)
+						<div class="row">
+							<div class="col-sm-4">
+								<div class="radio">
+									<label>
+										<input type="radio" name="publish_handler" value="{{ $publish_handler->identifier }}">
+										{{ $publish_handler->name }}
+									</label>
+								</div>
+							</div>
+							<div class="col-sm-8">
+								@include($publish_handler->template, [ 'publish_handler' => $publish_handler, 'publish_handler_invalid_fields' => $publish_handler_invalid_fields ])
+							</div>
+						</div>
+					@endforeach
+				@else
+					<input type="hidden" name="publish_handler" value="{{ $publish_handlers[array_keys($publish_handlers)[0]]->identifier }}">
+					@include($publish_handlers[array_keys($publish_handlers)[0]]->template, [ 'publish_handler' => $publish_handlers[array_keys($publish_handlers)[0]], 'publish_handler_invalid_fields' => $publish_handler_invalid_fields ])
+				@endif
+				{{ Form::button('Publish', ['name' => 'publish', 'value' => 'true', 'type' => 'submit', 'class' => 'btn btn-success']) }}
+			</div>
 		</div>
 		<div class="col-md-4">
 			<div class="form-group">
