@@ -21,6 +21,8 @@ interface HistoryRepositoryInterface {
      * @param $for_id
      * @return mixed
      */
-    public function get($for, $for_id);
+    public function get($for, $for_id, $limit);
+
+    public function getPaginated($for, $for_id);
 
 }

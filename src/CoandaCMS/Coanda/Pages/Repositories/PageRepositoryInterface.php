@@ -95,6 +95,12 @@ interface PageRepositoryInterface {
      * @param $page_id
      * @return mixed
      */
+    public function recentHistory($page_id);
+
+    /**
+     * @param $page_id
+     * @return mixed
+     */
     public function history($page_id);
 
     /**

@@ -417,9 +417,19 @@ class EloquentPageRepository implements PageRepositoryInterface {
      * @param int $limit
      * @return mixed
      */
-    public function history($page_id, $limit = 10)
+    public function recentHistory($page_id, $limit = 10)
 	{
 		return $this->historyRepository->get('pages', $page_id, $limit);
+	}
+
+    /**
+     * @param $page_id
+     * @param int $limit
+     * @return mixed
+     */
+    public function history($page_id)
+	{
+		return $this->historyRepository->getPaginated('pages', $page_id);
 	}
 
     /**

@@ -95,7 +95,7 @@ class PagesAdminController extends BaseController {
 			$view_data = [
 							'page' => $this->pageRepository->find($id),
 							'children' => $this->pageRepository->subPages($id, 10),
-							'history' => $this->pageRepository->history($id, 5),
+							'history' => $this->pageRepository->recentHistory($id, 5),
 							'contributors' => $this->pageRepository->contributors($id)
 						];
 
@@ -519,4 +519,24 @@ class PagesAdminController extends BaseController {
 			return Redirect::to(Coanda::adminUrl('pages'));
 		}
 	}
+
+    /**
+     * @param $page_id
+     * @return mixed
+     */
+    public function getHistory($page_id)
+    {
+        try
+        {
+            $page = $this->pageRepository->find($page_id);
+            $history = $this->pageRepository->history($page->id);
+            $contributors = $this->pageRepository->contributors($page->id);
+
+            return View::make('coanda::admin.pages.history', [ 'page' => $page, 'histories' => $history, 'contributors' => $contributors]);
+        }
+        catch (PageNotFound $exception)
+        {
+            return Redirect::to(Coanda::adminUrl('pages'));
+        }
+    }
 }

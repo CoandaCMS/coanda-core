@@ -27,9 +27,16 @@ class History extends Eloquent {
      */
     public function user()
 	{
-		$userRepository = \App::make('CoandaCMS\Coanda\Users\Repositories\UserRepositoryInterface');
+		try
+		{
+			$userRepository = \App::make('CoandaCMS\Coanda\Users\Repositories\UserRepositoryInterface');
 
-		return $userRepository->find($this->user_id);
+			return $userRepository->find($this->user_id);			
+		}
+		catch (\CoandaCMS\Coanda\Users\Exceptions\UserNotFound $exception)
+		{
+			return false;
+		}
 	}
 
     /**
