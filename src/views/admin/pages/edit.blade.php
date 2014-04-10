@@ -15,7 +15,7 @@
 
 <div class="row">
 	<div class="page-name col-md-12">
-		<h1 class="pull-left">Edit page</h1>
+		<h1 class="pull-left">Edit page (version #{{ $version->version }})</h1>
 	</div>
 </div>
 
@@ -106,6 +106,34 @@
 			    @if (isset($invalid_fields['slug']))
 			    	<span class="help-block">{{ $invalid_fields['slug'] }}</span>
 			    @endif
+			</div>
+
+			<div class="row">
+				<input type="hidden" name="date_format" value="d/m/Y H:i">
+				<div class="col-md-6">
+					<div class="form-group @if (isset($invalid_fields['visible_from'])) has-error @endif">
+						<label class="control-label" for="visibility">Visibile from</label>
+						<div class="input-group datetimepicker" data-date-format="DD/MM/YYYY HH:mm">
+							<input type="text" class="date-field form-control" id="visible_from" name="visible_from" value="{{ Input::old('visible_from', $version->present()->visible_from) }}">
+							<span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
+						</div>
+					    @if (isset($invalid_fields['visible_from']))
+					    	<span class="help-block">{{ $invalid_fields['visible_from'] }}</span>
+					    @endif
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="form-group @if (isset($invalid_fields['visible_to'])) has-error @endif">
+						<label class="control-label" for="visibility">Visibile to</label>
+						<div class="input-group datetimepicker" data-date-format="DD/MM/YYYY HH:mm">
+							<input type="text" class="date-field form-control" id="visible_to" name="visible_to" value="{{ Input::old('visible_to', $version->present()->visible_to) }}">
+							<span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
+						</div>
+					    @if (isset($invalid_fields['visible_to']))
+					    	<span class="help-block">{{ $invalid_fields['visible_to'] }}</span>
+					    @endif
+					</div>
+				</div>
 			</div>
 
 			@if ($version->page->show_meta)

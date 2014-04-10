@@ -14,6 +14,8 @@ use CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageAttribute as PageAtt
 
 use CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface;
 
+use Carbon\Carbon;
+
 /**
  * Class EloquentPageRepository
  * @package CoandaCMS\Coanda\Pages\Repositories\Eloquent
@@ -275,6 +277,74 @@ class EloquentPageRepository implements PageRepositoryInterface {
 			$version->meta_description = $data['meta_description'];
 		}
 
+		// Get the visible_from and to dates
+		$format = isset($data['date_format']) ? $data['date_format'] : false;
+
+		if ($format)
+		{
+			$dates = [
+					'visible_from' => false,
+					'visible_to' => false
+				];
+
+			$date_error = false;
+
+			foreach (array_keys($dates) as $date)
+			{
+				if (isset($data[$date]) && $data[$date] !== '')
+				{
+					try
+					{
+						$dates[$date] = Carbon::createFromFormat($format, $data[$date], date_default_timezone_get());
+
+						if ($dates[$date]->isPast())
+						{
+							$failed[$date] = 'The specified date is in past';
+
+							$date_error = true;
+						}
+					}
+					catch(\InvalidArgumentException $exception)
+					{
+						$failed[$date] = 'The specified date is invalid';
+
+						$date_error = true;
+					}
+				}
+			}
+
+			if (!$date_error && $dates['visible_from'] && $dates['visible_to'])
+			{
+				// Check that the from date is before the to date
+				if (!$dates['visible_from']->lt($dates['visible_to']))
+				{
+					$failed['visible_to'] = 'The date must be after the visible from date';
+				}
+			}
+
+			if ($dates['visible_from'])
+			{
+				$version->visible_from = $dates['visible_from'];
+			}
+
+			if ($dates['visible_to'])
+			{
+				$version->visible_to = $dates['visible_to'];
+			}
+
+			// If we have a blank date, null it
+			if (isset($data['visible_from']) && $data['visible_from'] == '')
+			{
+				$version->visible_from = null;
+			}
+
+			// If we have a blank date, null it
+			if (isset($data['visible_to']) && $data['visible_to'] == '')
+			{
+				$version->visible_to = null;
+			}
+		}
+
 		$version->save();
 
 		if (count($failed) > 0)
@@ -370,6 +440,10 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		// Carry over the meta
 		$version->meta_page_title = $current_version->meta_page_title;
 		$version->meta_description = $current_version->meta_description;
+
+		// Carry over the visible date
+		$version->visible_from = $current_version->visible_from;
+		$version->visible_to = $current_version->visible_to;
 
 		$page->versions()->save($version);
 

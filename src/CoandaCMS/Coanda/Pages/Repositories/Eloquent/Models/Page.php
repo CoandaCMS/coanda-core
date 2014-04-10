@@ -1,6 +1,7 @@
 <?php namespace CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models;
 
 use Eloquent, Coanda, App;
+use Carbon\Carbon;
 
 /**
  * Class Page
@@ -215,6 +216,70 @@ class Page extends Eloquent {
 	public function getStatusAttribute()
 	{
 		return $this->currentVersion()->status;
+	}
+
+	public function getIsVisibleAttribute()
+	{
+		$from = $this->getVisibleFromAttribute();
+		$to = $this->getVisibleToAttribute();
+
+		$now = Carbon::now(date_default_timezone_get());
+
+		$is_visible = false;
+
+		// Do we have a from and a to date?
+		if ($from && $to)
+		{
+			if ($now->gt($from) && $now->lt($to))
+			{
+				$is_visible = true;
+			}
+		}
+		else
+		{
+			// We have a from date
+			if ($from)
+			{
+				if ($now->gt($from))
+				{
+					$is_visible = true;
+				}
+			}
+
+			if ($to)
+			{
+				if ($now->lt($to))
+				{
+					$is_visible = true;
+				}
+			}
+		}
+
+		return $is_visible;
+	}
+
+	public function getVisibleFromAttribute()
+	{
+		$date = $this->currentVersion()->visible_from;
+
+		if ($date && $date !== '')
+		{
+			return new Carbon($date, date_default_timezone_get());
+		}
+
+		return false;
+	}
+
+	public function getVisibleToAttribute()
+	{
+		$date = $this->currentVersion()->visible_to;
+
+		if ($date && $date !== '')
+		{
+			return new Carbon($date, date_default_timezone_get());
+		}
+
+		return false;
 	}
 
 	/**

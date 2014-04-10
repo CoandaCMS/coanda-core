@@ -59,7 +59,7 @@
 						{{ Form::open(['url' => Coanda::adminUrl('pages')]) }}
 							<table class="table table-striped">
 								@foreach ($pages as $page)
-									<tr class="status-{{ $page->status }}">
+									<tr class="status-{{ $page->status }} @if (!$page->is_visible) info @endif">
 										<td class="tight"><input type="checkbox" name="remove_page_list[]" value="{{ $page->id }}"></td>
 										<td>
 											@if ($page->is_draft)
@@ -71,7 +71,16 @@
 										</td>
 										<td>{{ $page->present()->type }}</td>
 										<td>{{ $page->children->count() }} sub page{{ $page->children->count() !== 1 ? 's' : '' }}</td>
-										<td>{{ $page->present()->status }}</td>
+										<td>
+											{{ $page->present()->status }}
+
+											@if (!$page->is_visible)
+												<span class="label label-info show-tooltip" data-toggle="tooltip" data-placement="top" title="{{ $page->present()->visible_dates_short }}">
+													Hidden
+													<i class="fa fa-calendar"></i>
+												</span>
+											@endif
+										</td>
 										<td class="order-column">{{ Form::text('ordering[' . $page->id . ']', $page->order, ['class' => 'form-control input-sm']) }}</td>
 										<td class="tight">
 											@if ($page->is_draft)

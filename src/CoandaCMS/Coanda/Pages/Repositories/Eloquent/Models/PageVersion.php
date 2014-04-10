@@ -10,6 +10,8 @@ class PageVersion extends Eloquent {
 
 	use \CoandaCMS\Coanda\Core\Presenters\PresentableTrait;
 
+	protected $dates = ['visible_from', 'visible_to'];
+
     /**
      * @var string
      */

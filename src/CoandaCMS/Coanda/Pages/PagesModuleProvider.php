@@ -59,6 +59,11 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 					App::abort('404');
 				}
 
+				if (!$page->is_visible)
+				{
+					App::abort('404');
+				}
+
 				return 'View page: ' . $page->present()->name;
 			}
 			catch(\CoandaCMS\Coanda\Exceptions\PageNotFound $exception)

@@ -53,6 +53,19 @@
 	</div>
 </div>
 
+@if ($page->visible_from || $page->visible_to)
+<div class="row">
+	<div class="page-visibility col-md-12">
+		@if ($page->is_visible)
+			<span class="label label-success">Visible</span>
+		@else
+			<span class="label label-info">Hidden</span>
+		@endif
+		<i class="fa fa-calendar"></i> {{ $page->present()->visible_dates }}
+	</div>
+</div>
+@endif
+
 <div class="row">
 	<div class="page-options col-md-12">
 

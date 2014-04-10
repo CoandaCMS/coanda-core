@@ -72,6 +72,11 @@ h2
 	border-color: #000;
 }
 
+.bootstrap-datetimepicker-widget .btn
+{
+	border: none;
+}
+
 .note-editor .btn
 {
 	border-color: #ccc;
@@ -176,6 +181,7 @@ h2
 .page-status
 {
 	padding: 10px;
+	text-align: right;
 }
 
 .page-tabs
@@ -194,6 +200,13 @@ h2
 	padding-top: 10px;
 	padding-bottom: 10px;
 	border-bottom: 1px solid #e7e7e7;
+}
+
+.page-visibility
+{
+	background: #D9EDF7;
+	padding-top: 10px;
+	padding-bottom: 10px;
 }
 
 .page-timeline
