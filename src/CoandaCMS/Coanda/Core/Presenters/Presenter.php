@@ -60,11 +60,16 @@ abstract class Presenter {
      * @param $property
      * @return string
      */
-    public function format_date($property)
+    public function format_date($property, $format = false)
 	{
 		if ($this->model->$property && method_exists($this->model->$property, 'format'))
 		{
-			return $this->model->$property->format($this->date_format);
+			if (!$format)
+			{
+				$format = $this->date_format;
+			}
+			
+			return $this->model->$property->format($format);
 		}
 		
 		return '';
