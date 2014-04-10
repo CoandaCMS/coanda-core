@@ -1,4 +1,4 @@
-<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+<nav class="main-navigation navbar navbar-inverse navbar-fixed-top" role="navigation">
 	<div class="container-fluid">
 		<ul class="nav navbar-nav">
 			<li><a href="{{ Coanda::adminUrl('/') }}">Dashboard</a></li>
