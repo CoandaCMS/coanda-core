@@ -103,7 +103,8 @@ class Coanda {
 	{
 		$core_modules = [
 			'CoandaCMS\Coanda\Users\UsersModuleProvider',
-			'CoandaCMS\Coanda\Pages\PagesModuleProvider'
+			'CoandaCMS\Coanda\Pages\PagesModuleProvider',
+			'CoandaCMS\Coanda\Media\MediaModuleProvider'
 		];
 
 		$enabled_modules = Config::get('coanda::coanda.enabled_modules');
