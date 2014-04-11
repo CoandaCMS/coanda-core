@@ -202,6 +202,7 @@ h2
 .page-tabs .tab-pane
 {
 	padding-top: 10px;
+	padding-bottom: 10px;
 }
 
 .page-options
