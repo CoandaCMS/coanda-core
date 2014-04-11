@@ -60,7 +60,7 @@ class EloquentMediaRepository implements MediaRepositoryInterface {
 
 	public function getList($per_page)
 	{
-		return $this->model->orderBy('created_at', 'asc')->paginate($per_page);
+		return $this->model->orderBy('created_at', 'desc')->paginate($per_page);
 	}
 
 	public function handleUpload($file)
@@ -69,8 +69,6 @@ class EloquentMediaRepository implements MediaRepositoryInterface {
 		{
 			throw new MissingMedia;
 		}
-
-		dd($file);
 
 		$new_media = new $this->model;
 
