@@ -304,20 +304,27 @@ class PagesAdminController extends BaseController {
 
 			if (Input::has('publish') && Input::get('publish') == 'true')
 			{
-				try
+				if (!Input::has('publish_handler') || Input::get('publish_handler') == '')
 				{
-					$redirect = $this->pageRepository->publishVersion($version, Input::get('publish_handler'));
-
-					if ($redirect)
-					{
-						return Redirect::to($redirect);
-					}
-
-					return Redirect::to(Coanda::adminUrl('pages/view/' . $page_id));					
+					return Redirect::to(Coanda::adminUrl('pages/editversion/' . $page_id . '/' . $version_number))->with('error', true)->with('missing_publish_handler', true)->withInput();
 				}
-				catch (PublishHandlerException $exception)
+				else
 				{
-					return Redirect::to(Coanda::adminUrl('pages/editversion/' . $page_id . '/' . $version_number))->with('error', true)->with('invalid_publish_handler', true)->with('publish_handler_invalid_fields', $exception->getInvalidFields());
+					try
+					{
+						$redirect = $this->pageRepository->publishVersion($version, Input::get('publish_handler'), Input::all());
+
+						if ($redirect)
+						{
+							return Redirect::to($redirect);
+						}
+
+						return Redirect::to(Coanda::adminUrl('pages/view/' . $page_id));					
+					}
+					catch (PublishHandlerException $exception)
+					{
+						return Redirect::to(Coanda::adminUrl('pages/editversion/' . $page_id . '/' . $version_number))->with('error', true)->with('invalid_publish_handler', true)->with('publish_handler_invalid_fields', $exception->getInvalidFields())->withInput();
+					}
 				}
 			}
 		}

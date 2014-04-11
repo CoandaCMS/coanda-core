@@ -10,12 +10,12 @@ class Immediate implements PublishHandlerInterface {
 
 	public $template = 'coanda::admin.pages.publishoptions.immediate';
 
-	public function validate()
+	public function validate($version, $data)
 	{
 		// Nothing to validate on this one
 	}
 
-	public function execute($version, $urlRepository, $historyRepository)
+	public function execute($version, $data, $urlRepository, $historyRepository)
 	{
 		$page = $version->page;
 

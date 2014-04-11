@@ -1,6 +1,7 @@
 <?php namespace CoandaCMS\Coanda\Pages\Presenters;
 
 use Lang;
+use Carbon\Carbon;
 
 /**
  * Class PageVersion
@@ -62,5 +63,18 @@ class PageVersion extends \CoandaCMS\Coanda\Core\Presenters\Presenter {
         }
 
         return $this->format_date('visible_to');
+    }
+
+    public function delayed_publish_date()
+    {
+        if ($this->model->publish_handler == 'delayed')
+        {
+            $data = json_decode($this->model->publish_handler_data);
+
+            if (isset($data->date))
+            {
+                return Carbon::createFromFormat('Y-m-d H:i:s', $data->date->date, $data->date->timezone);
+            }
+        }
     }
 }

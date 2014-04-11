@@ -63,6 +63,13 @@
 			<div class="publish-options">
 
 				@if (count($publish_handlers) > 1)
+
+					@if (Session::has('missing_publish_handler'))
+						<div class="alert alert-danger">
+							Please choose how you would like this page to be published.
+						</div>
+					@endif
+
 					<h2>Publish options</h2>
 					@foreach ($publish_handlers as $publish_handler)
 						<div class="row">
@@ -83,6 +90,7 @@
 					<input type="hidden" name="publish_handler" value="{{ $publish_handlers[array_keys($publish_handlers)[0]]->identifier }}">
 					@include($publish_handlers[array_keys($publish_handlers)[0]]->template, [ 'publish_handler' => $publish_handlers[array_keys($publish_handlers)[0]], 'publish_handler_invalid_fields' => $publish_handler_invalid_fields ])
 				@endif
+
 				{{ Form::button('Publish', ['name' => 'publish', 'value' => 'true', 'type' => 'submit', 'class' => 'btn btn-success']) }}
 			</div>
 		</div>

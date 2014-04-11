@@ -12,10 +12,10 @@ interface PublishHandlerInterface {
     /**
      * @return mixed
      */
-    public function validate();
+    public function validate($version, $data);
 
     /**
      * @return mixed
      */
-    public function execute($version, $urlRepository, $historyRepository);
+    public function execute($version, $data, $urlRepository, $historyRepository);
 }

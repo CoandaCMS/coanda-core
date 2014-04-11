@@ -46,6 +46,8 @@
 
 			@if ($page->is_trashed)
 				<span class="label label-danger">{{ $page->present()->status }}</span>
+			@elseif ($page->is_pending)
+				<span class="label label-info">{{ $page->present()->status }}</span>
 			@else
 				<span class="label @if ($page->is_draft) label-warning @else label-success @endif">{{ $page->present()->status }}</span>
 			@endif
@@ -205,7 +207,7 @@
 
 					<table class="table table-striped">
 						@foreach ($page->versions as $version)
-							<tr>
+							<tr @if ($version->status == 'pending') class="info" @endif>
 								<td class="tight">
 									@if ($version->status == 'draft' && !$page->is_trashed)
 										<a href="{{ Coanda::adminUrl('pages/removeversion/' . $page->id . '/' . $version->version) }}"><i class="fa fa-minus-circle"></i></a>
@@ -214,7 +216,13 @@
 									@endif
 								</td>
 								<td>#{{ $version->version }}</td>
-								<td>{{ $version->present()->updated_at }}</td>
+								<td>
+									Updated: {{ $version->present()->updated_at }}
+									@if ($version->status == 'pending')
+										<span class="label label-info">Pending</span>
+										<i class="fa fa-calendar"></i> Due to be published {{ $version->present()->delayed_publish_date }}
+									@endif
+								</td>
 								<td class="tight">
 									@if (!$page->is_trashed)
 										@if ($version->status == 'draft')

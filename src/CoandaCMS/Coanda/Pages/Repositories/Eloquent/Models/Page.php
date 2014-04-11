@@ -223,6 +223,11 @@ class Page extends Eloquent {
 		$from = $this->getVisibleFromAttribute();
 		$to = $this->getVisibleToAttribute();
 
+		if (!$from && !$to)
+		{
+			return true;
+		}
+
 		$now = Carbon::now(date_default_timezone_get());
 
 		$is_visible = false;
@@ -321,6 +326,15 @@ class Page extends Eloquent {
 	public function getIsDraftAttribute()
 	{
 		return $this->currentVersion()->status == 'draft';
+	}
+
+	/**
+	 * Check if the status of the current version is pending
+	 * @return boolean
+	 */
+	public function getIsPendingAttribute()
+	{
+		return $this->currentVersion()->status == 'pending';
 	}
 
     /**

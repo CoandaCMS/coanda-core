@@ -396,7 +396,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
     /**
      * @param $version
      */
-    public function publishVersion($version, $publish_handler)
+    public function publishVersion($version, $publish_handler, $data)
 	{
 		$publish_handler = Coanda::module('pages')->getPublishHandler($publish_handler);
 
@@ -405,11 +405,13 @@ class EloquentPageRepository implements PageRepositoryInterface {
 			dd('no publish handler for: ' . $publish_handler);
 		}
 
+		$version->publish_handler = $publish_handler->identifier;
+
 		// Validate the publish handler - this can throw an exception if needs be!
-		$publish_handler->validate($version);
+		$publish_handler->validate($version, $data);
 
 		// Return the result of the publish handler - this should be a redirect URL of null/false as required.
-		return $publish_handler->execute($version, $this->urlRepository, $this->historyRepository);
+		return $publish_handler->execute($version, $data, $this->urlRepository, $this->historyRepository);
 	}
 
     /**

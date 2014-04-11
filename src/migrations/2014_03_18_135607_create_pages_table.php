@@ -54,6 +54,9 @@ class CreatePagesTable extends Migration {
 			$table->timestamp('visible_from');
 			$table->timestamp('visible_to');
 
+			$table->string('publish_handler');
+			$table->text('publish_handler_data');
+
 			$table->integer('created_by');
 			$table->integer('edited_by');
 			$table->timestamps();

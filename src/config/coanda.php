@@ -25,6 +25,7 @@ return array(
 	],
 
 	'publish_handlers' => [
+		// 'CoandaCMS\Coanda\Pages\PublishHandlers\Delayed',	
 	]
 	
 );

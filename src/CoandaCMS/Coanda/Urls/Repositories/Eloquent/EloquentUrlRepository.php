@@ -163,7 +163,7 @@ class EloquentUrlRepository implements \CoandaCMS\Coanda\Urls\Repositories\UrlRe
 			$current_url->save();
 		}
 
-		return true;
+		return $url;
 	}
 
     /**
