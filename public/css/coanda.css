@@ -328,4 +328,6 @@ td.order-column .input-sm
 .caption
 {
 	text-align: center;
+	white-space: nowrap;
+	overflow: hidden;
 }
