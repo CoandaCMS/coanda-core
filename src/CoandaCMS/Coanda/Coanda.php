@@ -167,11 +167,17 @@ class Coanda {
 			$module->userRoutes();
 		}
 
-		Route::match(array('GET', 'POST'), '{slug}', function($slug)
-		{
-			return Coanda::route($slug);
+		App::before( function () {
 
-		})->where('slug', '[\/_\-\_A-Za-z0-9]+');
+			Route::match(array('GET', 'POST'), '{slug}', function($slug)
+			{
+				dd('Coanda: ' . $slug);
+				return Coanda::route($slug);
+
+			})->where('slug', '[\/_\-\_A-Za-z0-9]+');
+
+		});
+
 	}
 
 	/**
