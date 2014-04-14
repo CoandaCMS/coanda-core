@@ -46,7 +46,6 @@ $(document).ready( function () {
 
 	$('.show-tooltip').tooltip();
 
-	// var dropZone = $("#dropzone-uploader").dropzone();
 	var reload_url = $("#dropzone-uploader").data('reload-url');
 
 	Dropzone.options.dropzoneUploader = {
