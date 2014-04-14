@@ -78,7 +78,7 @@ class EloquentMediaRepository implements MediaRepositoryInterface {
 
 		$upload_filename = time() . '-' . md5($new_media->original_filename) . '.' . $file->getClientOriginalExtension();
 
-        $file->move(Config::get('coanda::coanda.uploads_directory'), $upload_filename);
+        $file->move(base_path() . '/' . Config::get('coanda::coanda.uploads_directory'), $upload_filename);
 
         $new_media->filename = $upload_filename;
         $new_media->save();

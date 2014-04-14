@@ -36,13 +36,15 @@
 					<div class="row">
 						@foreach ($media_list as $media)
 							<div class="col-xs-6 col-md-3">
-								<div href="#" class="thumbnail">
-									@if ($media->present()->has_preview)
-										<img src="{{ $media->present()->thumbnail_url }}" width="200" height="200">
-									@else
-										<img src="{{ asset('packages/coanda/images/file.png') }}" width="200" height="200">
-									@endif
-									<div class="caption">{{ $media->present()->name }}</div>
+								<div class="thumbnail">
+									<a href="{{ Coanda::adminUrl('media/view/' . $media->id) }}">
+										@if ($media->present()->has_preview)
+											<img src="{{ $media->present()->thumbnail_url }}" width="200" height="200">
+										@else
+											<img src="{{ asset('packages/coanda/images/file.png') }}" width="200" height="200">
+										@endif
+									</a>
+									<div class="caption"><a href="{{ Coanda::adminUrl('media/view/' . $media->id) }}">{{ $media->present()->name }}</a></div>
 								</div>
 							</div>
 						@endforeach

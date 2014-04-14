@@ -2,6 +2,7 @@
 
 use View, App, Coanda, Redirect, Input, Session, Response;
 
+use CoandaCMS\Coanda\Media\Exceptions\MediaNotFound;
 use CoandaCMS\Coanda\Media\Exceptions\MissingMedia;
 
 use CoandaCMS\Coanda\Controllers\BaseController;
@@ -40,6 +41,20 @@ class MediaAdminController extends BaseController {
 		catch (MissingMedia $exception)
 		{
 			return Response::json(['error' => 'File not found, please try again.'], 500);
+		}
+	}
+
+	public function getView($media_id)
+	{
+		try
+		{
+			$media = $this->mediaRepository->findById($media_id);
+
+			return View::make('coanda::admin.media.view', ['media' => $media]);
+		}
+		catch (MediaNotFound $exception)
+		{
+			App::abort('404');
 		}
 	}
 }

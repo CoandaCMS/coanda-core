@@ -32,9 +32,19 @@ class Media extends \CoandaCMS\Coanda\Core\Presenters\Presenter {
 		return false;
 	}
 
+	public function large_url()
+	{
+		if ($this->model->type == 'image')
+		{
+			return $this->large();
+		}
+
+		return false;
+	}
+
     public function thumbnail()
     {
-        return $this->generateResized(200, 200);
+        return $this->generateCrop(200, 200);
     }
 
     public function large()
@@ -42,18 +52,50 @@ class Media extends \CoandaCMS\Coanda\Core\Presenters\Presenter {
         return $this->generateResized(800, 800);
     }
 
-    private function generateResized($width, $height, $maintainRatio = false)
+    private function generateResized($width, $height, $maintain_ratio = true)
     {
     	if ($this->type == 'image')
     	{
 	        ini_set('memory_limit', '64M');
 	        
-	        $uploads_directory = Config::get('coanda::coanda.uploads_directory');
+	        $uploads_directory = base_path() . '/' . Config::get('coanda::coanda.uploads_directory');
 	        $cache_base = Config::get('coanda::coanda.image_cache_directory');
 
 	        $cache_directory = $cache_base . '/' . $this->model->id;
 
-	        $cache_path = $cache_directory . '/' . $width . '.' . $this->extension;
+	        $cache_path = $cache_directory . '/r' . $width . '.' . $this->extension;
+
+	        if(!file_exists($cache_path))
+	        {
+	            if( !is_dir($cache_directory))
+	            {
+					mkdir($cache_directory);
+	            }
+
+	            $file_path = $uploads_directory . '/' . $this->model->filename;
+
+	            $imageFactory = ImageFactory::make($file_path);
+	            $imageFactory->resize($width, $height, $maintain_ratio, false)->save($cache_path);
+	        }
+
+	        return url($cache_path);
+    	}
+
+    	return false;
+    }
+
+    private function generateCrop($width, $height)
+    {
+    	if ($this->type == 'image')
+    	{
+	        ini_set('memory_limit', '64M');
+	        
+	        $uploads_directory = base_path() . '/' . Config::get('coanda::coanda.uploads_directory');
+	        $cache_base = Config::get('coanda::coanda.image_cache_directory');
+
+	        $cache_directory = $cache_base . '/' . $this->model->id;
+
+	        $cache_path = $cache_directory . '/c' . $width . '.' . $this->extension;
 
 	        if(!file_exists($cache_path))
 	        {
@@ -72,5 +114,5 @@ class Media extends \CoandaCMS\Coanda\Core\Presenters\Presenter {
     	}
 
     	return false;
-    }
+    }    
 }
