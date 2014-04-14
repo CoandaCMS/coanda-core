@@ -6,7 +6,7 @@ use Coanda;
 
 // Exceptions
 use CoandaCMS\Coanda\Exceptions\MissingInput;
-use CoandaCMS\Coanda\Exceptions\AuthenticationFailed;
+use CoandaCMS\Coanda\Users\Exceptions\AuthenticationFailed;
 
 /**
  * Class AdminController
