@@ -171,7 +171,6 @@ class Coanda {
 
 			Route::match(array('GET', 'POST'), '{slug}', function($slug)
 			{
-				dd('Coanda: ' . $slug);
 				return Coanda::route($slug);
 
 			})->where('slug', '[\/_\-\_A-Za-z0-9]+');
