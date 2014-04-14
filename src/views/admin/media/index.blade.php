@@ -36,13 +36,19 @@
 					<div class="row">
 						@foreach ($media_list as $media)
 							<div class="col-xs-6 col-md-3">
-								<a href="#" class="thumbnail">
-									<img data-src="holder.js/100%x180">
-									<div class="caption">{{ $media->original_filename }}</div>
-								</a>
+								<div href="#" class="thumbnail">
+									@if ($media->present()->has_preview)
+										<img src="{{ $media->present()->thumbnail_url }}" width="200" height="200">
+									@else
+										<img src="{{ asset('packages/coanda/images/file.png') }}" width="200" height="200">
+									@endif
+									<div class="caption">{{ $media->present()->name }}</div>
+								</div>
 							</div>
 						@endforeach
 					</div>
+
+					{{ $media_list->links() }}
 
 				</div>
 			</div>
@@ -57,7 +63,7 @@
 			<div class="tab-content">
 				<div class="tab-pane active" id="upload">
 					<p>Max file size <span class="label label-info">{{ ini_get('upload_max_filesize') }}</span></p>
-					<form action="{{ Coanda::adminUrl('media/handle-upload') }}" class="dropzone" id="my-awesome-dropzone"></form>
+					<form action="{{ Coanda::adminUrl('media/handle-upload') }}" class="dropzone" id="dropzone-uploader" data-reload-url="{{ Coanda::adminUrl('media') }}"></form>
 				</div>
 				<div class="tab-pane" id="search">
 					Search media

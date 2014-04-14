@@ -19,7 +19,7 @@ class MediaAdminController extends BaseController {
 
     public function getIndex()
 	{
-		$media_list = $this->mediaRepository->getList(10);
+		$media_list = $this->mediaRepository->getList(12);
 		
 		return View::make('coanda::admin.media.index', [ 'media_list' => $media_list ]);
 	}

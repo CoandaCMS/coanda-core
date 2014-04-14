@@ -26,6 +26,16 @@ return array(
 
 	'publish_handlers' => [
 		// 'CoandaCMS\Coanda\Pages\PublishHandlers\Delayed',	
-	]
-	
+	],
+
+	/*
+	|--------------------------------------------------------------------------
+	| Media settings
+	|--------------------------------------------------------------------------
+	|
+	*/
+	'uploads_directory' => 'uploads',
+
+	'image_cache_directory' => 'i',
+
 );

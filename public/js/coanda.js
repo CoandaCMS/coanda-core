@@ -46,10 +46,20 @@ $(document).ready( function () {
 
 	$('.show-tooltip').tooltip();
 
-	// $('.input-daterange').daterangepicker({
-	// 	timePicker: true,
-	// 	timePickerIncrement: 30,
-	// 	format: $('.input-daterange').data('format')
-	// });
+	// var dropZone = $("#dropzone-uploader").dropzone();
+	var reload_url = $("#dropzone-uploader").data('reload-url');
+
+	Dropzone.options.dropzoneUploader = {
+
+		init: function() {
+				this.on("success", function() {
 	
+					if (this.getQueuedFiles().length == 0 && this.getUploadingFiles().length == 0)
+					{
+						window.location = reload_url;
+					}
+				})
+			}
+		};
+
 });

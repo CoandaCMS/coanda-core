@@ -1,6 +1,6 @@
 <?php namespace CoandaCMS\Coanda\Media\Repositories\Eloquent;
 
-use Coanda;
+use Coanda, Config;
 
 use CoandaCMS\Coanda\Exceptions\ValidationException;
 use CoandaCMS\Coanda\Media\Exceptions\MediaNotFound;
@@ -78,7 +78,7 @@ class EloquentMediaRepository implements MediaRepositoryInterface {
 
 		$upload_filename = time() . '-' . md5($new_media->original_filename) . '.' . $file->getClientOriginalExtension();
 
-        $file->move('uploads', $upload_filename);
+        $file->move(Config::get('coanda::coanda.uploads_directory'), $upload_filename);
 
         $new_media->filename = $upload_filename;
         $new_media->save();

@@ -310,3 +310,22 @@ td.order-column .input-sm
 {
 	vertical-align: middle;
 }
+
+.file-preview
+{
+	background: rgba(0,0,0,0.03);
+	max-width: 100%;
+	height: auto;
+	display: block;
+	text-align: center;
+}
+
+.file-preview .fa
+{
+	font-size: 80px;
+}
+
+.caption
+{
+	text-align: center;
+}
