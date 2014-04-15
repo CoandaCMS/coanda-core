@@ -18,6 +18,8 @@ interface MediaRepositoryInterface {
 
     public function removeById($media_id);
 
+    public function tags($per_page);
+
     public function tagMedia($media_id, $tag_name);
 
     public function removeTag($media_id, $tag_id);
@@ -25,6 +27,8 @@ interface MediaRepositoryInterface {
     public function getTags($media_id);
 
     public function recentTagList($limit);
+
+    public function forTag($tag_id, $per_page);
 
     public function maxFileSize();
 

@@ -3,6 +3,7 @@
 use View, App, Coanda, Redirect, Input, Session, Response;
 
 use CoandaCMS\Coanda\Media\Exceptions\MediaNotFound;
+use CoandaCMS\Coanda\Media\Exceptions\TagNotFound;
 use CoandaCMS\Coanda\Media\Exceptions\MissingMedia;
 
 use CoandaCMS\Coanda\Controllers\BaseController;
@@ -157,6 +158,27 @@ class MediaAdminController extends BaseController {
 		{
 			App::abort('404');
 		}
+	}
 
+	public function getTags()
+	{
+		$tags = $this->mediaRepository->tags(10);
+
+		return View::make('coanda::admin.media.tags', ['tags' => $tags]);
+	}
+
+	public function getTag($tag_id)
+	{
+		try
+		{
+			$tag = $this->mediaRepository->tagById($tag_id);
+			$media_list = $this->mediaRepository->forTag($tag->id, 18);
+
+			return View::make('coanda::admin.media.tag', ['tag' => $tag, 'media_list' => $media_list]);
+		}
+		catch (TagNotFound $exception)
+		{
+			App::abort('404');
+		}
 	}
 }

@@ -5,6 +5,7 @@ use Coanda, Config;
 use CoandaCMS\Coanda\Exceptions\ValidationException;
 use CoandaCMS\Coanda\Media\Exceptions\MediaNotFound;
 use CoandaCMS\Coanda\Media\Exceptions\MissingMedia;
+use CoandaCMS\Coanda\Media\Exceptions\TagNotFound;
 
 use CoandaCMS\Coanda\Media\Repositories\Eloquent\Models\Media as MediaModel;
 use CoandaCMS\Coanda\Media\Repositories\Eloquent\Models\MediaTag as MediaTagModel;
@@ -109,6 +110,11 @@ class EloquentMediaRepository implements MediaRepositoryInterface {
 		return $media->originalFileLink();
 	}
 
+	public function tags($per_page)
+	{
+		return $this->tag_model->orderBy('created_at', 'desc')->paginate($per_page);
+	}
+
 	public function tagMedia($media_id, $tag_name)
 	{
 		$media = $this->findById($media_id);
@@ -158,6 +164,25 @@ class EloquentMediaRepository implements MediaRepositoryInterface {
 	public function recentTagList($limit)
 	{
 		return $this->tag_model->with('media')->orderBy('created_at', 'desc')->take($limit)->get();
+	}
+
+	public function tagById($tag_id)
+	{
+		$tag = $this->tag_model->find($tag_id);
+
+		if (!$tag)
+		{
+			throw new TagNotFound('Tag #' . $tag_id . ' not found');
+		}
+		
+		return $tag;
+	}
+
+	public function forTag($tag_id, $per_page)
+	{
+		$tag = $this->tagById($tag_id);
+
+		return $tag->media()->orderBy('created_at', 'desc')->paginate($per_page);
 	}
 
 	public function maxFileSize()
