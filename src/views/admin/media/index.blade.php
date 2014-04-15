@@ -74,7 +74,7 @@
 			</ul>
 			<div class="tab-content">
 				<div class="tab-pane active" id="upload">
-					<p>Max file size <span class="label label-info">{{ ini_get('upload_max_filesize') }}</span></p>
+					<p>Max file size <span class="label label-info">{{ $max_upload }}</span></p>
 					<form action="{{ Coanda::adminUrl('media/handle-upload') }}" class="dropzone" id="dropzone-uploader" data-reload-url="{{ Coanda::adminUrl('media') }}"></form>
 				</div>
 				<div class="tab-pane" id="search">

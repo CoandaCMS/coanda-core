@@ -154,4 +154,9 @@ class EloquentMediaRepository implements MediaRepositoryInterface {
 
 		return $media->tags;
 	}
+
+	public function maxFileSize()
+	{
+		return ini_get('upload_max_filesize');
+	}
 }
