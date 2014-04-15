@@ -16,6 +16,9 @@
 <div class="row">
 	<div class="page-name col-md-12">
 		<h1 class="pull-left">Tag: {{ $tag->tag }}</h1>
+		<div class="page-status pull-right">
+			<span class="label label-default">Total {{ $media_list->getTotal() }}</span>
+		</div>
 	</div>
 </div>
 
