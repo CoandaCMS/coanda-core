@@ -50,6 +50,7 @@
 						</div>
 
 						{{ Form::button('Upload', ['name' => 'upload', 'value' => 'true', 'type' => 'submit', 'class' => 'btn btn-primary']) }}
+						<a href="{{ Coanda::adminUrl('media') }}" class="btn btn-default">Cancel</a>
 
 					{{ Form::close() }}
 
