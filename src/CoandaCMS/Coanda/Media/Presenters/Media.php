@@ -12,6 +12,17 @@ class Media extends \CoandaCMS\Coanda\Core\Presenters\Presenter {
 		return $this->model->original_filename;
 	}
 
+	public function size()
+	{
+		$bytes = $this->model->size;
+
+		$size = array('B','kB','MB','GB','TB','PB','EB','ZB','YB');
+		$factor = floor((strlen($bytes) - 1) / 3);
+		$decimals = 2;
+
+		return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . @$size[$factor];
+	}
+
 	public function has_preview()
 	{
 		if ($this->model->type == 'image')

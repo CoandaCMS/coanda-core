@@ -37,38 +37,40 @@
 					<p><i class="fa fa-level-up"></i> <a href="{{ Coanda::adminUrl('media') }}">Up to Media</a></p>
 
 
-					@if ($media->present()->has_preview)
-						<div class="row">
-							<div class="col-md-8">
+					<div class="row">
+						<div class="@if ($media->present()->has_preview) col-md-8 @else col-md-4 @endif">
+							@if ($media->present()->has_preview)
 								<img src="{{ $media->present()->large_url }}" class="img-thumbnail">
-							</div>
-							<div class="col-md-4">
-
-								<p><a href="{{ Coanda::adminUrl('media/download/' . $media->id) }}"><i class="fa fa-download"></i> Download</a></p>
-
-								<table class="table table-striped">
-									<tr>
-										<td>Created</td>
-										<td>{{ $media->present()->created_at }}</td>
-									</tr>
-									<tr>
-										<td>File size</td>
-										<td>{{ $media->present()->file_size }}</td>
-									</tr>
-									@if ($media->is_image)
-										<tr>
-											<td>Dimensions</td>
-											<td>0000 x 0000</td>
-										</tr>
-									@endif
-									<tr>
-										<td>Mime type</td>
-										<td>{{ $media->present()->mime }}</td>
-									</tr>
-								</table>
-							</div>
+							@else
+								<img src="{{ asset('packages/coanda/images/file.png') }}" width="200" height="200" class="img-thumbnail">
+							@endif
 						</div>
-					@endif
+						<div class="@if ($media->present()->has_preview) col-md-4 @else col-md-8 @endif">
+
+							<p><a href="{{ Coanda::adminUrl('media/download/' . $media->id) }}"><i class="fa fa-download"></i> Download</a></p>
+
+							<table class="table table-striped">
+								<tr>
+									<td>Created</td>
+									<td>{{ $media->present()->created_at }}</td>
+								</tr>
+								<tr>
+									<td>File size</td>
+									<td>{{ $media->present()->size }}</td>
+								</tr>
+								@if ($media->type == 'image')
+									<tr>
+										<td>Dimensions</td>
+										<td>{{ $media->present()->width }} x {{ $media->present()->height }}</td>
+									</tr>
+								@endif
+								<tr>
+									<td>Mime type</td>
+									<td>{{ $media->present()->mime }}</td>
+								</tr>
+							</table>
+						</div>
+					</div>
 
 				</div>
 			</div>
