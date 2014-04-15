@@ -331,3 +331,8 @@ td.order-column .input-sm
 	white-space: nowrap;
 	overflow: hidden;
 }
+
+.dropzone
+{
+	overflow: hidden;
+}
