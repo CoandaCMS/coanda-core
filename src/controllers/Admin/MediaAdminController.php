@@ -20,8 +20,8 @@ class MediaAdminController extends BaseController {
 
     public function getIndex()
 	{
-		$media_list = $this->mediaRepository->getList(12);
-		
+		$media_list = $this->mediaRepository->getList(18);
+
 		return View::make('coanda::admin.media.index', [ 'media_list' => $media_list ]);
 	}
 
@@ -41,6 +41,34 @@ class MediaAdminController extends BaseController {
 		catch (MissingMedia $exception)
 		{
 			return Response::json(['error' => 'File not found, please try again.'], 500);
+		}
+	}
+
+	public function getAdd()
+	{
+		return View::make('coanda::admin.media.add');
+	}
+
+	public function postAdd()
+	{
+		if (Input::hasFile('file'))
+		{
+			$file = Input::file('file');
+
+			try
+			{
+				$new_media = $this->mediaRepository->handleUpload($file);
+
+				return Redirect::to(Coanda::adminUrl('media'))->with('media_uploaded', true)->with('media_uploaded_message', $new_media->present()->name);
+			}
+			catch (MissingMedia $exception)
+			{
+				return Redirect::to(Coanda::adminUrl('media/add'))->with('missing_file', true);
+			}
+		}
+		else
+		{
+			return Redirect::to(Coanda::adminUrl('media/add'))->with('missing_file', true);
 		}
 	}
 

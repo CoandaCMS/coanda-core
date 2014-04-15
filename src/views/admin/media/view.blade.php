@@ -34,13 +34,41 @@
 			<div class="tab-content">
 				<div class="tab-pane active" id="media">
 
-					@if ($media->present()->has_preview)
-						<img src="{{ $media->present()->large_url }}" class="thumbnail">
-					@endif
+					<p><i class="fa fa-level-up"></i> <a href="{{ Coanda::adminUrl('media') }}">Up to Media</a></p>
 
-					<a href="{{ Coanda::adminUrl('media/download/' . $media->id) }}">
-						<i class="fa fa-download"></i> Download
-					</a>
+
+					@if ($media->present()->has_preview)
+						<div class="row">
+							<div class="col-md-8">
+								<img src="{{ $media->present()->large_url }}" class="img-thumbnail">
+							</div>
+							<div class="col-md-4">
+
+								<p><a href="{{ Coanda::adminUrl('media/download/' . $media->id) }}"><i class="fa fa-download"></i> Download</a></p>
+
+								<table class="table table-striped">
+									<tr>
+										<td>Created</td>
+										<td>{{ $media->present()->created_at }}</td>
+									</tr>
+									<tr>
+										<td>File size</td>
+										<td>{{ $media->present()->file_size }}</td>
+									</tr>
+									@if ($media->is_image)
+										<tr>
+											<td>Dimensions</td>
+											<td>0000 x 0000</td>
+										</tr>
+									@endif
+									<tr>
+										<td>Mime type</td>
+										<td>{{ $media->present()->mime }}</td>
+									</tr>
+								</table>
+							</div>
+						</div>
+					@endif
 
 				</div>
 			</div>
@@ -53,7 +81,7 @@
 			</ul>
 			<div class="tab-content">
 				<div class="tab-pane active" id="tags">
-					List tags + add new
+
 				</div>
 			</div>
 		</div>

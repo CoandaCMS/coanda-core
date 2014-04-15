@@ -33,24 +33,34 @@
 			<div class="tab-content">
 				<div class="tab-pane active" id="media">
 
-					<div class="row">
-						@foreach ($media_list as $media)
-							<div class="col-xs-6 col-md-3">
-								<div class="thumbnail">
-									<a href="{{ Coanda::adminUrl('media/view/' . $media->id) }}">
-										@if ($media->present()->has_preview)
-											<img src="{{ $media->present()->thumbnail_url }}" width="200" height="200">
-										@else
-											<img src="{{ asset('packages/coanda/images/file.png') }}" width="200" height="200">
-										@endif
-									</a>
-									<div class="caption"><a href="{{ Coanda::adminUrl('media/view/' . $media->id) }}">{{ $media->present()->name }}</a></div>
-								</div>
-							</div>
-						@endforeach
-					</div>
+					@if (Session::has('media_uploaded'))
+						<div class="alert alert-success">
+							{{ Session::get('media_uploaded_message') }} successfully uploaded.
+						</div>
+					@endif
 
-					{{ $media_list->links() }}
+					@if ($media_list->count() > 0)
+						<div class="row">
+							@foreach ($media_list as $media)
+								<div class="col-md-2 col-xs-3">
+									<div class="thumbnail">
+										<a href="{{ Coanda::adminUrl('media/view/' . $media->id) }}">
+											@if ($media->present()->has_preview)
+												<img src="{{ $media->present()->thumbnail_url }}" width="100" height="100">
+											@else
+												<img src="{{ asset('packages/coanda/images/file.png') }}" width="100" height="100">
+											@endif
+										</a>
+										<div class="caption"><a href="{{ Coanda::adminUrl('media/view/' . $media->id) }}">{{ $media->present()->name }}</a></div>
+									</div>
+								</div>
+							@endforeach
+						</div>
+
+						{{ $media_list->links() }}
+					@else
+						<p>No media in the system yet, be the first to upload!</p>
+					@endif
 
 				</div>
 			</div>

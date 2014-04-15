@@ -65,22 +65,30 @@ class EloquentMediaRepository implements MediaRepositoryInterface {
 
 	public function handleUpload($file)
 	{
-		if (!$file)
-		{
-			throw new MissingMedia;
-		}
-
 		$new_media = new $this->model;
 
 		$new_media->original_filename = $file->getClientOriginalName();
 		$new_media->mime = $file->getMimeType();
 		$new_media->extension = $file->getClientOriginalExtension();
+		$new_media->size = $file->getClientSize();
 
 		$upload_filename = time() . '-' . md5($new_media->original_filename) . '.' . $file->getClientOriginalExtension();
+		$upload_path = base_path() . '/' . Config::get('coanda::coanda.uploads_directory');
 
-        $file->move(base_path() . '/' . Config::get('coanda::coanda.uploads_directory'), $upload_filename);
+        $file->move($upload_path, $upload_filename);
 
         $new_media->filename = $upload_filename;
+
+        if ($new_media->type == 'image')
+        {
+        	$dimensions = getimagesize($upload_path . '/' . $upload_filename);
+
+        	$new_media->width = $dimensions[0];
+        	$new_media->height = $dimensions[1];
+        }
+
         $new_media->save();
+
+        return $new_media;
 	}
 }
