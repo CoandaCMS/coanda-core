@@ -21,9 +21,10 @@ class MediaAdminController extends BaseController {
     public function getIndex()
 	{
 		$media_list = $this->mediaRepository->getList(18);
+		$tags = $this->mediaRepository->recentTagList(10);
 		$max_upload = $this->mediaRepository->maxFileSize();
 
-		return View::make('coanda::admin.media.index', [ 'media_list' => $media_list, 'max_upload' => $max_upload ]);
+		return View::make('coanda::admin.media.index', [ 'media_list' => $media_list, 'max_upload' => $max_upload, 'tags' => $tags ]);
 	}
 
 	public function postHandleUpload()

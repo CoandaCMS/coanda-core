@@ -24,6 +24,8 @@ interface MediaRepositoryInterface {
     
     public function getTags($media_id);
 
+    public function recentTagList($limit);
+
     public function maxFileSize();
 
 }

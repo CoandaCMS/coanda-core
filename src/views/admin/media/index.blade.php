@@ -70,15 +70,23 @@
 		<div class="page-tabs">
 			<ul class="nav nav-tabs">
 				<li class="active"><a href="#upload" data-toggle="tab">Upload</a></li>
-				<li><a href="#search" data-toggle="tab">Search</a></li>
+				<li><a href="#tags" data-toggle="tab">Tags</a></li>
 			</ul>
 			<div class="tab-content">
 				<div class="tab-pane active" id="upload">
 					<p>Max file size <span class="label label-info">{{ $max_upload }}</span></p>
 					<form action="{{ Coanda::adminUrl('media/handle-upload') }}" class="dropzone" id="dropzone-uploader" data-reload-url="{{ Coanda::adminUrl('media') }}"></form>
 				</div>
-				<div class="tab-pane" id="search">
-					Search media
+				<div class="tab-pane" id="tags">
+
+					<p>
+						@foreach ($tags as $tag)
+							<a href="{{ Coanda::adminUrl('media/tag/' . $tag->id) }}"><i class="fa fa-tag"></i> {{ $tag->tag }} ({{ $tag->media->count() }})</a>
+							&nbsp;
+						@endforeach
+					</p>
+
+					<p><a href="{{ Coanda::adminUrl('media/tags') }}">View all tags</a></p>
 				</div>
 			</div>
 		</div>

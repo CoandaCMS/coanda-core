@@ -155,6 +155,11 @@ class EloquentMediaRepository implements MediaRepositoryInterface {
 		return $media->tags;
 	}
 
+	public function recentTagList($limit)
+	{
+		return $this->tag_model->with('media')->orderBy('created_at', 'desc')->take($limit)->get();
+	}
+
 	public function maxFileSize()
 	{
 		return ini_get('upload_max_filesize');
