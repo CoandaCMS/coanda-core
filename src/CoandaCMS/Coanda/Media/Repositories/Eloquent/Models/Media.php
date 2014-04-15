@@ -1,6 +1,6 @@
 <?php namespace CoandaCMS\Coanda\Media\Repositories\Eloquent\Models;
 
-use Eloquent, Coanda, App, Config;
+use Eloquent, Coanda, App, Config, File;
 use Carbon\Carbon;
 
 class Media extends Eloquent {
@@ -42,6 +42,27 @@ class Media extends Eloquent {
 	public function getTypeAttribute()
 	{
 		return $this->type();
+	}
+
+	public function originalFileLink()
+	{
+        $original_file = base_path() . '/' . Config::get('coanda::coanda.uploads_directory') . '/' . $this->filename;
+        $cache_base = Config::get('coanda::coanda.file_cache_directory');
+
+        $cache_directory = $cache_base . '/' . $this->id;
+        $cache_path = $cache_directory . '/' . $this->id . '.' . $this->extension;
+
+        if(!file_exists($cache_path))
+        {
+            if( !is_dir($cache_directory))
+            {
+				mkdir($cache_directory);
+            }
+
+            copy($original_file, $cache_path);
+        }
+
+        return $cache_path;
 	}
 
 }

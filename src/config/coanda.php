@@ -38,4 +38,6 @@ return array(
 
 	'image_cache_directory' => 'i',
 
+	'file_cache_directory' => 'f',
+
 );

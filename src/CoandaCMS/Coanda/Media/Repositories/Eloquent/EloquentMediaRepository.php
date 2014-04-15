@@ -91,4 +91,11 @@ class EloquentMediaRepository implements MediaRepositoryInterface {
 
         return $new_media;
 	}
+
+	public function downloadLink($media_id)
+	{
+		$media = $this->findById($media_id);
+
+		return $media->originalFileLink();
+	}
 }

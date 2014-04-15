@@ -85,4 +85,18 @@ class MediaAdminController extends BaseController {
 			App::abort('404');
 		}
 	}
+
+	public function getDownload($media_id)
+	{
+		try
+		{
+			$link = $this->mediaRepository->downloadLink($media_id);
+
+			return Redirect::to(url($link));
+		}
+		catch (MediaNotFound $exception)
+		{
+			App::abort('404');
+		}
+	}
 }
