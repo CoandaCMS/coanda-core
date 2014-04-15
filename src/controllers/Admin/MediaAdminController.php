@@ -77,8 +77,9 @@ class MediaAdminController extends BaseController {
 		try
 		{
 			$media = $this->mediaRepository->findById($media_id);
+			$tags = $this->mediaRepository->getTags($media_id);
 
-			return View::make('coanda::admin.media.view', ['media' => $media]);
+			return View::make('coanda::admin.media.view', ['media' => $media, 'tags' => $tags]);
 		}
 		catch (MediaNotFound $exception)
 		{
@@ -98,5 +99,62 @@ class MediaAdminController extends BaseController {
 		{
 			App::abort('404');
 		}
+	}
+
+	public function postAddTag($media_id)
+	{
+		try
+		{
+			$this->mediaRepository->tagMedia($media_id, Input::get('tag'));
+
+			return Redirect::to(Coanda::adminUrl('media/view/' . $media_id));
+		}
+		catch (MediaNotFound $exception)
+		{
+			App::abort('404');
+		}
+	}
+
+	public function getRemoveTag($media_id, $tag_id)
+	{
+		try
+		{
+			$this->mediaRepository->removeTag($media_id, $tag_id);
+
+			return Redirect::to(Coanda::adminUrl('media/view/' . $media_id));
+		}
+		catch (MediaNotFound $exception)
+		{
+			App::abort('404');
+		}
+	}
+
+	public function getRemove($media_id)
+	{
+		try
+		{
+			$media = $this->mediaRepository->findById($media_id);
+
+			return View::make('coanda::admin.media.remove', ['media' => $media]);
+		}
+		catch (MediaNotFound $exception)
+		{
+			App::abort('404');
+		}
+	}
+
+	public function postRemove($media_id)
+	{
+		try
+		{
+			$this->mediaRepository->removeById($media_id);
+
+			return Redirect::to(Coanda::adminUrl('media'));
+		}
+		catch (MediaNotFound $exception)
+		{
+			App::abort('404');
+		}
+
 	}
 }

@@ -16,4 +16,12 @@ interface MediaRepositoryInterface {
 
     public function handleUpload($file);
 
+    public function removeById($media_id);
+
+    public function tagMedia($media_id, $tag_name);
+
+    public function removeTag($media_id, $tag_id);
+    
+    public function getTags($media_id);
+
 }

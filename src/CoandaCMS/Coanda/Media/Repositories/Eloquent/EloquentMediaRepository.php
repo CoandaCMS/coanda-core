@@ -7,6 +7,7 @@ use CoandaCMS\Coanda\Media\Exceptions\MediaNotFound;
 use CoandaCMS\Coanda\Media\Exceptions\MissingMedia;
 
 use CoandaCMS\Coanda\Media\Repositories\Eloquent\Models\Media as MediaModel;
+use CoandaCMS\Coanda\Media\Repositories\Eloquent\Models\MediaTag as MediaTagModel;
 
 use CoandaCMS\Coanda\Media\Repositories\MediaRepositoryInterface;
 
@@ -15,12 +16,14 @@ use Carbon\Carbon;
 class EloquentMediaRepository implements MediaRepositoryInterface {
 
     private $model;
+    private $tag_model;
 
     private $historyRepository;
 
-    public function __construct(MediaModel $model, \CoandaCMS\Coanda\History\Repositories\HistoryRepositoryInterface $historyRepository)
+    public function __construct(MediaModel $model, MediaTagModel $tag_model, \CoandaCMS\Coanda\History\Repositories\HistoryRepositoryInterface $historyRepository)
 	{
 		$this->model = $model;
+		$this->tag_model = $tag_model;
 		$this->historyRepository = $historyRepository;
 	}
 
@@ -63,6 +66,13 @@ class EloquentMediaRepository implements MediaRepositoryInterface {
 		return $this->model->orderBy('created_at', 'desc')->paginate($per_page);
 	}
 
+	public function removeById($media_id)
+	{
+		$media = $this->findById($media_id);
+
+		$media->delete();
+	}
+
 	public function handleUpload($file)
 	{
 		$new_media = new $this->model;
@@ -97,5 +107,51 @@ class EloquentMediaRepository implements MediaRepositoryInterface {
 		$media = $this->findById($media_id);
 
 		return $media->originalFileLink();
+	}
+
+	public function tagMedia($media_id, $tag_name)
+	{
+		$media = $this->findById($media_id);
+
+		if ($tag_name && $tag_name !== '')
+		{
+			$tag_name = mb_strtolower($tag_name);
+
+			$tag = $this->tag_model->whereTag($tag_name)->first();
+
+			if (!$tag)
+			{
+				$tag = new $this->tag_model;
+				$tag->tag = $tag_name;
+				$tag->save();
+			}
+
+			$current_tags = $media->tags()->lists('media_tag_id');
+
+			if (!is_array($current_tags))
+			{
+				$current_tags = [];
+			}
+
+			$current_tags[] = $tag->id;
+
+			$tags = array_values(array_unique($current_tags));
+
+			$media->tags()->sync($tags, true);
+		}
+	}
+
+	public function removeTag($media_id, $tag_id)
+	{
+		$media = $this->findById($media_id);
+
+		$media->tags()->detach($tag_id);
+	}
+
+	public function getTags($media_id)
+	{
+		$media = $this->findById($media_id);
+
+		return $media->tags;
 	}
 }

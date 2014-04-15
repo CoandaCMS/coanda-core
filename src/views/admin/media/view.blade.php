@@ -21,7 +21,7 @@
 
 <div class="row">
 	<div class="page-options col-md-12">
-		<a href="{{ Coanda::adminUrl('media/add') }}" class="btn btn-primary">Add media</a>
+		<a href="{{ Coanda::adminUrl('media/remove/' . $media->id) }}" class="btn btn-danger">Delete</a>
 	</div>
 </div>
 
@@ -84,6 +84,25 @@
 			</ul>
 			<div class="tab-content">
 				<div class="tab-pane active" id="tags">
+					
+					<p>
+						@foreach ($tags as $tag)
+							<i class="fa fa-tag"></i> {{ $tag->tag }}
+							<a href="{{ Coanda::adminUrl('media/remove-tag/' . $media->id . '/' . $tag->id) }}"><i class="fa fa-times"></i></a>
+							&nbsp;
+						@endforeach
+					</p>
+
+					{{ Form::open(['url' => Coanda::adminUrl('media/add-tag/' . $media->id), 'class' => 'form-inline']) }}
+
+						<div class="form-group @if (Session::has('missing_file')) has-error @endif">
+							<label for="tag" class="hidden">Tag</label>
+							<input type="text" name="tag" class="form-control">
+						</div>
+
+						{{ Form::button('Add', ['name' => 'add_tag', 'value' => 'true', 'type' => 'submit', 'class' => 'btn btn-primary']) }}
+
+					{{ Form::close() }}
 
 				</div>
 			</div>

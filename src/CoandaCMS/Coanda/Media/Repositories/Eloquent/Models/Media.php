@@ -19,6 +19,23 @@ class Media extends Eloquent {
 	 */
 	protected $table = 'media';
 
+	public function delete()
+	{
+		$original_file = base_path() . '/' . Config::get('coanda::coanda.uploads_directory') . '/' . $this->filename;
+
+		if (file_exists($original_file))
+		{
+			unlink($original_file);
+		}
+
+		foreach ($this->tags()->lists('media_tag_id') as $tag_id)
+		{
+			$this->tags()->detach($tag_id);
+		}
+
+		parent::delete();
+	}
+
 	public function type()
 	{
 		$mime_type_parts = explode('/', $this->mime);
@@ -65,4 +82,8 @@ class Media extends Eloquent {
         return $cache_path;
 	}
 
+	public function tags()
+	{
+		return $this->belongsToMany('CoandaCMS\Coanda\Media\Repositories\Eloquent\Models\MediaTag');
+	}
 }
