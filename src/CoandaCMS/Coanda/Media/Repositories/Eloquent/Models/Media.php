@@ -61,6 +61,11 @@ class Media extends Eloquent {
 		return $this->type();
 	}
 
+	public function originalFilePath()
+	{
+		return base_path() . '/' . Config::get('coanda::coanda.uploads_directory') . '/' . $this->filename;
+	}
+
 	public function originalFileLink()
 	{
         $original_file = base_path() . '/' . Config::get('coanda::coanda.uploads_directory') . '/' . $this->filename;
@@ -85,5 +90,15 @@ class Media extends Eloquent {
 	public function tags()
 	{
 		return $this->belongsToMany('CoandaCMS\Coanda\Media\Repositories\Eloquent\Models\MediaTag');
+	}
+
+	public function toArray()
+	{
+		return [
+			'id' => $this->id,
+			'original_filename' => $this->original_filename,
+			'admin_preview_url' => $this->type == 'image' ? Coanda::adminUrl('media/preview/' . $this->id . '/image.' . $this->extension) : false,
+			'mime' => $this->mime
+		];
 	}
 }

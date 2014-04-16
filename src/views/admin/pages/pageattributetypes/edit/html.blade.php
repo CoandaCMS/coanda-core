@@ -9,8 +9,18 @@
 
 @section('footer')
 	<script type="text/javascript">
+
+	var media_browse_url = '{{ Coanda::adminUrl('media/browse') }}';
+
 	$('#attribute_{{ $attribute->id }}').summernote({
-			height: 200
+			toolbar: [
+				['style', ['style']],
+				['font', ['bold', 'italic', 'underline', 'clear']],
+				['para', ['ul', 'ol', 'paragraph']],
+				['table', ['table']],
+				['insert', ['picture', 'link', 'medialibrary', 'video']],
+				['view', ['codeview']],
+			],
 		});
 	</script>
 @append

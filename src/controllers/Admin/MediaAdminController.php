@@ -181,4 +181,46 @@ class MediaAdminController extends BaseController {
 			App::abort('404');
 		}
 	}
+
+	public function getBrowse()
+	{
+		$per_page = 12;
+		$type = 'all';
+
+		if (Input::has('type') && Input::get('type') == 'image')
+		{
+			$type = 'image';
+		}
+
+		if (Input::has('type') && Input::get('type') == 'file')
+		{
+			$type = 'file';
+		}
+
+		$media_list = $this->mediaRepository->getListByType($type, $per_page);
+
+		return $media_list;
+	}
+
+	public function getPreview($media_id, $filename)
+	{
+		try
+		{
+			$media = $this->mediaRepository->findById($media_id);
+
+			if ($media->type == 'image')
+			{
+				$file_path = $media->originalFilePath();
+				
+				header('Content-Type: ' . $media->mime);
+				header('Content-Length: ' . filesize($file_path));
+
+				readfile($file_path);
+			}
+		}
+		catch (MediaNotFound $exception)
+		{
+			App::abort('404');
+		}
+	}
 }

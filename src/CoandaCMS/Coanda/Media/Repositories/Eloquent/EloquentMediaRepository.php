@@ -67,6 +67,27 @@ class EloquentMediaRepository implements MediaRepositoryInterface {
 		return $this->model->orderBy('created_at', 'desc')->paginate($per_page);
 	}
 
+	public function getListByType($type, $per_page)
+	{
+		switch ($type)
+		{
+			case 'image':
+			{
+				return $this->model->where('mime', 'like', 'image/%')->orderBy('created_at', 'desc')->paginate($per_page);
+			}
+
+			case 'file':
+			{
+				return $this->model->where('mime', 'like', 'application/%')->orderBy('created_at', 'desc')->paginate($per_page);
+			}
+
+			default:
+			{
+				return $this->model->orderBy('created_at', 'desc')->paginate($per_page);
+			}
+		}
+	}
+
 	public function removeById($media_id)
 	{
 		$media = $this->findById($media_id);

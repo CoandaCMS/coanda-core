@@ -14,6 +14,10 @@ interface MediaRepositoryInterface {
      */
     public function findByIds($ids);
 
+    public function getList($per_page);
+
+    public function getListByType($type, $per_page);
+
     public function handleUpload($file);
 
     public function removeById($media_id);
