@@ -1438,13 +1438,23 @@
      * @param {jQuery} $editable
      * @param {String} sUrl
      */
-    this.insertImage = function ($editable, sUrl) {
+    this.insertImage = function ($editable, sUrl, attributes) {
+
+      var img_attributes = attributes || [];
+
       async.createImage(sUrl).then(function ($image) {
         recordUndo($editable);
         $image.css({
           display: '',
-          width: Math.min($editable.width(), $image.width())
+          //width: Math.min($editable.width(), $image.width())
+          width: '100%'
         });
+
+        for (var attr_key in img_attributes)
+        {
+          $image.attr(attr_key, img_attributes[attr_key]);
+        }
+
         range.create().insertNode($image[0]);
       }).fail(function () {
         var callbacks = $editable.data('callbacks');
@@ -1703,7 +1713,8 @@
       recordUndo($editable);
 
       $target.css({
-        width: $editable.width() * sValue + 'px',
+        // width: $editable.width() * sValue + 'px',
+        width: (sValue * 100) + '%',
         height: ''
       });
     };
@@ -2031,20 +2042,131 @@
 
         var $mediaLibraryDialog = $dialog.find('.note-medialibrary-dialog');
 
-        $mediaLibraryDialog.one('show.bs.modal', function () {
+        var $buildPaginatorDots = function () {
+
+          var page_li = $('<li />');
+          page_li.addClass('disabled');
+          page_li.html('<span>...</span>');
+
+          return page_li;
+
+        };
+
+        var $buildPaginatorLink = function (page, is_active) {
+
+              var page_li = $('<li />');
+
+              if (is_active)
+              {
+                page_li.addClass('active');
+              }
+
+              var page_li_a = $('<a />');
+
+              page_li_a.text(page);
+              page_li_a.data('page', page);
+
+              page_li_a.on('click', function () {
+
+                $loadImages($(this).data('page'));
+
+              });
+
+              page_li.append(page_li_a);
+
+              return page_li;
+
+        };
+
+        var $loadPaginator = function (start_page, last_page, current_page) {
+
+              var pagination_ul = $('<ul />').addClass('pagination');
+
+              var start = 1;
+              var end = last_page;
+
+              if (last_page > 10)
+              {
+                // Add page 1
+                pagination_ul.append($buildPaginatorLink(1, (current_page == 1)));
+
+                if (current_page > 1)
+                {
+                  var previous_start = current_page - 3;
+
+                  if (previous_start <= 1)
+                  {
+                    previous_start = 2;
+                  }
+
+                  if (previous_start > 2)
+                  {
+                    pagination_ul.append($buildPaginatorDots);
+                  }
+
+                  // Go back 3 from the current page, assuming it doesn't go lower than 0
+                  for (var counter = previous_start; counter < current_page; counter ++)
+                  {
+                    pagination_ul.append($buildPaginatorLink(counter, false));  
+                  }
+                }
+
+                if (current_page !== 1)
+                {
+                  // Add the current page...
+                  pagination_ul.append($buildPaginatorLink(current_page, true));                  
+                }
+
+                var after_up_to = current_page + 3;
+
+                if (after_up_to > last_page)
+                {
+                  after_up_to = last_page;
+                }
+                
+                // Go forward 3 from the current page, assuming it doesn't go further than the last page
+                for (var counter = current_page + 1; counter <= after_up_to; counter ++)
+                {
+                    pagination_ul.append($buildPaginatorLink(counter, false));  
+                }
+
+                if (after_up_to < last_page)
+                {
+                  pagination_ul.append($buildPaginatorDots);
+
+                  // Add last page
+                  pagination_ul.append($buildPaginatorLink(last_page, false));
+                }
+              }
+              else
+              {
+                for (var page = 1; page <= last_page; page ++)
+                {
+                  pagination_ul.append($buildPaginatorLink(page, (page == current_page)));
+                }
+              }
+
+              $('#medialibrary-pages').append(pagination_ul);
+
+        };
+
+        var $loadImages = function (page) {
+
+            $('#medialibrary-list').html('<i class="fa fa-spinner fa-spin"></i>');
 
             $.ajax({
               type: 'GET',
               url: media_browse_url,
               data: {
                 type: 'image',
-                format: 'json'
+                page: page
               }
             }).done( function (result) {
 
               if (result.data.length > 0)
               {
                 $('#medialibrary-list').html('');
+                $('#medialibrary-pages').html('');
 
                 for(var i = 0; i < result.data.length; i ++)
                 {
@@ -2054,7 +2176,13 @@
                   }
 
                   var col = $('<div />').addClass('col-xs-3');
-                  var image = $('<img />').attr('src', result.data[i].admin_preview_url).addClass('img-thumbnail');
+                  var thumbnail = $('<div />').addClass('thumbnail');
+
+                  var image = $('<img />').attr('src', result.data[i].thumbnail_url)
+                                  .attr('width', 100)
+                                  .attr('height', 100)
+                                  .data('preview-src', result.data[i].original_file_url)
+                                  .data('media-id', result.data[i].id);
 
                   image.on('click', function (event) {
 
@@ -2062,18 +2190,36 @@
 
                     $mediaLibraryDialog.modal('hide');
 
-                    deferred.resolve($(this).attr('src'));
+                    var image_attributes = { 'data-media-id': $(this).data('media-id') };
+
+                    deferred.resolve($(this).data('preview-src'), image_attributes);
 
                   });
 
-                  col.append(image);
+                  thumbnail.append(image);
+
+                  var caption = $('<div />').addClass('caption');
+                  caption.text(result.data[i].original_filename);
+
+                  thumbnail.append(caption);
+
+                  col.append(thumbnail);
 
                   $('#medialibrary-list').append(col);
 
                 }
-              }
 
+                var last_page = result.last_page;
+                var current_page = result.current_page;
+
+                $loadPaginator(1, last_page, current_page);
+              }
             });
+        };
+
+        $mediaLibraryDialog.one('show.bs.modal', function () {
+
+            $loadImages(1);
 
           }).one('hidden.bs.modal', function () {
 
@@ -2379,10 +2525,10 @@
 
           $editable.focus();
 
-          dialog.showMediaLibraryDialog($editable, $dialog).then(function (data) {
+          dialog.showMediaLibraryDialog($editable, $dialog).then(function (data, attributes) {
             if (typeof data === 'string') {
               editor.restoreRange($editable);
-              editor.insertImage($editable, data);
+              editor.insertImage($editable, data, attributes);
             } else {
               insertImages($editable, data);
             }
@@ -3056,9 +3202,7 @@
                        '<div class="row" id="medialibrary-list">' +
                        '<i class="fa fa-spinner fa-spin"></i>' + 
                        '</div>' +
-                     '</div>' +
-                     '<div class="modal-footer">' +
-                       '<button href="#" class="btn btn-primary note-image-btn disabled" disabled="disabled">' + lang.image.insert + '</button>' +
+                       '<div id="medialibrary-pages"></div>' +
                      '</div>' +
                    '</div>' +
                  '</div>' +

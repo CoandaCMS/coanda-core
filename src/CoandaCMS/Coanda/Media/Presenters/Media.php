@@ -53,6 +53,11 @@ class Media extends \CoandaCMS\Coanda\Core\Presenters\Presenter {
 		return false;
 	}
 
+	public function original_file_url()
+	{
+		return url($this->model->originalFileLink());
+	}
+
     public function thumbnail()
     {
         return $this->generateCrop(200, 200);

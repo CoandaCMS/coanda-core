@@ -97,7 +97,8 @@ class Media extends Eloquent {
 		return [
 			'id' => $this->id,
 			'original_filename' => $this->original_filename,
-			'admin_preview_url' => $this->type == 'image' ? Coanda::adminUrl('media/preview/' . $this->id . '/image.' . $this->extension) : false,
+			'original_file_url' => $this->present()->original_file_url,
+			'thumbnail_url' => $this->type == 'image' ? $this->present()->thumbnail_url : false,
 			'mime' => $this->mime
 		];
 	}

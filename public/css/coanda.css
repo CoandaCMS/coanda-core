@@ -336,3 +336,8 @@ td.order-column .input-sm
 {
 	overflow: hidden;
 }
+
+#medialibrary-list .thumbnail img
+{
+	cursor: pointer;
+}
