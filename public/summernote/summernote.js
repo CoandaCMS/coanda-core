@@ -2054,6 +2054,7 @@
 
       return $.Deferred( function (deferred) {
 
+        var $imageInput = $dialog.find('.note-medialibrary-image-input');
         var $mediaLibraryDialog = $dialog.find('.note-medialibrary-dialog');
 
         var $buildPaginatorDots = function () {
@@ -2232,6 +2233,13 @@
         };
 
         $mediaLibraryDialog.one('show.bs.modal', function () {
+
+            $imageInput.replaceWith($imageInput.clone()
+              .on('change', function () {
+                $mediaLibraryDialog.modal('hide');
+                deferred.resolve(this.files);
+              })
+            );
 
             $loadImages(1);
 
@@ -3218,6 +3226,8 @@
                        '<i class="fa fa-spinner fa-spin"></i>' + 
                        '</div>' +
                        '<div id="medialibrary-pages"></div>' +
+                       '<h5>Upload</h5>' +
+                       '<input class="note-medialibrary-image-input" type="file" name="files" accept="image/*" />' +
                      '</div>' +
                    '</div>' +
                  '</div>' +

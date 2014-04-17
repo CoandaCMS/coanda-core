@@ -10,6 +10,27 @@
 @section('footer')
 	<script type="text/javascript">
 
+	var image_upload_url = '{{ Coanda::adminUrl('media/handle-upload') }}';
+
+	function uploadImage(file, editor, welEditable)
+	{
+		data = new FormData();
+	    data.append("file", file);
+
+	    $.ajax({
+	        data: data,
+	        type: "POST",
+	        url: image_upload_url,
+	        cache: false,
+	        contentType: false,
+	        processData: false,
+	        success: function(data)
+	        {
+                editor.insertImage(welEditable, data.original_file_url);
+	        }
+	    });
+	}
+
 	var media_browse_url = '{{ Coanda::adminUrl('media/browse') }}';
 
 	$('#attribute_{{ $attribute->id }}').summernote({
@@ -18,9 +39,16 @@
 				['font', ['bold', 'italic', 'underline', 'clear']],
 				['para', ['ul', 'ol', 'paragraph']],
 				['table', ['table']],
-				['insert', ['picture', 'link', 'medialibrary', 'video']],
+				['insert', ['link', 'medialibrary', 'video']],
 				['view', ['codeview']],
 			],
+			onImageUpload: function(files, editor, welEditable) {
+    			
+    			for (var i = 0; i < files.length; i ++)
+    			{
+    				uploadImage(files[i], editor, welEditable);	
+    			}
+  			}
 		});
 	</script>
 @append
