@@ -1447,7 +1447,8 @@
         $image.css({
           display: '',
           //width: Math.min($editable.width(), $image.width())
-          width: '100%'
+          width: 'auto',
+          maxWidth: '100%'
         });
 
         for (var attr_key in img_attributes)
@@ -1712,11 +1713,24 @@
     this.resize = function ($editable, sValue, $target) {
       recordUndo($editable);
 
-      $target.css({
-        // width: $editable.width() * sValue + 'px',
-        width: (sValue * 100) + '%',
-        height: ''
-      });
+      if (sValue == 'auto')
+      {
+        $target.css({
+          // width: $editable.width() * sValue + 'px',
+          width: 'auto',
+          maxWidth: '100%',
+          height: ''
+        });
+      }
+      else
+      {
+        $target.css({
+          // width: $editable.width() * sValue + 'px',
+          width: (sValue * 100) + '%',
+          height: ''
+        });        
+      }
+      
     };
 
     /**
@@ -3061,6 +3075,7 @@
                   '<div class="arrow"></div>' +
                   '<div class="popover-content note-image-content">' +
                     '<div class="btn-group">' +
+                    '<button type="button" class="btn btn-default btn-sm btn-small" title="Auto" data-event="resize" data-value="auto" tabindex="-1"><span class="note-fontsize-10">Auto</span> </button>' +
                       '<button type="button" class="btn btn-default btn-sm btn-small" title="' + lang.image.resizeFull + '" data-event="resize" data-value="1" tabindex="-1"><span class="note-fontsize-10">100%</span> </button>' +
                       '<button type="button" class="btn btn-default btn-sm btn-small" title="' + lang.image.resizeHalf + '" data-event="resize" data-value="0.5" tabindex="-1"><span class="note-fontsize-10">50%</span> </button>' +
                       '<button type="button" class="btn btn-default btn-sm btn-small" title="' + lang.image.resizeQuarter + '" data-event="resize" data-value="0.25" tabindex="-1"><span class="note-fontsize-10">25%</span> </button>' +
