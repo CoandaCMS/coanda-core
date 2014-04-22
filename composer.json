@@ -1,6 +1,7 @@
 {
     "name": "coandacms/coanda-core",
-    "description": "The basis of the CoandaCMS",
+    "description": "The core package for Coanda CMS",
+    "license": "MIT",
     "authors": [
         {
             "name": "Alex Dover",
