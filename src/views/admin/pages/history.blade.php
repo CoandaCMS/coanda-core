@@ -58,37 +58,9 @@
                     <table class="table table-striped table-history">
                         @foreach ($histories as $history)
                         <tr>
-                            <td class="tight"><img src="{{ $history->user ? $history->user->avatar : 'http://www.gravatar.com/avatar/dummy?d=mm' }}" class="img-circle" width="45"></td>
-                            <td>{{ $history->user ? $history->user->present()->name : 'unknown' }}</td>
-                            <td>
-                                @if ($history->action == 'initial_version')
-                                Created the page
-                                @endif
-
-                                @if ($history->action == 'new_version')
-                                Created version #{{ $history->action_data->version }}
-                                @endif
-
-                                @if ($history->action == 'discard_version')
-                                Discarded version #{{ $history->action_data->version }}
-                                @endif
-
-                                @if ($history->action == 'publish_version')
-                                Published version #{{ $history->action_data->version }}
-                                @endif
-
-                                @if ($history->action == 'order_changed')
-                                Order changed to {{ $history->action_data->new_order }}
-                                @endif
-
-                                @if ($history->action == 'restored')
-                                Restored
-                                @endif
-
-                                @if ($history->action == 'trashed')
-                                Moved to the trash
-                                @endif
-                            </td>
+                            <td class="tight"><img src="{{ $history->present()->avatar }}" class="img-circle" width="45"></td>
+                            <td>{{ $history->present()->username }}</td>
+                            <td>{{ $history->present()->happening }}</td>
                             <td>{{ $history->present()->created_at }}</td>
                         </tr>
                         @endforeach
