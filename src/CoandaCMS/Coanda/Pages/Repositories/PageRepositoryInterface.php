@@ -52,6 +52,7 @@ interface PageRepositoryInterface {
      */
     public function getDraftVersion($page_id, $version);
 
+    public function getVersionById($id);
     /**
      * @param $preview_key
      * @return mixed
@@ -78,11 +79,13 @@ interface PageRepositoryInterface {
      */
     public function draftsForUser($page_id, $user_id);
 
+    public function publishVersion($version, $user_id, $urlRepository, $historyRepository);
+
     /**
      * @param $version
      * @return mixed
      */
-    public function publishVersion($version, $publish_handler, $data);
+    public function executePublishHandler($version, $publish_handler, $data);
 
     /**
      * @param $page_id
@@ -146,5 +149,7 @@ interface PageRepositoryInterface {
      * @return mixed
      */
     public function updateOrdering($new_orders);
+
+    public function getPendingVersions($offset, $limit);
 
 }

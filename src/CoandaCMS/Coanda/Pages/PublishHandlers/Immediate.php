@@ -15,30 +15,8 @@ class Immediate implements PublishHandlerInterface {
 		// Nothing to validate on this one
 	}
 
-	public function execute($version, $data, $urlRepository, $historyRepository)
+	public function execute($version, $data, $pageRepository, $urlRepository, $historyRepository)
 	{
-		$page = $version->page;
-
-		if ($version->version !== 1)
-		{
-			// set the current published version to be archived
-			$page->currentVersion()->status = 'archived';
-			$page->currentVersion()->save();			
-		}
-
-		// set this version to be published
-		$version->status = 'published';
-		$version->save();
-		
-		// update the page name attribute (via the type)
-		$page->name = $page->pageType()->generateName($version);
-		$page->current_version = $version->version;
-		$page->save();
-
-		// Register the URL for this version with the Url Repo
-		$url = $urlRepository->register($version->base_slug . $version->slug, 'page', $page->id);
-
-		// Log the history
-		$historyRepository->add('pages', $page->id, Coanda::currentUser()->id, 'publish_version', ['version' => (int)$version->version]);		
+		$pageRepository->publishVersion($version, Coanda::currentUser()->id, $urlRepository, $historyRepository);
 	}
 }

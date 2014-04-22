@@ -50,12 +50,19 @@ class CoandaServiceProvider extends ServiceProvider {
 
 		});
 
-		$this->app['coanda.setup'] = $this->app->share(function($app)
+		// $this->app['coanda.setup'] = $this->app->share(function($app)
+		// {
+		//     return new \CoandaCMS\Coanda\Commands\SetupCommand($app);
+		// });
+		// $this->commands('coanda.setup');
+
+		$this->app['coanda.delayedpublish'] = $this->app->share(function($app)
 		{
-		    return new \CoandaCMS\Coanda\Commands\SetupCommand($app);
+		    return new \CoandaCMS\Coanda\Commands\DelayedPublishCommand($app);
 		});
 
-		$this->commands('coanda.setup');
+		$this->commands('coanda.delayedpublish');
+		
 	}
 
 	/**

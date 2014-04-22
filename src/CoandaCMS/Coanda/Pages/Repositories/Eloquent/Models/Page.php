@@ -70,6 +70,11 @@ class Page extends Eloquent {
 		return $this->hasMany('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageVersion');
 	}
 
+	public function getVersion($version)
+	{
+		return $this->versions()->whereVersion($version)->first();
+	}
+
 	/**
 	 * Returns the parent page for this page
 	 * @return CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\Page [description]

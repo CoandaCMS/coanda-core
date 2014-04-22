@@ -312,7 +312,7 @@ class PagesAdminController extends BaseController {
 				{
 					try
 					{
-						$redirect = $this->pageRepository->publishVersion($version, Input::get('publish_handler'), Input::all());
+						$redirect = $this->pageRepository->executePublishHandler($version, Input::get('publish_handler'), Input::all());
 
 						if ($redirect)
 						{
