@@ -12,6 +12,10 @@ Coanda CMS is a full featured content management system based on the Laravel PHP
 
 See the main application package for more information [http://github.com/coandacms/coandacms](http://github.com/coandacms/coandacms)
 
+## Usage
+
+**Note: This is still a work in progress. Not yet stable for production**
+
 ### Licence
 
 Coanda CMS is an open source software package licensed under the [MIT license](http://opensource.org/licenses/MIT)
