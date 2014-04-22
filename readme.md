@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/CoandaCMS/coanda-core.svg)](https://travis-ci.org/CoandaCMS/coanda-core)
 [![Total Downloads](https://img.shields.io/packagist/dm/CoandaCMS/coanda-core.svg)](https://packagist.org/packages/coandacms/coanda-core)
 [![Packagist Version](http://img.shields.io/packagist/v/CoandaCMS/coanda-core.svg)](https://packagist.org/packages/coandacms/coanda-core)
-[![Coverage Status](https://coveralls.io/repos/CoandaCMS/coanda-core/badge.png)](https://coveralls.io/r/CoandaCMS/coanda-core)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/CoandaCMS/coanda-core/badges/quality-score.png?s=b2c21466a89eae78a8b34296761eb9e388177457)](https://scrutinizer-ci.com/g/CoandaCMS/coanda-core/)
 ![Licence](http://img.shields.io/packagist/l/CoandaCMS/coanda-core.svg)
 
 The main Coanda CMS package.
