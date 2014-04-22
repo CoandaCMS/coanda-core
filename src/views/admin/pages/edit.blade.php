@@ -76,7 +76,7 @@
 							<div class="col-sm-4">
 								<div class="radio">
 									<label>
-										<input type="radio" name="publish_handler" value="{{ $publish_handler->identifier }}">
+										<input type="radio" name="publish_handler" id="publish_handler_{{ $publish_handler->identifier }}" value="{{ $publish_handler->identifier }}" {{ (Input::old('publish_handler', $default_publish_handler) == $publish_handler->identifier) ? ' checked="checked"' : '' }}>
 										{{ $publish_handler->name }}
 									</label>
 								</div>

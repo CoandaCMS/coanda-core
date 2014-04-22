@@ -7,3 +7,15 @@
 		<span class="help-block">{{ $publish_handler_invalid_fields['delayed_publish_date'] }}</span>
 	@endif
 </div>
+
+@section('footer')
+	<script type="text/javascript">
+
+	$('#delayed_publish_date').on('focus', function () {
+
+		$('#publish_handler_{{ $publish_handler->identifier }}').attr('checked', 'checked');
+
+	});
+
+	</script>
+@append
