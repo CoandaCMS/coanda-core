@@ -1,12 +1,8 @@
 <?php namespace CoandaCMS\Coanda\Urls\Repositories\Eloquent;
 
-use Coanda;
-
 use CoandaCMS\Coanda\Urls\Exceptions\UrlAlreadyExists;
 use CoandaCMS\Coanda\Urls\Exceptions\InvalidSlug;
 use CoandaCMS\Coanda\Urls\Exceptions\UrlNotFound;
-
-use CoandaCMS\Coanda\Urls\Repositories\Eloquent\Models\Url as UrlModel;
 
 /**
  * Class EloquentUrlRepository
@@ -15,7 +11,7 @@ use CoandaCMS\Coanda\Urls\Repositories\Eloquent\Models\Url as UrlModel;
 class EloquentUrlRepository implements \CoandaCMS\Coanda\Urls\Repositories\UrlRepositoryInterface {
 
     /**
-     * @var Models\Url
+     * @var \CoandaCMS\Coanda\Urls\Repositories\Eloquent\Models\Url
      */
     private $model;
     /**
@@ -23,14 +19,17 @@ class EloquentUrlRepository implements \CoandaCMS\Coanda\Urls\Repositories\UrlRe
      */
     private $slugifier;
 
+    private $db;
+
     /**
      * @param UrlModel $model
      * @param CoandaCMS\Coanda\Urls\Slugifier $slugifier
      */
-    public function __construct(UrlModel $model, \CoandaCMS\Coanda\Urls\Slugifier $slugifier)
+    public function __construct(\CoandaCMS\Coanda\Urls\Repositories\Eloquent\Models\Url $model, \CoandaCMS\Coanda\Urls\Slugifier $slugifier, \Illuminate\Database\DatabaseManager $db)
 	{
 		$this->model = $model;
 		$this->slugifier = $slugifier;
+		$this->db = $db;
 	}
 
     /**
@@ -125,11 +124,11 @@ class EloquentUrlRepository implements \CoandaCMS\Coanda\Urls\Repositories\UrlRe
 			// If the existing url matches the type and id, then we don't need to do anything..
 			if ($existing->urlable_type == $for && $existing->urlable_id == $for_id)
 			{
-				return true;
+				return $existing;
 			}
 
 			// If the existing one is a url, then we can overwrite it, otherwise it is alreay taken.
-			if ($existing->urlable_type !== 'wildcard')
+			if ($existing->urlable_type !== 'redirect')
 			{
 				throw new UrlAlreadyExists('The requested URL: ' . $slug . ' is already in use.');
 			}
@@ -143,8 +142,7 @@ class EloquentUrlRepository implements \CoandaCMS\Coanda\Urls\Repositories\UrlRe
 		// If we don't have a URL, then create a new one
 		if (!$url)
 		{
-			$url = new UrlModel;
-			$url->slug = $slug;			
+			$url = $this->model->create(['slug' => $slug]);
 		}
 
 		$url->urlable_type = $for;
@@ -172,7 +170,7 @@ class EloquentUrlRepository implements \CoandaCMS\Coanda\Urls\Repositories\UrlRe
      */
     private function updateSubTree($slug, $new_slug)
 	{
-		$this->model->where('slug', 'like', $slug . '/%')->update(['slug' => \DB::raw("REPLACE(slug, '" . $slug . "/', '" . $new_slug . "/')")]);
+		$this->model->where('slug', 'like', $slug . '/%')->update(['slug' => $this->db->raw("REPLACE(slug, '" . $slug . "/', '" . $new_slug . "/')")]);
 	}
 
     /**
@@ -205,7 +203,7 @@ class EloquentUrlRepository implements \CoandaCMS\Coanda\Urls\Repositories\UrlRe
 		}
 
 		// do we already have a record for this slug?
-		$existing = UrlModel::whereSlug($slug)->first();
+		$existing = $this->model->whereSlug($slug)->first();
 
 		if ($existing)
 		{
