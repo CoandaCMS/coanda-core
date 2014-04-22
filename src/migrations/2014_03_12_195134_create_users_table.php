@@ -25,10 +25,6 @@ class CreateUsersTable extends Migration {
 
 			$table->timestamps();
 		});
-
-		// Add a demo admin user, so you can log in!
-		Eloquent::unguard();
-		\CoandaCMS\Coanda\Users\Repositories\Eloquent\Models\User::create(['email' => 'demo@somewhere.com', 'password' => Hash::make('password'), 'first_name' => 'Demo', 'last_name' => 'Admin']);
 	}
 
 	/**
