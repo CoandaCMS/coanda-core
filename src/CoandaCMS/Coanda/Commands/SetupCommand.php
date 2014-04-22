@@ -3,6 +3,10 @@
 use Illuminate\Console\Command;
 use Coanda;
 
+/**
+ * Class SetupCommand
+ * @package CoandaCMS\Coanda\Commands
+ */
 class SetupCommand extends Command {
 
     /**
@@ -19,8 +23,14 @@ class SetupCommand extends Command {
      */
     protected $description = 'Sets up the coanda CMS system';
 
+    /**
+     * @var
+     */
     private $userRepository;
 
+    /**
+     * @param $app
+     */
     public function __construct($app)
     {
         $this->userRepository = $app->make('CoandaCMS\Coanda\Users\Repositories\UserRepositoryInterface');
@@ -29,7 +39,7 @@ class SetupCommand extends Command {
     }
 
     /**
-     * Compile and generate the file
+     * Run the command
      */
     public function fire()
     {

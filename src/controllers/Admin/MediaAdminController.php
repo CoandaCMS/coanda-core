@@ -8,10 +8,20 @@ use CoandaCMS\Coanda\Media\Exceptions\MissingMedia;
 
 use CoandaCMS\Coanda\Controllers\BaseController;
 
+/**
+ * Class MediaAdminController
+ * @package CoandaCMS\Coanda\Controllers\Admin
+ */
 class MediaAdminController extends BaseController {
 
+    /**
+     * @var \CoandaCMS\Coanda\Media\Repositories\MediaRepositoryInterface
+     */
     private $mediaRepository;
 
+    /**
+     * @param CoandaCMS\Coanda\Media\Repositories\MediaRepositoryInterface $mediaRepository
+     */
     public function __construct(\CoandaCMS\Coanda\Media\Repositories\MediaRepositoryInterface $mediaRepository)
 	{
 		$this->mediaRepository = $mediaRepository;
@@ -19,6 +29,9 @@ class MediaAdminController extends BaseController {
 		$this->beforeFilter('csrf', ['on' => 'post', 'except' => ['postHandleUpload']]);
 	}
 
+    /**
+     * @return mixed
+     */
     public function getIndex()
 	{
 		$media_list = $this->mediaRepository->getList(18);
@@ -28,7 +41,10 @@ class MediaAdminController extends BaseController {
 		return View::make('coanda::admin.media.index', [ 'media_list' => $media_list, 'max_upload' => $max_upload, 'tags' => $tags ]);
 	}
 
-	public function postHandleUpload()
+    /**
+     * @return mixed
+     */
+    public function postHandleUpload()
 	{
 		if (!Input::hasFile('file'))
 		{
@@ -47,12 +63,18 @@ class MediaAdminController extends BaseController {
 		}
 	}
 
-	public function getAdd()
+    /**
+     * @return mixed
+     */
+    public function getAdd()
 	{
 		return View::make('coanda::admin.media.add');
 	}
 
-	public function postAdd()
+    /**
+     * @return mixed
+     */
+    public function postAdd()
 	{
 		if (Input::hasFile('file'))
 		{
@@ -75,7 +97,11 @@ class MediaAdminController extends BaseController {
 		}
 	}
 
-	public function getView($media_id)
+    /**
+     * @param $media_id
+     * @return mixed
+     */
+    public function getView($media_id)
 	{
 		try
 		{
@@ -90,7 +116,11 @@ class MediaAdminController extends BaseController {
 		}
 	}
 
-	public function getDownload($media_id)
+    /**
+     * @param $media_id
+     * @return mixed
+     */
+    public function getDownload($media_id)
 	{
 		try
 		{
@@ -104,7 +134,11 @@ class MediaAdminController extends BaseController {
 		}
 	}
 
-	public function postAddTag($media_id)
+    /**
+     * @param $media_id
+     * @return mixed
+     */
+    public function postAddTag($media_id)
 	{
 		try
 		{
@@ -118,7 +152,12 @@ class MediaAdminController extends BaseController {
 		}
 	}
 
-	public function getRemoveTag($media_id, $tag_id)
+    /**
+     * @param $media_id
+     * @param $tag_id
+     * @return mixed
+     */
+    public function getRemoveTag($media_id, $tag_id)
 	{
 		try
 		{
@@ -132,7 +171,11 @@ class MediaAdminController extends BaseController {
 		}
 	}
 
-	public function getRemove($media_id)
+    /**
+     * @param $media_id
+     * @return mixed
+     */
+    public function getRemove($media_id)
 	{
 		try
 		{
@@ -146,7 +189,11 @@ class MediaAdminController extends BaseController {
 		}
 	}
 
-	public function postRemove($media_id)
+    /**
+     * @param $media_id
+     * @return mixed
+     */
+    public function postRemove($media_id)
 	{
 		try
 		{
@@ -160,14 +207,21 @@ class MediaAdminController extends BaseController {
 		}
 	}
 
-	public function getTags()
+    /**
+     * @return mixed
+     */
+    public function getTags()
 	{
 		$tags = $this->mediaRepository->tags(10);
 
 		return View::make('coanda::admin.media.tags', ['tags' => $tags]);
 	}
 
-	public function getTag($tag_id)
+    /**
+     * @param $tag_id
+     * @return mixed
+     */
+    public function getTag($tag_id)
 	{
 		try
 		{
@@ -182,7 +236,10 @@ class MediaAdminController extends BaseController {
 		}
 	}
 
-	public function getBrowse()
+    /**
+     * @return mixed
+     */
+    public function getBrowse()
 	{
 		$per_page = 12;
 		$type = 'all';
@@ -202,7 +259,11 @@ class MediaAdminController extends BaseController {
 		return $media_list;
 	}
 
-	public function getPreview($media_id, $filename)
+    /**
+     * @param $media_id
+     * @param $filename
+     */
+    public function getPreview($media_id, $filename)
 	{
 		try
 		{

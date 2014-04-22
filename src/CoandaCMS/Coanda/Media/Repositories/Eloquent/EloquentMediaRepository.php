@@ -14,13 +14,31 @@ use CoandaCMS\Coanda\Media\Repositories\MediaRepositoryInterface;
 
 use Carbon\Carbon;
 
+/**
+ * Class EloquentMediaRepository
+ * @package CoandaCMS\Coanda\Media\Repositories\Eloquent
+ */
 class EloquentMediaRepository implements MediaRepositoryInterface {
 
+    /**
+     * @var Models\Media
+     */
     private $model;
+    /**
+     * @var Models\MediaTag
+     */
     private $tag_model;
 
+    /**
+     * @var \CoandaCMS\Coanda\History\Repositories\HistoryRepositoryInterface
+     */
     private $historyRepository;
 
+    /**
+     * @param MediaModel $model
+     * @param MediaTagModel $tag_model
+     * @param CoandaCMS\Coanda\History\Repositories\HistoryRepositoryInterface $historyRepository
+     */
     public function __construct(MediaModel $model, MediaTagModel $tag_model, \CoandaCMS\Coanda\History\Repositories\HistoryRepositoryInterface $historyRepository)
 	{
 		$this->model = $model;
@@ -28,6 +46,11 @@ class EloquentMediaRepository implements MediaRepositoryInterface {
 		$this->historyRepository = $historyRepository;
 	}
 
+    /**
+     * @param $id
+     * @return mixed
+     * @throws \CoandaCMS\Coanda\Media\Exceptions\MediaNotFound
+     */
     public function findById($id)
 	{
 		$media = $this->model->find($id);
@@ -40,6 +63,10 @@ class EloquentMediaRepository implements MediaRepositoryInterface {
 		return $media;
 	}
 
+    /**
+     * @param $ids
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
     public function findByIds($ids)
 	{
 		$media_list = new \Illuminate\Database\Eloquent\Collection;
@@ -62,12 +89,21 @@ class EloquentMediaRepository implements MediaRepositoryInterface {
 		return $media_list;
 	}
 
-	public function getList($per_page)
+    /**
+     * @param $per_page
+     * @return mixed
+     */
+    public function getList($per_page)
 	{
 		return $this->model->orderBy('created_at', 'desc')->paginate($per_page);
 	}
 
-	public function getListByType($type, $per_page)
+    /**
+     * @param $type
+     * @param $per_page
+     * @return mixed
+     */
+    public function getListByType($type, $per_page)
 	{
 		switch ($type)
 		{
@@ -88,14 +124,21 @@ class EloquentMediaRepository implements MediaRepositoryInterface {
 		}
 	}
 
-	public function removeById($media_id)
+    /**
+     * @param $media_id
+     */
+    public function removeById($media_id)
 	{
 		$media = $this->findById($media_id);
 
 		$media->delete();
 	}
 
-	public function handleUpload($file)
+    /**
+     * @param $file
+     * @return mixed
+     */
+    public function handleUpload($file)
 	{
 		$new_media = new $this->model;
 
@@ -124,19 +167,31 @@ class EloquentMediaRepository implements MediaRepositoryInterface {
         return $new_media;
 	}
 
-	public function downloadLink($media_id)
+    /**
+     * @param $media_id
+     * @return mixed
+     */
+    public function downloadLink($media_id)
 	{
 		$media = $this->findById($media_id);
 
 		return $media->originalFileLink();
 	}
 
-	public function tags($per_page)
+    /**
+     * @param $per_page
+     * @return mixed
+     */
+    public function tags($per_page)
 	{
 		return $this->tag_model->orderBy('created_at', 'desc')->paginate($per_page);
 	}
 
-	public function tagMedia($media_id, $tag_name)
+    /**
+     * @param $media_id
+     * @param $tag_name
+     */
+    public function tagMedia($media_id, $tag_name)
 	{
 		$media = $this->findById($media_id);
 
@@ -168,26 +223,43 @@ class EloquentMediaRepository implements MediaRepositoryInterface {
 		}
 	}
 
-	public function removeTag($media_id, $tag_id)
+    /**
+     * @param $media_id
+     * @param $tag_id
+     */
+    public function removeTag($media_id, $tag_id)
 	{
 		$media = $this->findById($media_id);
 
 		$media->tags()->detach($tag_id);
 	}
 
-	public function getTags($media_id)
+    /**
+     * @param $media_id
+     * @return mixed
+     */
+    public function getTags($media_id)
 	{
 		$media = $this->findById($media_id);
 
 		return $media->tags;
 	}
 
-	public function recentTagList($limit)
+    /**
+     * @param $limit
+     * @return mixed
+     */
+    public function recentTagList($limit)
 	{
 		return $this->tag_model->with('media')->orderBy('created_at', 'desc')->take($limit)->get();
 	}
 
-	public function tagById($tag_id)
+    /**
+     * @param $tag_id
+     * @return mixed
+     * @throws \CoandaCMS\Coanda\Media\Exceptions\TagNotFound
+     */
+    public function tagById($tag_id)
 	{
 		$tag = $this->tag_model->find($tag_id);
 
@@ -199,14 +271,22 @@ class EloquentMediaRepository implements MediaRepositoryInterface {
 		return $tag;
 	}
 
-	public function forTag($tag_id, $per_page)
+    /**
+     * @param $tag_id
+     * @param $per_page
+     * @return mixed
+     */
+    public function forTag($tag_id, $per_page)
 	{
 		$tag = $this->tagById($tag_id);
 
 		return $tag->media()->orderBy('created_at', 'desc')->paginate($per_page);
 	}
 
-	public function maxFileSize()
+    /**
+     * @return string
+     */
+    public function maxFileSize()
 	{
 		return ini_get('upload_max_filesize');
 	}

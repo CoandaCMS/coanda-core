@@ -8,7 +8,10 @@ use Lang;
  */
 class History extends \CoandaCMS\Coanda\Core\Presenters\Presenter {
 
-	public function avatar()
+    /**
+     * @return string
+     */
+    public function avatar()
 	{
 		$user = $this->model->user;
 
@@ -20,7 +23,10 @@ class History extends \CoandaCMS\Coanda\Core\Presenters\Presenter {
 		return 'http://www.gravatar.com/avatar/dummy?d=mm';
 	}
 
-	public function username()
+    /**
+     * @return string
+     */
+    public function username()
 	{
 		$user = $this->model->user;
 
@@ -32,7 +38,10 @@ class History extends \CoandaCMS\Coanda\Core\Presenters\Presenter {
 		return 'System';
 	}
 
-	public function happening()
+    /**
+     * @return string
+     */
+    public function happening()
 	{
 		switch ($this->model->action)
 		{

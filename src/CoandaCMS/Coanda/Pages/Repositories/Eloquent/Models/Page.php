@@ -70,7 +70,11 @@ class Page extends Eloquent {
 		return $this->hasMany('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageVersion');
 	}
 
-	public function getVersion($version)
+    /**
+     * @param $version
+     * @return mixed
+     */
+    public function getVersion($version)
 	{
 		return $this->versions()->whereVersion($version)->first();
 	}
@@ -223,7 +227,10 @@ class Page extends Eloquent {
 		return $this->currentVersion()->status;
 	}
 
-	public function getIsVisibleAttribute()
+    /**
+     * @return bool
+     */
+    public function getIsVisibleAttribute()
 	{
 		$from = $this->getVisibleFromAttribute();
 		$to = $this->getVisibleToAttribute();
@@ -268,7 +275,10 @@ class Page extends Eloquent {
 		return $is_visible;
 	}
 
-	public function getVisibleFromAttribute()
+    /**
+     * @return bool|Carbon
+     */
+    public function getVisibleFromAttribute()
 	{
 		$date = $this->currentVersion()->visible_from;
 
@@ -280,7 +290,10 @@ class Page extends Eloquent {
 		return false;
 	}
 
-	public function getVisibleToAttribute()
+    /**
+     * @return bool|Carbon
+     */
+    public function getVisibleToAttribute()
 	{
 		$date = $this->currentVersion()->visible_to;
 

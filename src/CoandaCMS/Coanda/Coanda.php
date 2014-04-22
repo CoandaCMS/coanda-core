@@ -28,6 +28,9 @@ class Coanda {
      */
     private $urlRepository;
 
+    /**
+     * @var array
+     */
     private $routers = [];
 
     /**

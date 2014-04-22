@@ -5,14 +5,24 @@ use Config;
 // import the Intervention Image Class
 use Intervention\Image\Image as ImageFactory;
 
+/**
+ * Class Media
+ * @package CoandaCMS\Coanda\Media\Presenters
+ */
 class Media extends \CoandaCMS\Coanda\Core\Presenters\Presenter {
 
+    /**
+     * @return mixed
+     */
     public function name()
 	{
 		return $this->model->original_filename;
 	}
 
-	public function size()
+    /**
+     * @return string
+     */
+    public function size()
 	{
 		$bytes = $this->model->size;
 
@@ -23,7 +33,10 @@ class Media extends \CoandaCMS\Coanda\Core\Presenters\Presenter {
 		return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . @$size[$factor];
 	}
 
-	public function has_preview()
+    /**
+     * @return bool
+     */
+    public function has_preview()
 	{
 		if ($this->model->type == 'image')
 		{
@@ -33,7 +46,10 @@ class Media extends \CoandaCMS\Coanda\Core\Presenters\Presenter {
 		return false;
 	}
 
-	public function thumbnail_url()
+    /**
+     * @return bool|string
+     */
+    public function thumbnail_url()
 	{
 		if ($this->model->type == 'image')
 		{
@@ -43,7 +59,10 @@ class Media extends \CoandaCMS\Coanda\Core\Presenters\Presenter {
 		return false;
 	}
 
-	public function large_url()
+    /**
+     * @return bool|string
+     */
+    public function large_url()
 	{
 		if ($this->model->type == 'image')
 		{
@@ -53,21 +72,36 @@ class Media extends \CoandaCMS\Coanda\Core\Presenters\Presenter {
 		return false;
 	}
 
-	public function original_file_url()
+    /**
+     * @return string
+     */
+    public function original_file_url()
 	{
 		return url($this->model->originalFileLink());
 	}
 
+    /**
+     * @return bool|string
+     */
     public function thumbnail()
     {
         return $this->generateCrop(200, 200);
     }
 
+    /**
+     * @return bool|string
+     */
     public function large()
     {
         return $this->generateResized(800, 800);
     }
 
+    /**
+     * @param $width
+     * @param $height
+     * @param bool $maintain_ratio
+     * @return bool|string
+     */
     private function generateResized($width, $height, $maintain_ratio = true)
     {
     	if ($this->type == 'image')
@@ -100,6 +134,11 @@ class Media extends \CoandaCMS\Coanda\Core\Presenters\Presenter {
     	return false;
     }
 
+    /**
+     * @param $width
+     * @param $height
+     * @return bool|string
+     */
     private function generateCrop($width, $height)
     {
     	if ($this->type == 'image')

@@ -2,6 +2,10 @@
 
 use Illuminate\Support\ServiceProvider;
 
+/**
+ * Class CoandaServiceProvider
+ * @package CoandaCMS\Coanda
+ */
 class CoandaServiceProvider extends ServiceProvider {
 
 	/**

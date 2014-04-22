@@ -25,6 +25,9 @@ class PageVersion extends \CoandaCMS\Coanda\Core\Presenters\Presenter {
 		return 'pages/preview/' . $this->model->preview_key;
 	}
 
+    /**
+     * @return string
+     */
     public function visible_from_date()
     {
         if (!$this->model->visible_from)
@@ -35,6 +38,9 @@ class PageVersion extends \CoandaCMS\Coanda\Core\Presenters\Presenter {
         return $this->format_date('visible_from', 'd/m/Y');
     }
 
+    /**
+     * @return string
+     */
     public function visible_from_time()
     {
         if (!$this->model->visible_from)
@@ -45,6 +51,9 @@ class PageVersion extends \CoandaCMS\Coanda\Core\Presenters\Presenter {
         return $this->format_date('visible_from', 'h:i');
     }
 
+    /**
+     * @return string
+     */
     public function visible_from()
     {
         if (!$this->model->visible_from)
@@ -55,6 +64,9 @@ class PageVersion extends \CoandaCMS\Coanda\Core\Presenters\Presenter {
         return $this->format_date('visible_from');
     }
 
+    /**
+     * @return string
+     */
     public function visible_to()
     {
         if (!$this->model->visible_to)
@@ -65,6 +77,9 @@ class PageVersion extends \CoandaCMS\Coanda\Core\Presenters\Presenter {
         return $this->format_date('visible_to');
     }
 
+    /**
+     * @return Carbon
+     */
     public function delayed_publish_date()
     {
         if ($this->model->publish_handler == 'delayed')

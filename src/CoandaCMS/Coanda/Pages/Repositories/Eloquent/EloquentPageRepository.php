@@ -216,7 +216,12 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		throw new PageNotFound;
 	}
 
-	public function getVersionById($id)
+    /**
+     * @param $id
+     * @return mixed
+     * @throws \CoandaCMS\Coanda\Exceptions\PageVersionNotFound
+     */
+    public function getVersionById($id)
 	{
 		$version = PageVersionModel::find($id);
 
@@ -405,7 +410,13 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		throw new PageNotFound;
 	}
 
-	public function publishVersion($version, $user_id, $urlRepository, $historyRepository)
+    /**
+     * @param $version
+     * @param $user_id
+     * @param $urlRepository
+     * @param $historyRepository
+     */
+    public function publishVersion($version, $user_id, $urlRepository, $historyRepository)
 	{
 		$page = $version->page;
 
@@ -713,7 +724,12 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		}
 	}
 
-	public function getPendingVersions($offset, $limit)
+    /**
+     * @param $offset
+     * @param $limit
+     * @return mixed
+     */
+    public function getPendingVersions($offset, $limit)
 	{
 		return PageVersionModel::whereStatus('pending')->take($limit)->offset($offset)->get();
 	}

@@ -42,12 +42,18 @@ class Page extends \CoandaCMS\Coanda\Core\Presenters\Presenter {
 		return $this->model->pageType()->name;
 	}
 
-	public function visibility()
+    /**
+     * @return string
+     */
+    public function visibility()
 	{
 		return $this->model->is_visible ? 'Visble' : 'Hidden';
 	}
 
-	public function visible_dates()
+    /**
+     * @return string
+     */
+    public function visible_dates()
 	{
 		$from = $this->model->visible_from;
 		$to = $this->model->visible_to;
@@ -77,7 +83,10 @@ class Page extends \CoandaCMS\Coanda\Core\Presenters\Presenter {
 		return $visibility_text;
 	}
 
-	public function visible_dates_short()
+    /**
+     * @return string
+     */
+    public function visible_dates_short()
 	{
 		$from = $this->model->visible_from;
 		$to = $this->model->visible_to;

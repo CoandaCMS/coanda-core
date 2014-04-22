@@ -4,14 +4,32 @@ use Coanda;
 use CoandaCMS\Coanda\Pages\Exceptions\PublishHandlerException;
 use Carbon\Carbon;
 
+/**
+ * Class Delayed
+ * @package CoandaCMS\Coanda\Pages\PublishHandlers
+ */
 class Delayed implements PublishHandlerInterface {
 
-	public $identifier = 'delayed';
-	public $name = 'Delay publishing until a specified date and time';
+    /**
+     * @var string
+     */
+    public $identifier = 'delayed';
+    /**
+     * @var string
+     */
+    public $name = 'Delay publishing until a specified date and time';
 
-	public $template = 'coanda::admin.pages.publishoptions.delayed';
+    /**
+     * @var string
+     */
+    public $template = 'coanda::admin.pages.publishoptions.delayed';
 
-	public function validate($version, $data)
+    /**
+     * @param $version
+     * @param $data
+     * @throws \CoandaCMS\Coanda\Pages\Exceptions\PublishHandlerException
+     */
+    public function validate($version, $data)
 	{
 		if (!isset($data['delayed_publish_date']) || $data['delayed_publish_date'] == '')
 		{
@@ -35,7 +53,14 @@ class Delayed implements PublishHandlerInterface {
 		}
 	}
 
-	public function execute($version, $data, $pageRepository, $urlRepository, $historyRepository)
+    /**
+     * @param $version
+     * @param $data
+     * @param $pageRepository
+     * @param $urlRepository
+     * @param $historyRepository
+     */
+    public function execute($version, $data, $pageRepository, $urlRepository, $historyRepository)
 	{
 		$page = $version->page;
 
@@ -66,7 +91,13 @@ class Delayed implements PublishHandlerInterface {
 		$historyRepository->add('pages', $page->id, Coanda::currentUser()->id, 'publish_version_delayed', ['version' => (int)$version->version, 'date' => $date]);
 	}
 
-	public static function executeFromCommand($command, $pageRepository, $urlRepository, $historyRepository)
+    /**
+     * @param $command
+     * @param $pageRepository
+     * @param $urlRepository
+     * @param $historyRepository
+     */
+    public static function executeFromCommand($command, $pageRepository, $urlRepository, $historyRepository)
 	{
 		$offset = 0;
 		$limit = 5;

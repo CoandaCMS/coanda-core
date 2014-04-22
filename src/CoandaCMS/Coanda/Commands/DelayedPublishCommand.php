@@ -3,6 +3,10 @@
 use Illuminate\Console\Command;
 use Coanda;
 
+/**
+ * Class DelayedPublishCommand
+ * @package CoandaCMS\Coanda\Commands
+ */
 class DelayedPublishCommand extends Command {
 
     /**
@@ -19,10 +23,22 @@ class DelayedPublishCommand extends Command {
      */
     protected $description = 'Checks to see if any delayed/pending versions need to be published';
 
+    /**
+     * @var
+     */
     private $pageRepository;
+    /**
+     * @var
+     */
     private $urlRepository;
+    /**
+     * @var
+     */
     private $historyRepository;
 
+    /**
+     * @param $app
+     */
     public function __construct($app)
     {
         $this->pageRepository = $app->make('CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface');
@@ -33,7 +49,7 @@ class DelayedPublishCommand extends Command {
     }
 
     /**
-     * Compile and generate the file
+     * Run the command
      */
     public function fire()
     {        

@@ -3,6 +3,10 @@
 use Eloquent, Coanda, App, Config, File;
 use Carbon\Carbon;
 
+/**
+ * Class Media
+ * @package CoandaCMS\Coanda\Media\Repositories\Eloquent\Models
+ */
 class Media extends Eloquent {
 
 	use \CoandaCMS\Coanda\Core\Presenters\PresentableTrait;
@@ -19,7 +23,10 @@ class Media extends Eloquent {
 	 */
 	protected $table = 'media';
 
-	public function delete()
+    /**
+     *
+     */
+    public function delete()
 	{
 		$original_file = base_path() . '/' . Config::get('coanda::coanda.uploads_directory') . '/' . $this->filename;
 
@@ -36,7 +43,10 @@ class Media extends Eloquent {
 		parent::delete();
 	}
 
-	public function type()
+    /**
+     * @return string
+     */
+    public function type()
 	{
 		$mime_type_parts = explode('/', $this->mime);
 
@@ -56,17 +66,26 @@ class Media extends Eloquent {
 		return 'file';
 	}
 
-	public function getTypeAttribute()
+    /**
+     * @return string
+     */
+    public function getTypeAttribute()
 	{
 		return $this->type();
 	}
 
-	public function originalFilePath()
+    /**
+     * @return string
+     */
+    public function originalFilePath()
 	{
 		return base_path() . '/' . Config::get('coanda::coanda.uploads_directory') . '/' . $this->filename;
 	}
 
-	public function originalFileLink()
+    /**
+     * @return string
+     */
+    public function originalFileLink()
 	{
         $original_file = base_path() . '/' . Config::get('coanda::coanda.uploads_directory') . '/' . $this->filename;
         $cache_base = Config::get('coanda::coanda.file_cache_directory');
@@ -87,12 +106,18 @@ class Media extends Eloquent {
         return $cache_path;
 	}
 
-	public function tags()
+    /**
+     * @return mixed
+     */
+    public function tags()
 	{
 		return $this->belongsToMany('CoandaCMS\Coanda\Media\Repositories\Eloquent\Models\MediaTag');
 	}
 
-	public function toArray()
+    /**
+     * @return array
+     */
+    public function toArray()
 	{
 		return [
 			'id' => $this->id,

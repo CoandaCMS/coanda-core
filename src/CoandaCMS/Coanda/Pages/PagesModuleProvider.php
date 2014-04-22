@@ -158,12 +158,19 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		throw new PageAttributeTypeNotFound;
 	}
 
-	public function publishHandlers()
+    /**
+     * @return array
+     */
+    public function publishHandlers()
 	{
 		return $this->publish_handlers;
 	}
 
-	public function getPublishHandler($identifier)
+    /**
+     * @param $identifier
+     * @return mixed
+     */
+    public function getPublishHandler($identifier)
 	{
 		return $this->publish_handlers[$identifier];
 	}

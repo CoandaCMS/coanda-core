@@ -3,19 +3,43 @@
 use Coanda;
 use CoandaCMS\Coanda\Pages\Exceptions\PublishHandlerException;
 
+/**
+ * Class Immediate
+ * @package CoandaCMS\Coanda\Pages\PublishHandlers
+ */
 class Immediate implements PublishHandlerInterface {
 
-	public $identifier = 'immediate';
-	public $name = 'Publish Immediately';
+    /**
+     * @var string
+     */
+    public $identifier = 'immediate';
+    /**
+     * @var string
+     */
+    public $name = 'Publish Immediately';
 
-	public $template = 'coanda::admin.pages.publishoptions.immediate';
+    /**
+     * @var string
+     */
+    public $template = 'coanda::admin.pages.publishoptions.immediate';
 
-	public function validate($version, $data)
+    /**
+     * @param $version
+     * @param $data
+     */
+    public function validate($version, $data)
 	{
 		// Nothing to validate on this one
 	}
 
-	public function execute($version, $data, $pageRepository, $urlRepository, $historyRepository)
+    /**
+     * @param $version
+     * @param $data
+     * @param $pageRepository
+     * @param $urlRepository
+     * @param $historyRepository
+     */
+    public function execute($version, $data, $pageRepository, $urlRepository, $historyRepository)
 	{
 		$pageRepository->publishVersion($version, Coanda::currentUser()->id, $urlRepository, $historyRepository);
 	}

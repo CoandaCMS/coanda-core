@@ -3,9 +3,16 @@
 use Eloquent, Coanda, App, Config, File;
 use Carbon\Carbon;
 
+/**
+ * Class MediaTag
+ * @package CoandaCMS\Coanda\Media\Repositories\Eloquent\Models
+ */
 class MediaTag extends Eloquent {
 
-	protected $table = 'mediatags';
+    /**
+     * @var string
+     */
+    protected $table = 'mediatags';
 
 	use \CoandaCMS\Coanda\Core\Presenters\PresentableTrait;
 
@@ -14,7 +21,10 @@ class MediaTag extends Eloquent {
      */
     protected $presenter = 'CoandaCMS\Coanda\Media\Presenters\MediaTag';
 
-	public function media()
+    /**
+     * @return mixed
+     */
+    public function media()
 	{
 		return $this->belongsToMany('CoandaCMS\Coanda\Media\Repositories\Eloquent\Models\Media');
 	}
