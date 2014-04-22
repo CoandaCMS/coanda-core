@@ -19,7 +19,7 @@ abstract class Presenter {
 	/**
 	 * @param $model
 	 */
-	function __construct($model)
+	public function __construct($model)
 	{
 		$this->model = $model;
 	}
