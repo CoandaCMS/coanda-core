@@ -1,8 +1,8 @@
 tools:
-   php_code_coverage:
-       enabled: true
+    php_code_sniffer: true
     php_analyzer:
         enabled: true
         filter:
-            paths: ["src/*", "tests/*"]
-    sensiolabs_security_checker: true
+            excluded_paths: ['vendor/*']
+    php_cs_fixer: true
+    php_mess_detector: true
