@@ -19,11 +19,11 @@ class SetupCommand extends Command {
      */
     protected $description = 'Sets up the coanda CMS system';
 
-    private $pageRepository;
+    private $userRepository;
 
     public function __construct($app)
     {
-        $this->pageRepository = $app->make('CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface');
+        $this->userRepository = $app->make('CoandaCMS\Coanda\Users\Repositories\UserRepositoryInterface');
 
         parent::__construct();
     }
@@ -37,67 +37,66 @@ class SetupCommand extends Command {
         $this->info('Welcome to CoandaCMS setup');
         $this->info('--------------------------');
 
-        // $admin_group_name = $this->ask('Please specify the name for the main administrators group? (default: Administrators)');
+        $admin_group_name = $this->ask('First, we need to set up an admin user group, what shall we call it? (default: Administrators)');
+
+        if ($admin_group_name == '')
+        {
+            $admin_group_name = 'Administrators';
+        }
 
         // create the main admin group....
+        $group = $this->userRepository->createGroup(['name' => $admin_group_name, 'permissions' => ['*']]);
 
-        // $admin_email = $this->ask('Please specify email address for the first main admin account?');
-        // $admin_password = $this->ask('Please specify password for the first main admin account?');
+        $this->info('Now, lets setup the first user account for you');
 
-        // create the admin user
+        $first_name = $this->ask('First name? (default: Admin)');
 
-        $seed = $this->ask('Would you like to seed the system with demo pages (Y/N)? (default: N)');
-
-        if ($seed == 'Y')
+        if ($first_name == '')
         {
-            $this->seed();
+            $first_name = 'Admin';
         }
-    }
 
-    private function seed()
-    {
-        $this->createSubTree(0);
-    }
+        $last_name = $this->ask('Last name? (default: User)');
 
-    private function createSubTree($parent_page_id)
-    {
-        $page_type = 'page';
+        if ($last_name == '')
+        {
+            $last_name = 'User';
+        }
+
+        $email = $this->ask('Email address? (default: demo@somewhere.com)');
+
+        if ($email == '')
+        {
+            $email = 'demo@somewhere.com';
+        }
+
+        $password = $this->ask('Password? (default: password)');
+
+        if ($password == '')
+        {
+            $password = 'password';
+        }
+
+        $user_data = [
+            'first_name' => $first_name,
+            'last_name' => $last_name,
+            'email' => $email,
+            'password' => $password,
+            'password_confirmation' => $password,
+        ];
 
         try
         {
-            $type = Coanda::module('pages')->getPageType($page_type);
+            $user = $this->userRepository->createNew($user_data, $group->id);
 
-            foreach (range(0, rand(2, 20)) as $index)
-            {
-                $page = $this->pageRepository->create($type, 1, $parent_page_id);
-
-                $version = $this->pageRepository->getDraftVersion($page->id, 1);
-
-                $dummy_data = [];
-
-                foreach ($version->attributes as $attribute)
-                {
-                    $dummy_data['attribute_' . $attribute->id] = 'Page name: ' . $index;
-                }
-
-                echo '.';
-
-                $dummy_data['slug'] = 'page-' . $index;
-                $dummy_data['meta_page_title'] = 'Page #' . $index;
-                $dummy_data['meta_description'] = 'Page #' . $index;
-
-                $this->pageRepository->saveDraftVersion($version, $dummy_data);
-                $this->pageRepository->publishVersion($version);
-
-                if ($page->depth < 4)
-                {
-                    $this->createSubTree($page->id);                    
-                }
-            }
+            $this->info('All done, you can now log in with the details specified.');
         }
-        catch (PageTypeNotFound $exception)
+        catch (\CoandaCMS\Coanda\Exceptions\ValidationException $exception)
         {
-            $this->error('Could not find page type: ' . $page_type);
+            foreach ($exception->getInvalidFields() as $invalid)
+            {
+                $this->error($invalid);
+            }
         }
     }
 }

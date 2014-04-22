@@ -229,6 +229,8 @@ class EloquentUserRepository implements UserRepositoryInterface {
 		$user_group->name = $data['name'];
 		$user_group->permissions = json_encode($permissions);
 		$user_group->save();
+
+		return $user_group;
 	}
 
     /**
