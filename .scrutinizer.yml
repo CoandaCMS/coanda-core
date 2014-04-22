@@ -1,8 +1,8 @@
 tools:
    php_code_coverage:
        enabled: true
-    php_analyzer: true
     php_analyzer:
+        enabled: true
         filter:
             paths: ["src/*", "tests/*"]
     sensiolabs_security_checker: true
