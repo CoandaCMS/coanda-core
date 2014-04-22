@@ -51,8 +51,8 @@ class CreatePagesTable extends Migration {
 			
 			$table->string('status')->default('draft'); // draft/published/archived (maybe pending for sign off?)
 
-			$table->timestamp('visible_from');
-			$table->timestamp('visible_to');
+			$table->timestamp('visible_from')->nullable();
+			$table->timestamp('visible_to')->nullable();
 
 			$table->string('publish_handler');
 			$table->text('publish_handler_data');
