@@ -13,7 +13,7 @@ trait PresentableTrait {
 	 *
 	 * @var mixed
 	 */
-	protected $presenter;
+	protected $presenterInstance;
 
 	/**
 	 * Prepare a new or cached presenter instance
