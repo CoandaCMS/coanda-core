@@ -20,6 +20,8 @@ class DelayedPublishCommand extends Command {
     protected $description = 'Checks to see if any delayed/pending versions need to be published';
 
     private $pageRepository;
+    private $urlRepository;
+    private $historyRepository;
 
     public function __construct($app)
     {

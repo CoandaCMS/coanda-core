@@ -28,6 +28,8 @@ class Coanda {
      */
     private $urlRepository;
 
+    private $routers = [];
+
     /**
      * @param \Illuminate\Foundation\Application $app
      */
