@@ -35,7 +35,16 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
      */
     public function boot(\CoandaCMS\Coanda\Coanda $coanda)
 	{
-		// Ad the router to handle slug views
+		$this->loadRouter($coanda);
+		$this->loadPageTypes($coanda);
+		$this->loadAttributes($coanda);
+		$this->loadPublishHandlers($coanda);
+		$this->loadPermissions($coanda);
+	}
+
+	private function loadRouter($coanda)
+	{
+		// Add the router to handle slug views
 		$coanda->addRouter('page', function ($url) {
 
 			$pageRepository = App::make('CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface');
@@ -62,7 +71,10 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 			}
 
 		});
+	}
 
+	private function loadPageTypes($coanda)
+	{
 		// load the page types
 		$page_types = Config::get('coanda::coanda.page_types');
 
@@ -77,7 +89,10 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 				$this->page_types[$type->identifier] = $type;				
 			}
 		}
+	}
 
+	private function loadAttributes($coanda)
+	{
 		// Load the attributes
 		$page_attribute_types = Config::get('coanda::coanda.page_attribute_types');
 
@@ -87,7 +102,10 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 
 			$this->page_attribute_types[$attribute_type->identifier] = $attribute_type;
 		}
+	}
 
+	private function loadPublishHandlers($coanda)
+	{
 		// Load the publish handlers
 		$core_publish_handlers = [
 			'CoandaCMS\Coanda\Pages\PublishHandlers\Immediate' // Make sure this one is always added (TODO: Consider removing this as 'core')
@@ -106,7 +124,10 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 				$this->publish_handlers[$handler->identifier] = $handler;
 			}
 		}
+	}
 
+	private function loadPermissions($coanda)
+	{
 		$publish_handler_options = [];
 
 		foreach ($this->publish_handlers as $publish_handler)
@@ -145,7 +166,7 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 			]
 		];
 
-		$coanda->addModulePermissions('pages', 'Pages', $permissions);
+		$coanda->addModulePermissions('pages', 'Pages', $permissions);		
 	}
 
 	/**
