@@ -35,16 +35,6 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
      */
     public function boot(\CoandaCMS\Coanda\Coanda $coanda)
 	{
-		// Add the permissions
-		$views = [
-			'create',
-			'edit',
-			'remove',
-			'move'
-		];
-
-		$coanda->addModulePermissions('pages', 'Pages', $views);
-
 		// Ad the router to handle slug views
 		$coanda->addRouter('page', function ($url) {
 
@@ -116,6 +106,46 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 				$this->publish_handlers[$handler->identifier] = $handler;
 			}
 		}
+
+		$publish_handler_options = [];
+
+		foreach ($this->publish_handlers as $publish_handler)
+		{
+			$publish_handler_options[$publish_handler->identifier] = $publish_handler->name;
+		}
+
+		$page_type_options = [];
+
+		foreach ($this->page_types as $page_type)
+		{
+			$page_type_options[$page_type->identifier] = $page_type->name;
+		}
+
+		// Add the permissions
+		$permissions = [
+			'create' => [
+				'name' => 'Create',
+				'options' => []
+			],
+			'edit' => [
+				'name' => 'Edit',
+				'options' => []
+			],
+			'remove' => [
+				'name' => 'Remove',
+				'options' => []
+			],
+			'publish_options' => [
+				'name' => 'Publish options',
+				'options' => $publish_handler_options
+			],
+			'page_types' => [
+				'name' => 'Available page types',
+				'options' => $page_type_options
+			]
+		];
+
+		$coanda->addModulePermissions('pages', 'Pages', $permissions);
 	}
 
 	/**

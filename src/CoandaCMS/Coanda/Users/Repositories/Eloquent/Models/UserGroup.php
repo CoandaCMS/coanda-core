@@ -35,6 +35,6 @@ class UserGroup extends Eloquent {
      */
     public function getAccessListAttribute()
 	{
-		return json_decode($this->permissions);
+		return json_decode($this->permissions, true);
 	}
 }

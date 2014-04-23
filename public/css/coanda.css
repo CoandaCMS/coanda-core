@@ -341,3 +341,29 @@ td.order-column .input-sm
 {
 	cursor: pointer;
 }
+
+table.fifty-50 td
+{
+	width: 50%;
+}
+
+table.seventy-30 td
+{
+	width: 70%;
+}
+
+table.seventy-30 td:first-child
+{
+	width: 30%;
+}
+
+.permission-option-label
+{
+	margin-top: 10px;
+}
+
+.radio label.permission-everything-option,
+.checkbox label.permission-everything-option
+{
+	font-weight: bold;
+}

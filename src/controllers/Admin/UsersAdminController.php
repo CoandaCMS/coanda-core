@@ -45,9 +45,12 @@ class UsersAdminController extends BaseController {
     public function getCreateGroup()
 	{
 		$permissions = Coanda::availablePermissions();
+
+		$existing_permissions = Input::old('permissions');
+
 		$invalid_fields = Session::has('invalid_fields') ? Session::get('invalid_fields') : [];
 
-		return View::make('coanda::admin.users.creategroup', ['permissions' => $permissions, 'invalid_fields' => $invalid_fields ]);
+		return View::make('coanda::admin.users.creategroup', ['permissions' => $permissions, 'existing_permissions' => $existing_permissions, 'invalid_fields' => $invalid_fields ]);
 	}
 
     /**
@@ -83,7 +86,8 @@ class UsersAdminController extends BaseController {
 			$group = $this->userRepository->groupById($group_id);
 
 			$permissions = Coanda::availablePermissions();
-			$existing_permissions = Input::old('permissions', (array)$group->access_list);
+
+			$existing_permissions = Input::old('permissions', $group->access_list);
 
 			$invalid_fields = Session::has('invalid_fields') ? Session::get('invalid_fields') : [];
 

@@ -26,55 +26,36 @@
 
 <div class="row">
 	<div class="col-md-12">
+		<div class="edit-container">
 
-		{{ Form::open(['url' => Coanda::adminUrl('users/edit-group/' . $group->id)]) }}
+			{{ Form::open(['url' => Coanda::adminUrl('users/edit-group/' . $group->id)]) }}
 
-			<div class="form-group @if (isset($invalid_fields['name'])) has-error @endif">
-				<label class="control-label" for="name">Name</label>
+				<div class="form-group @if (isset($invalid_fields['name'])) has-error @endif">
+					<label class="control-label" for="name">Name</label>
 
-				{{ Form::text('name', Input::old('name', $group->name), [ 'class' => 'form-control' ]) }}
+					{{ Form::text('name', Input::old('name', $group->name), [ 'class' => 'form-control' ]) }}
 
-			    @if (isset($invalid_fields['name']))
-			    	<span class="help-block">{{ $invalid_fields['name'] }}</span>
-			    @endif
-			</div>
-
-			<div class="form-group @if (isset($invalid_fields['permissions'])) has-error @endif">
-				<label class="control-label">Permissions</label>
-				
-				<div class="checkbox">
-					<label>
-						<input type="checkbox" name="permissions[*][]" value="*" {{ (in_array('*', $existing_permissions) || (isset($existing_permissions['*']) && in_array('*', $existing_permissions['*']))) ? 'checked="checked"' : '' }}>
-						Everything
-					</label>
+				    @if (isset($invalid_fields['name']))
+				    	<span class="help-block">{{ $invalid_fields['name'] }}</span>
+				    @endif
 				</div>
 
-				@foreach ($permissions as $module_key => $module)
-					<div class="checkbox">
-						<label>
-							<input type="checkbox" name="permissions[{{ $module_key }}][]" value="*" {{ (isset($existing_permissions[$module_key]) && in_array('*', $existing_permissions[$module_key])) ? 'checked="checked"' : '' }}>
-							{{ $module['name'] }}
-						</label>
-					</div>
+				<div class="form-group @if (isset($invalid_fields['permissions'])) has-error @endif">
+					<label class="control-label">Permissions</label>
 
-					@foreach ($module['views'] as $view)
-						<label class="checkbox-inline">
-							<input type="checkbox" name="permissions[{{ $module_key }}][]" value="{{ $view }}" {{ (isset($existing_permissions[$module_key]) && in_array($view, $existing_permissions[$module_key])) ? 'checked="checked"' : '' }}> {{ $view }}
-						</label>
-					@endforeach
+					@include('coanda::admin.users.includes.permissions', [ 'permissions' => $permissions, 'existing_permissions' => $existing_permissions ])
 
-				@endforeach
+				    @if (isset($invalid_fields['permissions']))
+				    	<span class="help-block">{{ $invalid_fields['permissions'] }}</span>
+				    @endif
+				</div>
 
-			    @if (isset($invalid_fields['permissions']))
-			    	<span class="help-block">{{ $invalid_fields['permissions'] }}</span>
-			    @endif
-			</div>
+				{{ Form::button('Update', ['name' => 'save', 'value' => 'true', 'type' => 'submit', 'class' => 'btn btn-primary']) }}
+				{{ Form::button('Cancel', ['name' => 'cancel', 'value' => 'true', 'type' => 'submit', 'class' => 'btn btn-default']) }}
 
-			{{ Form::button('Update', ['name' => 'save', 'value' => 'true', 'type' => 'submit', 'class' => 'btn btn-primary']) }}
-			{{ Form::button('Cancel', ['name' => 'cancel', 'value' => 'true', 'type' => 'submit', 'class' => 'btn btn-default']) }}
+			{{ Form::close() }}
 
-		{{ Form::close() }}
-
+		</div>
 	</div>
 </div>
 

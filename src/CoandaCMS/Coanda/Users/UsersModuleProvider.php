@@ -18,14 +18,23 @@ class UsersModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
      */
     public function boot(\CoandaCMS\Coanda\Coanda $coanda)
 	{
-		// Add the permissions
-		$views = [
-			'create',
-			'edit',
-			'remove',
-		];
+        // Add the permissions
+        $permissions = [
+            'create' => [
+                'name' => 'Create',
+                'options' => []
+            ],
+            'edit' => [
+                'name' => 'Edit',
+                'options' => []
+            ],
+            'remove' => [
+                'name' => 'Remove',
+                'options' => []
+            ]
+        ];
 
-		$coanda->addModulePermissions('users', 'Users', $views);
+		$coanda->addModulePermissions('users', 'Users', $permissions);
 	}
 
     /**

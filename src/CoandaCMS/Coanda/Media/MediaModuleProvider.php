@@ -15,12 +15,18 @@ class MediaModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
     public function boot(\CoandaCMS\Coanda\Coanda $coanda)
 	{
 		// Add the permissions
-		$views = [
-			'create',
-			'remove'
-		];
+        $permissions = [
+            'create' => [
+                'name' => 'Create',
+                'options' => []
+            ],
+            'remove' => [
+                'name' => 'Remove',
+                'options' => []
+            ]
+        ];
 
-		$coanda->addModulePermissions('media', 'Media', $views);
+		$coanda->addModulePermissions('media', 'Media', $permissions);
 	}
 
     /**
