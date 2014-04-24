@@ -293,7 +293,7 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 	{
 		if (in_array('*', $user_permissions))
 		{
-			return true;
+			return;
 		}
 
 		// If we anything in pages, we allow view
