@@ -7,7 +7,11 @@
 <div class="row">
 	<div class="breadcrumb-nav">
 		<div class="pull-right">
-			<a href="{{ Coanda::adminUrl('pages/trash') }}" class="trash-icon"><i class="fa fa-trash-o"></i> Trash</a>
+			@if (Coanda::canView('pages', 'remove'))
+				<a href="{{ Coanda::adminUrl('pages/trash') }}" class="trash-icon"><i class="fa fa-trash-o"></i> Trash</a>
+			@else
+				<span  class="trash-icon disabled"><i class="fa fa-trash-o"></i> Trash</span>
+			@endif
 		</div>
 		<ul class="breadcrumb">
 			<li><a href="{{ Coanda::adminUrl('pages') }}">Pages</a></li>
@@ -104,7 +108,12 @@
 
 							<div class="buttons">
 								{{ Form::button('Update ordering', ['name' => 'update_order', 'value' => 'true', 'type' => 'submit', 'class' => 'pull-right btn btn-default']) }}
-								{{ Form::button('Delete selected', ['name' => 'delete_selected', 'value' => 'true', 'type' => 'submit', 'class' => 'btn btn-danger']) }}
+
+								@if (Coanda::canView('pages', 'remove'))
+									{{ Form::button('Delete selected', ['name' => 'delete_selected', 'value' => 'true', 'type' => 'submit', 'class' => 'btn btn-danger']) }}
+								@else
+									<span class="btn btn-danger" disabled="disabled">Delete selected</span>
+								@endif
 							</div>
 						{{ Form::close() }}
 					@else

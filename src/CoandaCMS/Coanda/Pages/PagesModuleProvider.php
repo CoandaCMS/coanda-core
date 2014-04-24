@@ -174,9 +174,46 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 	 * Returns the available page types
 	 * @return Array
 	 */
-	public function availablePageTypes()
+	public function availablePageTypes($page = false)
 	{
-		return $this->page_types;
+		$user_permissions = \Coanda::currentUserPermissions();
+
+		if (isset($user_permissions['everything']) && in_array('*', $user_permissions['everything']))
+		{
+			return $this->page_types;	
+		}
+
+		if (isset($user_permissions['pages']))
+		{
+			if (in_array('*', $user_permissions['pages']))
+			{
+				return $this->page_types;
+			}
+
+			if (in_array('create', $user_permissions['pages']))
+			{
+				if (isset($user_permissions['pages']['page_types']))
+				{
+					$page_types = [];
+
+					foreach ($user_permissions['pages']['page_types'] as $permissioned_page_type)
+					{
+						if (isset($this->page_types[$permissioned_page_type]))
+						{
+							$page_types[$permissioned_page_type] = $this->page_types[$permissioned_page_type];
+						}
+					}
+
+					return $page_types;
+				}
+				else
+				{
+					return $this->page_types;
+				}
+			}
+		}
+
+		return [];
 	}
 
     /**
