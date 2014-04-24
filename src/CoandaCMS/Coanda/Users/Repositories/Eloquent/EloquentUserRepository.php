@@ -24,6 +24,8 @@ class EloquentUserRepository implements UserRepositoryInterface {
      */
     private $model;
 
+    private $current_user_permissions;
+
     /**
      * @param UserModel $model
      */
@@ -93,64 +95,25 @@ class EloquentUserRepository implements UserRepositoryInterface {
 		return Auth::logout();
 	}
 
-    /**
-     * @param $permission
-     * @param bool $permission_id
-     * @return bool
-     */
-    public function hasAccessTo($permission, $permission_id = false)
+	public function currentUserPermissions()
 	{
-		// Get all the groups for the user
-		$user = Coanda::currentUser();
-
-		// Try to split up into the module:view
-		$permission_parts = explode(':', $permission);
-
-		if (count($permission_parts) == 2)
+		if (!$this->current_user_permissions)
 		{
-			$requested_module = $permission_parts[0];
-			$requested_view = $permission_parts[1];
-		}
-		else
-		{
-			// If we are only requesting a module, e.g. They can do something in the module!
-			$requested_module = $permission;
-			$requested_view = false;
-		}
+			$user = Coanda::currentUser();
+			$permissions = [];
 
-		// Loop through each of the user groups
-		foreach ($user->groups as $group)
-		{
-			// Get the access list for the group
-			$access_list = $group->access_list;
-
-			foreach ($access_list as $module => $access)
+			if ($user)
 			{
-				// This is a wildcard, they can see anything with this.
-				if ($access == '*')
+				foreach ($user->groups as $group)
 				{
-					return true;
-				}
-
-				// If the module is the requested one
-				if ($module == $requested_module)
-				{
-					// If we have not requested a specific view, but we have the module, then OK.
-					if (!$requested_view)
-					{
-						return true;
-					}
-
-					// Check for the specific view in the access list
-					if (in_array($requested_view, $access))
-					{
-						return true;
-					}
+					$permissions = array_merge($permissions, $group->access_list);
 				}
 			}
+
+			$this->current_user_permissions = $permissions;
 		}
 
-		return false;
+		return $this->current_user_permissions;
 	}
 
 	/**

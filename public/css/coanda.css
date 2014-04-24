@@ -103,6 +103,11 @@ h2
 	background: #FF6600;
 }
 
+.btn-primary[disabled]
+{
+	background: #ccc;	
+}
+
 .btn-primary:hover,
 .btn-primary:focus,
 .btn-primary:active,
@@ -301,6 +306,11 @@ td.order-column .input-sm
 	padding: 8px 15px 0 0;
 }
 
+.trash-icon.disabled
+{
+	color: #ccc;
+}
+
 .buttons
 {
 	margin: 0 0 10px 0;
@@ -366,4 +376,15 @@ table.seventy-30 td:first-child
 .checkbox label.permission-everything-option
 {
 	font-weight: bold;
+}
+
+.dropdown-menu > li > span.disabled
+{
+	display: block;
+	padding: 3px 20px;
+	clear: both;
+	font-weight: 400;
+	line-height: 1.42857143;
+	color: #ccc;
+	white-space: nowrap;
 }

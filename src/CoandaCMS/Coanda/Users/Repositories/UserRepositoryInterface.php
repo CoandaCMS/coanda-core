@@ -33,13 +33,6 @@ interface UserRepositoryInterface {
 	public function logout();
 
     /**
-     * @param $permission
-     * @param bool $permission_id
-     * @return mixed
-     */
-    public function hasAccessTo($permission, $permission_id = false);
-
-    /**
      * @param $id
      * @return mixed
      */
@@ -102,5 +95,5 @@ interface UserRepositoryInterface {
      * @return mixed
      */
     public function getByIds($ids);
-
+    
 }

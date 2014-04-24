@@ -5,6 +5,8 @@ use App, Route, Config, Redirect, Request, Session;
 use CoandaCMS\Coanda\Exceptions\PageTypeNotFound;
 use CoandaCMS\Coanda\Exceptions\PageAttributeTypeNotFound;
 
+use CoandaCMS\Coanda\Exceptions\PermissionDenied;
+
 /**
  * Class Coanda
  * @package CoandaCMS\Coanda
@@ -91,14 +93,36 @@ class Coanda {
 									];
 	}
 
-    /**
-     * @param $permission
-     * @param bool $permission_id
-     * @return mixed
-     */
-    public function canAccess($permission, $permission_id = false)
+	public function canView($module, $permission, $parameters = [])
 	{
-		return $this->user->hasAccessTo($permission, $permission_id);
+		try
+		{
+			$this->checkAccess($module, $permission, $parameters);
+
+			return true;
+		}
+		catch (PermissionDenied $exception)
+		{
+			return false;
+		}
+	}
+
+	public function checkAccess($module, $permission, $parameters = [])
+	{
+		$user_permissions = $this->user->currentUserPermissions();
+
+		if (isset($user_permissions['everything']) && in_array('*', $user_permissions['everything']))
+		{
+			return;
+		}
+
+		// Do we have some permissions for this module? If not, then they can not pass!
+		if (!isset($user_permissions[$module]))
+		{
+			throw new PermissionDenied('No access to module: ' . $module);
+		}
+
+		$this->module($module)->checkAccess($permission, $parameters, $user_permissions[$module]);
 	}
 
 	/**

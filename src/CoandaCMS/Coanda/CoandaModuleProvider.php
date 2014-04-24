@@ -31,4 +31,6 @@ interface CoandaModuleProvider {
      */
     public function bindings(Application $app);
 
+    public function checkAccess($permission, $parameters, $user_permissions);
+
 }

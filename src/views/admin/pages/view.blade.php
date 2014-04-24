@@ -7,8 +7,13 @@
 <div class="row">
 
 	<div class="breadcrumb-nav">
+
 		<div class="pull-right">
-			<a href="{{ Coanda::adminUrl('pages/trash') }}" class="trash-icon"><i class="fa fa-trash-o"></i> Trash</a>
+			@if (Coanda::canView('pages', 'remove'))
+				<a href="{{ Coanda::adminUrl('pages/trash') }}" class="trash-icon"><i class="fa fa-trash-o"></i> Trash</a>
+			@else
+				<span  class="trash-icon disabled"><i class="fa fa-trash-o"></i> Trash</span>
+			@endif
 		</div>
 
 		<ul class="breadcrumb">
@@ -75,12 +80,20 @@
 			<div class="col-md-10">
 				<div class="btn-group">
 					@if ($page->is_trashed)
-						<a href="{{ Coanda::adminUrl('pages/restore/' . $page->id) }}" class="btn btn-primary">Restore</a>
+						@if (Coanda::canView('pages', 'remove', ['page_id' => $page->id, 'page_type' => $page->type]))
+							<a href="{{ Coanda::adminUrl('pages/restore/' . $page->id) }}" class="btn btn-primary">Restore</a>
+						@else
+							<span class="btn btn-primary" disabled="disabled">Restore</span>
+						@endif
 					@else
 						@if ($page->is_draft)
 							<a href="{{ Coanda::adminUrl('pages/editversion/' . $page->id . '/1') }}" class="btn btn-primary">Continue editing</a>
 						@else
-							<a href="{{ Coanda::adminUrl('pages/edit/' . $page->id) }}" class="btn btn-primary">Edit</a>
+							@if (Coanda::canView('pages', 'edit', ['page_id' => $page->id, 'page_type' => $page->type]))
+								<a href="{{ Coanda::adminUrl('pages/edit/' . $page->id) }}" class="btn btn-primary">Edit</a>
+							@else
+								<span class="btn btn-primary" disabled="disabled">Edit</span>
+							@endif
 						@endif
 						<div class="btn-group">
 							<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
@@ -88,7 +101,13 @@
 								<span class="caret"></span>
 							</button>
 							<ul class="dropdown-menu">
-								<li><a href="{{ Coanda::adminUrl('pages/delete/' . $page->id) }}">Delete</a></li>
+								<li>
+									@if (Coanda::canView('pages', 'remove', ['page_id' => $page->id, 'page_type' => $page->type]))
+										<a href="{{ Coanda::adminUrl('pages/delete/' . $page->id) }}">Delete</a>
+									@else
+										<span class="disabled">Delete</span>
+									@endif
+								</li>
 							</ul>
 						</div>
 					@endif
@@ -163,8 +182,8 @@
 									<td>{{ $child->present()->type }}</td>
 									<td>{{ $child->children->count() }} sub page{{ $child->children->count() !== 1 ? 's' : '' }}</td>
 									<td>{{ $child->present()->status }}</td>
-									<td class="order-column">{{ Form::text('ordering[' . $child->id . ']', $child->order, ['class' => 'form-control input-sm']) }}</td>
 									@if (!$page->is_trashed)
+										<td class="order-column">{{ Form::text('ordering[' . $child->id . ']', $child->order, ['class' => 'form-control input-sm']) }}</td>
 										<td class="tight">
 											@if ($child->is_draft)
 												<a href="{{ Coanda::adminUrl('pages/editversion/' . $child->id . '/1') }}"><i class="fa fa-pencil-square-o"></i></a>
@@ -179,10 +198,17 @@
 
 							{{ $children->links() }}
 
-							<div class="buttons">
-								{{ Form::button('Update ordering', ['name' => 'update_order', 'value' => 'true', 'type' => 'submit', 'class' => 'pull-right btn btn-default']) }}
-								{{ Form::button('Delete selected', ['name' => 'delete_selected', 'value' => 'true', 'type' => 'submit', 'class' => 'btn btn-danger']) }}
-							</div>
+							@if (!$page->is_trashed)
+								<div class="buttons">
+									{{ Form::button('Update ordering', ['name' => 'update_order', 'value' => 'true', 'type' => 'submit', 'class' => 'pull-right btn btn-default']) }}
+
+									@if (Coanda::canView('pages', 'remove'))
+										{{ Form::button('Delete selected', ['name' => 'delete_selected', 'value' => 'true', 'type' => 'submit', 'class' => 'btn btn-danger']) }}
+									@else
+										<span class="btn btn-danger" disabled="disabled">Delete selected</span>
+									@endif
+								</div>
+							@endif
 						@else
 							<p>This page doesn't have any sub pages</p>
 						@endif

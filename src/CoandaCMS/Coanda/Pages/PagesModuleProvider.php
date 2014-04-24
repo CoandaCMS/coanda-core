@@ -4,6 +4,7 @@ use Route, App, Config;
 
 use CoandaCMS\Coanda\Exceptions\PageTypeNotFound;
 use CoandaCMS\Coanda\Exceptions\PageAttributeTypeNotFound;
+use CoandaCMS\Coanda\Exceptions\PermissionDenied;
 
 /**
  * Class PagesModuleProvider
@@ -251,5 +252,43 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
     public function bindings(\Illuminate\Foundation\Application $app)
 	{
 		$app->bind('CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface', 'CoandaCMS\Coanda\Pages\Repositories\Eloquent\EloquentPageRepository');
+	}
+
+	public function checkAccess($permission, $parameters, $user_permissions = [])
+	{
+		if (in_array('*', $user_permissions))
+		{
+			return true;
+		}
+
+		// If we anything in pages, we allow view
+		if ($permission == 'view')
+		{
+			return;
+		}
+
+		// If we have create, but not edit, then add edit
+		if (in_array('create', $user_permissions) && !in_array('edit', $user_permissions))
+		{
+			$user_permissions[] = 'edit';
+		}
+
+		// If we don't have this permission in the array, the throw right away
+		if (!in_array($permission, $user_permissions))
+		{
+			throw new PermissionDenied('Access denied by pages module: ' . $permission);
+		}
+
+		// Page type check
+		if ($permission == 'create' || $permission == 'edit')
+		{
+			if (isset($user_permissions['page_types']) && count($user_permissions['page_types']) > 0)
+			{
+				if (!in_array($parameters['page_type'], $user_permissions['page_types']))
+				{
+					throw new PermissionDenied('Access denied by pages module for page type: ' . $parameters['page_type']);
+				}
+			}
+		}
 	}
 }

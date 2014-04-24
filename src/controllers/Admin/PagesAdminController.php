@@ -39,10 +39,7 @@ class PagesAdminController extends BaseController {
      */
     public function getIndex()
 	{
-		if (!Coanda::canAccess('pages'))
-		{
-			throw new PermissionDenied;
-		}
+		Coanda::checkAccess('pages', 'view');
 
 		$per_page = 10;
 
@@ -82,11 +79,6 @@ class PagesAdminController extends BaseController {
      */
     public function getView($id)
 	{
-		if (!Coanda::canAccess('pages'))
-		{
-			throw new PermissionDenied;
-		}
-
 		if ($id == 0)
 		{
 			return Redirect::to(Coanda::adminUrl('pages'));
@@ -94,8 +86,12 @@ class PagesAdminController extends BaseController {
 
 		try
 		{
+			$page = $this->pageRepository->find($id);
+
+			Coanda::checkAccess('pages', 'view', ['page_id' => $page->id, 'page_type' => $page->type]);
+
 			$view_data = [
-							'page' => $this->pageRepository->find($id),
+							'page' => $page,
 							'children' => $this->pageRepository->subPages($id, 10),
 							'history' => $this->pageRepository->recentHistory($id, 5),
 							'contributors' => $this->pageRepository->contributors($id)
@@ -103,7 +99,7 @@ class PagesAdminController extends BaseController {
 
 			return View::make('coanda::admin.pages.view', $view_data);
 		}
-		catch(PageNotFound $exception)
+		catch (PageNotFound $exception)
 		{
 			App::abort('404');
 		}
@@ -191,6 +187,8 @@ class PagesAdminController extends BaseController {
      */
     public function getCreate($page_type, $parent_page_id = false)
 	{
+		Coanda::checkAccess('pages', 'create', ['page_type' => $page_type, 'parent_page_id' => $parent_page_id]);
+
 		try
 		{
 			$type = Coanda::module('pages')->getPageType($page_type);
@@ -214,20 +212,24 @@ class PagesAdminController extends BaseController {
 	{
 		try
 		{
+			$page = $this->pageRepository->find($page_id);
+
+			Coanda::checkAccess('pages', 'edit', ['page_id' => $page->id, 'page_type' => $page->type]);
+
 			$existing_drafts = $this->pageRepository->draftsForUser($page_id, Coanda::currentUser()->id);	
 
 			if ($existing_drafts->count() > 0)
 			{
-				return Redirect::to(Coanda::adminUrl('pages/existing-drafts/' . $page_id));
+				return Redirect::to(Coanda::adminUrl('pages/existing-drafts/' . $page->id));
 			}
 			else
 			{
 				$new_version = $this->pageRepository->createNewVersion($page_id, Coanda::currentUser()->id);
 
-				return Redirect::to(Coanda::adminUrl('pages/editversion/' . $page_id . '/' . $new_version));
+				return Redirect::to(Coanda::adminUrl('pages/editversion/' . $page->id . '/' . $new_version));
 			}
 		}		
-		catch(PageNotFound $exception)
+		catch (PageNotFound $exception)
 		{
 			return Redirect::to(Coanda::adminUrl('pages'));
 		}
@@ -243,6 +245,10 @@ class PagesAdminController extends BaseController {
 		try
 		{
 			$version = $this->pageRepository->getDraftVersion($page_id, $version_number);
+			$page = $version->page;
+
+			Coanda::checkAccess('pages', 'edit', ['page_id' => $page->id, 'page_type' => $page->type]);
+
 			$invalid_fields = Session::has('invalid_fields') ? Session::get('invalid_fields') : [];
 
 			$publish_handlers = Coanda::module('pages')->publishHandlers();
@@ -271,6 +277,9 @@ class PagesAdminController extends BaseController {
 		try
 		{
 			$version = $this->pageRepository->getDraftVersion($page_id, $version_number);
+			$page = $version->page;
+
+			Coanda::checkAccess('pages', 'edit', ['page_id' => $page->id, 'page_type' => $page->type]);
 
 			if (Input::has('discard'))
 			{
@@ -349,6 +358,9 @@ class PagesAdminController extends BaseController {
 		try
 		{
 			$version = $this->pageRepository->getDraftVersion($page_id, $version_number);
+			$page = $version->page;
+
+			Coanda::checkAccess('pages', 'edit', ['page_id' => $page->id, 'page_type' => $page->type]);
 
 			$this->pageRepository->discardDraftVersion($version);
 
@@ -373,6 +385,9 @@ class PagesAdminController extends BaseController {
 		try
 		{
 			$page = $this->pageRepository->find($page_id);
+
+			Coanda::checkAccess('pages', 'edit', ['page_id' => $page->id, 'page_type' => $page->type]);
+
 			$drafts = $this->pageRepository->draftsForUser($page_id, Coanda::currentUser()->id);
 
 			return View::make('coanda::admin.pages.existingdrafts', ['page' => $page, 'drafts' => $drafts ]);
@@ -391,10 +406,12 @@ class PagesAdminController extends BaseController {
 	{
 		try
 		{
+			$page = $this->pageRepository->find($page_id);
+
+			Coanda::checkAccess('pages', 'edit', ['page_id' => $page->id, 'page_type' => $page->type]);
+
 			if (Input::has('new_version') && Input::get('new_version') == 'true')
 			{
-				$page = $this->pageRepository->find($page_id);
-
 				$new_version = $this->pageRepository->createNewVersion($page->id, Coanda::currentUser()->id);
 
 				return Redirect::to(Coanda::adminUrl('pages/editversion/' . $page_id . '/' . $new_version));
@@ -416,6 +433,8 @@ class PagesAdminController extends BaseController {
 		{
 			$page = $this->pageRepository->find($page_id);
 
+			Coanda::checkAccess('pages', 'remove', ['page_id' => $page->id, 'page_type' => $page->type]);
+
 			return View::make('coanda::admin.pages.delete', ['page' => $page ]);
 		}
 		catch (PageNotFound $exception)
@@ -433,6 +452,9 @@ class PagesAdminController extends BaseController {
 		try
 		{
 			$page = $this->pageRepository->find($page_id);
+
+			Coanda::checkAccess('pages', 'remove', ['page_id' => $page->id, 'page_type' => $page->type]);
+
 			$parent_page_id = $page->parent_page_id;
 
 			$this->pageRepository->deletePage($page_id);
@@ -450,6 +472,8 @@ class PagesAdminController extends BaseController {
      */
     public function getTrash()
 	{
+		Coanda::checkAccess('pages', 'remove');
+
 		$pages = $this->pageRepository->trashed();
 
 		return View::make('coanda::admin.pages.trash', ['pages' => $pages ]);
@@ -460,6 +484,8 @@ class PagesAdminController extends BaseController {
      */
     public function postTrash()
 	{
+		Coanda::checkAccess('pages', 'remove');
+
 		if (!Input::has('permanent_remove_list') || count(Input::get('permanent_remove_list')) == 0)
 		{
 			return Redirect::to(Coanda::adminUrl('pages/trash'));
@@ -473,6 +499,8 @@ class PagesAdminController extends BaseController {
      */
     public function getConfirmDeleteFromTrash()
 	{
+		Coanda::checkAccess('pages', 'remove');
+
 		if (!Session::has('confirm_permanent_remove_list') || count(Session::get('confirm_permanent_remove_list')) == 0)
 		{
 			return Redirect::to(Coanda::adminUrl('pages/trash'));
@@ -488,6 +516,8 @@ class PagesAdminController extends BaseController {
      */
     public function postConfirmDeleteFromTrash()
 	{
+		Coanda::checkAccess('pages', 'remove');
+
 		if (!Input::has('confirmed_remove_list') || count(Input::get('confirmed_remove_list')) == 0)
 		{
 			return Redirect::to(Coanda::adminUrl('pages/trash'));
@@ -508,6 +538,8 @@ class PagesAdminController extends BaseController {
 		{
 			// Get the page to be restored
 			$page = $this->pageRepository->find($page_id);
+
+			Coanda::checkAccess('pages', 'remove');
 
 			if (!$page->is_trashed)
 			{
@@ -533,6 +565,8 @@ class PagesAdminController extends BaseController {
 	{
 		try
 		{
+			Coanda::checkAccess('pages', 'remove');
+
 			$restore_sub_pages = Input::has('restore_sub_pages') && Input::get('restore_sub_pages') == 'yes';
 
 			$this->pageRepository->restore($page_id, $restore_sub_pages);
@@ -554,6 +588,9 @@ class PagesAdminController extends BaseController {
         try
         {
             $page = $this->pageRepository->find($page_id);
+ 
+			Coanda::checkAccess('pages', 'view', ['page_id' => $page->id, 'page_type' => $page->type]);
+
             $history = $this->pageRepository->history($page->id);
             $contributors = $this->pageRepository->contributors($page->id);
 

@@ -60,4 +60,10 @@ class UsersModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 	{
 		$app->bind('CoandaCMS\Coanda\Users\Repositories\UserRepositoryInterface', 'CoandaCMS\Coanda\Users\Repositories\Eloquent\EloquentUserRepository');
 	}
+
+    public function checkAccess($permission, $parameters, $user_permissions)
+    {
+        return true;
+    }
+
 }

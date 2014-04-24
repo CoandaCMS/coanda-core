@@ -53,4 +53,9 @@ class MediaModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 	{
 		$app->bind('CoandaCMS\Coanda\Media\Repositories\MediaRepositoryInterface', 'CoandaCMS\Coanda\Media\Repositories\Eloquent\EloquentMediaRepository');
 	}
+
+    public function checkAccess($permission, $parameters, $user_permissions)
+    {
+        return true;
+    }
 }
