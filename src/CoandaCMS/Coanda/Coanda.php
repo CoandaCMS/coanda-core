@@ -107,9 +107,14 @@ class Coanda {
 		}
 	}
 
+	public function currentUserPermissions()
+	{
+		return $this->user->currentUserPermissions();
+	}
+
 	public function checkAccess($module, $permission, $parameters = [])
 	{
-		$user_permissions = $this->user->currentUserPermissions();
+		$user_permissions = $this->currentUserPermissions();
 
 		if (isset($user_permissions['everything']) && in_array('*', $user_permissions['everything']))
 		{
