@@ -24,8 +24,17 @@
 
 <div class="row">
 	<div class="page-options col-md-12">
-		<a href="{{ Coanda::adminUrl('users/edit-group/' . $group->id) }}" class="btn btn-default">Edit</a>
-		<a href="{{ Coanda::adminUrl('users/create-user/' . $group->id) }}" class="btn btn-primary">New user</a>
+		@if (Coanda::canView('users', 'edit'))
+			<a href="{{ Coanda::adminUrl('users/edit-group/' . $group->id) }}" class="btn btn-default">Edit</a>
+		@else
+			<span class="btn btn-primary" disabled="disabled">Edit</span>
+		@endif
+
+		@if (Coanda::canView('users', 'create'))
+			<a href="{{ Coanda::adminUrl('users/create-user/' . $group->id) }}" class="btn btn-primary">New user</a>
+		@else
+			<span class="btn btn-primary" disabled="disabled">New user</span>
+		@endif
 	</div>
 </div>
 
@@ -47,7 +56,13 @@
 										<a href="{{ Coanda::adminUrl('users/user/' . $user->id) }}">{{ $user->present()->name }}</a>
 									</td>
 									<td>{{ $user->present()->email }}</td>
-									<td class="tight"><a href="{{ Coanda::adminUrl('users/edit-user/' . $user->id) }}"><i class="fa fa-pencil-square-o"></i></a></td>
+									<td class="tight">
+										@if (Coanda::canView('users', 'edit'))
+											<a href="{{ Coanda::adminUrl('users/edit-user/' . $user->id) }}"><i class="fa fa-pencil-square-o"></i></a>
+										@else
+											<span class="disabled"><i class="fa fa-pencil-square-o"></i></span>
+										@endif
+									</td>
 								</tr>
 							@endforeach
 						</table>
@@ -56,20 +71,7 @@
 					@endif
 				</div>
 				<div class="tab-pane" id="permissions">
-
-					@if ($group->present()->permissions == 'all')
-						<p>This group has full permissions to access all aspects of the CMS.</p>
-					@else
-						@foreach ($group->present()->permissions as $module => $permissions)
-							<p><strong>{{ $module }}</strong></p>
-							<ul>
-								@foreach ($permissions as $permission)
-									<li>{{ $permission }}</li>
-								@endforeach
-							</ul>
-						@endforeach
-					@endif
-
+					@include('coanda::admin.users.includes.permissionsview', [ 'permissions' => Coanda::availablePermissions(), 'existing_permissions' => $group->access_list ])
 				</div>
 			</div>
 		</div>

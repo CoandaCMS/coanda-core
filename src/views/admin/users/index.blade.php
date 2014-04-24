@@ -23,7 +23,11 @@
 
 <div class="row">
 	<div class="page-options col-md-12">
-		<a href="{{ Coanda::adminUrl('users/create-group') }}" class="btn btn-primary">New group</a>
+		@if (Coanda::canView('users', 'create'))
+			<a href="{{ Coanda::adminUrl('users/create-group') }}" class="btn btn-primary">New group</a>
+		@else
+			<span class="btn btn-primary" disabled="disabled">New group</span>
+		@endif
 	</div>
 </div>
 
@@ -43,7 +47,13 @@
 									<a href="{{ Coanda::adminUrl('users/group/' . $group->id) }}">{{ $group->name }}</a>
 								</td>
 								<td>{{ $group->users->count() }} user{{ $group->users->count() !== 1 ? 's' : '' }}</td>
-								<td class="tight"><a href="{{ Coanda::adminUrl('users/edit-group/' . $group->id) }}"><i class="fa fa-pencil-square-o"></i></a></td>
+								<td class="tight">
+									@if (Coanda::canView('users', 'edit'))
+										<a href="{{ Coanda::adminUrl('users/edit-group/' . $group->id) }}"><i class="fa fa-pencil-square-o"></i></a>
+									@else
+										<span class="disabled"><i class="fa fa-pencil-square-o"></i></span>
+									@endif
+								</td>
 							</tr>
 						@endforeach
 					</table>

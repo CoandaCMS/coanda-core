@@ -34,6 +34,8 @@ class UsersAdminController extends BaseController {
      */
     public function getIndex()
 	{
+		Coanda::checkAccess('users', 'view');
+
 		$groups = $this->userRepository->groups();
 
 		return View::make('coanda::admin.users.index', [ 'groups' => $groups ]);
@@ -44,6 +46,8 @@ class UsersAdminController extends BaseController {
      */
     public function getCreateGroup()
 	{
+		Coanda::checkAccess('users', 'create');
+
 		$permissions = Coanda::availablePermissions();
 
 		$existing_permissions = Input::old('permissions');
@@ -58,6 +62,8 @@ class UsersAdminController extends BaseController {
      */
     public function postCreateGroup()
 	{
+		Coanda::checkAccess('users', 'create');
+
 		if (Input::has('cancel'))
 		{
 			return Redirect::to(Coanda::adminUrl('users'));
@@ -81,6 +87,8 @@ class UsersAdminController extends BaseController {
      */
     public function getEditGroup($group_id)
 	{
+		Coanda::checkAccess('users', 'edit');
+
 		try
 		{
 			$group = $this->userRepository->groupById($group_id);
@@ -105,6 +113,8 @@ class UsersAdminController extends BaseController {
      */
     public function postEditGroup($group_id)
 	{
+		Coanda::checkAccess('users', 'edit');
+
 		try
 		{
 			if (Input::has('cancel'))
@@ -132,6 +142,8 @@ class UsersAdminController extends BaseController {
      */
     public function getGroup($group_id)
 	{
+		Coanda::checkAccess('users', 'view');
+
 		try
 		{
 			Session::put('last_group_view', $group_id);
@@ -152,6 +164,8 @@ class UsersAdminController extends BaseController {
      */
     public function getCreateUser($group_id)
 	{
+		Coanda::checkAccess('users', 'create');
+
 		try
 		{
 			$group = $this->userRepository->groupById($group_id);
@@ -171,6 +185,8 @@ class UsersAdminController extends BaseController {
      */
     public function postCreateUser($group_id)
 	{
+		Coanda::checkAccess('users', 'create');
+
 		if (Input::has('cancel'))
 		{
 			return Redirect::to(Coanda::adminUrl('users/group/' . $group_id));
@@ -198,6 +214,8 @@ class UsersAdminController extends BaseController {
      */
     public function getEditUser($user_id)
 	{
+		Coanda::checkAccess('users', 'edit');
+
 		try
 		{
 			$user = $this->userRepository->find($user_id);
@@ -218,6 +236,8 @@ class UsersAdminController extends BaseController {
      */
     public function postEditUser($user_id)
 	{
+		Coanda::checkAccess('users', 'edit');
+
 		$last_group_id = Session::get('last_group_view');
 
 		if (Input::has('cancel'))
@@ -250,6 +270,8 @@ class UsersAdminController extends BaseController {
      */
     public function getUser($user_id, $selected_tab = '')
 	{
+		Coanda::checkAccess('users', 'view');
+
 		$last_group_id = Session::get('last_group_view');
 
 		try
@@ -271,6 +293,8 @@ class UsersAdminController extends BaseController {
      */
     public function getAddToGroup($user_id, $group_id)
 	{
+		Coanda::checkAccess('users', 'edit');
+
 		try
 		{
 			$this->userRepository->addUserToGroup($user_id, $group_id);
@@ -294,6 +318,8 @@ class UsersAdminController extends BaseController {
      */
     public function getRemoveFromGroup($user_id, $group_id)
 	{
+		Coanda::checkAccess('users', 'edit');
+
 		try
 		{
 			$this->userRepository->removeUserFromGroup($user_id, $group_id);

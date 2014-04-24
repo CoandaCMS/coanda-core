@@ -2,6 +2,8 @@
 
 use Route, App, Config;
 
+use CoandaCMS\Coanda\Exceptions\PermissionDenied;
+
 /**
  * Class UsersModuleProvider
  * @package CoandaCMS\Coanda\Users
@@ -63,7 +65,28 @@ class UsersModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 
     public function checkAccess($permission, $parameters, $user_permissions)
     {
-        return true;
+        if (in_array('*', $user_permissions))
+        {
+            return;
+        }
+
+        // If we anything in pages, we allow view
+        if ($permission == 'view')
+        {
+            return;
+        }
+
+        // If we have create, but not edit, then add edit
+        if (in_array('create', $user_permissions) && !in_array('edit', $user_permissions))
+        {
+            $user_permissions[] = 'edit';
+        }
+
+        // If we don't have this permission in the array, the throw right away
+        if (!in_array($permission, $user_permissions))
+        {
+            throw new PermissionDenied('Access denied by users module: ' . $permission);
+        }
     }
 
 }
