@@ -85,8 +85,6 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 			{
 				$type = new $page_type($this);
 
-				// TODO: validate the definition to ensure all the specified page attribute types are available.
-
 				$this->page_types[$type->identifier] = $type;				
 			}
 		}
