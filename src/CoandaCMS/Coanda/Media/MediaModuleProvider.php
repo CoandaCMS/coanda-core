@@ -76,7 +76,7 @@ class MediaModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
         // If we don't have this permission in the array, the throw right away
         if (!in_array($permission, $user_permissions))
         {
-            throw new PermissionDenied('Access denied by pages module: ' . $permission);
+            throw new PermissionDenied('Access denied by media module: ' . $permission);
         }
 
         return;
