@@ -55,7 +55,7 @@ class SetupCommand extends Command {
         }
 
         // create the main admin group....
-        $group = $this->userRepository->createGroup(['name' => $admin_group_name, 'permissions' => ['*']]);
+        $group = $this->userRepository->createGroup(['name' => $admin_group_name, 'permissions' => ['everything' => ['*']]]);
 
         $this->info('Now, lets setup the first user account for you');
 
