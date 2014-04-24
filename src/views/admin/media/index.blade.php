@@ -23,7 +23,11 @@
 
 <div class="row">
 	<div class="page-options col-md-12">
-		<a href="{{ Coanda::adminUrl('media/add') }}" class="btn btn-primary">Add media</a>
+		@if (Coanda::canView('media', 'create'))
+			<a href="{{ Coanda::adminUrl('media/add') }}" class="btn btn-primary">Add media</a>
+		@else
+			<span class="btn btn-primary" disabled="disabled">Add media</span>
+		@endif
 	</div>
 </div>
 
@@ -77,8 +81,13 @@
 			</ul>
 			<div class="tab-content">
 				<div class="tab-pane active" id="upload">
-					<p>Max file size <span class="label label-info">{{ $max_upload }}</span></p>
-					<form action="{{ Coanda::adminUrl('media/handle-upload') }}" class="dropzone" id="dropzone-uploader" data-reload-url="{{ Coanda::adminUrl('media') }}"></form>
+
+					@if (Coanda::canView('media', 'create'))
+						<p>Max file size <span class="label label-info">{{ $max_upload }}</span></p>
+						<form action="{{ Coanda::adminUrl('media/handle-upload') }}" class="dropzone" id="dropzone-uploader" data-reload-url="{{ Coanda::adminUrl('media') }}"></form>
+					@else
+						<p>You do not have permission to add media</p>
+					@endif
 				</div>
 				<div class="tab-pane" id="tags">
 

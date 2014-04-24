@@ -34,6 +34,8 @@ class MediaAdminController extends BaseController {
      */
     public function getIndex()
 	{
+		Coanda::checkAccess('media', 'view');
+
 		$media_list = $this->mediaRepository->getList(18);
 		$tags = $this->mediaRepository->recentTagList(10);
 		$max_upload = $this->mediaRepository->maxFileSize();
@@ -46,6 +48,8 @@ class MediaAdminController extends BaseController {
      */
     public function postHandleUpload()
 	{
+		Coanda::checkAccess('media', 'create');
+
 		if (!Input::hasFile('file'))
 		{
 			return Response::json(['error' => 'File not found, please try again.'], 500);
@@ -68,6 +72,8 @@ class MediaAdminController extends BaseController {
      */
     public function getAdd()
 	{
+		Coanda::checkAccess('media', 'create');
+
 		return View::make('coanda::admin.media.add');
 	}
 
@@ -76,6 +82,8 @@ class MediaAdminController extends BaseController {
      */
     public function postAdd()
 	{
+		Coanda::checkAccess('media', 'create');
+
 		if (Input::hasFile('file'))
 		{
 			$file = Input::file('file');
@@ -103,6 +111,8 @@ class MediaAdminController extends BaseController {
      */
     public function getView($media_id)
 	{
+		Coanda::checkAccess('media', 'view');
+
 		try
 		{
 			$media = $this->mediaRepository->findById($media_id);
@@ -122,6 +132,8 @@ class MediaAdminController extends BaseController {
      */
     public function getDownload($media_id)
 	{
+		Coanda::checkAccess('media', 'view');
+
 		try
 		{
 			$link = $this->mediaRepository->downloadLink($media_id);
@@ -140,6 +152,8 @@ class MediaAdminController extends BaseController {
      */
     public function postAddTag($media_id)
 	{
+		Coanda::checkAccess('media', 'tag');
+
 		try
 		{
 			$this->mediaRepository->tagMedia($media_id, Input::get('tag'));
@@ -159,6 +173,8 @@ class MediaAdminController extends BaseController {
      */
     public function getRemoveTag($media_id, $tag_id)
 	{
+		Coanda::checkAccess('media', 'tag');
+
 		try
 		{
 			$this->mediaRepository->removeTag($media_id, $tag_id);
@@ -177,6 +193,8 @@ class MediaAdminController extends BaseController {
      */
     public function getRemove($media_id)
 	{
+		Coanda::checkAccess('media', 'remove');
+
 		try
 		{
 			$media = $this->mediaRepository->findById($media_id);
@@ -195,6 +213,8 @@ class MediaAdminController extends BaseController {
      */
     public function postRemove($media_id)
 	{
+		Coanda::checkAccess('media', 'remove');
+
 		try
 		{
 			$this->mediaRepository->removeById($media_id);
@@ -212,6 +232,8 @@ class MediaAdminController extends BaseController {
      */
     public function getTags()
 	{
+		Coanda::checkAccess('media', 'view');
+
 		$tags = $this->mediaRepository->tags(10);
 
 		return View::make('coanda::admin.media.tags', ['tags' => $tags]);
@@ -223,6 +245,8 @@ class MediaAdminController extends BaseController {
      */
     public function getTag($tag_id)
 	{
+		Coanda::checkAccess('media', 'view');
+
 		try
 		{
 			$tag = $this->mediaRepository->tagById($tag_id);

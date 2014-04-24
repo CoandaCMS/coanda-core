@@ -2,6 +2,8 @@
 
 use Route, App, Config;
 
+use CoandaCMS\Coanda\Exceptions\PermissionDenied;
+
 class MediaModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 
     /**
@@ -22,6 +24,10 @@ class MediaModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
             ],
             'remove' => [
                 'name' => 'Remove',
+                'options' => []
+            ],
+            'tag' => [
+                'name' => 'Tag',
                 'options' => []
             ]
         ];
@@ -56,6 +62,23 @@ class MediaModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 
     public function checkAccess($permission, $parameters, $user_permissions)
     {
-        return true;
-    }
+        if (in_array('*', $user_permissions))
+        {
+            return true;
+        }
+
+        // If we anything in pages, we allow view
+        if ($permission == 'view')
+        {
+            return;
+        }
+
+        // If we don't have this permission in the array, the throw right away
+        if (!in_array($permission, $user_permissions))
+        {
+            throw new PermissionDenied('Access denied by pages module: ' . $permission);
+        }
+
+        return;
+   }
 }

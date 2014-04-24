@@ -21,7 +21,11 @@
 
 <div class="row">
 	<div class="page-options col-md-12">
-		<a href="{{ Coanda::adminUrl('media/remove/' . $media->id) }}" class="btn btn-danger">Delete</a>
+		@if (Coanda::canView('media', 'remove'))
+			<a href="{{ Coanda::adminUrl('media/remove/' . $media->id) }}" class="btn btn-danger">Delete</a>
+		@else
+			<span class="btn btn-primary" disabled="disabled">Delete</span>
+		@endif
 	</div>
 </div>
 
@@ -93,16 +97,20 @@
 						@endforeach
 					</p>
 
-					{{ Form::open(['url' => Coanda::adminUrl('media/add-tag/' . $media->id), 'class' => 'form-inline']) }}
+					@if (Coanda::canView('media', 'tag'))
 
-						<div class="form-group @if (Session::has('missing_file')) has-error @endif">
-							<label for="tag" class="hidden">Tag</label>
-							<input type="text" name="tag" class="form-control">
-						</div>
+						{{ Form::open(['url' => Coanda::adminUrl('media/add-tag/' . $media->id), 'class' => 'form-inline']) }}
 
-						{{ Form::button('Add', ['name' => 'add_tag', 'value' => 'true', 'type' => 'submit', 'class' => 'btn btn-primary']) }}
+							<div class="form-group @if (Session::has('missing_file')) has-error @endif">
+								<label for="tag" class="hidden">Tag</label>
+								<input type="text" name="tag" class="form-control">
+							</div>
 
-					{{ Form::close() }}
+							{{ Form::button('Add', ['name' => 'add_tag', 'value' => 'true', 'type' => 'submit', 'class' => 'btn btn-primary']) }}
+
+						{{ Form::close() }}
+						
+					@endif
 
 				</div>
 			</div>
