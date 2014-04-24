@@ -44,6 +44,7 @@ td .fa
 	font-size: 130%;
 }
 
+.disabled,
 .fa-disabled
 {
 	color: #ccc;
