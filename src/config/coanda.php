@@ -25,8 +25,16 @@ return array(
 	],
 
 	'publish_handlers' => [
-		'CoandaCMS\Coanda\Pages\PublishHandlers\Delayed',	
+		'CoandaCMS\Coanda\Pages\PublishHandlers\Delayed',
 	],
+
+	/*
+	|--------------------------------------------------------------------------
+	| Theme settings (Theme provider class)
+	|--------------------------------------------------------------------------
+	|
+	*/
+	'theme_provider' => 'CoandaCMS\Coanda\Themes\Simple\SimpleThemeProvider',
 
 	/*
 	|--------------------------------------------------------------------------

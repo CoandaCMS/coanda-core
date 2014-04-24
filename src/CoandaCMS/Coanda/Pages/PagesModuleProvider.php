@@ -46,7 +46,7 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 	private function loadRouter($coanda)
 	{
 		// Add the router to handle slug views
-		$coanda->addRouter('page', function ($url) {
+		$coanda->addRouter('page', function ($url) use ($coanda) {
 
 			$pageRepository = App::make('CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface');
 
@@ -64,7 +64,7 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 					App::abort('404');
 				}
 
-				return 'View page: ' . $page->present()->name;
+				return $this->renderPage($page, $coanda->theme());
 			}
 			catch(\CoandaCMS\Coanda\Exceptions\PageNotFound $exception)
 			{
@@ -325,5 +325,43 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 				}
 			}
 		}
+	}
+
+	private function buildAttributes($page)
+	{
+		$attributes = [];
+
+		foreach ($page->attributes as $attribute)
+		{
+			$attributes[$attribute->identifier] = [
+				'identifier' => $attribute->identifier,
+				'type' => $attribute->type,
+				'order' => $attribute->order,
+				'content' => $attribute->typeData(),
+				'attribute_data' => $attribute->attribute_data,
+			];
+		}
+
+		return $attributes;
+	}
+
+	private function buildMeta($page)
+	{
+		return [
+			'title' => 'XXXXX',
+			'description' => 'XXXXX'
+		];
+	}
+
+	private function renderPage($page, $theme)
+	{
+		$render_data = [
+			'name' => $page->present()->name,
+			'type' => $page->type,
+			'meta' => $this->buildMeta($page),
+			'attributes' => $this->buildAttributes($page)
+		];
+
+		return $theme->render('page', $render_data);
 	}
 }
