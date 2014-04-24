@@ -247,6 +247,17 @@
 									@if ($version->status == 'pending')
 										<span class="label label-info">Pending</span>
 										<i class="fa fa-calendar"></i> Due to be published {{ $version->present()->delayed_publish_date }}
+									@else
+										@if ($version->status == 'draft')
+											<span class="label label-warning">
+										@elseif ($version->status == 'published')
+											<span class="label label-success">
+										@else  
+											<span class="label label-default">
+										@endif
+
+										{{ $version->present()->status }}</span>
+										
 									@endif
 								</td>
 								<td class="tight">
