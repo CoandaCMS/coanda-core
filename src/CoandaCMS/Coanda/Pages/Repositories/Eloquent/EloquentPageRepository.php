@@ -148,7 +148,10 @@ class EloquentPageRepository implements PageRepositoryInterface {
 			if ($parent_page)
 			{
 				$page->parent_page_id = $parent_page->id;
-				$page->path = $parent_page->path . $parent_page->id . '/';
+
+				$path = $parent_page->path == '' ? '/' : $parent_page->path;
+				
+				$page->path = $path . $parent_page->id . '/';
 			}
 		}
 
