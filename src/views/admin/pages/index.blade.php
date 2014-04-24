@@ -64,7 +64,7 @@
 							<table class="table table-striped">
 								@foreach ($pages as $page)
 									<tr class="status-{{ $page->status }} @if (!$page->is_visible || $page->is_pending) info @endif">
-										<td class="tight"><input type="checkbox" name="remove_page_list[]" value="{{ $page->id }}"></td>
+										<td class="tight"><input type="checkbox" name="remove_page_list[]" value="{{ $page->id }}" @if (!Coanda::canView('pages', 'remove')) disabled="disabled" @endif></td>
 										<td>
 											@if ($page->is_draft)
 												<i class="fa fa-circle-o"></i>

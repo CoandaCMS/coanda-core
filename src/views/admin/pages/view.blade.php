@@ -168,7 +168,7 @@
 								<tr class="status-{{ $child->status }}">
 
 									@if (!$page->is_trashed)
-										<td class="tight"><input type="checkbox" name="remove_page_list[]" value="{{ $child->id }}"></td>
+										<td class="tight"><input type="checkbox" name="remove_page_list[]" value="{{ $child->id }}" @if (!Coanda::canView('pages', 'remove')) disabled="disabled" @endif></td>
 									@endif
 
 									<td>
