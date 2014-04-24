@@ -3,6 +3,8 @@
 use Illuminate\Console\Command;
 use Coanda;
 
+use CoandaCMS\Coanda\Pages\PublishHandlers\Delayed as DelayedPublishHandler;
+
 /**
  * Class DelayedPublishCommand
  * @package CoandaCMS\Coanda\Commands
@@ -55,6 +57,6 @@ class DelayedPublishCommand extends Command {
     {        
         $this->info('Running delayed publish handler');
 
-        \CoandaCMS\Coanda\Pages\PublishHandlers\Delayed::executeFromCommand($this, $this->pageRepository, $this->urlRepository, $this->historyRepository);
+        DelayedPublishHandler::executeFromCommand($this, $this->pageRepository, $this->urlRepository, $this->historyRepository);
     }
 }
