@@ -329,7 +329,12 @@ class Coanda {
 
 		if ($url)
 		{
-			return Redirect::to(url(str_replace($wildcard_url->slug, $url->slug, Request::path())));
+			$wildcard_slug = '/' . $wildcard_url->slug . '/';
+			$new_slug = '/' . $url->slug . '/';
+
+			$requested_url = str_replace($wildcard_slug, $new_slug, '/' . Request::path() . '/');
+
+			return Redirect::to(url($requested_url));
 		}
 	}
 }
