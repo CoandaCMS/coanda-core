@@ -128,7 +128,7 @@ class EloquentUrlRepository implements \CoandaCMS\Coanda\Urls\Repositories\UrlRe
 			}
 
 			// If the existing one is a url, then we can overwrite it, otherwise it is alreay taken.
-			if ($existing->urlable_type !== 'redirect')
+			if ($existing->urlable_type !== 'wildcard')
 			{
 				throw new UrlAlreadyExists('The requested URL: ' . $slug . ' is already in use.');
 			}
@@ -214,7 +214,7 @@ class EloquentUrlRepository implements \CoandaCMS\Coanda\Urls\Repositories\UrlRe
 			}
 
 			// If the exisitng type is a url, then it can be overwritten (otherwise this would be 'reserved' forever)
-			if ($existing->urlable_type == 'redirect')
+			if ($existing->urlable_type == 'wildcard')
 			{
 				return true;
 			}
