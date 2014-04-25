@@ -9,6 +9,15 @@ class SimpleThemeProvider implements \CoandaCMS\Coanda\CoandaThemeProvider {
 		// Do anything which needs to be done, maybe you would like to set some internal variables to use when rendering.
 	}
 
+	public function renderHome()
+	{
+		$home_data = [
+			'page_title' => 'Home page title'
+		];
+		
+		return View::make('coanda::themes.simple.home', $home_data);
+	}
+
 	public function render($what, $with = [])
 	{
 		// Do what ever you like with the data provided!

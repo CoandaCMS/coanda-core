@@ -215,11 +215,17 @@ class Coanda {
 
 		App::before( function () {
 
-			Route::match(array('GET', 'POST'), '{slug}', function($slug)
+			Route::match(['GET', 'POST'], '{slug}', function ($slug)
 			{
 				return Coanda::route($slug);
 
 			})->where('slug', '[\/_\-\_A-Za-z0-9]+');
+
+			Route::match(['GET', 'POST'], '/', function ()
+			{
+				return Coanda::routeHome();
+
+			});
 
 		});
 
@@ -257,6 +263,11 @@ class Coanda {
     public function addRouter($for, $closure)
 	{
 		$this->routers[$for] = $closure;
+	}
+
+	public function routeHome()
+	{
+		return $this->theme()->renderHome();
 	}
 
     /**

@@ -14,4 +14,6 @@ interface CoandaThemeProvider {
 
 	public function render($what, $with = []);
 
+	public function renderHome();
+
 }
