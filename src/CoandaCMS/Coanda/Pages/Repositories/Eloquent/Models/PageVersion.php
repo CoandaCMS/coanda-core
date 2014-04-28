@@ -126,11 +126,11 @@ class PageVersion extends Eloquent {
 			if (!in_array($attribute_identifier, array_keys($existing_attributes)))
 			{
 				// We need to add this new attribute
-				$page_attribute_type = Coanda::module('pages')->getPageAttributeType($definition['type']);
+				$page_attribute_type = Coanda::getAttributeType($definition['type']);
 
 				$new_attribute = new \CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageAttribute;
 
-				$new_attribute->type = $page_attribute_type->identifier;
+				$new_attribute->type = $page_attribute_type->identifier();
 				$new_attribute->identifier = $definition['identifier'];
 				$new_attribute->order = $index;
 
