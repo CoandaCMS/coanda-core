@@ -1,6 +1,6 @@
 <?php namespace CoandaCMS\Coanda\Pages;
 
-use Route, App, Config;
+use Route, App, Config, Coanda, View;
 
 use CoandaCMS\Coanda\Exceptions\PageTypeNotFound;
 use CoandaCMS\Coanda\Exceptions\PageAttributeTypeNotFound;
@@ -30,6 +30,8 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
      * @var array
      */
     private $publish_handlers = [];
+
+    private $theme;
 
     /**
      * @param \CoandaCMS\Coanda\Coanda $coanda
@@ -64,7 +66,7 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 					App::abort('404');
 				}
 
-				return $this->renderPage($page, $coanda->theme());
+				return $this->renderPage($page);
 			}
 			catch(\CoandaCMS\Coanda\Exceptions\PageNotFound $exception)
 			{
@@ -327,6 +329,85 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		}
 	}
 
+	private function getTheme()
+	{
+		if (!$this->theme)
+		{
+			$this->theme = Coanda::theme();
+		}
+
+		return $this->theme;
+	}
+
+	private function templateDirectory()
+	{
+		$directory = '';
+
+		$theme = $this->getTheme();
+
+		if (method_exists($theme, 'themeDirectory'))
+		{
+			$directory = $theme->themeDirectory() . '.';
+		}
+
+		return $directory;
+	}
+
+	private function preRender($render_data)
+	{
+		$theme = $this->getTheme();
+
+		if (method_exists($theme, 'preRender'))
+		{
+			$render_data = $theme->preRender($render_data);
+		}
+
+		return $render_data;
+	}
+
+	private function defaultLayoutTemplate()
+	{
+		$theme = $this->getTheme();
+
+		if (method_exists($theme, 'defaultLayoutTemplate'))
+		{
+			return $theme->defaultLayoutTemplate();
+		}
+
+		// A sensible default - an exception will be thrown if it doesn't exist anyway
+		return 'layouts.default';
+	}
+
+	private function renderPage($page)
+	{
+		$data = [
+			'name' => $page->present()->name,
+			'type' => $page->type,
+			'meta' => $this->buildMeta($page),
+			'attributes' => $this->buildAttributes($page),
+			'page' => $page,
+			'template' => $this->templateDirectory() . 'pagetypes.' . $page->type
+		];
+
+		// Let the theme provider have a look at (and potentially change) the render data...
+		$data = $this->preRender($data);
+
+		// Make the view and pass all the render data to it...
+		$rendered_page = View::make($data['template'], $data);
+
+		// Get the layout template...
+		$layout = $this->defaultLayoutTemplate();
+
+		// Does the page want to change the layout...?
+		// if ($page->layout)
+		// {
+		// 	$layout = $page->layout;
+		// }
+		
+		// Give the layout the rendered page and the data, and it can work some magic to give us back a complete page...
+		return View::make($layout, ['content' => $rendered_page, 'data' => $data]);
+	}
+
 	private function buildAttributes($page)
 	{
 		$attributes = [];
@@ -353,15 +434,4 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		];
 	}
 
-	private function renderPage($page, $theme)
-	{
-		$render_data = [
-			'name' => $page->present()->name,
-			'type' => $page->type,
-			'meta' => $this->buildMeta($page),
-			'attributes' => $this->buildAttributes($page)
-		];
-
-		return $theme->render('page', $render_data);
-	}
 }

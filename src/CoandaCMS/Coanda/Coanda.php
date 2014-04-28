@@ -267,7 +267,7 @@ class Coanda {
 
 	public function routeHome()
 	{
-		return $this->theme()->renderHome();
+		return $this->theme()->render('home');
 	}
 
     /**
