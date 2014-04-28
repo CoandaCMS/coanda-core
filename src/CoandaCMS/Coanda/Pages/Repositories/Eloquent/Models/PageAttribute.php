@@ -118,7 +118,7 @@ class PageAttribute extends Eloquent {
 	 */
 	public function type()
 	{
-		return Coanda::module('pages')->getPageAttributeType($this->type);
+		return Coanda::getAttributeType($this->type);
 	}
 
 	/**
@@ -128,7 +128,7 @@ class PageAttribute extends Eloquent {
 	public function typeData()
 	{
 		// Let the type do whatever with the attribute to return the data required...
-		return $this->type()->data($this);
+		return $this->type()->data($this->attribute_data);
 	}
 
 	/**
@@ -147,8 +147,10 @@ class PageAttribute extends Eloquent {
 	 */
 	public function store($data)
 	{
-		// Let the type class validate/manipulate/store the data..
-		$this->type()->store($this, $data);
+		// Let the type class validate/manipulate the data...
+		$this->attribute_data = $this->type()->store($data, $this->isRequired(), $this->name());
+
+		$this->save();
 	}
 
 }

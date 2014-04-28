@@ -21,10 +21,6 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
      * @var array
      */
     private $page_types = [];
-    /**
-     * @var array
-     */
-    private $page_attribute_types = [];
 
     /**
      * @var array
@@ -40,7 +36,6 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 	{
 		$this->loadRouter($coanda);
 		$this->loadPageTypes($coanda);
-		$this->loadAttributes($coanda);
 		$this->loadPublishHandlers($coanda);
 		$this->loadPermissions($coanda);
 	}
@@ -89,19 +84,6 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 
 				$this->page_types[$type->identifier()] = $type;
 			}
-		}
-	}
-
-	private function loadAttributes($coanda)
-	{
-		// Load the attributes
-		$page_attribute_types = Config::get('coanda::coanda.page_attribute_types');
-
-		foreach ($page_attribute_types as $page_attribute_type)
-		{
-			$attribute_type = new $page_attribute_type;
-
-			$this->page_attribute_types[$attribute_type->identifier] = $attribute_type;
 		}
 	}
 
@@ -231,21 +213,6 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		throw new PageTypeNotFound;
 	}
 
-
-    /**
-     * @param $type_identifier
-     * @return mixed
-     * @throws \CoandaCMS\Coanda\Exceptions\PageAttributeTypeNotFound
-     */
-    public function getPageAttributeType($type_identifier)
-	{
-		if (array_key_exists($type_identifier, $this->page_attribute_types))
-		{
-			return $this->page_attribute_types[$type_identifier];
-		}
-
-		throw new PageAttributeTypeNotFound;
-	}
 
     /**
      * @return array

@@ -2,9 +2,7 @@
 
 use App, Route, Config, Redirect, Request, Session;
 
-use CoandaCMS\Coanda\Exceptions\PageTypeNotFound;
-use CoandaCMS\Coanda\Exceptions\PageAttributeTypeNotFound;
-
+use CoandaCMS\Coanda\Core\Attributes\Exceptions\AttributeTypeNotFound;
 use CoandaCMS\Coanda\Exceptions\PermissionDenied;
 
 /**
@@ -35,6 +33,8 @@ class Coanda {
      */
     private $routers = [];
 
+    private $attribute_types = [];
+
     private $theme_provider;
 
     /**
@@ -49,6 +49,31 @@ class Coanda {
 
 		$this->theme_provider = new $theme_provider;
 		$this->theme_provider->boot($this);
+
+		$this->loadAttributes();
+	}
+
+	private function loadAttributes()
+	{
+		// Load the attributes
+		$attribute_types = Config::get('coanda::coanda.attribute_types');
+
+		foreach ($attribute_types as $attribute_types)
+		{
+			$attribute_type = new $attribute_types;
+
+			$this->attribute_types[$attribute_type->identifier()] = $attribute_type;
+		}
+	}
+
+    public function getAttributeType($type_identifier)
+	{
+		if (array_key_exists($type_identifier, $this->attribute_types))
+		{
+			return $this->attribute_types[$type_identifier];
+		}
+
+		throw new AttributeTypeNotFound;
 	}
 
 	public function theme()

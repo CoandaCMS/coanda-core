@@ -10,18 +10,24 @@ return array(
 	*/
 	'admin_path' => 'admin',
 
+	/*
+	|--------------------------------------------------------------------------
+	| Available attributes, used by page types and templates
+	|--------------------------------------------------------------------------
+	|
+	*/
+	'attribute_types' => [
+		'CoandaCMS\Coanda\Core\Attributes\Types\Textline',
+		'CoandaCMS\Coanda\Core\Attributes\Types\HTML',
+	],
+
 	'enabled_modules' => [
 
 		],
 
 	'page_types' => [
-		'MySite\Coanda\PageTypes\Page',
-		// 'MySite\Coanda\PageTypes\NewsArticle'
-	],
-	
-	'page_attribute_types' => [
-		'CoandaCMS\Coanda\Pages\PageAttributeTypes\Textline',
-		'CoandaCMS\Coanda\Pages\PageAttributeTypes\HTML',
+		'MySite\PageTypes\LandingPage',
+		'MySite\PageTypes\Page',
 	],
 
 	'publish_handlers' => [
