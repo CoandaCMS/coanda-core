@@ -39,7 +39,7 @@ class Page extends \CoandaCMS\Coanda\Core\Presenters\Presenter {
      */
     public function type()
 	{
-		return $this->model->pageType()->name;
+		return $this->model->pageType()->name();
 	}
 
     /**

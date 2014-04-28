@@ -36,7 +36,7 @@
 			</button>
 			<ul class="dropdown-menu" role="menu">
 				@foreach (Coanda::module('pages')->availablePageTypes() as $page_type)
-					<li><a href="{{ Coanda::adminUrl('pages/create/' . $page_type->identifier) }}">{{ $page_type->name }}</a></li>
+					<li><a href="{{ Coanda::adminUrl('pages/create/' . $page_type->identifier()) }}">{{ $page_type->name() }}</a></li>
 				@endforeach
 			</ul>
 		</div>

@@ -6,8 +6,9 @@
  */
 interface PageTypeInterface {
 	
-	// public $name;
-	// public $identifier;
+    public function name();
+
+    public function identifier();
 
     /**
      * @return mixed

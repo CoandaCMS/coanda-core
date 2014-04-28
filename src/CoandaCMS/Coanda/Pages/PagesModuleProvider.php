@@ -85,7 +85,7 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 			{
 				$type = new $page_type($this);
 
-				$this->page_types[$type->identifier] = $type;				
+				$this->page_types[$type->identifier()] = $type;
 			}
 		}
 	}
@@ -138,7 +138,7 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 
 		foreach ($this->page_types as $page_type)
 		{
-			$page_type_options[$page_type->identifier] = $page_type->name;
+			$page_type_options[$page_type->identifier()] = $page_type->name();
 		}
 
 		// Add the permissions
