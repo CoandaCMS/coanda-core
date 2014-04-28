@@ -136,7 +136,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 	{
 		// create a page model
 		$page = new PageModel;
-		$page->type = $type->identifier;
+		$page->type = $type->identifier();
 		$page->created_by = $user_id;
 		$page->edited_by = $user_id;
 		$page->current_version = 1;
