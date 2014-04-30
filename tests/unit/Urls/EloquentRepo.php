@@ -4,6 +4,11 @@ use \Mockery as M;
 
 class EloquentRepo extends BaseTest {
 
+	public function test_dummy()
+	{
+		
+	}
+
 	// private function get_mock_slugifier()
 	// {
 	// 	return M::mock('CoandaCMS\Coanda\Urls\Slugifier');
