@@ -4,6 +4,7 @@ use App, Route, Config, Redirect, Request, Session;
 
 use CoandaCMS\Coanda\Core\Attributes\Exceptions\AttributeTypeNotFound;
 use CoandaCMS\Coanda\Exceptions\PermissionDenied;
+use CoandaCMS\Coanda\Exceptions\ModuleNotFound;
 
 /**
  * Class Coanda
@@ -278,7 +279,12 @@ class Coanda {
      */
     public function module($module)
 	{
-		return $this->modules[$module];
+		if (array_key_exists($module, $this->modules))
+		{
+			return $this->modules[$module];	
+		}
+
+		throw new ModuleNotFound('Module ' . $module . ' does not exist or has not been loaded.');		
 	}
 
     /**
