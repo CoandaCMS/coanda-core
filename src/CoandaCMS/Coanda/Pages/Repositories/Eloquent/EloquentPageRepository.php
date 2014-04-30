@@ -9,6 +9,7 @@ use CoandaCMS\Coanda\Exceptions\ValidationException;
 
 use CoandaCMS\Coanda\Pages\Exceptions\PublishHandlerException;
 use CoandaCMS\Coanda\Pages\Exceptions\HomePageAlreadyExists;
+use CoandaCMS\Coanda\Pages\Exceptions\SubPagesNotAllowed;
 
 use CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\Page as PageModel;
 use CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageVersion as PageVersionModel;
@@ -201,14 +202,21 @@ class EloquentPageRepository implements PageRepositoryInterface {
      */
     public function create($type, $user_id, $parent_page_id = false)
 	{
-		$parent_page = $this->find($parent_page_id);
-
-		if ($parent_page->pageType()->allowsSubPages())
+		if ($parent_page_id)
 		{
-			return $this->createNewPage($type, false, $user_id, $parent_page_id);	
-		}
+			$parent_page = $this->find($parent_page_id);
 
-		throw new SubPagesNotAllowed('This page type does not allow sub pages');
+			if ($parent_page->pageType()->allowsSubPages())
+			{
+				return $this->createNewPage($type, false, $user_id, $parent_page_id);
+			}			
+
+			throw new SubPagesNotAllowed('This page type does not allow sub pages');
+		}
+		else
+		{
+			return $this->createNewPage($type, false, $user_id, $parent_page_id);
+		}
 	}
 
 	public function createHome($type, $user_id)
