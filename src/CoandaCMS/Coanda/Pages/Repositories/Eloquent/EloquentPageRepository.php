@@ -201,7 +201,14 @@ class EloquentPageRepository implements PageRepositoryInterface {
      */
     public function create($type, $user_id, $parent_page_id = false)
 	{
-		return $this->createNewPage($type, false, $user_id, $parent_page_id);
+		$parent_page = $this->find($parent_page_id);
+
+		if ($parent_page->pageType()->allowsSubPages())
+		{
+			return $this->createNewPage($type, false, $user_id, $parent_page_id);	
+		}
+
+		throw new SubPagesNotAllowed('This page type does not allow sub pages');
 	}
 
 	public function createHome($type, $user_id)

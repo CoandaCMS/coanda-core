@@ -45,7 +45,18 @@
 
 <div class="row">
 	<div class="page-name col-md-12">
-		<h1 class="pull-left">@if ($page->is_trashed) [Trashed] @endif {{ $page->present()->name }} <small>{{ $page->present()->type }}</small></h1>
+		<h1 class="pull-left">
+			@if ($page->is_trashed) [Trashed] @endif
+			{{ $page->present()->name }}
+			<small>
+				@if ($page->is_draft)
+					<i class="fa fa-circle-o"></i>
+				@else
+					<i class="fa {{ $page->pageType()->icon() }}"></i>
+				@endif
+				{{ $page->present()->type }}
+			</small>
+		</h1>
 		<div class="page-status pull-right">
 			<span class="label label-default">Version {{ $page->current_version }}</span>
 
@@ -112,7 +123,7 @@
 						</div>
 					@endif
 				</div>
-				@if (!$page->is_trashed && !$page->is_home))
+				@if (!$page->is_trashed && !$page->is_home && $page->pageType()->allowsSubPages())
 					<div class="btn-group">
 						<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
 							Add sub page <span class="caret"></span>
@@ -142,16 +153,16 @@
 		<div class="page-tabs">
 			<ul class="nav nav-tabs">
 
-				@if (!$page->is_home)
+				@if (!$page->is_home && $page->pageType()->allowsSubPages())
 					<li class="active"><a href="#subpages" data-toggle="tab">Sub pages ({{ $children->getTotal() }})</a></li>
 				@endif
 
-				<li @if ($page->is_home) class="active" @endif><a href="#content" data-toggle="tab">Content</a></li>
+				<li @if ($page->is_home || !$page->pageType()->allowsSubPages()) class="active" @endif><a href="#content" data-toggle="tab">Content</a></li>
 				<li><a href="#versions" data-toggle="tab">Versions ({{ $page->versions->count() }})</a></li>
 			</ul>
 			<div class="tab-content">
 
-				@if (!$page->is_home)
+				@if (!$page->is_home && $page->pageType()->allowsSubPages())
 					<div class="tab-pane active" id="subpages">
 
 						@if (Session::has('ordering_updated'))
@@ -186,7 +197,11 @@
 											<a href="{{ Coanda::adminUrl('pages/view/' . $child->id) }}">{{ $child->present()->name }}</a>
 										</td>
 										<td>{{ $child->present()->type }}</td>
-										<td>{{ $child->children->count() }} sub page{{ $child->children->count() !== 1 ? 's' : '' }}</td>
+										<td>
+											@if ($child->pageType()->allowsSubPages())
+												{{ $child->children->count() }} sub page{{ $child->children->count() !== 1 ? 's' : '' }}
+											@endif
+										</td>
 										<td>{{ $child->present()->status }}</td>
 										@if (!$page->is_trashed)
 											<td class="order-column">{{ Form::text('ordering[' . $child->id . ']', $child->order, ['class' => 'form-control input-sm']) }}</td>
@@ -223,7 +238,7 @@
 					</div>
 				@endif
 
-				<div class="tab-pane @if ($page->is_home) active @endif" id="content">
+				<div class="tab-pane @if ($page->is_home || !$page->pageType()->allowsSubPages()) active @endif" id="content">
 
 					<table class="table table-striped">
 						@foreach ($page->attributes as $attribute)

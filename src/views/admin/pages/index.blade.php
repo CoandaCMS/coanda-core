@@ -77,7 +77,7 @@
 										@if ($home_page->is_draft)
 											<i class="fa fa-circle-o"></i>
 										@else
-											<i class="fa fa-circle"></i>
+											<i class="fa {{ $home_page->pageType()->icon() }}"></i>
 										@endif
 										<a href="{{ Coanda::adminUrl('pages/view/' . $home_page->id) }}">{{ $home_page->present()->name }}</a>
 									</td>
@@ -132,12 +132,16 @@
 											@if ($page->is_draft)
 												<i class="fa fa-circle-o"></i>
 											@else
-												<i class="fa fa-circle"></i>
+												<i class="fa {{ $page->pageType()->icon() }}"></i>
 											@endif
 											<a href="{{ Coanda::adminUrl('pages/view/' . $page->id) }}">{{ $page->present()->name }}</a>
 										</td>
 										<td>{{ $page->present()->type }}</td>
-										<td>{{ $page->children->count() }} sub page{{ $page->children->count() !== 1 ? 's' : '' }}</td>
+										<td>
+											@if ($page->pageType()->allowsSubPages())
+												{{ $page->children->count() }} sub page{{ $page->children->count() !== 1 ? 's' : '' }}
+											@endif
+										</td>
 										<td>
 											{{ $page->present()->status }}
 

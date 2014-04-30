@@ -10,6 +10,8 @@ interface PageTypeInterface {
 
     public function identifier();
 
+    public function icon();
+
     public function allowsSubPages();
 
     /**

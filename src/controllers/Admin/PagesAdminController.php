@@ -10,6 +10,7 @@ use CoandaCMS\Coanda\Exceptions\PermissionDenied;
 
 use CoandaCMS\Coanda\Pages\Exceptions\PublishHandlerException;
 use CoandaCMS\Coanda\Pages\Exceptions\HomePageAlreadyExists;
+use CoandaCMS\Coanda\Pages\Exceptions\SubPagesNotAllowed;
 
 use CoandaCMS\Coanda\Controllers\BaseController;
 
@@ -204,6 +205,10 @@ class PagesAdminController extends BaseController {
 		{
 			return Redirect::to(Coanda::adminUrl('pages'));
 		}
+		catch (SubPagesNotAllowed $exception)
+		{
+			return Redirect::to(Coanda::adminUrl('pages'));	
+		}
 	}
 
     public function getCreateHome($page_type)
@@ -279,7 +284,9 @@ class PagesAdminController extends BaseController {
 			$publish_handler_invalid_fields = Session::has('publish_handler_invalid_fields') ? Session::get('publish_handler_invalid_fields') : [];
 			$default_publish_handler = array_keys($publish_handlers)[0];
 
-			return View::make('coanda::admin.pages.edit', ['version' => $version, 'invalid_fields' => $invalid_fields, 'publish_handler_invalid_fields' => $publish_handler_invalid_fields, 'publish_handlers' => $publish_handlers, 'default_publish_handler' => $default_publish_handler ]);
+			$layouts = Coanda::module('pages')->layoutsByPageType($page->type);
+
+			return View::make('coanda::admin.pages.edit', ['version' => $version, 'invalid_fields' => $invalid_fields, 'publish_handler_invalid_fields' => $publish_handler_invalid_fields, 'publish_handlers' => $publish_handlers, 'default_publish_handler' => $default_publish_handler, 'layouts' => $layouts ]);
 		}
 		catch (PageNotFound $exception)
 		{
