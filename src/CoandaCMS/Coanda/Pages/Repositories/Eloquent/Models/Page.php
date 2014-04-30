@@ -180,7 +180,14 @@ class Page extends Eloquent {
 	{
 		if (!$this->pageType)
 		{
-			$this->pageType = Coanda::module('pages')->getPageType($this->type);
+			if ($this->is_home)
+			{
+				$this->pageType = Coanda::module('pages')->getHomePageType($this->type);
+			}
+			else
+			{
+				$this->pageType = Coanda::module('pages')->getPageType($this->type);
+			}
 		}
 
 		return $this->pageType;

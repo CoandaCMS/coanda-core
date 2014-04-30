@@ -28,6 +28,7 @@ class CreatePagesTable extends Migration {
 			$table->integer('current_version');
 
 			$table->integer('is_trashed');
+			$table->integer('is_home');
 
 			$table->integer('created_by');
 			$table->integer('edited_by');

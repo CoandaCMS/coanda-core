@@ -298,7 +298,9 @@ class Coanda {
 
 	public function routeHome()
 	{
-		return $this->theme()->render('home');
+		// TODO - let other modules have a go at rendering the home page if the pages module doesn't!
+		// Does the pages module want to render the home page?
+		return $this->module('pages')->renderHome();
 	}
 
     /**

@@ -26,8 +26,12 @@ return array(
 		],
 
 	'page_types' => [
-		'MySite\PageTypes\LandingPage',
 		'MySite\PageTypes\Page',
+		'MySite\PageTypes\LandingPage',
+	],
+
+	'home_page_types' => [
+		'MySite\PageTypes\HomePage'
 	],
 
 	'publish_handlers' => [
@@ -40,7 +44,12 @@ return array(
 	|--------------------------------------------------------------------------
 	|
 	*/
-	'theme_provider' => 'CoandaCMS\Coanda\Themes\Simple\SimpleThemeProvider',
+	'theme_provider' => 'MySite\Theme\MySiteThemeProvider',
+
+	'layouts' => [
+		'MySite\Theme\Layouts\SingleColumn',
+		'MySite\Theme\Layouts\TwoColumn',
+	],
 
 	/*
 	|--------------------------------------------------------------------------

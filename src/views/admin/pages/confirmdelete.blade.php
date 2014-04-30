@@ -53,7 +53,13 @@
 									{{ $page->present()->name }}
 								</td>
 								<td>{{ $page->present()->type }}</td>
-								<td><span class="label label-danger">{{ $page->subTreeCount() }}</span> sub pages will also be removed</td>
+								<td>
+									@if (!$page->is_home)
+										<span class="label label-danger">{{ $page->subTreeCount() }}</span> sub pages will also be removed.
+									@else
+										<span class="label label-danger">Note: This page is currently used as the home page.
+									@endif
+								</td>
 								<td>
 									@foreach ($page->parents() as $parent)
 										{{ $parent->present()->name }} /

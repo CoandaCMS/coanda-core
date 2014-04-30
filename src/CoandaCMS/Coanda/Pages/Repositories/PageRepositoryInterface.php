@@ -45,6 +45,8 @@ interface PageRepositoryInterface {
      */
     public function create($type, $user_id, $parent_page_id);
 
+    public function createHome($type, $user_id);
+    
     /**
      * @param $page_id
      * @param $version
@@ -168,4 +170,5 @@ interface PageRepositoryInterface {
      */
     public function getPendingVersions($offset, $limit);
 
+    public function getHomePage();
 }

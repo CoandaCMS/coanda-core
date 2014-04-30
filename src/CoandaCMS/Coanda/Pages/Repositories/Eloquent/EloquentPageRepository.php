@@ -6,7 +6,9 @@ use CoandaCMS\Coanda\Exceptions\PageNotFound;
 use CoandaCMS\Coanda\Exceptions\PageVersionNotFound;
 use CoandaCMS\Coanda\Exceptions\AttributeValidationException;
 use CoandaCMS\Coanda\Exceptions\ValidationException;
+
 use CoandaCMS\Coanda\Pages\Exceptions\PublishHandlerException;
+use CoandaCMS\Coanda\Pages\Exceptions\HomePageAlreadyExists;
 
 use CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\Page as PageModel;
 use CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageVersion as PageVersionModel;
@@ -113,7 +115,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
      */
     public function topLevel($per_page = 10)
 	{
-		return $this->model->where('parent_page_id', 0)->whereIsTrashed(false)->orderBy('order', 'asc')->paginate($per_page);
+		return $this->model->where('parent_page_id', 0)->whereIsHome(false)->whereIsTrashed(false)->orderBy('order', 'asc')->paginate($per_page);
 	}
 
     /**
@@ -126,16 +128,16 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		return $this->model->where('parent_page_id', $page_id)->whereIsTrashed(false)->orderBy('order', 'asc')->paginate($per_page);
 	}
 
-    /**
-     * @param $type
-     * @param $user_id
-     * @param bool $parent_page_id
-     * @return PageModel
-     */
-    public function create($type, $user_id, $parent_page_id = false)
+	private function createNewPage($type, $is_home, $user_id, $parent_page_id = false)
 	{
 		// create a page model
 		$page = new PageModel;
+
+		if ($is_home)
+		{
+			$page->is_home = true;
+		}
+
 		$page->type = $type->identifier();
 		$page->created_by = $user_id;
 		$page->edited_by = $user_id;
@@ -188,6 +190,31 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		$this->historyRepository->add('pages', $page->id, $user_id, 'initial_version');
 
 		return $page;
+
+	}
+
+    /**
+     * @param $type
+     * @param $user_id
+     * @param bool $parent_page_id
+     * @return PageModel
+     */
+    public function create($type, $user_id, $parent_page_id = false)
+	{
+		return $this->createNewPage($type, false, $user_id, $parent_page_id);
+	}
+
+	public function createHome($type, $user_id)
+	{
+		// Check we don't already have a home page...
+		$home = $this->getHomePage();
+
+		if (!$home)
+		{
+			return $this->createNewPage($type, true, $user_id);	
+		}
+
+		throw new HomePageAlreadyExists('You already have a home page defined');
 	}
 
     /**
@@ -274,20 +301,24 @@ class EloquentPageRepository implements PageRepositoryInterface {
 			}
 		}
 
-		// Lets check the requested slug
-		try
+		// If we are dealing with the home page, then the slug doesn't matter
+		if (!$version->page->is_home)
 		{
-			$this->urlRepository->canUse($version->base_slug . $data['slug'], 'page', $version->page->id);
-			
-			$version->slug = $data['slug'];
-		}
-		catch(\CoandaCMS\Coanda\Urls\Exceptions\InvalidSlug $exception)
-		{
-			$failed['slug'] = 'The slug is not valid';
-		}
-		catch(\CoandaCMS\Coanda\Urls\Exceptions\UrlAlreadyExists $exception)
-		{
-			$failed['slug'] = 'The slug is already in use';
+			// Lets check the requested slug
+			try
+			{
+				$this->urlRepository->canUse($version->base_slug . $data['slug'], 'page', $version->page->id);
+				
+				$version->slug = $data['slug'];
+			}
+			catch(\CoandaCMS\Coanda\Urls\Exceptions\InvalidSlug $exception)
+			{
+				$failed['slug'] = 'The slug is not valid';
+			}
+			catch(\CoandaCMS\Coanda\Urls\Exceptions\UrlAlreadyExists $exception)
+			{
+				$failed['slug'] = 'The slug is already in use';
+			}
 		}
 
 		// Get the meta
@@ -439,8 +470,12 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		$page->current_version = $version->version;
 		$page->save();
 
-		// Register the URL for this version with the Url Repo
-		$url = $urlRepository->register($version->base_slug . $version->slug, 'page', $page->id);
+		// If we are dealing with the home page, not need to worry about the URL...
+		if (!$version->page->is_home)
+		{
+			// Register the URL for this version with the Url Repo
+			$url = $urlRepository->register($version->base_slug . $version->slug, 'page', $page->id);			
+		}
 
 		// Log the history
 		$historyRepository->add('pages', $page->id, $user_id, 'publish_version', ['version' => (int)$version->version]);		
@@ -735,5 +770,10 @@ class EloquentPageRepository implements PageRepositoryInterface {
     public function getPendingVersions($offset, $limit)
 	{
 		return PageVersionModel::whereStatus('pending')->take($limit)->offset($offset)->get();
+	}
+
+	public function getHomePage()
+	{
+		return $this->model->whereIsHome(true)->first();
 	}
 }

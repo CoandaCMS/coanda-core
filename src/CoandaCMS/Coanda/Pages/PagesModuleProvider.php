@@ -22,12 +22,16 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
      */
     private $page_types = [];
 
+    private $home_page_types = [];
+
     /**
      * @var array
      */
     private $publish_handlers = [];
 
     private $theme;
+
+    private $layouts_by_page_type = [];
 
     /**
      * @param \CoandaCMS\Coanda\Coanda $coanda
@@ -38,6 +42,30 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		$this->loadPageTypes($coanda);
 		$this->loadPublishHandlers($coanda);
 		$this->loadPermissions($coanda);
+		$this->loadLayouts($coanda);
+	}
+
+	private function loadLayouts($coanda)
+	{
+		$layouts = $coanda->layouts();
+
+		foreach ($layouts as $layout)
+		{
+			foreach ($layout->pageTypes() as $page_type)
+			{
+				$this->layouts_by_page_type[$page_type][] = $layout;
+			}			
+		}
+	}
+
+	public function layoutsByPageType($page_type)
+	{
+		if (array_key_exists($page_type, $this->layouts_by_page_type))
+		{
+			return $this->layouts_by_page_type[$page_type];
+		}
+
+		return [];
 	}
 
 	private function loadRouter($coanda)
@@ -50,16 +78,6 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 			try
 			{
 				$page = $pageRepository->findById($url->urlable_id);	
-
-				if ($page->is_trashed)
-				{
-					App::abort('404');
-				}
-
-				if (!$page->is_visible)
-				{
-					App::abort('404');
-				}
 
 				return $this->renderPage($page);
 			}
@@ -83,6 +101,19 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 				$type = new $page_type($this);
 
 				$this->page_types[$type->identifier()] = $type;
+			}
+		}
+
+		// load the home page types
+		$home_page_types = Config::get('coanda::coanda.home_page_types');
+
+		foreach ($home_page_types as $home_page_type)
+		{
+			if (class_exists($home_page_type))
+			{
+				$type = new $home_page_type($this);
+
+				$this->home_page_types[$type->identifier()] = $type;
 			}
 		}
 	}
@@ -162,7 +193,7 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 
 		if (isset($user_permissions['everything']) && in_array('*', $user_permissions['everything']))
 		{
-			return $this->page_types;	
+			return $this->page_types;
 		}
 
 		if (isset($user_permissions['pages']))
@@ -198,6 +229,11 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		return [];
 	}
 
+	public function availableHomePageTypes($page = false)
+	{
+		return $this->home_page_types;
+	}
+
     /**
      * @param $type
      * @return mixed
@@ -213,6 +249,15 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		throw new PageTypeNotFound;
 	}
 
+    public function getHomePageType	($type)
+	{
+		if (array_key_exists($type, $this->home_page_types))
+		{
+			return $this->home_page_types[$type];
+		}
+
+		throw new PageTypeNotFound;
+	}
 
     /**
      * @return array
@@ -332,8 +377,18 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		return $render_data;
 	}
 
-	private function defaultLayoutTemplate()
+	private function getLayout($page)
 	{
+		if ($page->currentVersion()->layout)
+		{
+			$layout = Coanda::layoutByIdentifier($page->currentVersion()->layout);
+
+			if ($layout)
+			{
+				return $layout->template();
+			}
+		}
+
 		$theme = $this->getTheme();
 
 		if (method_exists($theme, 'defaultLayoutTemplate'))
@@ -345,8 +400,30 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		return 'layouts.default';
 	}
 
+	public function renderHome()
+	{
+		$pageRepository = App::make('CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface');
+		
+		$home_page = $pageRepository->getHomePage();
+
+		if ($home_page)
+		{
+			return $this->renderPage($home_page);
+		}
+	}
+
 	private function renderPage($page)
 	{
+		if ($page->is_trashed)
+		{
+			App::abort('404');
+		}
+
+		if (!$page->is_visible)
+		{
+			App::abort('404');
+		}
+
 		$data = [
 			'name' => $page->present()->name,
 			'type' => $page->type,
@@ -363,16 +440,20 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		$rendered_page = View::make($data['template'], $data);
 
 		// Get the layout template...
-		$layout = $this->defaultLayoutTemplate();
+		$layout = $this->getLayout($page);
 
-		// Does the page want to change the layout...?
-		// if ($page->layout)
-		// {
-		// 	$layout = $page->layout;
-		// }
-		
+		// $blocks = Coanda::module('blocks')->get($layout_identifier, $page->id);
+
 		// Give the layout the rendered page and the data, and it can work some magic to give us back a complete page...
-		return View::make($layout, ['content' => $rendered_page, 'data' => $data]);
+		$layout_data = [
+			'content' => $rendered_page,
+			'data' => $data,
+			'layout' => $layout,
+			'module' => 'pages',
+			'module_identifier' => $page->id
+		];
+
+		return View::make($layout, $layout_data);
 	}
 
 	private function buildAttributes($page)
@@ -400,5 +481,4 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 			'description' => 'XXXXX'
 		];
 	}
-
 }

@@ -40,6 +40,19 @@
 				@endforeach
 			</ul>
 		</div>
+
+		@if (!$home_page)
+			<div class="btn-group">
+				<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+					Create home page <span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu" role="menu">
+					@foreach (Coanda::module('pages')->availableHomePageTypes() as $page_type)
+						<li><a href="{{ Coanda::adminUrl('pages/create-home/' . $page_type->identifier()) }}">{{ $page_type->name() }}</a></li>
+					@endforeach
+				</ul>
+			</div>
+		@endif
 	</div>
 </div>
 
@@ -48,19 +61,69 @@
 
 		<div class="page-tabs">
 			<ul class="nav nav-tabs">
-				<li class="active"><a href="#pages" data-toggle="tab">Top level pages</a></li>
+				<li class="active"><a href="#pages" data-toggle="tab">Pages</a></li>
 			</ul>
 			<div class="tab-content">
 				<div class="tab-pane active" id="subpages">
 
-					@if ($pages->count() > 0)
-						@if (Session::has('ordering_updated'))
-							<div class="alert alert-success">
-								Ordering updated
-							</div>
+					{{ Form::open(['url' => Coanda::adminUrl('pages')]) }}
+
+						<h2>Home page</h2>
+						@if ($home_page)
+							<table class="table table-striped">
+								<tr class="status-{{ $home_page->status }} @if (!$home_page->is_visible || $home_page->is_pending) info @endif @if ($home_page->is_trashed) danger @endif">
+									<td class="tight"><input type="checkbox" name="remove_page_list[]" value="{{ $home_page->id }}" @if (!Coanda::canView('home_pages', 'remove') || $home_page->is_trashed) disabled="disabled" @endif></td>
+									<td>
+										@if ($home_page->is_draft)
+											<i class="fa fa-circle-o"></i>
+										@else
+											<i class="fa fa-circle"></i>
+										@endif
+										<a href="{{ Coanda::adminUrl('pages/view/' . $home_page->id) }}">{{ $home_page->present()->name }}</a>
+									</td>
+									<td>{{ $home_page->present()->type }}</td>
+									<td>
+										{{ $home_page->present()->status }}
+
+										@if ($home_page->is_trashed)
+											(<a href="{{ Coanda::adminUrl('pages/restore/' . $home_page->id) }}">Restore</a>)
+										@endif
+
+										@if (!$home_page->is_visible)
+											<span class="label label-info show-tooltip" data-toggle="tooltip" data-placement="top" title="{{ $home_page->present()->visible_dates_short }}">
+												Hidden
+												<i class="fa fa-calendar"></i>
+											</span>
+										@endif
+
+										@if ($home_page->is_pending)
+											<span class="label label-info show-tooltip" data-toggle="tooltip" data-placement="top" title="{{ $home_page->currentVersion()->present()->delayed_publish_date }}">
+												Pending
+												<i class="fa fa-calendar"></i>
+											</span>
+										@endif
+									</td>
+									<td class="tight">
+										@if ($home_page->is_draft)
+											<a href="{{ Coanda::adminUrl('pages/editversion/' . $home_page->id . '/1') }}"><i class="fa fa-pencil-square-o"></i></a>
+										@else
+											<a href="{{ Coanda::adminUrl('pages/edit/' . $home_page->id) }}"><i class="fa fa-pencil-square-o"></i></a>
+										@endif
+									</td>
+								</tr>
+							</table>
+						@else
+							<p>Home page not created</p>
 						@endif
 
-						{{ Form::open(['url' => Coanda::adminUrl('pages')]) }}
+						<h2>Top level pages</h2>
+						@if ($pages->count() > 0)
+							@if (Session::has('ordering_updated'))
+								<div class="alert alert-success">
+									Ordering updated
+								</div>
+							@endif
+
 							<table class="table table-striped">
 								@foreach ($pages as $page)
 									<tr class="status-{{ $page->status }} @if (!$page->is_visible || $page->is_pending) info @endif">
@@ -115,10 +178,12 @@
 									<span class="btn btn-danger" disabled="disabled">Delete selected</span>
 								@endif
 							</div>
-						{{ Form::close() }}
-					@else
-						<p>Your site doesn't have any pages yet!</p>
-					@endif
+
+						@else
+							<p>Your site doesn't have any pages yet!</p>
+						@endif
+
+					{{ Form::close() }}
 				</div>
 			</div>
 		</div>

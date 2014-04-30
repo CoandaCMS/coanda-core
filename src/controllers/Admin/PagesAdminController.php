@@ -9,6 +9,7 @@ use CoandaCMS\Coanda\Exceptions\ValidationException;
 use CoandaCMS\Coanda\Exceptions\PermissionDenied;
 
 use CoandaCMS\Coanda\Pages\Exceptions\PublishHandlerException;
+use CoandaCMS\Coanda\Pages\Exceptions\HomePageAlreadyExists;
 
 use CoandaCMS\Coanda\Controllers\BaseController;
 
@@ -41,11 +42,13 @@ class PagesAdminController extends BaseController {
 	{
 		Coanda::checkAccess('pages', 'view');
 
+		$home_page = $this->pageRepository->getHomePage();
+
 		$per_page = 10;
 
 		$pages = $this->pageRepository->topLevel($per_page);
 
-		return View::make('coanda::admin.pages.index', [ 'pages' => $pages ]);
+		return View::make('coanda::admin.pages.index', [ 'home_page' => $home_page, 'pages' => $pages ]);
 	}
 
     /**
@@ -201,7 +204,28 @@ class PagesAdminController extends BaseController {
 		{
 			return Redirect::to(Coanda::adminUrl('pages'));
 		}
+	}
 
+    public function getCreateHome($page_type)
+	{
+		Coanda::checkAccess('pages', 'create', ['page_type' => $page_type]);
+
+		try
+		{
+			$type = Coanda::module('pages')->getHomePageType($page_type);
+			$page = $this->pageRepository->createHome($type, Coanda::currentUser()->id);
+
+			// Redirect to edit (version 1 - which should be the only version, give this is the create method!)
+			return Redirect::to(Coanda::adminUrl('pages/editversion/' . $page->id . '/1'));
+		}
+		catch (PageTypeNotFound $exception)
+		{
+			return Redirect::to(Coanda::adminUrl('pages'));
+		}
+		catch (HomePageAlreadyExists $exception)
+		{
+			return Redirect::to(Coanda::adminUrl('pages'));	
+		}
 	}
 
     /**
