@@ -410,6 +410,8 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		{
 			return $this->renderPage($home_page);
 		}
+
+		throw new \Exception('Home page not created yet!');
 	}
 
 	private function renderPage($page)
