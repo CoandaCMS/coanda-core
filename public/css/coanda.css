@@ -264,7 +264,7 @@ td.tight
 
 td.order-column
 {
-	max-width: 20px;
+	width: 50px;
 }
 
 td.order-column .input-sm
