@@ -10,6 +10,16 @@ class HTML implements AttributeTypeInterface {
 		return 'html';
 	}
 
+    public function edit_template()
+    {
+    	return 'coanda::admin.core.attributes.edit.html';
+    }
+
+    public function view_template()
+    {
+    	return 'coanda::admin.core.attributes.view.html';
+    }
+
     public function store($data, $is_required, $name)
 	{
 		if ($data == '<p><br></p>')
@@ -30,7 +40,6 @@ class HTML implements AttributeTypeInterface {
     public function data($data)
 	{
 		// TODO - tidy up the HTML ready for displaying...
-		// 
 		return $data;
 	}
 }

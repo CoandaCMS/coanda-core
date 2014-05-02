@@ -1,9 +1,16 @@
-<div class="form-group @if (isset($invalid_fields['attribute_' . $attribute->id])) has-error @endif">
-	<label class="control-label" for="attribute_{{ $attribute->id }}">{{ $attribute->name }}</label>
-    <textarea class="form-control" id="attribute_{{ $attribute->id }}" name="attribute_{{ $attribute->id }}">{{ $attribute->type_data }}</textarea>
+{{--
+$attribute_name
+$attribute_identifier
+$invalid_fields
+$is_required
+$prefill_data
+--}}
+<div class="form-group @if (isset($invalid_fields['attribute_' . $attribute_identifier])) has-error @endif">
+	<label class="control-label" for="attribute_{{ $attribute_identifier }}">{{ $attribute_name }} @if ($is_required) * @endif</label>
+    <textarea class="form-control" id="attribute_{{ $attribute_identifier }}" name="attribute_{{ $attribute_identifier }}">{{ Input::old('attribute_' . $attribute_identifier, $prefill_data) }}</textarea>
 
-    @if (isset($invalid_fields['attribute_' . $attribute->id]))
-    	<span class="help-block">{{ $invalid_fields['attribute_' . $attribute->id] }}</span>
+    @if (isset($invalid_fields['attribute_' . $attribute_identifier]))
+    	<span class="help-block">{{ $invalid_fields['attribute_' . $attribute_identifier] }}</span>
     @endif
 </div>
 
@@ -33,7 +40,7 @@
 
 	var media_browse_url = '{{ Coanda::adminUrl('media/browse') }}';
 
-	$('#attribute_{{ $attribute->id }}').summernote({
+	$('#attribute_{{ $attribute_identifier }}').summernote({
 			toolbar: [
 				['style', ['style']],
 				['font', ['bold', 'italic', 'underline', 'clear']],

@@ -245,7 +245,7 @@
 						<tr>
 							<td class="tight">{{ $attribute->name }}</td>
 							<td>
-								@include('coanda::admin.pages.pageattributetypes.view.' . $attribute->type, [ 'attribute' => $attribute ])
+								@include($attribute->type()->view_template(), [ 'content' => $attribute->type_data ])
 							</td>
 						</tr>
 						@endforeach

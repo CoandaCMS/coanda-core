@@ -10,6 +10,16 @@ class Textline implements AttributeTypeInterface {
         return 'textline';
     }
 
+    public function edit_template()
+    {
+    	return 'coanda::admin.core.attributes.edit.textline';
+    }
+
+    public function view_template()
+    {
+    	return 'coanda::admin.core.attributes.view.textline';
+    }
+
     public function store($data, $is_required, $name)
 	{
 		// Is this required?

@@ -61,7 +61,7 @@
 				<div class="tab-pane active" id="attributes">
 					@foreach ($version->attributes as $attribute)
 
-						@include('coanda::admin.pages.pageattributetypes.edit.' . $attribute->type, [ 'attribute' => $attribute, 'invalid_fields' => $invalid_fields ])
+						@include($attribute->type()->edit_template(), [ 'attribute_identifier' => $attribute->id, 'attribute_name' => $attribute->name, 'invalid_fields' => $invalid_fields, 'is_required' => $attribute->is_required, 'prefill_data' => $attribute->type_data ])
 
 						@if ($attribute->generates_slug)
 							@section('footer')

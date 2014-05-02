@@ -12,7 +12,7 @@ return array(
 
 	/*
 	|--------------------------------------------------------------------------
-	| Available attributes, used by page types and templates
+	| Available attributes, used by page types and layout blocks
 	|--------------------------------------------------------------------------
 	|
 	*/
