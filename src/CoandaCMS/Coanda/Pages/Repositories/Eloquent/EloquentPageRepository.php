@@ -411,6 +411,19 @@ class EloquentPageRepository implements PageRepositoryInterface {
 			}
 		}
 
+		if (isset($data['layout']))
+		{
+			$layout = Coanda::layoutByIdentifier($data['layout']);
+
+			if (!$version->layout || $version->layout === '')
+			{
+				// initialise the layout data....
+				// $version->layout_data = .....
+			}
+			
+			$version->layout = $data['layout'];
+		}
+
 		$version->save();
 
 		if (count($failed) > 0)
@@ -469,7 +482,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 	{
 		$page = $version->page;
 
-		if ($version->version !== 1)
+		if ((int)$version->version !== 1)
 		{
 			// set the current published version to be archived
 			$page->currentVersion()->status = 'archived';

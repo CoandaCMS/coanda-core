@@ -21,10 +21,22 @@ return array(
 		'CoandaCMS\Coanda\Core\Attributes\Types\HTML',
 	],
 
+	/*
+	|--------------------------------------------------------------------------
+	| Modules
+	|--------------------------------------------------------------------------
+	|
+	*/
 	'enabled_modules' => [
+	],
 
-		],
 
+	/*
+	|--------------------------------------------------------------------------
+	| Page settings - available types, home page types and publish handlers
+	|--------------------------------------------------------------------------
+	|
+	*/
 	'page_types' => [
 		'MySite\PageTypes\Page',
 		'MySite\PageTypes\LandingPage',
@@ -40,15 +52,21 @@ return array(
 
 	/*
 	|--------------------------------------------------------------------------
-	| Theme settings (Theme provider class)
+	| Design & Layout settings
 	|--------------------------------------------------------------------------
 	|
 	*/
 	'theme_provider' => 'MySite\Theme\MySiteThemeProvider',
 
 	'layouts' => [
-		'MySite\Theme\Layouts\SingleColumn',
-		'MySite\Theme\Layouts\TwoColumn',
+		'MySite\Layouts\SingleColumn',
+		'MySite\Layouts\TwoColumn',
+	],
+
+	'default_layout' => 'single-column',
+
+	'layout_block_types' => [
+		'MySite\LayoutBlocks\TextWithButton',
 	],
 
 	/*

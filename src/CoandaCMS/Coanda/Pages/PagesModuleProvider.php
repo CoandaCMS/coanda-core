@@ -31,8 +31,6 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 
     private $theme;
 
-    private $layouts_by_page_type = [];
-
     /**
      * @param \CoandaCMS\Coanda\Coanda $coanda
      */
@@ -42,30 +40,6 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		$this->loadPageTypes($coanda);
 		$this->loadPublishHandlers($coanda);
 		$this->loadPermissions($coanda);
-		$this->loadLayouts($coanda);
-	}
-
-	private function loadLayouts($coanda)
-	{
-		$layouts = $coanda->layouts();
-
-		foreach ($layouts as $layout)
-		{
-			foreach ($layout->pageTypes() as $page_type)
-			{
-				$this->layouts_by_page_type[$page_type][] = $layout;
-			}			
-		}
-	}
-
-	public function layoutsByPageType($page_type)
-	{
-		if (array_key_exists($page_type, $this->layouts_by_page_type))
-		{
-			return $this->layouts_by_page_type[$page_type];
-		}
-
-		return [];
 	}
 
 	private function loadRouter($coanda)
@@ -381,11 +355,11 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 	{
 		if ($page->currentVersion()->layout)
 		{
-			$layout = Coanda::layoutByIdentifier($page->currentVersion()->layout);
+			$layout = Coanda::module('layout')->layoutByIdentifier($page->currentVersion()->layout);
 
 			if ($layout)
 			{
-				return $layout->template();
+				return $layout;
 			}
 		}
 
@@ -396,8 +370,7 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 			return $theme->defaultLayoutTemplate();
 		}
 
-		// A sensible default - an exception will be thrown if it doesn't exist anyway
-		return 'layouts.default';
+		dd('no layout specified.....hmmm');
 	}
 
 	public function renderHome()
@@ -455,7 +428,7 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 			'module_identifier' => $page->id
 		];
 
-		return View::make($layout, $layout_data);
+		return View::make($layout->template(), $layout_data);
 	}
 
 	private function buildAttributes($page)

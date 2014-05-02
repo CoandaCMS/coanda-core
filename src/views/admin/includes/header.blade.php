@@ -4,6 +4,7 @@
 			<li><a href="{{ Coanda::adminUrl('/') }}">Dashboard</a></li>
 			<li><a href="{{ Coanda::adminUrl('pages') }}">Pages</a></li>
 			<li><a href="{{ Coanda::adminUrl('media') }}">Media</a></li>
+			<li><a href="{{ Coanda::adminUrl('layout') }}">Layout</a></li>
 			<li><a href="{{ Coanda::adminUrl('users') }}">Users</a></li>
 		</ul>
 

@@ -50,7 +50,7 @@ class Coanda {
 
 		$this->theme_provider = new $theme_provider;
 		$this->theme_provider->boot($this);
-
+		
 		$this->loadAttributes();
 	}
 
@@ -59,11 +59,14 @@ class Coanda {
 		// Load the attributes
 		$attribute_types = Config::get('coanda::coanda.attribute_types');
 
-		foreach ($attribute_types as $attribute_types)
+		foreach ($attribute_types as $attribute_type_class)
 		{
-			$attribute_type = new $attribute_types;
+			if (class_exists($attribute_type_class))
+			{
+				$attribute_type = new $attribute_type_class;
 
-			$this->attribute_types[$attribute_type->identifier()] = $attribute_type;
+				$this->attribute_types[$attribute_type->identifier()] = $attribute_type;				
+			}
 		}
 	}
 
@@ -176,6 +179,7 @@ class Coanda {
 		$core_modules = [
 			'CoandaCMS\Coanda\Users\UsersModuleProvider',
 			'CoandaCMS\Coanda\Pages\PagesModuleProvider',
+			'CoandaCMS\Coanda\Layout\LayoutModuleProvider',
 			'CoandaCMS\Coanda\Media\MediaModuleProvider'
 		];
 

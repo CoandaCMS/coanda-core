@@ -284,7 +284,8 @@ class PagesAdminController extends BaseController {
 			$publish_handler_invalid_fields = Session::has('publish_handler_invalid_fields') ? Session::get('publish_handler_invalid_fields') : [];
 			$default_publish_handler = array_keys($publish_handlers)[0];
 
-			$layouts = Coanda::module('pages')->layoutsByPageType($page->type);
+			// $layouts = Coanda::module('pages')->layoutsByPageType($page->type);
+			$layouts = [];
 
 			return View::make('coanda::admin.pages.edit', ['version' => $version, 'invalid_fields' => $invalid_fields, 'publish_handler_invalid_fields' => $publish_handler_invalid_fields, 'publish_handlers' => $publish_handlers, 'default_publish_handler' => $default_publish_handler, 'layouts' => $layouts ]);
 		}
