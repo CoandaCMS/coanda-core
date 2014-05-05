@@ -22,7 +22,18 @@
 </div>
 
 <div class="row">
-	<div class="page-options col-md-12"></div>
+	<div class="page-options col-md-12">
+		<div class="btn-group">
+			<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+				Add new <span class="caret"></span>
+			</button>
+			<ul class="dropdown-menu" role="menu">
+				@foreach (Coanda::module('layout')->availableBlockTypes() as $block_type)
+					<li><a href="{{ Coanda::adminUrl('layout/block-create/' . $block_type->identifier()) }}">{{ $block_type->name() }}</a></li>
+				@endforeach
+			</ul>
+		</div>
+	</div>
 </div>
 
 <div class="row">
