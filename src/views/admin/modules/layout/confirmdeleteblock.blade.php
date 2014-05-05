@@ -8,7 +8,7 @@
 	<div class="breadcrumb-nav">
 		<ul class="breadcrumb">
 			<li><a href="{{ Coanda::adminUrl('layout') }}">Layouts</a></li>
-			<li><a href="{{ Coanda::adminUrl('layout/block-view/' . $block->id) }}">{{ $block->name }}</a></li>
+			<li><a href="{{ Coanda::adminUrl('layout/block-view/' . $block->id) }}">{{ $block->present()->name }}</a></li>
 			<li>Confirm delete</li>
 		</ul>
 	</div>
