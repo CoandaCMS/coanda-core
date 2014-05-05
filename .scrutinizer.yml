@@ -13,6 +13,4 @@ tools:
     php_loc:
         enabled: true
         excluded_dirs: [vendor, tests]
-    php_sim:
-        enabled: true
-        excluded_dirs: [vendor, tests]
+    php_sim: true
