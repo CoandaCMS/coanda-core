@@ -8,6 +8,7 @@ use CoandaCMS\Coanda\Exceptions\PermissionDenied;
 use CoandaCMS\Coanda\Layout\Exceptions\LayoutNotFound;
 use CoandaCMS\Coanda\Layout\Exceptions\LayoutBlockTypeNotFound;
 use CoandaCMS\Coanda\Layout\Exceptions\LayoutBlockNotFound;
+use CoandaCMS\Coanda\Layout\Exceptions\LayoutBlockVersionNotFound;
 
 use CoandaCMS\Coanda\Controllers\BaseController;
 
@@ -115,6 +116,10 @@ class LayoutAdminController extends BaseController {
 
 			return View::make('coanda::admin.modules.layout.editblock', [ 'version' => $version, 'invalid_fields' => $invalid_fields ]);
 		}
+		catch (LayoutBlockVersionNotFound $exception)
+		{
+			return Redirect::to(Coanda::adminUrl('layout/blocks'));	
+		}
 		catch (LayoutBlockNotFound $exception)
 		{
 			return Redirect::to(Coanda::adminUrl('layout/blocks'));
@@ -153,7 +158,10 @@ class LayoutAdminController extends BaseController {
 
 				return Redirect::to(Coanda::adminUrl('layout/block-view/' . $block_id));
 			}
-
+		}
+		catch (LayoutBlockVersionNotFound $exception)
+		{
+			return Redirect::to(Coanda::adminUrl('layout/blocks'));	
 		}
 		catch (LayoutBlockNotFound $exception)
 		{
@@ -212,4 +220,24 @@ class LayoutAdminController extends BaseController {
 		}
 	}
 
+	public function getBlockRemoveversion($block_id, $version_number)
+	{
+		try
+		{
+			$version = $this->layoutBlockRepository->getBlockVersion($block_id, $version_number);
+
+			$this->layoutBlockRepository->discardDraftBlock($version);
+
+			return Redirect::to(Coanda::adminUrl('layout/block-view/' . $block_id));
+		}
+		catch (LayoutBlockVersionNotFound $exception)
+		{
+			return Redirect::to(Coanda::adminUrl('layout/blocks'));	
+		}
+		catch (LayoutBlockNotFound $exception)
+		{
+			return Redirect::to(Coanda::adminUrl('layout/blocks'));
+		}
+
+	}
 }

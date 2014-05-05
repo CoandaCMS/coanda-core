@@ -3,6 +3,7 @@
 use Coanda;
 
 use CoandaCMS\Coanda\Layout\Exceptions\LayoutBlockNotFound;
+use CoandaCMS\Coanda\Layout\Exceptions\LayoutBlockVersionNotFound;
 
 use CoandaCMS\Coanda\Exceptions\AttributeValidationException;
 use CoandaCMS\Coanda\Exceptions\ValidationException;
