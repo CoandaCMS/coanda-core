@@ -9,10 +9,12 @@ tools:
     php_code_sniffer: true
     sensiolabs_security_checker: true
     php_code_coverage: true
-    php_pdepend: false
+    php_analyzer:
+        enabled: true
+        excluded_dirs: [vendor, tests]
     php_loc:
         enabled: true
         excluded_dirs: [vendor, tests]
-    php_cpd:
+    php_sim:
         enabled: true
         excluded_dirs: [vendor, tests]
