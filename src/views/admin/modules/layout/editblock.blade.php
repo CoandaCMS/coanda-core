@@ -19,7 +19,7 @@
 			Edit layout block (version #{{ $version->version }})
 			<small>
 				<i class="fa"></i>
-				{{ $version->block->type }}
+				{{ $version->block->blockType()->name() }}
 			</small>
 		</h1>
 	</div>
@@ -73,12 +73,27 @@
 		<div class="col-md-4">
 
 			<ul class="nav nav-tabs">
-				<li class="active"><a href="#details" data-toggle="tab">Details</a></li>
+				<li class="active"><a href="#regions" data-toggle="tab">Layout regions</a></li>
 			</ul>
 
 			<div class="edit-container tab-content">
 
-				<div class="tab-pane active" id="details">
+				<div class="tab-pane active" id="regions">
+
+					@if ($version->block->regions->count() > 0)
+
+						<table class="table table-striped">
+							@foreach ($version->block->regions as $region)
+								<tr>
+									<td>{{ $region->layout->name() }}/{{ $region->region->name() }}</td>
+								</tr>
+							@endforeach
+						</table>
+
+					@else
+						<p>This block is not used in any layout regions.</p>
+					@endif
+
 
 					{{--
 					<div class="row">

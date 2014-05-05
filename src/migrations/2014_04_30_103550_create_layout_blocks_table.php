@@ -30,9 +30,6 @@ class CreateLayoutBlocksTable extends Migration {
 
 			$table->string('status')->default('draft'); // draft/published/archived
 
-			$table->timestamp('visible_from')->nullable();
-			$table->timestamp('visible_to')->nullable();
-
 			$table->integer('version');
 
 	        $table->timestamps();
@@ -51,6 +48,23 @@ class CreateLayoutBlocksTable extends Migration {
 
 	        $table->timestamps();
 	    });
+
+		Schema::create('layoutblockregions', function($table)
+	    {
+	        $table->increments('id');
+	        $table->integer('layout_block_id');
+
+			$table->string('layout_identifier');
+			$table->string('region_identifier');
+
+			$table->string('module');
+			$table->string('module_identifier');
+			$table->boolean('cascade');
+
+			$table->integer('order');
+
+	        $table->timestamps();
+	    });
 	}
 
 	/**
@@ -60,9 +74,10 @@ class CreateLayoutBlocksTable extends Migration {
 	 */
 	public function down()
 	{
-		Schema::drop('layoutblock_regions');
 		Schema::drop('layoutblocks');
+		Schema::drop('layoutblockversions');
 		Schema::drop('layoutblockattributes');
+		Schema::drop('layoutblockregions');
 	}
 
 }

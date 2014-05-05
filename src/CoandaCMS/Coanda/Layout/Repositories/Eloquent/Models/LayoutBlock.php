@@ -1,6 +1,6 @@
 <?php namespace CoandaCMS\Coanda\Layout\Repositories\Eloquent\Models;
 
-use Coanda;
+use Coanda, App;
 
 class LayoutBlock extends \Illuminate\Database\Eloquent\Model {
 
@@ -12,6 +12,7 @@ class LayoutBlock extends \Illuminate\Database\Eloquent\Model {
 
     private $currentVersion;
     private $blockType;
+    private $defaultRegions;
 
     public function delete()
     {
@@ -26,6 +27,21 @@ class LayoutBlock extends \Illuminate\Database\Eloquent\Model {
     public function versions()
     {
     	return $this->hasMany('CoandaCMS\Coanda\Layout\Repositories\Eloquent\Models\LayoutBlockVersion');
+    }
+
+    public function regions()
+    {
+        return $this->hasMany('CoandaCMS\Coanda\Layout\Repositories\Eloquent\Models\LayoutRegion');
+    }
+
+    public function defaultRegions()
+    {
+        if (!$this->defaultRegions)
+        {
+            $this->defaultRegions = $this->regions()->whereModule('*')->get();
+        }
+
+        return $this->defaultRegions;
     }
 
     public function currentVersion()
@@ -68,4 +84,27 @@ class LayoutBlock extends \Illuminate\Database\Eloquent\Model {
         return $this->currentVersion()->status == 'draft';
     }
 
+    public function availableRegions()
+    {
+        $regions = [];
+        $layouts = Coanda::module('layout')->layouts();
+
+        $layoutRepository = App::make('CoandaCMS\Coanda\Layout\Repositories\LayoutBlockRepositoryInterface');
+
+        foreach ($layouts as $layout)
+        {
+            foreach ($layout->regions() as $region)
+            {
+                if (!$layoutRepository->checkBlockIsDefaultInRegion($this->id, $layout->identifier(), $region->identifier()))
+                {
+                    $regions[] = [
+                        'name' => $layout->name() . '/' . $region->name(),
+                        'identifier' => $layout->identifier() . '/' . $region->identifier()
+                    ];                    
+                }
+            }
+        }
+
+        return $regions;
+    }
 }

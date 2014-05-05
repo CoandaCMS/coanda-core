@@ -38,14 +38,24 @@
 					{{ Form::open(['url' => Coanda::adminUrl('pages')]) }}
 
 						@if (count($layouts) > 0)
-							<table class="table table-striped">
+							<table class="table table-striped fifty-50">
 								@foreach ($layouts as $layout)
 									<tr>
+										<td><i class="fa fa-code"></i> {{ $layout->name() }}</td>
 										<td>
-											<i class="fa fa-code"></i>
-											<a href="{{ Coanda::adminUrl('layout/view/' . $layout->identifier()) }}">{{ $layout->name() }}</a>
+											@if ($layout->regionCount() > 0)
+												<table class="table table-striped">
+													@foreach ($layout->regions() as $region)
+													<tr>
+														<td><a href="{{ Coanda::adminUrl('layout/view-region/' . $layout->identifier() . '/' . $region->identifier()) }}">{{ $region->name() }}</a></td>
+														<td>{{ $layout->defaultBlockCount($region->identifier()) }} blocks</td>
+													</tr>
+													@endforeach
+												</table>
+											@else
+												<p>This layout does not have any editable regions.</p>
+											@endif
 										</td>
-										<td>{{ $layout->regionCount() }} editable regions</td>
 									</tr>
 								@endforeach
 							</table>

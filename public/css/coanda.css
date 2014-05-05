@@ -368,6 +368,11 @@ table.seventy-30 td:first-child
 	width: 30%;
 }
 
+td table.table
+{
+	margin-bottom: 0;
+}
+
 .permission-option-label
 {
 	margin-top: 10px;

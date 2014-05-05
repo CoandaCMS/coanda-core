@@ -69,6 +69,11 @@ abstract class Layout {
 		return $this->blockRepository()->defaultBlocksForRegion($this->identifier(), $region);
 	}
 
+	public function defaultBlockCount($region)
+	{
+		return $this->blockRepository()->defaultBlocksForRegion($this->identifier(), $region)->count();
+	}
+
 	public function blocks($region, $module, $module_identifier)
 	{
 		// Get the blocks for this region, module and module_identifier combination...

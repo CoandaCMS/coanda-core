@@ -1,17 +1,15 @@
 @extends('coanda::admin.layout.main')
 
-@section('page_title', 'View layout block: ' . $block->name)
+@section('page_title', 'View layout block: ' . $block->present()->name)
 
 @section('content')
 
 <div class="row">
-
 	<div class="breadcrumb-nav">
-
 		<ul class="breadcrumb">
-			<li><a href="{{ Coanda::adminUrl('layout/blocks') }}">Layout blocks</a></li>
+			<li><a href="{{ Coanda::adminUrl('layout') }}">Layouts</a></li>
+			<li>{{ $block->present()->name }}</li>
 		</ul>
-
 	</div>
 </div>
 
@@ -143,12 +141,46 @@
 	<div class="col-md-4">
 		<div class="page-tabs">
 			<ul class="nav nav-tabs">
-				<li class="active"><a href="#layouts" data-toggle="tab">Layouts</a></li>
+				<li class="active"><a href="#layouts" data-toggle="tab">Layout regions</a></li>
 			</ul>
 			<div class="tab-content">
 				<div class="tab-pane active" id="layouts">
 
-					Layouts...
+					@if (Session::has('region_added'))
+						<div class="alert alert-success">
+							Block added to region
+						</div>
+					@endif
+
+					@if (Session::has('region_removed'))
+						<div class="alert alert-danger">
+							Block removed from region
+						</div>
+					@endif
+
+					@if ($version->block->defaultRegions()->count() > 0)
+						<table class="table table-striped">
+							@foreach ($version->block->defaultRegions() as $region)
+								<tr>
+									<td class="tight"><a href="{{ Coanda::adminUrl('layout/remove-block-from-region/' . $block->id . '/' . $region->layout->identifier() . '/' . $region->region->identifier()) }}"><i class="fa fa-minus-circle"></i></a></td>
+									<td><a href="{{ Coanda::adminUrl('layout/view-region/' . $region->layout->identifier() . '/' . $region->region->identifier()) }}">{{ $region->layout->name() }}/{{ $region->region->name() }}</a></td>
+								</tr>
+							@endforeach
+						</table>
+					@else
+						<p>This block is not used in any layout regions.</p>
+					@endif
+
+					@if (count($available_regions) > 0)
+						{{ Form::open([ 'url' => Coanda::adminUrl('layout/block-view/' . $block->id), 'class' => 'form-inline' ]) }}
+							<select name="add_region" class="form-control">
+								@foreach ($available_regions as $available_region)
+									<option value="{{ $available_region['identifier'] }}">{{ $available_region['name'] }}</option>
+								@endforeach
+							</select>
+							{{ Form::button('Add', ['name' => 'add_default', 'value' => 'true', 'type' => 'submit', 'class' => 'btn btn-default']) }}
+						{{ Form::close() }}
+					@endif
 
 				</div>
 			</div>

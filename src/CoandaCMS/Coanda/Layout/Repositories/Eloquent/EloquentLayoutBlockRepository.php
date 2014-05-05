@@ -11,47 +11,41 @@ use CoandaCMS\Coanda\Exceptions\ValidationException;
 use CoandaCMS\Coanda\Layout\Repositories\Eloquent\Models\LayoutBlock as LayoutBlockModel;
 use CoandaCMS\Coanda\Layout\Repositories\Eloquent\Models\LayoutBlockVersion as LayoutBlockVersionModel;
 use CoandaCMS\Coanda\Layout\Repositories\Eloquent\Models\LayoutBlockAttribute as LayoutBlockAttributeModel;
+use CoandaCMS\Coanda\Layout\Repositories\Eloquent\Models\LayoutRegion as LayoutRegionModel;
 
 class EloquentLayoutBlockRepository implements \CoandaCMS\Coanda\Layout\Repositories\LayoutBlockRepositoryInterface {
 
     private $layout_block_model;
 	private $layout_block_version_model;
     private $layout_block_attribute_model;
+    private $layout_region_model;
 
-    public function __construct(LayoutBlockModel $layout_block_model, LayoutBlockVersionModel $layout_block_version_model, LayoutBlockAttributeModel $layout_block_attribute_model)
+    public function __construct(LayoutBlockModel $layout_block_model, LayoutBlockVersionModel $layout_block_version_model, LayoutBlockAttributeModel $layout_block_attribute_model, LayoutRegionModel $layout_region_model)
 	{
 		$this->layout_block_model = $layout_block_model;
 		$this->layout_block_version_model = $layout_block_version_model;
 		$this->layout_block_attribute_model = $layout_block_attribute_model;
+		$this->layout_region_model = $layout_region_model;
 	}
 
- //    public function getBlocksForRegion($layout, $region_identifier, $module_identifier, $module_id)
-	// {
-	// 	dd('getBlocksForRegion');
+	public function defaultBlocksForRegion($layout_identifier, $region_identifier)
+	{
+		$blocks = [];
 
-	// 	$blocks = [];
-		
-	// 	foreach ($this->layout_block_region_model->whereLayout($layout)->whereRegion($region_identifier)->whereModule($module_identifier)->whereModuleId($module_id)->orderBy('order')->lists('layout_block_id') as $layout_block_id)
-	// 	{
-	// 		$blocks[] = $this->layout_block_model->find($layout_block_id);
-	// 	}
+		$regions = $this->layout_region_model->whereLayoutIdentifier($layout_identifier)->whereRegionIdentifier($region_identifier)->whereModule('*')->orderBy('order')->lists('layout_block_id');
 
-	// 	return $blocks;
-	// }
+		foreach ($regions as $layout_block_id)
+		{
+			$blocks[] = $this->layout_block_model->find($layout_block_id);
+		}
 
-	// public function defaultBlocksForRegion($layout_identifier, $region_identifier)
-	// {
-	// 	dd('defaultBlocksForRegion');
+		return \Illuminate\Support\Collection::make($blocks);
+	}
 
-	// 	$blocks = [];
-		
-	// 	foreach ($this->layout_block_region_model->whereLayoutIdentifier($layout_identifier)->whereRegion($region_identifier)->whereModule('*')->orderBy('order')->lists('layout_block_id') as $layout_block_id)
-	// 	{
-	// 		$blocks[] = $this->layout_block_model->find($layout_block_id);
-	// 	}
-
-	// 	return $blocks;
-	// }
+	public function regionBlocks($layout_identifier, $region_identifier)
+	{
+		return $this->layout_region_model->whereLayoutIdentifier($layout_identifier)->whereRegionIdentifier($region_identifier)->whereModule('*')->orderBy('order')->get();
+	}
 
 	public function getBlockById($id)
 	{
@@ -92,7 +86,7 @@ class EloquentLayoutBlockRepository implements \CoandaCMS\Coanda\Layout\Reposito
 		throw new LayoutBlockFound;
 	}
 
-	public function createNewBlock($type)
+	public function createNewBlock($type, $layout_identifier, $region_identifier)
 	{
 		// Create the block
 		$block = new $this->layout_block_model;
@@ -124,6 +118,14 @@ class EloquentLayoutBlockRepository implements \CoandaCMS\Coanda\Layout\Reposito
 
 			$index ++;
 		}
+
+		// Now add the region link up
+		$region_link = $this->layout_region_model;
+		$region_link->layout_block_id = $block->id;
+		$region_link->layout_identifier = $layout_identifier;
+		$region_link->region_identifier = $region_identifier;
+		$region_link->module = '*';
+		$region_link->save();
 
 		return $block;
 	}
@@ -236,5 +238,55 @@ class EloquentLayoutBlockRepository implements \CoandaCMS\Coanda\Layout\Reposito
 		$block = $this->getBlockById($block_id);
 
 		$block->delete();
+	}
+
+	public function addDefaultBlockToRegion($block_id, $region_identifier)
+	{
+		$block = $this->getBlockById($block_id);
+
+		$parts = explode('/', $region_identifier);
+
+		if (count($parts) == 2)
+		{
+			$layout_identifier = $parts[0];
+			$region_identifier = $parts[1];
+
+			if ($this->layout_region_model->whereLayoutBlockId($block_id)->whereLayoutIdentifier($layout_identifier)->whereRegionIdentifier($region_identifier)->whereModule('*')->count() == 0)
+			{
+				$region = new $this->layout_region_model;
+				$region->layout_block_id = $block_id;
+				$region->layout_identifier = $layout_identifier;
+				$region->region_identifier = $region_identifier;
+				$region->module = '*';
+				$region->save();
+			}
+		}
+	}
+
+	public function checkBlockIsDefaultInRegion($block_id, $layout_identifier, $region_identifier)
+	{
+		$block = $this->getBlockById($block_id);
+
+		return $this->layout_region_model->whereLayoutBlockId($block->id)->whereLayoutIdentifier($layout_identifier)->whereRegionIdentifier($region_identifier)->whereModule('*')->count() > 0;
+	}
+
+	public function removeDefaultBlockFromRegion($block_id, $layout_identifier, $region_identifier)
+	{
+		$block = $this->getBlockById($block_id);
+
+		$region = $this->layout_region_model->whereLayoutIdentifier($layout_identifier)->whereRegionIdentifier($region_identifier)->whereModule('*');
+
+		if ($region)
+		{
+			$region->delete();
+		}
+	}
+
+	public function updateRegionOrdering($layout_identifier, $region_identifier, $ordering)
+	{
+		foreach ($ordering as $region_id => $new_order)
+		{
+			$this->layout_region_model->whereId($region_id)->whereLayoutIdentifier($layout_identifier)->whereRegionIdentifier($region_identifier)->whereModule('*')->update(['order' => $new_order]);
+		}
 	}
 }

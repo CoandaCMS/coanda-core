@@ -25,7 +25,7 @@
 	<div class="page-options col-md-12">
 		<div class="btn-group">
 			<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
-				Add new <span class="caret"></span>
+				Add new block <span class="caret"></span>
 			</button>
 			<ul class="dropdown-menu" role="menu">
 				@foreach (Coanda::module('layout')->availableBlockTypes() as $block_type)
@@ -37,7 +37,7 @@
 </div>
 
 <div class="row">
-	<div class="col-md-12">
+	<div class="col-md-8">
 
 		<div class="page-tabs">
 			<ul class="nav nav-tabs">
@@ -69,6 +69,36 @@
 			</div>
 		</div>
 	</div>
+
+	<div class="col-md-4">
+		<div class="page-tabs">
+			<ul class="nav nav-tabs">
+				<li class="active"><a href="#layouts" data-toggle="tab">Layouts</a></li>
+			</ul>
+			<div class="tab-content">
+				<div class="tab-pane active" id="layouts">
+
+					@if (count($layouts) > 0)
+						<table class="table table-striped">
+							@foreach ($layouts as $layout)
+								<tr>
+									<td>
+										<i class="fa fa-code"></i>
+										<a href="{{ Coanda::adminUrl('layout/view/' . $layout->identifier()) }}">{{ $layout->name() }}</a>
+									</td>
+									<td>{{ $layout->regionCount() }} editable regions</td>
+								</tr>
+							@endforeach
+						</table>
+					@else
+						<p>No layouts have been specified!</p>
+					@endif
+
+				</div>
+			</div>
+		</div>
+	</div>
+
 </div>
 
 @stop
