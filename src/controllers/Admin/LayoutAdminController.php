@@ -28,7 +28,9 @@ class LayoutAdminController extends BaseController {
 		// Coanda::checkAccess('layout', 'edit');
 		$layouts = Coanda::module('layout')->layouts();
 
-		return View::make('coanda::admin.modules.layout.index', [ 'layouts' => $layouts ]);
+		$block_list = $this->layoutBlockRepository->getBlockList(10);
+
+		return View::make('coanda::admin.modules.layout.index', [ 'layouts' => $layouts, 'block_list' => $block_list ]);
 	}
 
 	public function getViewRegion($layout_identifier, $region_identifier)
@@ -77,16 +79,6 @@ class LayoutAdminController extends BaseController {
 			return Redirect::to(Coanda::adminUrl('layout'));
 		}
 
-	}
-
-
-
-	public function getBlocks()
-	{
-		$block_list = $this->layoutBlockRepository->getBlockList(10);
-		$layouts = Coanda::module('layout')->layouts();
-
-		return View::make('coanda::admin.modules.layout.blocks', [ 'block_list' => $block_list, 'layouts' => $layouts ]);
 	}
 
 	public function getBlockCreate($block_type_identifier, $layout_identifier, $region_identifier)
