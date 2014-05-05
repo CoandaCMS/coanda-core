@@ -16,4 +16,6 @@ interface LayoutBlockRepositoryInterface {
 
 	public function discardDraftBlock($version);
 
+	public function deleteBlock($block_id);
+
 }

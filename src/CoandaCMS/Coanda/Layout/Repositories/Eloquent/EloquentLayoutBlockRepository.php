@@ -228,6 +228,12 @@ class EloquentLayoutBlockRepository implements \CoandaCMS\Coanda\Layout\Reposito
 		{
 			$block->delete();
 		}
+	}
 
+	public function deleteBlock($block_id)
+	{
+		$block = $this->getBlockById($block_id);
+
+		$block->delete();
 	}
 }

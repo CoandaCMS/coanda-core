@@ -183,4 +183,33 @@ class LayoutAdminController extends BaseController {
 			return Redirect::to(Coanda::adminUrl('layout/blocks'));
 		}
 	}
+
+	public function getBlockDelete($block_id)
+	{
+		try
+		{
+			$block = $this->layoutBlockRepository->getBlockById($block_id);	
+
+			return View::make('coanda::admin.modules.layout.confirmdeleteblock', [ 'block' => $block ]);
+		}
+		catch (LayoutBlockNotFound $exception)
+		{
+			return Redirect::to(Coanda::adminUrl('layout/blocks'));
+		}
+	}
+
+	public function postBlockDelete($block_id)
+	{
+		try
+		{
+			$this->layoutBlockRepository->deleteBlock($block_id);
+
+			return Redirect::to(Coanda::adminUrl('layout/blocks'));
+		}
+		catch (LayoutBlockNotFound $exception)
+		{
+			return Redirect::to(Coanda::adminUrl('layout/blocks'));
+		}
+	}
+
 }

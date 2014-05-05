@@ -15,7 +15,7 @@ class LayoutBlock extends \Illuminate\Database\Eloquent\Model {
 
     public function delete()
     {
-        foreach ($this->versions() as $version)
+        foreach ($this->versions as $version)
         {
             $version->delete();
         }
