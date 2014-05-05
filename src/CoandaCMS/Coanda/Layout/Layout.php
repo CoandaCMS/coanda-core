@@ -51,19 +51,6 @@ abstract class Layout {
 		return $this->block_repository;	
 	}
 
-	public function defaultBlocksByRegion()
-	{
-		if (!$this->blocks_by_region)
-		{
-			foreach ($this->regions() as $region)
-			{
-				$this->blocks_by_region[$region['identifier']] = $this->defaultBlocks($region['identifier']);
-			}
-		}
-
-		return $this->blocks_by_region;
-	}
-
 	public function defaultBlocks($region)
 	{
 		return $this->blockRepository()->defaultBlocksForRegion($this->identifier(), $region);
@@ -71,18 +58,18 @@ abstract class Layout {
 
 	public function defaultBlockCount($region)
 	{
-		return $this->blockRepository()->defaultBlocksForRegion($this->identifier(), $region)->count();
+		return $this->defaultBlocks($region)->count();
 	}
 
 	public function blocks($region, $module, $module_identifier)
 	{
 		// Get the blocks for this region, module and module_identifier combination...
-		$blocks = $this->blockRepository()->getBlocksForRegion($this->identifier(), $region, $module, $module_identifier);;
+		$blocks = $this->blockRepository()->blocksForRegionAndModule($this->identifier(), $region, $module, $module_identifier);;
 
 		// If we have not got any blocks, then fetch the default ones...
 		if (count($blocks) == 0)
 		{
-			$blocks = $this->defaultBlocks();
+			$blocks = $this->defaultBlocks($region);
 		}
 
 		$this->blocks = $blocks;
@@ -108,7 +95,7 @@ abstract class Layout {
 
 			foreach ($this->blocks as $block)
 			{
-				$block_content .= View::make(Coanda::module('layout')->getBlockTemplate($block->type), ['block' => $block]);
+				$block_content .= View::make($block->blockType()->template(), ['block' => $block]);
 			}
 
 			return $block_content;

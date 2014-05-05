@@ -2,7 +2,9 @@
 
 interface LayoutBlockRepositoryInterface {
 
-	public function defaultBlocksForRegion($layout, $region_identifier);
+	public function defaultBlocksForRegion($layout_identifier, $region_identifier);
+
+	public function blocksForRegionAndModule($layout_identifier, $region_identifier, $module, $module_idenfitier);
 
 	public function getBlockList($per_page);
 

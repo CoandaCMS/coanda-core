@@ -120,16 +120,4 @@ class LayoutModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 	{
 	}
 
-	// public function getBlockTemplate($block_type)
-	// {
-	// 	$theme = Coanda::theme();
-
-	// 	if (method_exists($theme, 'blockTemplate'))
-	// 	{
-	// 		return $theme->blockTemplate($block_type);
-	// 	}
-
-	// 	return 'layoutblocks.' . $block_type;
-	// }
-
 }

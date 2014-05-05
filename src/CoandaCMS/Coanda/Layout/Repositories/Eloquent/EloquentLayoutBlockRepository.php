@@ -42,6 +42,20 @@ class EloquentLayoutBlockRepository implements \CoandaCMS\Coanda\Layout\Reposito
 		return \Illuminate\Support\Collection::make($blocks);
 	}
 
+	public function blocksForRegionAndModule($layout_identifier, $region_identifier, $module, $module_idenfitier)
+	{
+		$blocks = [];
+
+		$regions = $this->layout_region_model->whereLayoutIdentifier($layout_identifier)->whereRegionIdentifier($region_identifier)->whereModule($module)->whereModuleIdentifier($module_idenfitier)->orderBy('order')->lists('layout_block_id');
+
+		foreach ($regions as $layout_block_id)
+		{
+			$blocks[] = $this->layout_block_model->find($layout_block_id);
+		}
+
+		return \Illuminate\Support\Collection::make($blocks);
+	}
+
 	public function regionBlocks($layout_identifier, $region_identifier)
 	{
 		return $this->layout_region_model->whereLayoutIdentifier($layout_identifier)->whereRegionIdentifier($region_identifier)->whereModule('*')->orderBy('order')->get();
