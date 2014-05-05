@@ -6,7 +6,6 @@ abstract class Layout {
 
 	private $blocks;
 	private $block_repository;
-	private $blocks_by_region;
 
 	abstract public function identifier();
 
