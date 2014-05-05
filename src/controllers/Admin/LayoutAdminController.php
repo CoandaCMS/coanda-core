@@ -97,9 +97,19 @@ class LayoutAdminController extends BaseController {
 	{
 		try
 		{
-			$new_version = $this->layoutBlockRepository->createNewVersion($block_id);
+			$block = $this->layoutBlockRepository->getBlockById($block_id);
+			$existing_drafts = $block->drafts();
 
-			return Redirect::to(Coanda::adminUrl('layout/block-editversion/' . $block_id . '/' . $new_version));
+			if ($existing_drafts->count() > 0)
+			{
+				return Redirect::to(Coanda::adminUrl('layout/block-existing-drafts/' . $block->id));
+			}
+			else
+			{
+				$new_version = $this->layoutBlockRepository->createNewVersion($block_id);
+
+				return Redirect::to(Coanda::adminUrl('layout/block-editversion/' . $block_id . '/' . $new_version));
+			}			
 		}
 		catch (LayoutBlockNotFound $exception)
 		{
@@ -238,6 +248,33 @@ class LayoutAdminController extends BaseController {
 		{
 			return Redirect::to(Coanda::adminUrl('layout/blocks'));
 		}
+	}
 
+	public function getBlockExistingDrafts($block_id)
+	{
+		try
+		{
+			$block = $this->layoutBlockRepository->getBlockById($block_id);	
+
+			return View::make('coanda::admin.modules.layout.existingblockdrafts', [ 'block' => $block ]);
+		}
+		catch (LayoutBlockNotFound $exception)
+		{
+			return Redirect::to(Coanda::adminUrl('layout/blocks'));
+		}
+	}
+
+	public function postBlockExistingDrafts($block_id)
+	{
+		try
+		{
+			$new_version = $this->layoutBlockRepository->createNewVersion($block_id);
+
+			return Redirect::to(Coanda::adminUrl('layout/block-editversion/' . $block_id . '/' . $new_version));
+		}
+		catch (LayoutBlockNotFound $exception)
+		{
+			return Redirect::to(Coanda::adminUrl('layout/blocks'));
+		}
 	}
 }

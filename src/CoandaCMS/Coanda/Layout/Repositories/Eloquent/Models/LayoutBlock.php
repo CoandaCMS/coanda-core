@@ -38,6 +38,11 @@ class LayoutBlock extends \Illuminate\Database\Eloquent\Model {
     	return $this->currentVersion;
     }
 
+    public function drafts()
+    {
+        return $this->versions()->whereStatus('draft')->get();
+    }
+
     public function blockType()
     {
         if (!$this->blockType)
