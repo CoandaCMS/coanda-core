@@ -40,7 +40,7 @@ class MediaAdminController extends BaseController {
 		$tags = $this->mediaRepository->recentTagList(10);
 		$max_upload = $this->mediaRepository->maxFileSize();
 
-		return View::make('coanda::admin.media.index', [ 'media_list' => $media_list, 'max_upload' => $max_upload, 'tags' => $tags ]);
+		return View::make('coanda::admin.modules.media.index', [ 'media_list' => $media_list, 'max_upload' => $max_upload, 'tags' => $tags ]);
 	}
 
     /**
@@ -74,7 +74,7 @@ class MediaAdminController extends BaseController {
 	{
 		Coanda::checkAccess('media', 'create');
 
-		return View::make('coanda::admin.media.add');
+		return View::make('coanda::admin.modules.media.add');
 	}
 
     /**
@@ -118,7 +118,7 @@ class MediaAdminController extends BaseController {
 			$media = $this->mediaRepository->findById($media_id);
 			$tags = $this->mediaRepository->getTags($media_id);
 
-			return View::make('coanda::admin.media.view', ['media' => $media, 'tags' => $tags]);
+			return View::make('coanda::admin.modules.media.view', ['media' => $media, 'tags' => $tags]);
 		}
 		catch (MediaNotFound $exception)
 		{
@@ -199,7 +199,7 @@ class MediaAdminController extends BaseController {
 		{
 			$media = $this->mediaRepository->findById($media_id);
 
-			return View::make('coanda::admin.media.remove', ['media' => $media]);
+			return View::make('coanda::admin.modules.media.remove', ['media' => $media]);
 		}
 		catch (MediaNotFound $exception)
 		{
@@ -236,7 +236,7 @@ class MediaAdminController extends BaseController {
 
 		$tags = $this->mediaRepository->tags(10);
 
-		return View::make('coanda::admin.media.tags', ['tags' => $tags]);
+		return View::make('coanda::admin.modules.media.tags', ['tags' => $tags]);
 	}
 
     /**
@@ -252,7 +252,7 @@ class MediaAdminController extends BaseController {
 			$tag = $this->mediaRepository->tagById($tag_id);
 			$media_list = $this->mediaRepository->forTag($tag->id, 18);
 
-			return View::make('coanda::admin.media.tag', ['tag' => $tag, 'media_list' => $media_list]);
+			return View::make('coanda::admin.modules.media.tag', ['tag' => $tag, 'media_list' => $media_list]);
 		}
 		catch (TagNotFound $exception)
 		{

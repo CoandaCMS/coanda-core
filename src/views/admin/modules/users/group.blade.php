@@ -71,7 +71,7 @@
 					@endif
 				</div>
 				<div class="tab-pane" id="permissions">
-					@include('coanda::admin.users.includes.permissionsview', [ 'permissions' => Coanda::availablePermissions(), 'existing_permissions' => $group->access_list ])
+					@include('coanda::admin.modules.users.includes.permissionsview', [ 'permissions' => Coanda::availablePermissions(), 'existing_permissions' => $group->access_list ])
 				</div>
 			</div>
 		</div>

@@ -38,7 +38,7 @@ class UsersAdminController extends BaseController {
 
 		$groups = $this->userRepository->groups();
 
-		return View::make('coanda::admin.users.index', [ 'groups' => $groups ]);
+		return View::make('coanda::admin.modules.users.index', [ 'groups' => $groups ]);
 	}
 
     /**
@@ -54,7 +54,7 @@ class UsersAdminController extends BaseController {
 
 		$invalid_fields = Session::has('invalid_fields') ? Session::get('invalid_fields') : [];
 
-		return View::make('coanda::admin.users.creategroup', ['permissions' => $permissions, 'existing_permissions' => $existing_permissions, 'invalid_fields' => $invalid_fields ]);
+		return View::make('coanda::admin.modules.users.creategroup', ['permissions' => $permissions, 'existing_permissions' => $existing_permissions, 'invalid_fields' => $invalid_fields ]);
 	}
 
     /**
@@ -99,7 +99,7 @@ class UsersAdminController extends BaseController {
 
 			$invalid_fields = Session::has('invalid_fields') ? Session::get('invalid_fields') : [];
 
-			return View::make('coanda::admin.users.editgroup', ['group' => $group, 'existing_permissions' => $existing_permissions, 'permissions' => $permissions, 'invalid_fields' => $invalid_fields ]);
+			return View::make('coanda::admin.modules.users.editgroup', ['group' => $group, 'existing_permissions' => $existing_permissions, 'permissions' => $permissions, 'invalid_fields' => $invalid_fields ]);
 		}
 		catch (GroupNotFound $exception)
 		{
@@ -150,7 +150,7 @@ class UsersAdminController extends BaseController {
 
 			$group = $this->userRepository->groupById($group_id);
 
-			return View::make('coanda::admin.users.group', ['group' => $group ]);
+			return View::make('coanda::admin.modules.users.group', ['group' => $group ]);
 		}
 		catch (GroupNotFound $exception)
 		{
@@ -171,7 +171,7 @@ class UsersAdminController extends BaseController {
 			$group = $this->userRepository->groupById($group_id);
 			$invalid_fields = Session::has('invalid_fields') ? Session::get('invalid_fields') : [];
 
-			return View::make('coanda::admin.users.createuser', ['group' => $group, 'invalid_fields' => $invalid_fields ]);
+			return View::make('coanda::admin.modules.users.createuser', ['group' => $group, 'invalid_fields' => $invalid_fields ]);
 		}
 		catch (GroupNotFound $exception)
 		{
@@ -222,7 +222,7 @@ class UsersAdminController extends BaseController {
 
 			$invalid_fields = Session::has('invalid_fields') ? Session::get('invalid_fields') : [];
 
-			return View::make('coanda::admin.users.edituser', ['user' => $user, 'invalid_fields' => $invalid_fields ]);
+			return View::make('coanda::admin.modules.users.edituser', ['user' => $user, 'invalid_fields' => $invalid_fields ]);
 		}
 		catch (UserNotFound $exception)
 		{
@@ -278,7 +278,7 @@ class UsersAdminController extends BaseController {
 		{
 			$user = $this->userRepository->find($user_id);
 
-			return View::make('coanda::admin.users.user', ['user' => $user, 'selected_tab' => $selected_tab ]);
+			return View::make('coanda::admin.modules.users.user', ['user' => $user, 'selected_tab' => $selected_tab ]);
 		}
 		catch (UserNotFound $exception)
 		{
