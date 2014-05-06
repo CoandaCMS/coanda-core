@@ -49,7 +49,7 @@ class PagesAdminController extends BaseController {
 
 		$pages = $this->pageRepository->topLevel($per_page);
 
-		return View::make('coanda::admin.pages.index', [ 'home_page' => $home_page, 'pages' => $pages ]);
+		return View::make('coanda::admin.modules.pages.index', [ 'home_page' => $home_page, 'pages' => $pages ]);
 	}
 
     /**
@@ -101,7 +101,7 @@ class PagesAdminController extends BaseController {
 							'contributors' => $this->pageRepository->contributors($id)
 						];
 
-			return View::make('coanda::admin.pages.view', $view_data);
+			return View::make('coanda::admin.modules.pages.view', $view_data);
 		}
 		catch (PageNotFound $exception)
 		{
@@ -158,7 +158,7 @@ class PagesAdminController extends BaseController {
 
 		$pages = $this->pageRepository->findByIds(Session::get('remove_page_list'));
 
-		return View::make('coanda::admin.pages.confirmdelete', ['pages' => $pages, 'previous_page_id' => $previous_page_id]);
+		return View::make('coanda::admin.modules.pages.confirmdelete', ['pages' => $pages, 'previous_page_id' => $previous_page_id]);
 
 	}
 
@@ -286,7 +286,7 @@ class PagesAdminController extends BaseController {
 
 			$layouts = Coanda::module('layout')->layoutsByPageType($page->type);
 
-			return View::make('coanda::admin.pages.edit', ['version' => $version, 'invalid_fields' => $invalid_fields, 'publish_handler_invalid_fields' => $publish_handler_invalid_fields, 'publish_handlers' => $publish_handlers, 'default_publish_handler' => $default_publish_handler, 'layouts' => $layouts ]);
+			return View::make('coanda::admin.modules.pages.edit', ['version' => $version, 'invalid_fields' => $invalid_fields, 'publish_handler_invalid_fields' => $publish_handler_invalid_fields, 'publish_handlers' => $publish_handlers, 'default_publish_handler' => $default_publish_handler, 'layouts' => $layouts ]);
 		}
 		catch (PageNotFound $exception)
 		{
@@ -438,7 +438,7 @@ class PagesAdminController extends BaseController {
 
 			$drafts = $this->pageRepository->draftsForUser($page_id, Coanda::currentUser()->id);
 
-			return View::make('coanda::admin.pages.existingdrafts', ['page' => $page, 'drafts' => $drafts ]);
+			return View::make('coanda::admin.modules.pages.existingdrafts', ['page' => $page, 'drafts' => $drafts ]);
 		}
 		catch (PageNotFound $exception)
 		{
@@ -483,7 +483,7 @@ class PagesAdminController extends BaseController {
 
 			Coanda::checkAccess('pages', 'remove', ['page_id' => $page->id, 'page_type' => $page->type]);
 
-			return View::make('coanda::admin.pages.delete', ['page' => $page ]);
+			return View::make('coanda::admin.modules.pages.delete', ['page' => $page ]);
 		}
 		catch (PageNotFound $exception)
 		{
@@ -524,7 +524,7 @@ class PagesAdminController extends BaseController {
 
 		$pages = $this->pageRepository->trashed();
 
-		return View::make('coanda::admin.pages.trash', ['pages' => $pages ]);
+		return View::make('coanda::admin.modules.pages.trash', ['pages' => $pages ]);
 	}
 
     /**
@@ -556,7 +556,7 @@ class PagesAdminController extends BaseController {
 
 		$pages = $this->pageRepository->findByIds(Session::get('confirm_permanent_remove_list'));
 
-		return View::make('coanda::admin.pages.confirmdeletefromtrash', ['pages' => $pages ]);
+		return View::make('coanda::admin.modules.pages.confirmdeletefromtrash', ['pages' => $pages ]);
 	}
 
     /**
@@ -597,7 +597,7 @@ class PagesAdminController extends BaseController {
 			// Get all the parent pages which would have to be restored too
 			$trashed_parents = $this->pageRepository->trashedParentsForPage($page->id);
 
-			return View::make('coanda::admin.pages.restore', ['page' => $page, 'trashed_parents' => $trashed_parents ]);
+			return View::make('coanda::admin.modules.pages.restore', ['page' => $page, 'trashed_parents' => $trashed_parents ]);
 		}
 		catch (PageNotFound $exception)
 		{
@@ -642,7 +642,7 @@ class PagesAdminController extends BaseController {
             $history = $this->pageRepository->history($page->id);
             $contributors = $this->pageRepository->contributors($page->id);
 
-            return View::make('coanda::admin.pages.history', [ 'page' => $page, 'histories' => $history, 'contributors' => $contributors]);
+            return View::make('coanda::admin.modules.pages.history', [ 'page' => $page, 'histories' => $history, 'contributors' => $contributors]);
         }
         catch (PageNotFound $exception)
         {

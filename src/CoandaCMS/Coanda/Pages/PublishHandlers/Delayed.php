@@ -22,7 +22,7 @@ class Delayed implements PublishHandlerInterface {
     /**
      * @var string
      */
-    public $template = 'coanda::admin.pages.publishoptions.delayed';
+    public $template = 'coanda::admin.modules.pages.publishoptions.delayed';
 
     /**
      * @param $version

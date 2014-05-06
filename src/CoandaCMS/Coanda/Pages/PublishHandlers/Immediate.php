@@ -21,7 +21,7 @@ class Immediate implements PublishHandlerInterface {
     /**
      * @var string
      */
-    public $template = 'coanda::admin.pages.publishoptions.immediate';
+    public $template = 'coanda::admin.modules.pages.publishoptions.immediate';
 
     /**
      * @param $version
