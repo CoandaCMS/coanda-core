@@ -399,10 +399,12 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 			App::abort('404');
 		}
 
+		$meta = $this->buildMeta($page);
+
 		$data = [
 			'name' => $page->present()->name,
 			'type' => $page->type,
-			'meta' => $this->buildMeta($page),
+			'meta' => $meta,
 			'attributes' => $this->buildAttributes($page),
 			'page' => $page,
 			'template' => $this->templateDirectory() . 'pagetypes.' . $page->type
@@ -420,6 +422,7 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		// Give the layout the rendered page and the data, and it can work some magic to give us back a complete page...
 		$layout_data = [
 			'content' => $rendered_page,
+			'meta' => $meta,
 			'data' => $data,
 			'layout' => $layout,
 			'module' => 'pages',
@@ -450,8 +453,8 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 	private function buildMeta($page)
 	{
 		return [
-			'title' => 'XXXXX',
-			'description' => 'XXXXX'
+			'title' => $page->currentVersion()->meta_page_title,
+			'description' => $page->currentVersion()->meta_description
 		];
 	}
 }
