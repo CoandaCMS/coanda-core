@@ -411,17 +411,21 @@ class EloquentPageRepository implements PageRepositoryInterface {
 			}
 		}
 
-		if (isset($data['layout']))
+		if (isset($data['layout_identifier']))
 		{
-			$layout = Coanda::layoutByIdentifier($data['layout']);
-
-			if (!$version->layout || $version->layout === '')
+			if ($data['layout_identifier'] !== '')
 			{
-				// initialise the layout data....
-				// $version->layout_data = .....
+				$layout = Coanda::module('layout')->layoutByIdentifier($data['layout_identifier']);
+
+				if ($layout)
+				{
+					$version->layout_identifier = $data['layout_identifier'];
+				}
 			}
-			
-			$version->layout = $data['layout'];
+			else
+			{
+				$version->layout_identifier = '';
+			}
 		}
 
 		$version->save();
@@ -560,6 +564,12 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		// Carry over the visible date
 		$version->visible_from = $current_version->visible_from;
 		$version->visible_to = $current_version->visible_to;
+
+		// Carry over the layout
+		$version->layout_identifier = $current_version->layout_identifier;
+
+		// Ask the layout module to replicate the custom region blocks for this
+		Coanda::module('layout')->copyCustomRegionBlock('pages', $page->id . ':' . $current_version->version, $page->id . ':' . $new_version_number);
 
 		$page->versions()->save($version);
 

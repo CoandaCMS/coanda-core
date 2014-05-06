@@ -45,7 +45,7 @@ class LayoutAdminController extends BaseController {
 				return Redirect::to(Coanda::adminUrl('layout'));
 			}
 
-			$region_blocks = $this->layoutBlockRepository->regionBlocks($layout->identifier(), $region->identifier());
+			$region_blocks = $this->layoutBlockRepository->defaultRegionBlocks($layout->identifier(), $region->identifier());
 
 			return View::make('coanda::admin.modules.layout.viewregion', [ 'layout' => $layout, 'region' => $region, 'region_blocks' => $region_blocks ]);
 		}
@@ -69,7 +69,7 @@ class LayoutAdminController extends BaseController {
 
 			if (Input::has('update_order') && Input::get('update_order') == 'true')
 			{
-				$this->layoutBlockRepository->updateRegionOrdering($layout_identifier, $region_identifier, Input::get('ordering'));
+				$this->layoutBlockRepository->updateRegionOrdering(Input::get('ordering'));
 
 				return Redirect::to(Coanda::adminUrl('layout/view-region/' . $layout_identifier . '/' . $region_identifier))->with('ordering_updated', true);
 			}
@@ -319,6 +319,32 @@ class LayoutAdminController extends BaseController {
 		{
 			return Redirect::to(Coanda::adminUrl('layout/blocks'));
 		}
-
 	}
+
+	public function getPageCustomRegionBlock($page_id, $version_number, $layout_identifier, $region_identifier)
+	{
+		$data = [
+			'block_list' => $this->layoutBlockRepository->getBlockList(10),
+			'page_id' => $page_id,
+			'version_number' => $version_number,
+			'layout_identifier' => $layout_identifier,
+			'region_identifier' => $region_identifier
+		];
+
+		return View::make('coanda::admin.modules.layout.pagecustomregion', $data);
+	}
+
+	public function postPageCustomRegionBlock($page_id, $version_number, $layout_identifier, $region_identifier)
+	{
+		if (Input::has('add_block_list') && count(Input::get('add_block_list')))
+		{
+			foreach (Input::get('add_block_list') as $block_id)
+			{
+				$this->layoutBlockRepository->addCustomBlockToRegion($block_id, $layout_identifier, $region_identifier, 'pages', $page_id . ':' . $version_number);
+			}
+		}
+
+		return Redirect::to(Coanda::adminUrl('pages/editversion/' . $page_id . '/' . $version_number))->with('custom_blocks_added', true);
+	}
+
 }

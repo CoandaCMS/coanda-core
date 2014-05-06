@@ -97,6 +97,20 @@ class LayoutModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		return [];
 	}
 
+	public function updateCustomRegionBlockOrders($new_orders)
+	{
+		$layoutBlockRepository = \App::make('CoandaCMS\Coanda\Layout\Repositories\LayoutBlockRepositoryInterface');
+
+		$layoutBlockRepository->updateRegionOrdering($new_orders);
+	}
+
+	public function copyCustomRegionBlock($module, $from_identifier, $to_identifier)
+	{
+		$layoutBlockRepository = \App::make('CoandaCMS\Coanda\Layout\Repositories\LayoutBlockRepositoryInterface');
+
+		$layoutBlockRepository->copyBlocks($module, $from_identifier, $to_identifier);
+	}
+
     public function adminRoutes()
 	{
 		// Load the layout controller

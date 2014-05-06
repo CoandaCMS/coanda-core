@@ -284,8 +284,7 @@ class PagesAdminController extends BaseController {
 			$publish_handler_invalid_fields = Session::has('publish_handler_invalid_fields') ? Session::get('publish_handler_invalid_fields') : [];
 			$default_publish_handler = array_keys($publish_handlers)[0];
 
-			// $layouts = Coanda::module('pages')->layoutsByPageType($page->type);
-			$layouts = [];
+			$layouts = Coanda::module('layout')->layoutsByPageType($page->type);
 
 			return View::make('coanda::admin.pages.edit', ['version' => $version, 'invalid_fields' => $invalid_fields, 'publish_handler_invalid_fields' => $publish_handler_invalid_fields, 'publish_handlers' => $publish_handlers, 'default_publish_handler' => $default_publish_handler, 'layouts' => $layouts ]);
 		}
@@ -336,6 +335,23 @@ class PagesAdminController extends BaseController {
 			if (Input::has('save') && Input::get('save') == 'true')
 			{
 				return Redirect::to(Coanda::adminUrl('pages/editversion/' . $page_id . '/' . $version_number))->with('page_saved', true);
+			}
+
+			if (Input::has('choose_layout') && Input::get('choose_layout') == 'true')
+			{
+				return Redirect::to(Coanda::adminUrl('pages/editversion/' . $page_id . '/' . $version_number))->with('layout_chosen', true);
+			}
+
+			if (Input::has('update_region_block_order') && Input::get('update_region_block_order') == 'true')
+			{
+				Coanda::module('layout')->updateCustomRegionBlockOrders(Input::get('region_block_ordering'));
+
+				return Redirect::to(Coanda::adminUrl('pages/editversion/' . $page_id . '/' . $version_number))->with('ordering_updated', true);
+			}
+
+			if (Input::has('add_custom_block'))
+			{
+				return Redirect::to(Coanda::adminUrl('layout/page-custom-region-block/' . $page_id . '/' . $version_number . '/' . Input::get('add_custom_block')));
 			}
 
 			if (Input::has('save_exit') && Input::get('save_exit') == 'true')

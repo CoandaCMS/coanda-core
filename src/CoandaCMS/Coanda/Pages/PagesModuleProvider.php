@@ -353,9 +353,9 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 
 	private function getLayout($page)
 	{
-		if ($page->currentVersion()->layout)
+		if ($page->currentVersion()->layout_identifier)
 		{
-			$layout = Coanda::module('layout')->layoutByIdentifier($page->currentVersion()->layout);
+			$layout = Coanda::module('layout')->layoutByIdentifier($page->currentVersion()->layout_identifier);
 
 			if ($layout)
 			{
@@ -417,15 +417,13 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		// Get the layout template...
 		$layout = $this->getLayout($page);
 
-		// $blocks = Coanda::module('blocks')->get($layout_identifier, $page->id);
-
 		// Give the layout the rendered page and the data, and it can work some magic to give us back a complete page...
 		$layout_data = [
 			'content' => $rendered_page,
 			'data' => $data,
 			'layout' => $layout,
 			'module' => 'pages',
-			'module_identifier' => $page->id
+			'module_identifier' => $page->id . ':' . $page->current_version
 		];
 
 		return View::make($layout->template(), $layout_data);

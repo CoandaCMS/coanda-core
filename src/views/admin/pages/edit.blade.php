@@ -48,17 +48,15 @@
 		<div class="col-md-8">
 
 			<ul class="nav nav-tabs">
-				<li class="active"><a href="#attributes" data-toggle="tab">Content</a></li>
-				{{-- <li><a href="#variations" data-toggle="tab">Variations</a></li> --}}
-				<li><a href="#layout" data-toggle="tab">Layout</a></li>
-
+				<li @if (!Session::has('layout_chosen')) class="active" @endif><a href="#attributes" data-toggle="tab">Content</a></li>
+				<li @if (Session::has('layout_chosen')) class="active" @endif><a href="#layout" data-toggle="tab">Layout</a></li>
 				@if ($version->page->show_meta)
 					<li><a href="#meta" data-toggle="tab">Meta</a></li>
 				@endif
 			</ul>
 
 			<div class="tab-content edit-container">
-				<div class="tab-pane active" id="attributes">
+				<div class="tab-pane @if (!Session::has('layout_chosen')) active @endif" id="attributes">
 					@foreach ($version->attributes as $attribute)
 
 						@include($attribute->type()->edit_template(), [ 'attribute_identifier' => $attribute->id, 'attribute_name' => $attribute->name, 'invalid_fields' => $invalid_fields, 'is_required' => $attribute->is_required, 'prefill_data' => $attribute->type_data ])
@@ -74,35 +72,69 @@
 					@endforeach
 				</div>
 
-				{{--
-				<div class="tab-pane" id="variations">
+				<div class="tab-pane @if (Session::has('layout_chosen')) active @endif" id="layout">
 
-					Available variations e.g. with image/with date etc
-
-				</div>
-				--}}
-
-				<div class="tab-pane" id="layout">
+					@if (Session::has('layout_chosen'))
+						<div class="alert alert-success">
+							Layout chosen
+						</div>
+					@endif
 
 					<div class="form-group">
-						<label class="control-label" for="layout">Layout</label>
+						<label class="control-label" for="layout_identifier">Layout</label>
 
-						{{--
 						<div class="row">
 							<div class="col-xs-10">
-								<select name="layout" id="layout" class="form-control">
+								<select name="layout_identifier" id="layout_identifier" class="form-control">
+									<option value=""></option>
 									@foreach ($layouts as $layout)
-										<option value="{{ $layout->identifier() }}">{{ $layout->name() }}</option>
+										<option @if ($version->layout_identifier == $layout->identifier()) selected="selected" @endif value="{{ $layout->identifier() }}">{{ $layout->name() }}</option>
 									@endforeach
 								</select>
 							</div>
 							<div class="col-xs-2">
-								{{ Form::button('Customise', ['name' => 'customise_layout', 'value' => 'true', 'type' => 'submit', 'class' => 'btn btn-default btn-block']) }}
+								{{ Form::button('Choose', ['name' => 'choose_layout', 'value' => 'true', 'type' => 'submit', 'class' => 'btn btn-default btn-block']) }}
 							</div>
 						</div>
-						--}}
+
+						@if ($version->layout_identifier)
+							<div class="edit-container">
+								<div class="panel-group" id="accordion">
+									@foreach ($version->layout->regions() as $region)
+										<div class="panel panel-default">
+											<div class="panel-heading">
+												<a data-toggle="collapse" data-parent="#accordion" href="#region_{{ $region->identifier() }}">{{ $region->name() }}</a>
+											</div>
+											<div id="region_{{ $region->identifier() }}" class="panel-collapse collapse">
+												<div class="panel-body">
+
+													@if (count($version->layoutRegionBlocks($region->identifier())) > 0)
+														<table class="table table-striped">
+															@foreach ($version->layoutRegionBlocks($region->identifier()) as $region_block)
+																<tr>
+																	<td class="tight"><a href="{{ Coanda::adminUrl('pages/remove-custom-region-block/' . $region_block->block->id . '/' . $version->page->id . '/' . $version->version) }}"><i class="fa fa-minus-circle"></i></a></td>
+																	<td>{{ $region_block->block->name }}</td>
+																	<td class="order-column">{{ Form::text('region_block_ordering[' . $region_block->id . ']', $region_block->order, ['class' => 'form-control input-sm']) }}</td>
+																</tr>
+															@endforeach
+														</table>
+
+														{{ Form::button('Update ordering', ['name' => 'update_region_block_order', 'value' => 'true', 'type' => 'submit', 'class' => 'pull-right btn btn-default']) }}
+													@else
+														<p>No custom blocks have been added, the defaults will be used.</p>
+													@endif
+
+													{{ Form::button('Add custom block', ['name' => 'add_custom_block', 'value' => $version->layout->identifier() . '/' . $region->identifier(), 'type' => 'submit', 'class' => 'btn btn-default']) }}
+
+												</div>
+											</div>
+										</div>
+									@endforeach
+								</div>
+							</div>
+						@endif
+
 					</div>
-					
 				</div>
 
 				@if ($version->page->show_meta)

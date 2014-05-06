@@ -147,4 +147,30 @@ class PageVersion extends Eloquent {
 		}
 	}
 
+	public function layout()
+    {
+        if ($this->layout_identifier !== '')
+        {
+            return Coanda::module('layout')->layoutByIdentifier($this->layout_identifier);
+        }
+
+        return false;
+    }
+
+    public function getLayoutAttribute()
+    {
+        return $this->layout();
+    }
+
+    public function layoutRegionBlocks($region)
+    {
+    	$layout = $this->layout();
+
+    	if ($layout)
+    	{
+    		return $layout->regionBlocks($region, 'pages', $this->page->id . ':' . $this->version);
+    	}
+
+    	return [];
+    }
 }

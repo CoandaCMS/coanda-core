@@ -62,8 +62,7 @@ abstract class Layout {
 
 	public function blocks($region, $module, $module_identifier)
 	{
-		// Get the blocks for this region, module and module_identifier combination...
-		$blocks = $this->blockRepository()->blocksForRegionAndModule($this->identifier(), $region, $module, $module_identifier);;
+		$blocks = $this->blockRepository()->blocksForRegionAndModule($this->identifier(), $region, $module, $module_identifier);
 
 		// If we have not got any blocks, then fetch the default ones...
 		if (count($blocks) == 0)
@@ -74,6 +73,11 @@ abstract class Layout {
 		$this->blocks = $blocks;
 
 		return $this;
+	}
+
+	public function regionBlocks($region, $module, $module_identifier)
+	{
+		return $this->blockRepository()->regionBlocks($this->identifier(), $region, $module, $module_identifier);
 	}
 
 	public function get()

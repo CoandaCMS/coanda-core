@@ -56,9 +56,33 @@ class EloquentLayoutBlockRepository implements \CoandaCMS\Coanda\Layout\Reposito
 		return \Illuminate\Support\Collection::make($blocks);
 	}
 
-	public function regionBlocks($layout_identifier, $region_identifier)
+	public function defaultRegionBlocks($layout_identifier, $region_identifier)
 	{
 		return $this->layout_region_model->whereLayoutIdentifier($layout_identifier)->whereRegionIdentifier($region_identifier)->whereModule('*')->orderBy('order')->get();
+	}
+
+	public function regionBlocks($layout_identifier, $region_identifier, $module, $module_idenfitier)
+	{
+		return $this->layout_region_model->whereLayoutIdentifier($layout_identifier)->whereRegionIdentifier($region_identifier)->whereModule($module)->whereModuleIdentifier($module_idenfitier)->orderBy('order')->get();
+	}
+
+	public function copyBlocks($module, $from_identifier, $to_identifier)
+	{
+		$existing_blocks = $this->layout_region_model->whereModule($module)->whereModuleIdentifier($from_identifier)->get();
+
+		foreach ($existing_blocks as $existing_block)
+		{
+			$new_block = new $this->layout_region_model;
+			$new_block->layout_block_id = $existing_block->layout_block_id;
+			$new_block->layout_identifier = $existing_block->layout_identifier;
+			$new_block->region_identifier = $existing_block->region_identifier;
+			$new_block->order = $existing_block->order;
+			$new_block->cascade = $existing_block->cascade;
+
+			$new_block->module = $module;
+			$new_block->module_identifier = $to_identifier;
+			$new_block->save();
+		}
 	}
 
 	public function getBlockById($id)
@@ -296,11 +320,36 @@ class EloquentLayoutBlockRepository implements \CoandaCMS\Coanda\Layout\Reposito
 		}
 	}
 
-	public function updateRegionOrdering($layout_identifier, $region_identifier, $ordering)
+	public function updateRegionOrdering($ordering)
 	{
 		foreach ($ordering as $region_id => $new_order)
 		{
-			$this->layout_region_model->whereId($region_id)->whereLayoutIdentifier($layout_identifier)->whereRegionIdentifier($region_identifier)->whereModule('*')->update(['order' => $new_order]);
+			$this->layout_region_model->whereId($region_id)->update(['order' => $new_order]);
 		}
 	}
+
+	public function addCustomBlockToRegion($block_id, $layout_identifier, $region_identifier, $module, $module_identifier)
+	{
+		$block = $this->getBlockById($block_id);
+
+		$existing = $this->layout_region_model
+						->whereLayoutBlockId($block_id)
+						->whereLayoutIdentifier($layout_identifier)
+						->whereRegionIdentifier($region_identifier)
+						->whereModule($module)
+						->whereModuleIdentifier($module_identifier)
+						->first();
+
+		if (!$existing)
+		{
+			$region = new $this->layout_region_model;
+			$region->layout_block_id = $block_id;
+			$region->layout_identifier = $layout_identifier;
+			$region->region_identifier = $region_identifier;
+			$region->module = $module;
+			$region->module_identifier = $module_identifier;
+			$region->save();
+		}
+	}
+
 }

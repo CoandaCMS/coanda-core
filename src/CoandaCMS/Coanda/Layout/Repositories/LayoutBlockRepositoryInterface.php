@@ -6,6 +6,10 @@ interface LayoutBlockRepositoryInterface {
 
 	public function blocksForRegionAndModule($layout_identifier, $region_identifier, $module, $module_idenfitier);
 
+	public function defaultRegionBlocks($layout_identifier, $region_identifier);
+
+	public function regionBlocks($layout_identifier, $region_identifier, $module, $module_idenfitier);
+
 	public function getBlockList($per_page);
 
 	public function getBlockVersion($block_id, $version);
@@ -24,6 +28,8 @@ interface LayoutBlockRepositoryInterface {
 
 	public function removeDefaultBlockFromRegion($block_id, $layout_identifier, $region_identifier);
 
-	public function updateRegionOrdering($layout_identifier, $region_identifier, $ordering);
+	public function updateRegionOrdering($ordering);
+
+	public function addCustomBlockToRegion($block_id, $layout_identifier, $region_identifier, $module, $module_identifier);
 
 }

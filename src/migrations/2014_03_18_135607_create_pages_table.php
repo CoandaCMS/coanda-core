@@ -58,6 +58,8 @@ class CreatePagesTable extends Migration {
 			$table->string('publish_handler');
 			$table->text('publish_handler_data');
 
+			$table->string('layout_identifier');
+
 			$table->integer('created_by');
 			$table->integer('edited_by');
 			$table->timestamps();
