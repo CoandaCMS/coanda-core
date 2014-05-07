@@ -82,13 +82,18 @@ class EloquentUrlRepository implements \CoandaCMS\Coanda\Urls\Repositories\UrlRe
 			return $url;
 		}
 
+		// Lets see if we can find a wildcard....
 		if (strpos($slug, '/'))
 		{
 			$slug_parts = explode('/', $slug);
 
+			$wildcard_slug = '';
+
 			foreach ($slug_parts as $slug_part)
 			{
-				$url = $this->model->whereSlug($slug_part)->whereUrlableType('wildcard')->first();
+				$wildcard_slug .= ($wildcard_slug !== '' ? '/' : '') . $slug_part;
+
+				$url = $this->model->whereSlug($wildcard_slug)->whereUrlableType('wildcard')->first();
 
 				if ($url)
 				{
