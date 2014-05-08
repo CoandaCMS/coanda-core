@@ -8,24 +8,8 @@
 	<div class="breadcrumb-nav">
 		<ul class="breadcrumb">
 			<li><a href="{{ Coanda::adminUrl('pages') }}">Pages</a></li>
-
-			@foreach ($page->parents() as $parent)
-				<li>
-					<a href="{{ Coanda::adminUrl('pages/view/' . $parent->id) }}">{{ $parent->present()->name }}</a>
-					&nbsp;&nbsp;
-					<a href="#sub-pages-{{ $parent->id }}" class="expand"><i class="fa fa-caret-square-o-down"></i></a>
-				</li>	
-			@endforeach
 			<li>{{ $page->present()->name }}</li>
 		</ul>
-
-		@foreach ($page->parents() as $parent)
-			<div class="sub-pages-expand" id="sub-pages-{{ $parent->id }}">
-				
-				<p>Loading <span class="one">.</span><span class="two">.</span><span class="three">.</span></p>
-
-			</div>
-		@endforeach
 	</div>
 </div>
 
@@ -45,8 +29,27 @@
 		<i class="fa fa-exclamation-triangle"></i> Are you sure you want to remove this page?
 	</div>
 
-	@if ($page->children->count() > 0)
-		<p><i class="fa fa-info-circle"></i> Deleting this page will also delete {{ $page->subTreeCount() }} sub page{{ $page->subTreeCount() != 1 ? 's' : '' }}</p>
+	@if ($page->locations->count() > 0)
+
+		<p><i class="fa fa-info-circle"></i> The page will be removed from the following locations.</p>
+
+		<table class="table table-striped">
+			@foreach ($page->locations as $location)
+				<tr>
+					<td>
+						@foreach ($location->parents() as $parent)
+							{{ $parent->page->present()->name }}</a> /
+						@endforeach
+
+						{{ $location->page->present()->name }}
+					</td>
+					<td>
+						{{ $location->subTreeCount() }} sub page{{ $location->subTreeCount() != 1 ? 's' : '' }} will also be deleted.
+					</td>
+				</tr>
+			@endforeach
+		</table>
+
 	@endif
 
 	<div class="row">

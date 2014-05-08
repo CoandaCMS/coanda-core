@@ -19,10 +19,6 @@ class CreatePagesTable extends Migration {
 			$table->string('type');
 			$table->string('name');
 
-			$table->string('path');
-			$table->integer('parent_page_id');
-
-			$table->integer('order');
 			$table->string('remote_id'); // Used to mark any imported pages/content
 
 			$table->integer('current_version');
@@ -42,8 +38,6 @@ class CreatePagesTable extends Migration {
 
 			$table->integer('page_id');
 			$table->integer('version');
-
-			$table->text('slug');
 
 			$table->string('meta_page_title');
 			$table->text('meta_description');
@@ -66,6 +60,18 @@ class CreatePagesTable extends Migration {
 
 		});
 
+		Schema::create('pageversionslugs', function ($table) {
+
+			$table->increments('id');
+			
+			$table->integer('version_id');
+			$table->integer('location_id');
+			$table->text('slug');
+
+			$table->timestamps();
+
+		});
+
 		Schema::create('pageattributes', function ($table) {
 
 			$table->increments('id');
@@ -78,6 +84,20 @@ class CreatePagesTable extends Migration {
 			$table->text('attribute_data'); // I think most attribute types can store everything they need in here..
 
 		});
+
+		Schema::create('pagelocations', function ($table) {
+
+			$table->increments('id');
+			$table->integer('page_id');
+			$table->integer('parent_page_id');
+			$table->string('path');
+
+			$table->integer('order');
+
+			$table->timestamps();
+
+		});
+
 	}
 
 	/**
@@ -89,7 +109,9 @@ class CreatePagesTable extends Migration {
 	{
 		Schema::drop('pages');
 		Schema::drop('pageversions');
+		Schema::drop('pageversionslugs');
 		Schema::drop('pageattributes');
+		Schema::drop('pagelocations');
 	}
 
 }

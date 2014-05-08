@@ -45,15 +45,15 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 	private function loadRouter($coanda)
 	{
 		// Add the router to handle slug views
-		$coanda->addRouter('page', function ($url) use ($coanda) {
+		$coanda->addRouter('pagelocation', function ($url) use ($coanda) {
 
 			$pageRepository = App::make('CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface');
 
 			try
 			{
-				$page = $pageRepository->findById($url->urlable_id);	
+				$location = $pageRepository->locationById($url->urlable_id);	
 
-				return $this->renderPage($page);
+				return $this->renderPage($location);
 			}
 			catch(\CoandaCMS\Coanda\Exceptions\PageNotFound $exception)
 			{
@@ -370,7 +370,7 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 			return $theme->defaultLayoutTemplate();
 		}
 
-		dd('no layout specified.....hmmm');
+		return Coanda::module('layout')->layoutByIdentifier('single-column');
 	}
 
 	public function renderHome()
@@ -387,8 +387,10 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		throw new \Exception('Home page not created yet!');
 	}
 
-	private function renderPage($page)
+	private function renderPage($pagelocation)
 	{
+		$page = $pagelocation->page;
+
 		if ($page->is_trashed)
 		{
 			App::abort('404');
@@ -402,11 +404,12 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		$meta = $this->buildMeta($page);
 
 		$data = [
+			'page' => $page,
+			'location' => $pagelocation,
 			'name' => $page->present()->name,
 			'type' => $page->type,
 			'meta' => $meta,
 			'attributes' => $this->buildAttributes($page),
-			'page' => $page,
 			'template' => $this->templateDirectory() . 'pagetypes.' . $page->type
 		];
 

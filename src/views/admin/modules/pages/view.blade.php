@@ -1,6 +1,6 @@
 @extends('coanda::admin.layout.main')
 
-@section('page_title', 'View page: ' . $page->name)
+@section('page_title', 'View page: ' . $page->present()->name)
 
 @section('content')
 
@@ -18,28 +18,8 @@
 
 		<ul class="breadcrumb">
 			<li><a href="{{ Coanda::adminUrl('pages') }}">Pages</a></li>
-
-			@foreach ($page->parents() as $parent)
-				<li>
-					<a href="{{ Coanda::adminUrl('pages/view/' . $parent->id) }}">{{ $parent->present()->name }}</a>
-					{{--
-					&nbsp;&nbsp;
-					<a href="#sub-pages-{{ $parent->id }}" class="expand"><i class="fa fa-caret-square-o-down"></i></a>
-					--}}
-				</li>	
-			@endforeach
 			<li>{{ $page->present()->name }}</li>
 		</ul>
-
-		{{--
-		@foreach ($page->parents() as $parent)
-			<div class="sub-pages-expand" id="sub-pages-{{ $parent->id }}">
-				
-				<p>Loading <span class="one">.</span><span class="two">.</span><span class="three">.</span></p>
-
-			</div>
-		@endforeach
-		--}}
 	</div>
 </div>
 
@@ -86,64 +66,39 @@
 
 <div class="row">
 	<div class="page-options col-md-12">
-
-		<div class="row">
-			<div class="col-md-10">
-				<div class="btn-group">
-					@if ($page->is_trashed)
-						@if (Coanda::canView('pages', 'remove', ['page_id' => $page->id, 'page_type' => $page->type]))
-							<a href="{{ Coanda::adminUrl('pages/restore/' . $page->id) }}" class="btn btn-primary">Restore</a>
-						@else
-							<span class="btn btn-primary" disabled="disabled">Restore</span>
-						@endif
+		<div class="btn-group">
+			@if ($page->is_trashed)
+				@if (Coanda::canView('pages', 'remove', ['page_id' => $page->id, 'page_type' => $page->type]))
+					<a href="{{ Coanda::adminUrl('pages/restore/' . $page->id) }}" class="btn btn-primary">Restore</a>
+				@else
+					<span class="btn btn-primary" disabled="disabled">Restore</span>
+				@endif
+			@else
+				@if ($page->is_draft)
+					<a href="{{ Coanda::adminUrl('pages/editversion/' . $page->id . '/1') }}" class="btn btn-primary">Continue editing</a>
+				@else
+					@if (Coanda::canView('pages', 'edit', ['page_id' => $page->id, 'page_type' => $page->type]))
+						<a href="{{ Coanda::adminUrl('pages/edit/' . $page->id) }}" class="btn btn-primary">Edit</a>
 					@else
-						@if ($page->is_draft)
-							<a href="{{ Coanda::adminUrl('pages/editversion/' . $page->id . '/1') }}" class="btn btn-primary">Continue editing</a>
-						@else
-							@if (Coanda::canView('pages', 'edit', ['page_id' => $page->id, 'page_type' => $page->type]))
-								<a href="{{ Coanda::adminUrl('pages/edit/' . $page->id) }}" class="btn btn-primary">Edit</a>
-							@else
-								<span class="btn btn-primary" disabled="disabled">Edit</span>
-							@endif
-						@endif
-						<div class="btn-group">
-							<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-								More
-								<span class="caret"></span>
-							</button>
-							<ul class="dropdown-menu">
-								<li>
-									@if (Coanda::canView('pages', 'remove', ['page_id' => $page->id, 'page_type' => $page->type]))
-										<a href="{{ Coanda::adminUrl('pages/delete/' . $page->id) }}">Delete</a>
-									@else
-										<span class="disabled">Delete</span>
-									@endif
-								</li>
-							</ul>
-						</div>
+						<span class="btn btn-primary" disabled="disabled">Edit</span>
 					@endif
+				@endif
+				<div class="btn-group">
+					<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+						More
+						<span class="caret"></span>
+					</button>
+					<ul class="dropdown-menu">
+						<li>
+							@if (Coanda::canView('pages', 'remove', ['page_id' => $page->id, 'page_type' => $page->type]))
+								<a href="{{ Coanda::adminUrl('pages/delete/' . $page->id) }}">Delete</a>
+							@else
+								<span class="disabled">Delete</span>
+							@endif
+						</li>
+					</ul>
 				</div>
-				@if (!$page->is_trashed && !$page->is_home && $page->pageType()->allowsSubPages())
-					<div class="btn-group">
-						<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-							Add sub page <span class="caret"></span>
-						</button>
-						<ul class="dropdown-menu" role="menu">
-							@foreach (Coanda::module('pages')->availablePageTypes($page) as $page_type)
-								<li><a href="{{ Coanda::adminUrl('pages/create/' . $page_type->identifier() . '/' . $page->id) }}">{{ $page_type->name() }}</a></li>
-							@endforeach
-						</ul>
-					</div>
-				@endif
-			</div>
-			<div class="col-md-2">
-				@if (!$page->is_trashed && !$page->is_draft)				
-					<div class="input-group">
-						<input type="text" class="form-control select-all" readonly value="{{ url($page->slug) }}">
-						<span class="input-group-addon"><a class="new-window" href="{{ url($page->slug) }}"><i class="fa fa-share-square-o"></i></a></span>
-					</div>
-				@endif
-			</div>
+			@endif
 		</div>
 	</div>
 </div>
@@ -153,92 +108,15 @@
 		<div class="page-tabs">
 			<ul class="nav nav-tabs">
 
-				@if (!$page->is_home && $page->pageType()->allowsSubPages())
-					<li class="active"><a href="#subpages" data-toggle="tab">Sub pages ({{ $children->getTotal() }})</a></li>
-				@endif
+				<li class="active"><a href="#content" data-toggle="tab">Content</a></li>
 
-				<li @if ($page->is_home || !$page->pageType()->allowsSubPages()) class="active" @endif><a href="#content" data-toggle="tab">Content</a></li>
-				<li><a href="#versions" data-toggle="tab">Versions ({{ $page->versions->count() }})</a></li>
+				@if ($page->locations->count() > 0)
+					<li><a href="#locations" data-toggle="tab">Locations ({{ $page->locations->count() }})</a></li>
+				@endif
 			</ul>
 			<div class="tab-content">
 
-				@if (!$page->is_home && $page->pageType()->allowsSubPages())
-					<div class="tab-pane active" id="subpages">
-
-						@if (Session::has('ordering_updated'))
-							<div class="alert alert-success">
-								Ordering updated
-							</div>
-						@endif
-
-						{{ Form::open(['url' => Coanda::adminUrl('pages/view/' . $page->id)]) }}
-
-							@if ($page->parent)
-								<p><i class="fa fa-level-up"></i> <a href="{{ Coanda::adminUrl('pages/view/' . $page->parent->id) }}">Up to {{ $page->parent->present()->name }}</a></p>
-							@else
-								<p><i class="fa fa-level-up"></i> <a href="{{ Coanda::adminUrl('pages') }}">Up to Pages</a></p>
-							@endif
-
-							@if ($children->count() > 0)
-								<table class="table table-striped">
-								@foreach ($children as $child)
-									<tr class="status-{{ $child->status }}">
-
-										@if (!$page->is_trashed)
-											<td class="tight"><input type="checkbox" name="remove_page_list[]" value="{{ $child->id }}" @if (!Coanda::canView('pages', 'remove')) disabled="disabled" @endif></td>
-										@endif
-
-										<td>
-											@if ($child->is_draft)
-												<i class="fa fa-circle-o"></i>
-											@else
-												<i class="fa fa-circle"></i>
-											@endif
-											<a href="{{ Coanda::adminUrl('pages/view/' . $child->id) }}">{{ $child->present()->name }}</a>
-										</td>
-										<td>{{ $child->present()->type }}</td>
-										<td>
-											@if ($child->pageType()->allowsSubPages())
-												{{ $child->children->count() }} sub page{{ $child->children->count() !== 1 ? 's' : '' }}
-											@endif
-										</td>
-										<td>{{ $child->present()->status }}</td>
-										@if (!$page->is_trashed)
-											<td class="order-column">{{ Form::text('ordering[' . $child->id . ']', $child->order, ['class' => 'form-control input-sm']) }}</td>
-											<td class="tight">
-												@if ($child->is_draft)
-													<a href="{{ Coanda::adminUrl('pages/editversion/' . $child->id . '/1') }}"><i class="fa fa-pencil-square-o"></i></a>
-												@else
-													<a href="{{ Coanda::adminUrl('pages/edit/' . $child->id) }}"><i class="fa fa-pencil-square-o"></i></a>
-												@endif
-											</td>
-										@endif
-									</tr>
-								@endforeach
-								</table>
-
-								{{ $children->links() }}
-
-								@if (!$page->is_trashed)
-									<div class="buttons">
-										{{ Form::button('Update ordering', ['name' => 'update_order', 'value' => 'true', 'type' => 'submit', 'class' => 'pull-right btn btn-default']) }}
-
-										@if (Coanda::canView('pages', 'remove'))
-											{{ Form::button('Delete selected', ['name' => 'delete_selected', 'value' => 'true', 'type' => 'submit', 'class' => 'btn btn-danger']) }}
-										@else
-											<span class="btn btn-danger" disabled="disabled">Delete selected</span>
-										@endif
-									</div>
-								@endif
-							@else
-								<p>This page doesn't have any sub pages</p>
-							@endif
-
-						{{ Form::close() }}
-					</div>
-				@endif
-
-				<div class="tab-pane @if ($page->is_home || !$page->pageType()->allowsSubPages()) active @endif" id="content">
+				<div class="tab-pane active" id="content">
 
 					<table class="table table-striped">
 						@foreach ($page->attributes as $attribute)
@@ -252,50 +130,33 @@
 					</table>
 
 				</div>
-				<div class="tab-pane" id="versions">
 
-					<table class="table table-striped">
-						@foreach ($page->versions as $version)
-							<tr @if ($version->status == 'pending') class="info" @endif>
-								<td class="tight">
-									@if ($version->status == 'draft' && !$page->is_trashed)
-										<a href="{{ Coanda::adminUrl('pages/removeversion/' . $page->id . '/' . $version->version) }}"><i class="fa fa-minus-circle"></i></a>
-									@else
-										<i class="fa fa-minus-circle fa-disabled"></i>
-									@endif
-								</td>
-								<td>#{{ $version->version }}</td>
+				@if ($page->locations->count() > 0)
+					<div class="tab-pane" id="locations">
+						<table class="table table-striped">
+							@foreach ($page->locations as $location)
+							<tr>
 								<td>
-									Updated: {{ $version->present()->updated_at }}
-									@if ($version->status == 'pending')
-										<span class="label label-info">Pending</span>
-										<i class="fa fa-calendar"></i> Due to be published {{ $version->present()->delayed_publish_date }}
-									@else
-										@if ($version->status == 'draft')
-											<span class="label label-warning">
-										@elseif ($version->status == 'published')
-											<span class="label label-success">
-										@else  
-											<span class="label label-default">
-										@endif
+									<a href="{{ Coanda::adminUrl('pages/location/' . $location->id) }}">
 
-										{{ $version->present()->status }}</span>
-										
-									@endif
+										@foreach ($location->parents() as $parent)
+											{{ $parent->page->present()->name }} /
+										@endforeach
+
+										{{ $location->page->present()->name }}
+									</a>
 								</td>
-								<td class="tight">
-									@if (!$page->is_trashed)
-										@if ($version->status == 'draft')
-											<a class="new-window" href="{{ url($version->present()->preview_url) }}"><i class="fa fa-share-square-o"></i></a>
-											<a href="{{ Coanda::adminUrl('pages/editversion/' . $page->id . '/' . $version->version) }}"><i class="fa fa-pencil-square-o"></i></a>
-										@endif
+								<td>
+									@if ($page->pageType()->allowsSubPages())
+										{{ $location->children->count() }} sub page{{ $location->children->count() !== 1 ? 's' : '' }}
 									@endif
 								</td>
 							</tr>
-						@endforeach
-					</table>
+							@endforeach
+						</table>
+					</div>
+				@endif
 
-				</div>
 			</div>
 		</div>
 	</div>

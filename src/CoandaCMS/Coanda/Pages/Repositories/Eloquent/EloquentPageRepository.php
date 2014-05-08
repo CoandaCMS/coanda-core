@@ -11,8 +11,10 @@ use CoandaCMS\Coanda\Pages\Exceptions\PublishHandlerException;
 use CoandaCMS\Coanda\Pages\Exceptions\HomePageAlreadyExists;
 use CoandaCMS\Coanda\Pages\Exceptions\SubPagesNotAllowed;
 
+use CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageLocation as PageLocationModel;
 use CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\Page as PageModel;
 use CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageVersion as PageVersionModel;
+use CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageVersionSlug as PageVersionSlugModel;
 use CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageAttribute as PageAttributeModel;
 
 use CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface;
@@ -29,6 +31,9 @@ class EloquentPageRepository implements PageRepositoryInterface {
      * @var Models\Page
      */
     private $model;
+    private $page_location_model;
+    private $page_version_slug_model;
+
     /**
      * @var \CoandaCMS\Coanda\Urls\Repositories\UrlRepositoryInterface
      */
@@ -43,8 +48,10 @@ class EloquentPageRepository implements PageRepositoryInterface {
      * @param CoandaCMS\Coanda\Urls\Repositories\UrlRepositoryInterface $urlRepository
      * @param CoandaCMS\Coanda\History\Repositories\HistoryRepositoryInterface $historyRepository
      */
-    public function __construct(PageModel $model, \CoandaCMS\Coanda\Urls\Repositories\UrlRepositoryInterface $urlRepository, \CoandaCMS\Coanda\History\Repositories\HistoryRepositoryInterface $historyRepository)
+    public function __construct(PageLocationModel $page_location_model, PageModel $model, PageVersionSlugModel $page_version_slug_model, \CoandaCMS\Coanda\Urls\Repositories\UrlRepositoryInterface $urlRepository, \CoandaCMS\Coanda\History\Repositories\HistoryRepositoryInterface $historyRepository)
 	{
+		$this->page_location_model = $page_location_model;
+		$this->page_version_slug_model = $page_version_slug_model;
 		$this->model = $model;
 		$this->urlRepository = $urlRepository;
 		$this->historyRepository = $historyRepository;
@@ -84,6 +91,18 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		return $page;
 	}
 
+	public function locationById($id)
+	{
+		$location = $this->page_location_model->find($id);
+
+		if (!$location)
+		{
+			throw new PageNotFound('Page Location #' . $id . ' not found');
+		}
+
+		return $location;
+	}
+
     /**
      * @param $ids
      * @return \Illuminate\Database\Eloquent\Collection
@@ -110,13 +129,20 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		return $pages;
 	}
 
+	private function subLocationsForLocation($parent_location_id, $per_page = 10)
+	{
+		return $this->page_location_model->where('parent_page_id', $parent_location_id)->whereHas('page', function ($query) { $query->where('is_trashed', '=', '0'); })->orderBy('order', 'asc')->paginate($per_page);
+	}
+
     /**
      * @param int $per_page
      * @return mixed
      */
     public function topLevel($per_page = 10)
 	{
-		return $this->model->where('parent_page_id', 0)->whereIsHome(false)->whereIsTrashed(false)->orderBy('order', 'asc')->paginate($per_page);
+		return $this->subLocationsForLocation(0, $per_page);
+
+		// return $this->model->where('parent_page_id', 0)->whereIsHome(false)->whereIsTrashed(false)->orderBy('order', 'asc')->paginate($per_page);
 	}
 
     /**
@@ -124,12 +150,14 @@ class EloquentPageRepository implements PageRepositoryInterface {
      * @param $per_page
      * @return mixed
      */
-    public function subPages($page_id, $per_page)
+    public function subPages($location_id, $per_page)
 	{
-		return $this->model->where('parent_page_id', $page_id)->whereIsTrashed(false)->orderBy('order', 'asc')->paginate($per_page);
+		return $this->subLocationsForLocation($location_id, $per_page);
+
+		// return $this->page_location_model->where('parent_page_id', $page_id)->orderBy('order', 'asc')->paginate($per_page);
 	}
 
-	private function createNewPage($type, $is_home, $user_id, $parent_page_id = false)
+	private function createNewPage($type, $is_home, $user_id, $parent_pagelocation_id = false)
 	{
 		// create a page model
 		$page = new PageModel;
@@ -143,20 +171,6 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		$page->created_by = $user_id;
 		$page->edited_by = $user_id;
 		$page->current_version = 1;
-
-		if ($parent_page_id)
-		{
-			$parent_page = $this->model->find($parent_page_id);
-
-			if ($parent_page)
-			{
-				$page->parent_page_id = $parent_page->id;
-
-				$path = $parent_page->path == '' ? '/' : $parent_page->path;
-				
-				$page->path = $path . $parent_page->id . '/';
-			}
-		}
 
 		$page->save();
 
@@ -187,11 +201,34 @@ class EloquentPageRepository implements PageRepositoryInterface {
 			$index ++;
 		}
 
+		// If we are dealing with the home page, then we don't need to add a location
+		if (!$is_home)
+		{
+			$location = new $this->page_location_model;
+			$location->page_id = $page->id;
+
+			// Work out the parent and path fields...
+			if ($parent_pagelocation_id)
+			{
+				$parent_location = $this->page_location_model->find($parent_pagelocation_id);
+
+				if ($parent_location)
+				{
+					$location->parent_page_id = $parent_location->id;
+
+					$path = $parent_location->path == '' ? '/' : $parent_location->path;
+
+					$location->path = $path . $parent_location->id . '/';
+				}
+			}
+
+			$location->save();
+		}
+
 		// Log the history
 		$this->historyRepository->add('pages', $page->id, $user_id, 'initial_version');
 
 		return $page;
-
 	}
 
     /**
@@ -200,22 +237,22 @@ class EloquentPageRepository implements PageRepositoryInterface {
      * @param bool $parent_page_id
      * @return PageModel
      */
-    public function create($type, $user_id, $parent_page_id = false)
+    public function create($type, $user_id, $parent_pagelocation_id = false)
 	{
-		if ($parent_page_id)
+		if ($parent_pagelocation_id)
 		{
-			$parent_page = $this->find($parent_page_id);
+			$parent_location = $this->locationById($parent_pagelocation_id);
 
-			if ($parent_page->pageType()->allowsSubPages())
+			if ($parent_location->page->pageType()->allowsSubPages())
 			{
-				return $this->createNewPage($type, false, $user_id, $parent_page_id);
+				return $this->createNewPage($type, false, $user_id, $parent_location->id);
 			}			
 
 			throw new SubPagesNotAllowed('This page type does not allow sub pages');
 		}
 		else
 		{
-			return $this->createNewPage($type, false, $user_id, $parent_page_id);
+			return $this->createNewPage($type, false, $user_id, $parent_pagelocation_id);
 		}
 	}
 
@@ -319,20 +356,24 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		// If we are dealing with the home page, then the slug doesn't matter
 		if (!$version->page->is_home)
 		{
-			// Lets check the requested slug
-			try
+			// Check each of the locations to see if the slug is OK
+			foreach ($version->page->locations as $location)
 			{
-				$this->urlRepository->canUse($version->base_slug . $data['slug'], 'page', $version->page->id);
-				
-				$version->slug = $data['slug'];
-			}
-			catch(\CoandaCMS\Coanda\Urls\Exceptions\InvalidSlug $exception)
-			{
-				$failed['slug'] = 'The slug is not valid';
-			}
-			catch(\CoandaCMS\Coanda\Urls\Exceptions\UrlAlreadyExists $exception)
-			{
-				$failed['slug'] = 'The slug is already in use';
+				try
+				{
+					$this->urlRepository->canUse($location->slug . $data['slug_' . $location->id], 'pagelocation', $location->id);
+
+					$version->setLocationSlug($location->id, $data['slug_' . $location->id]);
+
+				}
+				catch(\CoandaCMS\Coanda\Urls\Exceptions\InvalidSlug $exception)
+				{
+					$failed['slug_' . $location->id] = 'The slug is not valid';
+				}
+				catch(\CoandaCMS\Coanda\Urls\Exceptions\UrlAlreadyExists $exception)
+				{
+					$failed['slug_' . $location->id] = 'The slug is already in use';
+				}
 			}
 		}
 
@@ -506,7 +547,17 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		if (!$version->page->is_home)
 		{
 			// Register the URL for this version with the Url Repo
-			$url = $urlRepository->register($version->base_slug . $version->slug, 'page', $page->id);			
+			foreach ($version->page->locations as $location)
+			{
+				$base_slug = $location->base_slug;
+
+				if ($base_slug !== '')
+				{
+					$base_slug .= '/';
+				}
+
+				$url = $urlRepository->register($base_slug . $version->slugForLocation($location->id), 'pagelocation', $location->id);
+			}
 		}
 
 		// Log the history
@@ -554,9 +605,6 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		$version->created_by = $user_id;
 		$version->edited_by = $user_id;
 
-		// Get the slug from the current version
-		$version->slug = $current_version->slug;
-
 		// Carry over the meta
 		$version->meta_page_title = $current_version->meta_page_title;
 		$version->meta_description = $current_version->meta_description;
@@ -572,6 +620,16 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		Coanda::module('layout')->copyCustomRegionBlock('pages', $page->id . ':' . $current_version->version, $page->id . ':' . $new_version_number);
 
 		$page->versions()->save($version);
+
+		// Now lets replicate the slugs
+		foreach ($current_version->slugs as $slug)
+		{
+			$new_slug = new $this->page_version_slug_model;
+			$new_slug->version_id = $version->id;
+			$new_slug->slug = $slug->slug;
+			$new_slug->location_id = $slug->location_id;
+			$new_slug->save();
+		}
 
 		// Add all the attributes..
 		$index = 1;
@@ -647,9 +705,14 @@ class EloquentPageRepository implements PageRepositoryInterface {
 
 		if ($permanent)
 		{
-			$this->urlRepository->delete('page', $page->id);
+			$this->deleteSubPages($page, true);			
 
-			$this->deleteSubTree($page, true);
+			foreach ($page->locations as $location)
+			{
+				$this->deleteLocation($location);
+			}
+
+			// Finally, we can remove this page
 			$page->delete();
 
 			$this->historyRepository->add('pages', $page->id, Coanda::currentUser()->id, 'deleted');
@@ -658,14 +721,21 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		{
 			if (!$page->is_trashed)
 			{
+				$this->deleteSubPages($page, false);
+
 				$page->is_trashed = true;
 				$page->save();
-
-				$this->deleteSubTree($page, false);
 
 				$this->historyRepository->add('pages', $page->id, Coanda::currentUser()->id, 'trashed');
 			}
 		}
+	}
+
+	public function deleteLocation($location)
+	{
+		$this->urlRepository->delete('pagelocation', $location->id);
+
+		$location->delete();
 	}
 
     /**
@@ -693,25 +763,61 @@ class EloquentPageRepository implements PageRepositoryInterface {
      * @param $page
      * @param bool $permanent
      */
-    private function deleteSubTree($page, $permanent = false)
+    private function deleteSubPages($page, $permanent = false)
 	{
-		$base_path = $page->path == '' ? '/' : $page->path;
-
-		if ($permanent)
+		// Loop through the locations and set the sub pages to be deleted
+		if ($page->locations->count() > 0)
 		{
-			$pages = $this->model->where('path', 'like', $base_path . $page->id . '/%')->get();
-
-			foreach ($pages as $page)
+			foreach ($page->locations as $location)
 			{
-				$this->urlRepository->delete('page', $page->id);
+				$base_path = $location->path == '' ? '/' : $location->path;
 
-				$page->delete();	
+				$sub_page_ids = $this->page_location_model->where('path', 'like', $base_path . $location->id . '/%')->lists('page_id');
+
+				if (count($sub_page_ids) > 0)
+				{
+					if ($permanent)
+					{
+						foreach ($sub_page_ids as $sub_page_id)
+						{
+							$page = $this->model->find($sub_page_id);
+
+							if ($page)
+							{
+								if ($page->locations->count() > 0)
+								{
+									foreach ($page->locations as $location)
+									{
+										$this->deleteLocation($location);
+									}									
+								}
+
+								$page->delete();
+							}
+						}
+					}
+					else
+					{
+						$this->model->whereIn('id', $sub_page_ids)->update(['is_trashed' => true]);	
+					}
+				}
 			}
 		}
-		else
-		{
-			$this->model->where('path', 'like', $base_path . $page->id . '/%')->update(['is_trashed' => true]);		
-		}
+		// if ($permanent)
+		// {
+		// 	$pages = $this->model->where('path', 'like', $base_path . $page->id . '/%')->get();
+
+		// 	foreach ($pages as $page)
+		// 	{
+		// 		$this->urlRepository->delete('page', $page->id);
+
+		// 		$page->delete();	
+		// 	}
+		// }
+		// else
+		// {
+		// 	$this->model->where('path', 'like', $base_path . $page->id . '/%')->update(['is_trashed' => true]);		
+		// }
 	}
 
     /**
@@ -724,34 +830,10 @@ class EloquentPageRepository implements PageRepositoryInterface {
 
     /**
      * @param $page_id
-     * @return \Illuminate\Database\Eloquent\Collection
-     */
-    public function trashedParentsForPage($page_id)
-	{
-		$trashed_parents = new \Illuminate\Database\Eloquent\Collection;
-
-		$page = $this->model->find($page_id);
-
-		if ($page)
-		{
-			foreach ($page->parents() as $parent)
-			{
-				if ($parent->is_trashed)
-				{
-					$trashed_parents->add($parent);
-				}
-			}
-		}
-
-		return $trashed_parents;
-	}
-
-    /**
-     * @param $page_id
      * @param bool $restore_sub_pages
      * @throws \CoandaCMS\Coanda\Exceptions\PageNotFound
      */
-    public function restore($page_id, $restore_sub_pages = false)
+    public function restore($page_id, $restore_sub_pages = [])
 	{
 		$page = $this->model->find($page_id);
 
@@ -760,32 +842,38 @@ class EloquentPageRepository implements PageRepositoryInterface {
 			throw new PageNotFound;
 		}
 
-		// Do we have a parent page and does it need to be restored?
-		$parent = $page->parent;
-
-		if ($parent && $parent->is_trashed)
+		if ($page->locations->count() > 0)
 		{
-			$this->restore($parent->id);
+			foreach ($page->locations as $location)
+			{
+				// Is the parent page trashed? If so, we need to restore that - which will be recursive if its parent is trashed...
+				if ($location->parent)
+				{
+					if ($location->parent->page->is_trashed)
+					{
+						$this->restore($location->parent->page->id);
+					}
+				}
+
+				// Are we restoring the sub pages?
+				if (in_array($location->id, $restore_sub_pages))
+				{
+					$base_path = $location->path == '' ? '/' : $location->path;
+
+					$sub_page_ids = $this->page_location_model->where('path', 'like', $base_path . $location->id . '/%')->lists('page_id');
+
+					if (count($sub_page_ids) > 0)
+					{
+						$this->model->whereIn('id', $sub_page_ids)->update(['is_trashed' => false]);
+					}			
+				}
+			}
 		}
 
-		// Now we can update this page
 		$page->is_trashed = false;
 		$page->save();
 
-		if ($restore_sub_pages)
-		{
-			$this->restoreSubTree($page->path);
-		}
-
 		$this->historyRepository->add('pages', $page->id, Coanda::currentUser()->id, 'restored');
-	}
-
-    /**
-     * @param $path
-     */
-    public function restoreSubTree($path)
-	{
-		$this->model->where('path', 'like', $path . '%')->update(['is_trashed' => false]);
 	}
 
     /**
@@ -793,10 +881,10 @@ class EloquentPageRepository implements PageRepositoryInterface {
      */
     public function updateOrdering($new_orders)
 	{
-		foreach ($new_orders as $page_id => $new_order)
+		foreach ($new_orders as $location_id => $new_order)
 		{
-			$this->model->whereId($page_id)->update(['order' => $new_order]);
-			$this->historyRepository->add('pages', $page_id, Coanda::currentUser()->id, 'order_changed', ['new_order' => $new_order]);
+			$this->page_location_model->whereId($location_id)->update(['order' => $new_order]);
+			$this->historyRepository->add('pages', $location_id, Coanda::currentUser()->id, 'order_changed', ['new_order' => $new_order]);
 		}
 	}
 

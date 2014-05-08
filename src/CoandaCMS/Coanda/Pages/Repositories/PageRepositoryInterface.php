@@ -18,6 +18,8 @@ interface PageRepositoryInterface {
      */
     public function findById($id);
 
+    public function locationById($id);
+
     /**
      * @param $ids
      * @return mixed
@@ -143,12 +145,6 @@ interface PageRepositoryInterface {
      * @return mixed
      */
     public function trashed();
-
-    /**
-     * @param $page_id
-     * @return mixed
-     */
-    public function trashedParentsForPage($page_id);
 
     /**
      * @param $page_id

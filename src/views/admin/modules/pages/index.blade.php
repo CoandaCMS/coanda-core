@@ -57,7 +57,7 @@
 </div>
 
 <div class="row">
-	<div class="col-md-8">
+	<div class="col-md-12">
 
 		<div class="page-tabs">
 			<ul class="nav nav-tabs">
@@ -72,7 +72,6 @@
 						@if ($home_page)
 							<table class="table table-striped">
 								<tr class="status-{{ $home_page->status }} @if (!$home_page->is_visible || $home_page->is_pending) info @endif @if ($home_page->is_trashed) danger @endif">
-									<td class="tight"><input type="checkbox" name="remove_page_list[]" value="{{ $home_page->id }}" @if (!Coanda::canView('home_pages', 'remove') || $home_page->is_trashed) disabled="disabled" @endif></td>
 									<td>
 										@if ($home_page->is_draft)
 											<i class="fa fa-circle-o"></i>
@@ -125,46 +124,46 @@
 							@endif
 
 							<table class="table table-striped">
-								@foreach ($pages as $page)
-									<tr class="status-{{ $page->status }} @if (!$page->is_visible || $page->is_pending) info @endif">
-										<td class="tight"><input type="checkbox" name="remove_page_list[]" value="{{ $page->id }}" @if (!Coanda::canView('pages', 'remove')) disabled="disabled" @endif></td>
+								@foreach ($pages as $pagelocation)
+									<tr class="status-{{ $pagelocation->page->status }} @if (!$pagelocation->page->is_visible || $pagelocation->page->is_pending) info @endif">
+										<td class="tight"><input type="checkbox" name="remove_page_list[]" value="{{ $pagelocation->page->id }}" @if (!Coanda::canView('pages', 'remove')) disabled="disabled" @endif></td>
 										<td>
-											@if ($page->is_draft)
+											@if ($pagelocation->page->is_draft)
 												<i class="fa fa-circle-o"></i>
 											@else
-												<i class="fa {{ $page->pageType()->icon() }}"></i>
+												<i class="fa {{ $pagelocation->page->pageType()->icon() }}"></i>
 											@endif
-											<a href="{{ Coanda::adminUrl('pages/view/' . $page->id) }}">{{ $page->present()->name }}</a>
+											<a href="{{ Coanda::adminUrl('pages/location/' . $pagelocation->id) }}">{{ $pagelocation->page->present()->name }}</a>
 										</td>
-										<td>{{ $page->present()->type }}</td>
+										<td>{{ $pagelocation->page->present()->type }}</td>
 										<td>
-											@if ($page->pageType()->allowsSubPages())
-												{{ $page->children->count() }} sub page{{ $page->children->count() !== 1 ? 's' : '' }}
+											@if ($pagelocation->page->pageType()->allowsSubPages())
+												{{ $pagelocation->children->count() }} sub page{{ $pagelocation->children->count() !== 1 ? 's' : '' }}
 											@endif
 										</td>
 										<td>
-											{{ $page->present()->status }}
+											{{ $pagelocation->page->present()->status }}
 
-											@if (!$page->is_visible)
-												<span class="label label-info show-tooltip" data-toggle="tooltip" data-placement="top" title="{{ $page->present()->visible_dates_short }}">
+											@if (!$pagelocation->page->is_visible)
+												<span class="label label-info show-tooltip" data-toggle="tooltip" data-placement="top" title="{{ $pagelocation->page->present()->visible_dates_short }}">
 													Hidden
 													<i class="fa fa-calendar"></i>
 												</span>
 											@endif
 
-											@if ($page->is_pending)
-												<span class="label label-info show-tooltip" data-toggle="tooltip" data-placement="top" title="{{ $page->currentVersion()->present()->delayed_publish_date }}">
+											@if ($pagelocation->page->is_pending)
+												<span class="label label-info show-tooltip" data-toggle="tooltip" data-placement="top" title="{{ $pagelocation->page->currentVersion()->present()->delayed_publish_date }}">
 													Pending
 													<i class="fa fa-calendar"></i>
 												</span>
 											@endif
 										</td>
-										<td class="order-column">{{ Form::text('ordering[' . $page->id . ']', $page->order, ['class' => 'form-control input-sm']) }}</td>
+										<td class="order-column">{{ Form::text('ordering[' . $pagelocation->id . ']', $pagelocation->order, ['class' => 'form-control input-sm']) }}</td>
 										<td class="tight">
-											@if ($page->is_draft)
-												<a href="{{ Coanda::adminUrl('pages/editversion/' . $page->id . '/1') }}"><i class="fa fa-pencil-square-o"></i></a>
+											@if ($pagelocation->page->is_draft)
+												<a href="{{ Coanda::adminUrl('pages/editversion/' . $pagelocation->page->page_id . '/1') }}"><i class="fa fa-pencil-square-o"></i></a>
 											@else
-												<a href="{{ Coanda::adminUrl('pages/edit/' . $page->id) }}"><i class="fa fa-pencil-square-o"></i></a>
+												<a href="{{ Coanda::adminUrl('pages/edit/' . $pagelocation->page->page_id) }}"><i class="fa fa-pencil-square-o"></i></a>
 											@endif
 										</td>
 									</tr>
@@ -188,23 +187,6 @@
 						@endif
 
 					{{ Form::close() }}
-				</div>
-			</div>
-		</div>
-	</div>
-	<div class="col-md-4">
-		<div class="page-tabs">
-			<ul class="nav nav-tabs">
-				<li class="active"><a href="#search" data-toggle="tab">Search</a></li>
-				<li><a href="#other" data-toggle="tab">Other</a></li>
-			</ul>
-			<div class="tab-content">
-				<div class="tab-pane active" id="search">
-					<input type="text" class="form-control" placeholder="Search pages">
-				</div>
-
-				<div class="tab-pane" id="other">
-					Something else
 				</div>
 			</div>
 		</div>

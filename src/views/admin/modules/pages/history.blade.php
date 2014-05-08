@@ -13,12 +13,6 @@
 
         <ul class="breadcrumb">
             <li><a href="{{ Coanda::adminUrl('pages') }}">Pages</a></li>
-
-            @foreach ($page->parents() as $parent)
-            <li>
-                <a href="{{ Coanda::adminUrl('pages/view/' . $parent->id) }}">{{ $parent->present()->name }}</a>
-            </li>
-            @endforeach
             <li><a href="{{ Coanda::adminUrl('pages/view/' . $page->id) }}">{{ $page->present()->name }}</a></li>
             <li>History</li>
         </ul>

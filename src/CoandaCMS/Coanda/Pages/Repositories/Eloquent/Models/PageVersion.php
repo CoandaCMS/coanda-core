@@ -50,6 +50,11 @@ class PageVersion extends Eloquent {
 			$attribute->delete();
 		}
 
+		foreach ($this->slugs as $slug)
+		{
+			$slug->delete();
+		}
+
 		parent::delete();
 	}
 
@@ -60,6 +65,38 @@ class PageVersion extends Eloquent {
 	public function attributes()
 	{
 		return $this->hasMany('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageAttribute')->orderBy('order', 'asc');
+	}
+
+	public function slugs()
+	{
+		return $this->hasMany('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageVersionSlug', 'version_id');
+	}
+
+	public function slugForLocation($location_id)
+	{
+		$slug = $this->slugs()->whereLocationId($location_id)->first();
+
+		if ($slug)
+		{
+			return $slug->slug;
+		}
+
+		return '';
+	}
+
+	public function setLocationSlug($location_id, $slug)
+	{
+		$version_slug = $this->slugs()->whereLocationId($location_id)->first();
+
+		if (!$version_slug)
+		{
+			$version_slug = new PageVersionSlug;
+		}
+
+		$version_slug->version_id = $this->id;
+		$version_slug->location_id = $location_id;
+		$version_slug->slug = $slug;
+		$version_slug->save();
 	}
 
 	/**
@@ -79,20 +116,6 @@ class PageVersion extends Eloquent {
 	public function page()
 	{
 		return $this->belongsTo('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\Page');
-	}
-
-	/**
-	 * Get the base slug for this version
-	 * @return string the slug
-	 */
-	public function getBaseSlugAttribute()
-	{
-		if ($this->page->parent)
-		{
-			return $this->page->parent->slug . '/';
-		}
-
-		return '';
 	}
 
     /**

@@ -61,6 +61,11 @@ class Page extends Eloquent {
 		parent::delete();
 	}
 
+	public function locations()
+	{
+		return $this->hasMany('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageLocation');
+	}
+
 	/**
 	 * Get the versions for this page
 	 * @return \Illuminate\Database\Eloquent\Collection
@@ -77,99 +82,6 @@ class Page extends Eloquent {
     public function getVersion($version)
 	{
 		return $this->versions()->whereVersion($version)->first();
-	}
-
-	/**
-	 * Returns the parent page for this page
-	 * @return CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\Page [description]
-	 */
-	public function parent()
-	{
-		return $this->belongsTo('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\Page', 'parent_page_id');
-	}
-
-	/**
-	 * Returns all the children of this page
-	 * @return \Illuminate\Database\Eloquent\Collection
-	 */
-	public function children()
-	{
-		if (!$this->children)
-		{
-			if ($this->is_trashed)
-			{
-				$this->children = $this->hasMany('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\Page', 'parent_page_id')->orderBy('order', 'asc');
-			}
-			else
-			{
-				$this->children = $this->hasMany('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\Page', 'parent_page_id')->orderBy('order', 'asc')->whereIsTrashed(0);	
-			}
-		}
-		
-		return $this->children;
-	}
-
-    /**
-     * @return mixed
-     */
-    public function subTreeCount()
-	{
-		if (!$this->subTreeCount)
-		{
-			$path = $this->path == '' ? '/' : $this->path;
-
-			$this->subTreeCount = Page::where('path', 'like', $path . $this->id . '/%')->count();
-		}
-
-		return $this->subTreeCount;
-	}
-
-    /**
-     * @return array
-     */
-    public function pathArray()
-	{
-		return explode('/', $this->path);
-	}
-
-    /**
-     * @return int
-     */
-    public function depth()
-	{
-		return count($this->pathArray());
-	}
-
-    /**
-     * @return int
-     */
-    public function getDepthAttribute()
-	{
-		return $this->depth();
-	}
-
-	/**
-	 * Loop through the path and build up the collection of parents
-	 * @return \Illuminate\Database\Eloquent\Collection
-	 */
-	public function parents()
-	{
-		if (!$this->parents)
-		{
-			$this->parents = new \Illuminate\Database\Eloquent\Collection;
-
-			foreach ($this->pathArray() as $parent_id)
-			{
-				$parent = $this->find($parent_id);
-
-				if ($parent)
-				{
-					$this->parents->add($parent);					
-				}
-			}
-		}
-
-		return $this->parents;
 	}
 
 	/**
@@ -319,29 +231,6 @@ class Page extends Eloquent {
 	public function getAttributesAttribute()
 	{
 		return $this->currentVersion()->attributes()->get();
-	}
-
-	/**
-	 * Returns the slug for this page
-	 * @return CoandaCMS\Coanda\Urls\Repositories\Eloquent\Models\Url
-	 */
-	public function getSlugAttribute()
-	{
-		if (!$this->slug)
-		{
-			$urlRepository = App::make('CoandaCMS\Coanda\Urls\Repositories\UrlRepositoryInterface');
-
-			try
-			{
-				$this->slug = $urlRepository->findFor('page', $this->id)->slug;
-			}
-			catch(\CoandaCMS\Coanda\Urls\Exceptions\UrlNotFound $exception)
-			{
-				$this->slug = '';
-			}
-		}
-
-		return $this->slug;
 	}
 
 	/**

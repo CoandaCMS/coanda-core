@@ -334,7 +334,7 @@ class Coanda {
 				{
 					throw new \Exception('No method exists to route this type of URL: "' . $url->urlable_type . '"');
 				}
-			}			
+			}
 		}
 		catch(\CoandaCMS\Coanda\Urls\Exceptions\UrlNotFound $exception)
 		{

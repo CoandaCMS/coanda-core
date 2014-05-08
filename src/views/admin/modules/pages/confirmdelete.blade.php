@@ -48,28 +48,32 @@
 									@if ($page->is_draft)
 										<i class="fa fa-circle-o"></i>
 									@else
-										<i class="fa fa-circle"></i>
+										<i class="fa {{ $page->pageType()->icon() }}"></i>
 									@endif
 									{{ $page->present()->name }}
 								</td>
 								<td>{{ $page->present()->type }}</td>
 								<td>
-									@if (!$page->is_home)
-										<span class="label label-danger">{{ $page->subTreeCount() }}</span> sub pages will also be removed.
-									@else
-										<span class="label label-danger">Note: This page is currently used as the home page.
+									@if ($page->locations->count() > 0)
+										@foreach ($page->locations as $location)
+											<p>
+												/
+												@foreach ($location->parents() as $parent)
+													{{ $parent->page->present()->name }} /
+												@endforeach
+
+												{{ $page->present()->name }}
+
+												<span class="pull-right">{{ $location->subTreeCount() }} sub pages will also be removed.</span>
+											</p>
+										@endforeach
 									@endif
-								</td>
-								<td>
-									@foreach ($page->parents() as $parent)
-										{{ $parent->present()->name }} /
-									@endforeach									
 								</td>
 							</tr>
 						@endforeach
 						</table>
 
-						<input type="hidden" value="{{ $previous_page_id }}" name="previous_page_id">
+						<input type="hidden" value="{{ $previous_location_id }}" name="previous_location_id">
 
 						{{ Form::button('I understand, please delete them', ['name' => 'permanent_remove', 'value' => 'true', 'type' => 'submit', 'class' => 'btn btn-danger']) }}
 					@endif

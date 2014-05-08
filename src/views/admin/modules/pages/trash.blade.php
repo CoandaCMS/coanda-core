@@ -37,28 +37,43 @@
 
 					@if ($pages->count() > 0)
 						<table class="table table-striped">
-						@foreach ($pages as $page)
-							<tr class="status-{{ $page->status }}">
-								<td class="tight">
-									<input type="checkbox" name="permanent_remove_list[]" value="{{ $page->id }}">
-								</td>
-								<td>
-									@if ($page->is_draft)
-										<i class="fa fa-circle-o"></i>
-									@else
-										<i class="fa fa-circle"></i>
-									@endif
-									<a href="{{ Coanda::adminUrl('pages/view/' . $page->id) }}">{{ $page->present()->name }}</a>
-								</td>
-								<td>{{ $page->present()->type }}</td>
-								<td>
-									@foreach ($page->parents() as $parent)
-										<a href="{{ Coanda::adminUrl('pages/view/' . $parent->id) }}">{{ $parent->present()->name }}</a> /
-									@endforeach									
-								</td>
-								<td><a href="{{ Coanda::adminUrl('pages/restore/' . $page->id) }}">Restore</a></td>
+							<tr>
+								<th></th>
+								<th>Name</th>
+								<th>Type</th>
+								<th>Locations</th>
+								<th></th>
 							</tr>
-						@endforeach
+							@foreach ($pages as $page)
+								<tr class="status-{{ $page->status }}">
+									<td class="tight">
+										<input type="checkbox" name="permanent_remove_list[]" value="{{ $page->id }}">
+									</td>
+									<td>
+										@if ($page->is_draft)
+											<i class="fa fa-circle-o"></i>
+										@else
+											<i class="fa {{ $page->pageType()->icon() }}"></i>
+										@endif
+										<a href="{{ Coanda::adminUrl('pages/view/' . $page->id) }}">{{ $page->present()->name }}</a>
+									</td>
+									<td>{{ $page->present()->type }}</td>
+									<td>
+										@if ($page->locations->count() > 0)
+											@foreach ($page->locations as $location)
+											<p>
+												<a href="{{ Coanda::adminUrl('pages') }}">Pages</a> / 
+												@foreach ($location->parents() as $parent)
+													<a href="{{ Coanda::adminUrl('pages/location/' . $parent->id) }}">{{ $parent->page->present()->name }}</a> /
+												@endforeach
+												{{ $location->page->present()->name }}
+											</p>
+											@endforeach
+										@endif
+									</td>
+									<td><a class="pull-right btn btn-xs btn-primary" href="{{ Coanda::adminUrl('pages/restore/' . $page->id) }}">Restore</a></td>
+								</tr>
+							@endforeach
 						</table>
 
 						{{ Form::button('Delete permanently', ['name' => 'permanent_remove', 'value' => 'true', 'type' => 'submit', 'class' => 'btn btn-danger']) }}

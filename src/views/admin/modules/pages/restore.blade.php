@@ -30,32 +30,27 @@
 		<i class="fa fa-exclamation-triangle"></i> Are you sure you want to restore this page?
 	</div>
 
-	@if ($trashed_parents->count() > 0)
-		<h2>Parent pages to be restored</h2>
+	@if ($page->locations->count() > 0)
 
-		<p>The following parent pages will also need to be restored</p>
-
-		<ul>
-
-			@foreach ($trashed_parents as $trashed_parent)
-
-				<li>{{ $trashed_parent->present()->name }}</li>
-
+		<table class="table table-striped">
+			@foreach ($page->locations as $location)
+				<tr>
+					<td>
+						<strong>Location:</strong>
+						@foreach ($location->parents() as $parent)
+							{{ $parent->page->present()->name }} @if ($parent->page->is_trashed) * @endif /
+						@endforeach
+						{{ $location->page->present()->name }}
+					</td>
+					<td>
+						<input type="checkbox" id="restore_sub_pages_location_{{ $location->id }}" name="restore_sub_pages[]" value="{{ $location->id }}">
+						Also restore sub pages
+					</td>
+				</tr>
 			@endforeach
-		</ul>
+		</table>
 
-	@endif
-
-	@if ($page->children->count() > 0)
-		<h2>Sub pages</h2>
-		<p>Would you also like to restore sub pages?</p>
-
-		<div class="checkbox">
-			<label for="restore_sub_pages">
-				<input type="checkbox" id="restore_sub_pages" name="restore_sub_pages" value="yes">
-				Yes, restore all sub pages as well
-			</label>
-		</div>
+		<p><i class="fa fa-exclamation-circle"></i> Parent pages marked with a * will also be restored.</p>
 	@endif
 
 	<div class="row">

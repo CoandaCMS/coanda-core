@@ -64,7 +64,7 @@
 						@if ($attribute->generates_slug)
 							@section('footer')
 								<script type="text/javascript">
-									$('#slug').slugify('#attribute_{{ $attribute->id }}');
+									// $('.slugiwugy').slugify('#attribute_{{ $attribute->id }}');
 								</script>
 							@append
 						@endif
@@ -139,7 +139,6 @@
 
 				@if ($version->page->show_meta)
 					<div class="tab-pane" id="meta">
-
 						<div class="form-group @if (isset($invalid_fields['meta_page_title'])) has-error @endif">
 							<label class="control-label" for="meta_page_title">Page title</label>
 					    	<input type="text" class="form-control" id="meta_page_title" name="meta_page_title" value="{{ Input::old('meta_page_title', $version->meta_page_title) }}">
@@ -148,7 +147,6 @@
 						    	<span class="help-block">{{ $invalid_fields['meta_page_title'] }}</span>
 						    @endif
 						</div>
-
 						<div class="form-group @if (isset($invalid_fields['meta_description'])) has-error @endif">
 							<label class="control-label" for="meta_description">Meta description</label>
 					    	<textarea type="text" class="form-control" id="meta_description" name="meta_description">{{ Input::old('meta_description', $version->meta_description) }}</textarea>
@@ -157,7 +155,6 @@
 						    	<span class="help-block">{{ $invalid_fields['meta_description'] }}</span>
 						    @endif
 						</div>
-
 					</div>
 				@endif
 
@@ -217,18 +214,21 @@
 
 				<div class="tab-pane active" id="details">
 					@if (!$version->page->is_home)
-						<div class="form-group @if (isset($invalid_fields['slug'])) has-error @endif">
-							<label class="control-label" for="slug">Slug</label>
 
-							<div class="input-group">
-								<span class="input-group-addon">{{ $version->base_slug == '' ? '/' : $version->base_slug }}</span>
-						    	<input type="text" class="form-control" id="slug" name="slug" value="{{ Input::old('slug', $version->slug) }}">
+						@foreach ($version->page->locations as $location)
+							<div class="form-group @if (isset($invalid_fields['slug_' . $location->id])) has-error @endif">
+								<label class="control-label" for="slug_{{ $location->id }}">Location: {{ $location->base_slug }}</label>
+
+								<div class="input-group">
+									<span class="input-group-addon">/</span>
+							    	<input type="text" class="form-control slugiwugy" id="slug_{{ $location->id }}" name="slug_{{ $location->id }}" value="{{ Input::old('slug_' . $location->id, $version->slugForLocation($location->id)) }}">
+								</div>
+
+							    @if (isset($invalid_fields['slug_' . $location->id]))
+							    	<span class="help-block">{{ $invalid_fields['slug_' . $location->id] }}</span>
+							    @endif
 							</div>
-
-						    @if (isset($invalid_fields['slug']))
-						    	<span class="help-block">{{ $invalid_fields['slug'] }}</span>
-						    @endif
-						</div>
+						@endforeach
 					@endif
 
 					<div class="row">
