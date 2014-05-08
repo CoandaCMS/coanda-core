@@ -161,9 +161,9 @@
 										<td class="order-column">{{ Form::text('ordering[' . $pagelocation->id . ']', $pagelocation->order, ['class' => 'form-control input-sm']) }}</td>
 										<td class="tight">
 											@if ($pagelocation->page->is_draft)
-												<a href="{{ Coanda::adminUrl('pages/editversion/' . $pagelocation->page->page_id . '/1') }}"><i class="fa fa-pencil-square-o"></i></a>
+												<a href="{{ Coanda::adminUrl('pages/editversion/' . $pagelocation->page->id . '/1') }}"><i class="fa fa-pencil-square-o"></i></a>
 											@else
-												<a href="{{ Coanda::adminUrl('pages/edit/' . $pagelocation->page->page_id) }}"><i class="fa fa-pencil-square-o"></i></a>
+												<a href="{{ Coanda::adminUrl('pages/edit/' . $pagelocation->page->id) }}"><i class="fa fa-pencil-square-o"></i></a>
 											@endif
 										</td>
 									</tr>
