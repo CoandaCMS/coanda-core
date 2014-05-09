@@ -3,6 +3,8 @@
 use Eloquent, Coanda, App;
 use Carbon\Carbon;
 
+use CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageLocation as PageLocationModel;
+
 class PageVersionSlug extends Eloquent {
 
 	protected $table = 'pageversionslugs';
@@ -16,7 +18,12 @@ class PageVersionSlug extends Eloquent {
 
 	public function location()
 	{
-		return $this->belongsTo('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageLocation', 'page_location_id');
+		return PageLocationModel::wherePageId($this->version->page->id)->whereParentPageId($this->page_location_id)->first(); 
+	}
+
+	public function getLocationAttribute()
+	{
+		return $this->location();
 	}
 
 	public function getFullSlugAttribute()
@@ -37,6 +44,15 @@ class PageVersionSlug extends Eloquent {
 
 		if ($location)
 		{
+			if ($location->parent)
+			{
+				return $location->parent->slug;	
+			}
+		}
+		else
+		{
+			$location = PageLocationModel::whereId($this->page_location_id)->first();
+
 			return $location->slug;
 		}
 

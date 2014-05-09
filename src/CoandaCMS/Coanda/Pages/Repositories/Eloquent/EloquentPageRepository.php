@@ -297,7 +297,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
      */
     public function getDraftVersion($page_id, $version)
 	{
-		$page = PageModel::find($page_id);
+		$page = $this->page_model->find($page_id);
 
 		if ($page)
 		{
@@ -341,7 +341,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
      */
     public function getVersionByPreviewKey($preview_key)
 	{
-		$version = PageVersionModel::wherePreviewKey($preview_key)->whereStatus('draft')->first();
+		$version = $this->page_version_model->wherePreviewKey($preview_key)->whereStatus('draft')->first();
 
 		if (!$version)
 		{
@@ -380,7 +380,9 @@ class EloquentPageRepository implements PageRepositoryInterface {
 			{
 				try
 				{
-					$this->urlRepository->canUse($slug->base_slug . $data['slug_' . $slug->id], 'pagelocation', $slug->location ? $slug->location->id : 0);
+					$location_id = $slug->location ? $slug->location->id : 0;
+
+					$this->urlRepository->canUse($slug->base_slug . $data['slug_' . $slug->id], 'pagelocation', $location_id);
 
 					$slug->slug = $data['slug_' . $slug->id];
 					$slug->save();
@@ -526,7 +528,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
      */
     public function draftsForUser($page_id, $user_id)
 	{
-		$page = PageModel::find($page_id);
+		$page = $this->page_model->find($page_id);
 
 		if ($page)
 		{
@@ -902,7 +904,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
      */
     public function getPendingVersions($offset, $limit)
 	{
-		return PageVersionModel::whereStatus('pending')->take($limit)->offset($offset)->get();
+		return $this->page_version_model->whereStatus('pending')->take($limit)->offset($offset)->get();
 	}
 
 	public function getHomePage()
