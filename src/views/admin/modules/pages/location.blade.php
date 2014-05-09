@@ -73,7 +73,7 @@
 	<div class="page-options col-md-12">
 
 		<div class="row">
-			<div class="col-md-10">
+			<div class="col-md-8">
 				<div class="btn-group">
 					@if ($page->is_trashed)
 						@if (Coanda::canView('pages', 'remove', ['page_id' => $page->id, 'page_type' => $page->type]))
@@ -121,7 +121,7 @@
 					</div>
 				@endif
 			</div>
-			<div class="col-md-2">
+			<div class="col-md-4">
 				@if (!$page->is_trashed && !$page->is_draft)				
 					<div class="input-group">
 						<input type="text" class="form-control select-all" readonly value="{{ url($pagelocation->slug) }}">
