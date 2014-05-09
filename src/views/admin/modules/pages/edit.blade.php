@@ -228,6 +228,8 @@
 							    @if (isset($invalid_fields['slug_' . $slug->id]))
 							    	<span class="help-block">{{ $invalid_fields['slug_' . $slug->id] }}</span>
 							    @endif
+
+							    
 							</div>
 						@endforeach
 

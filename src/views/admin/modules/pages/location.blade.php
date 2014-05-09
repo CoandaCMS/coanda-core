@@ -189,8 +189,11 @@
 											@endif
 										</td>
 										<td>{{ $childlocation->page->present()->status }}</td>
+										<td>{{ $childlocation->page->present()->created_at }}</td>
 										@if (!$childlocation->is_trashed)
-											<td class="order-column">{{ Form::text('ordering[' . $childlocation->id . ']', $childlocation->order, ['class' => 'form-control input-sm']) }}</td>
+											@if ($pagelocation->sub_location_order == 'manual')
+												<td class="order-column">{{ Form::text('ordering[' . $childlocation->id . ']', $childlocation->order, ['class' => 'form-control input-sm']) }}</td>
+											@endif
 											<td class="tight">
 												@if ($childlocation->page->is_draft)
 													<a href="{{ Coanda::adminUrl('pages/editversion/' . $childlocation->page->id . '/1') }}"><i class="fa fa-pencil-square-o"></i></a>
@@ -207,7 +210,22 @@
 
 								@if (!$page->is_trashed)
 									<div class="buttons">
-										{{ Form::button('Update ordering', ['name' => 'update_order', 'value' => 'true', 'type' => 'submit', 'class' => 'pull-right btn btn-default']) }}
+										<div class="btn-group pull-right">
+											<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+												Order: {{ $pagelocation->present()->sub_location_order }} <span class="caret"></span>
+											</button>
+											<ul class="dropdown-menu" role="menu">
+												<li><a href="{{ Coanda::adminUrl('pages/change-location-order/' . $pagelocation->id . '/manual') }}"><i class="fa fa-sort-numeric-asc"></i> Manual</a></li>
+												<li><a href="{{ Coanda::adminUrl('pages/change-location-order/' . $pagelocation->id . '/alpha:asc') }}"><i class="fa fa-sort-alpha-asc"></i> Alpabetical (A-Z)</a></li>
+												<li><a href="{{ Coanda::adminUrl('pages/change-location-order/' . $pagelocation->id . '/alpha:desc') }}"><i class="fa fa-sort-alpha-desc"></i> Alpabetical (Z-A)</a></li>
+												<li><a href="{{ Coanda::adminUrl('pages/change-location-order/' . $pagelocation->id . '/created:desc') }}"><i class="fa fa-sort-amount-asc"></i> Created date (Newest-Oldest)</a></li>
+												<li><a href="{{ Coanda::adminUrl('pages/change-location-order/' . $pagelocation->id . '/created:asc') }}"><i class="fa fa-sort-amount-desc"></i> Created date (Oldest-Newest)</a></li>
+											</ul>
+
+											@if ($pagelocation->sub_location_order == 'manual')
+												{{ Form::button('Update orders', ['name' => 'update_order', 'value' => 'true', 'type' => 'submit', 'class' => 'pull-right btn btn-default']) }}
+											@endif
+										</div>
 
 										@if (Coanda::canView('pages', 'remove'))
 											{{ Form::button('Delete selected', ['name' => 'delete_selected', 'value' => 'true', 'type' => 'submit', 'class' => 'btn btn-danger']) }}

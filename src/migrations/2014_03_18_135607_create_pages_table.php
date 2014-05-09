@@ -90,6 +90,7 @@ class CreatePagesTable extends Migration {
 			$table->increments('id');
 			$table->integer('page_id');
 			$table->integer('parent_page_id');
+			$table->string('sub_location_order');
 			$table->string('path');
 
 			$table->integer('order');

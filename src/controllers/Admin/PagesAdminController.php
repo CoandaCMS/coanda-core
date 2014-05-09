@@ -758,4 +758,23 @@ class PagesAdminController extends BaseController {
             return Redirect::to(Coanda::adminUrl('pages'));
         }
     }
+
+    public function getChangeLocationOrder($location_id, $new_sub_page_order)
+    {
+ 		try
+		{
+			$pagelocation = $this->pageRepository->locationById($location_id);
+
+			Coanda::checkAccess('pages', 'view', ['page_location_id' => $pagelocation->id, 'page_type' => $pagelocation->page->type]);
+
+			$this->pageRepository->updateLocationSubPageOrder($pagelocation->id, $new_sub_page_order);
+
+			return Redirect::to(Coanda::adminUrl('pages/location/' . $location_id));
+		}
+		catch (PageNotFound $exception)
+		{
+			App::abort('404');
+		}
+   	
+    }
 }

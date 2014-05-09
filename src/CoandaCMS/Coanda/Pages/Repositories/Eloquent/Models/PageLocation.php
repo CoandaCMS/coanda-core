@@ -9,6 +9,13 @@ use Carbon\Carbon;
  */
 class PageLocation extends Eloquent {
 
+	use \CoandaCMS\Coanda\Core\Presenters\PresentableTrait;
+
+    /**
+     * @var string
+     */
+    protected $presenter = 'CoandaCMS\Coanda\Pages\Presenters\PageLocation';
+
     /**
      * @var string
      */
@@ -161,6 +168,23 @@ class PageLocation extends Eloquent {
 		}
 
 		return '';
+	}
+
+
+	public function scopeOrderByPageName($query, $order)
+	{
+		$query->join('pages', 'pagelocations.page_id', '=', 'pages.id');
+		$query->orderBy('pages.name', $order);
+
+		return $query;
+	}
+
+	public function scopeOrderByPageCreated($query, $order)
+	{
+		$query->join('pages', 'pagelocations.page_id', '=', 'pages.id');
+		$query->orderBy('pages.created_at', $order);
+
+		return $query;
 	}
 
 }

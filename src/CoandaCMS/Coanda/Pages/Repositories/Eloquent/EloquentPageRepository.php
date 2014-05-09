@@ -164,7 +164,46 @@ class EloquentPageRepository implements PageRepositoryInterface {
      */
     private function subLocationsForLocation($parent_location_id, $per_page = 10)
 	{
-		return $this->page_location_model->where('parent_page_id', $parent_location_id)->whereHas('page', function ($query) { $query->where('is_trashed', '=', '0'); })->orderBy('order', 'asc')->paginate($per_page);
+		$order = 'manual';
+
+		if ($parent_location_id != 0)
+		{
+			$parent = $this->locationById($parent_location_id);
+
+			if ($parent)
+			{
+				$order = $parent->sub_location_order;
+			}
+		}
+
+		$query = $this->page_location_model->where('parent_page_id', $parent_location_id)->whereHas('page', function ($query) { $query->where('is_trashed', '=', '0'); });
+
+		if ($order == 'manual')
+		{
+			$query->orderBy('order', 'asc');
+		}
+
+		if ($order == 'alpha:asc')
+		{
+			$query->orderByPageName('asc');
+		}
+
+		if ($order == 'alpha:desc')
+		{
+			$query->orderByPageName('desc');
+		}
+
+		if ($order == 'created:asc')
+		{
+			$query->orderByPageCreated('asc');
+		}
+
+		if ($order == 'created:desc')
+		{
+			$query->orderByPageCreated('desc');
+		}
+
+		return $query->paginate($per_page);
 	}
 
     /**
@@ -962,5 +1001,13 @@ class EloquentPageRepository implements PageRepositoryInterface {
     public function getHomePage()
 	{
 		return $this->page_model->whereIsHome(true)->first();
+	}
+
+	public function updateLocationSubPageOrder($location_id, $new_sub_page_order)
+	{
+		$pagelocation = $this->locationById($location_id);
+
+		$pagelocation->sub_location_order = $new_sub_page_order;
+		$pagelocation->save();
 	}
 }
