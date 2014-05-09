@@ -53,7 +53,7 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 			{
 				$location = $pageRepository->locationById($url->urlable_id);	
 
-				return $this->renderPage($location);
+				return $this->renderPage($location->page, $location);
 			}
 			catch(\CoandaCMS\Coanda\Exceptions\PageNotFound $exception)
 			{
@@ -223,7 +223,7 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		throw new PageTypeNotFound;
 	}
 
-    public function getHomePageType	($type)
+    public function getHomePageType($type)
 	{
 		if (array_key_exists($type, $this->home_page_types))
 		{
@@ -387,10 +387,8 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		throw new \Exception('Home page not created yet!');
 	}
 
-	private function renderPage($pagelocation)
+	private function renderPage($page, $pagelocation = false)
 	{
-		$page = $pagelocation->page;
-
 		if ($page->is_trashed)
 		{
 			App::abort('404');
