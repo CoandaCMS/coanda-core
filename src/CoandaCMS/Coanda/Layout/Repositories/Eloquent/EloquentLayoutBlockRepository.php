@@ -13,13 +13,35 @@ use CoandaCMS\Coanda\Layout\Repositories\Eloquent\Models\LayoutBlockVersion as L
 use CoandaCMS\Coanda\Layout\Repositories\Eloquent\Models\LayoutBlockAttribute as LayoutBlockAttributeModel;
 use CoandaCMS\Coanda\Layout\Repositories\Eloquent\Models\LayoutRegion as LayoutRegionModel;
 
+/**
+ * Class EloquentLayoutBlockRepository
+ * @package CoandaCMS\Coanda\Layout\Repositories\Eloquent
+ */
 class EloquentLayoutBlockRepository implements \CoandaCMS\Coanda\Layout\Repositories\LayoutBlockRepositoryInterface {
 
+    /**
+     * @var Models\LayoutBlock
+     */
     private $layout_block_model;
-	private $layout_block_version_model;
+    /**
+     * @var Models\LayoutBlockVersion
+     */
+    private $layout_block_version_model;
+    /**
+     * @var Models\LayoutBlockAttribute
+     */
     private $layout_block_attribute_model;
+    /**
+     * @var Models\LayoutRegion
+     */
     private $layout_region_model;
 
+    /**
+     * @param LayoutBlockModel $layout_block_model
+     * @param LayoutBlockVersionModel $layout_block_version_model
+     * @param LayoutBlockAttributeModel $layout_block_attribute_model
+     * @param LayoutRegionModel $layout_region_model
+     */
     public function __construct(LayoutBlockModel $layout_block_model, LayoutBlockVersionModel $layout_block_version_model, LayoutBlockAttributeModel $layout_block_attribute_model, LayoutRegionModel $layout_region_model)
 	{
 		$this->layout_block_model = $layout_block_model;
@@ -28,7 +50,12 @@ class EloquentLayoutBlockRepository implements \CoandaCMS\Coanda\Layout\Reposito
 		$this->layout_region_model = $layout_region_model;
 	}
 
-	public function defaultBlocksForRegion($layout_identifier, $region_identifier)
+    /**
+     * @param $layout_identifier
+     * @param $region_identifier
+     * @return \Illuminate\Support\Collection
+     */
+    public function defaultBlocksForRegion($layout_identifier, $region_identifier)
 	{
 		$blocks = [];
 
@@ -42,7 +69,14 @@ class EloquentLayoutBlockRepository implements \CoandaCMS\Coanda\Layout\Reposito
 		return \Illuminate\Support\Collection::make($blocks);
 	}
 
-	public function blocksForRegionAndModule($layout_identifier, $region_identifier, $module, $module_idenfitier)
+    /**
+     * @param $layout_identifier
+     * @param $region_identifier
+     * @param $module
+     * @param $module_idenfitier
+     * @return \Illuminate\Support\Collection
+     */
+    public function blocksForRegionAndModule($layout_identifier, $region_identifier, $module, $module_idenfitier)
 	{
 		$blocks = [];
 
@@ -56,17 +90,34 @@ class EloquentLayoutBlockRepository implements \CoandaCMS\Coanda\Layout\Reposito
 		return \Illuminate\Support\Collection::make($blocks);
 	}
 
-	public function defaultRegionBlocks($layout_identifier, $region_identifier)
+    /**
+     * @param $layout_identifier
+     * @param $region_identifier
+     * @return mixed
+     */
+    public function defaultRegionBlocks($layout_identifier, $region_identifier)
 	{
 		return $this->layout_region_model->whereLayoutIdentifier($layout_identifier)->whereRegionIdentifier($region_identifier)->whereModule('*')->orderBy('order')->get();
 	}
 
-	public function regionBlocks($layout_identifier, $region_identifier, $module, $module_idenfitier)
+    /**
+     * @param $layout_identifier
+     * @param $region_identifier
+     * @param $module
+     * @param $module_idenfitier
+     * @return mixed
+     */
+    public function regionBlocks($layout_identifier, $region_identifier, $module, $module_idenfitier)
 	{
 		return $this->layout_region_model->whereLayoutIdentifier($layout_identifier)->whereRegionIdentifier($region_identifier)->whereModule($module)->whereModuleIdentifier($module_idenfitier)->orderBy('order')->get();
 	}
 
-	public function copyBlocks($module, $from_identifier, $to_identifier)
+    /**
+     * @param $module
+     * @param $from_identifier
+     * @param $to_identifier
+     */
+    public function copyBlocks($module, $from_identifier, $to_identifier)
 	{
 		$existing_blocks = $this->layout_region_model->whereModule($module)->whereModuleIdentifier($from_identifier)->get();
 
@@ -85,7 +136,12 @@ class EloquentLayoutBlockRepository implements \CoandaCMS\Coanda\Layout\Reposito
 		}
 	}
 
-	public function getBlockById($id)
+    /**
+     * @param $id
+     * @return \Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|static
+     * @throws \CoandaCMS\Coanda\Layout\Exceptions\LayoutBlockNotFound
+     */
+    public function getBlockById($id)
 	{
 		$block = $this->layout_block_model->find($id);
 
@@ -97,12 +153,23 @@ class EloquentLayoutBlockRepository implements \CoandaCMS\Coanda\Layout\Reposito
 		throw new LayoutBlockNotFound('Block #' . $id . ' not found');
 	}
 
-	public function getBlockList($per_page)
+    /**
+     * @param $per_page
+     * @return mixed
+     */
+    public function getBlockList($per_page)
 	{
 		return $this->layout_block_model->orderBy('created_at', 'desc')->paginate($per_page);
 	}
 
-	public function getBlockVersion($block_id, $version)
+    /**
+     * @param $block_id
+     * @param $version
+     * @return mixed
+     * @throws LayoutBlockFound
+     * @throws \CoandaCMS\Coanda\Layout\Exceptions\LayoutBlockVersionNotFound
+     */
+    public function getBlockVersion($block_id, $version)
 	{
 		$block = $this->layout_block_model->find($block_id);
 
@@ -124,7 +191,13 @@ class EloquentLayoutBlockRepository implements \CoandaCMS\Coanda\Layout\Reposito
 		throw new LayoutBlockFound;
 	}
 
-	public function createNewBlock($type, $layout_identifier, $region_identifier)
+    /**
+     * @param $type
+     * @param $layout_identifier
+     * @param $region_identifier
+     * @return mixed
+     */
+    public function createNewBlock($type, $layout_identifier, $region_identifier)
 	{
 		// Create the block
 		$block = new $this->layout_block_model;
@@ -168,6 +241,10 @@ class EloquentLayoutBlockRepository implements \CoandaCMS\Coanda\Layout\Reposito
 		return $block;
 	}
 
+    /**
+     * @param $block_id
+     * @return mixed
+     */
     public function createNewVersion($block_id)
 	{
 		$block = $this->getBlockById($block_id);
@@ -213,7 +290,12 @@ class EloquentLayoutBlockRepository implements \CoandaCMS\Coanda\Layout\Reposito
 	}
 
 
-	public function saveDraftBlockVersion($version, $data)
+    /**
+     * @param $version
+     * @param $data
+     * @throws \CoandaCMS\Coanda\Exceptions\ValidationException
+     */
+    public function saveDraftBlockVersion($version, $data)
 	{
 		$failed = [];
 
@@ -237,6 +319,9 @@ class EloquentLayoutBlockRepository implements \CoandaCMS\Coanda\Layout\Reposito
 		}
 	}
 
+    /**
+     * @param $version
+     */
     public function publishBlockVersion($version)
 	{
 		$block = $version->block;
@@ -258,7 +343,10 @@ class EloquentLayoutBlockRepository implements \CoandaCMS\Coanda\Layout\Reposito
 		$block->save();
 	}
 
-	public function discardDraftBlock($version)
+    /**
+     * @param $version
+     */
+    public function discardDraftBlock($version)
 	{
 		$block = $version->block;
 
@@ -271,14 +359,21 @@ class EloquentLayoutBlockRepository implements \CoandaCMS\Coanda\Layout\Reposito
 		}
 	}
 
-	public function deleteBlock($block_id)
+    /**
+     * @param $block_id
+     */
+    public function deleteBlock($block_id)
 	{
 		$block = $this->getBlockById($block_id);
 
 		$block->delete();
 	}
 
-	public function addDefaultBlockToRegion($block_id, $region_identifier)
+    /**
+     * @param $block_id
+     * @param $region_identifier
+     */
+    public function addDefaultBlockToRegion($block_id, $region_identifier)
 	{
 		$block = $this->getBlockById($block_id);
 
@@ -301,14 +396,25 @@ class EloquentLayoutBlockRepository implements \CoandaCMS\Coanda\Layout\Reposito
 		}
 	}
 
-	public function checkBlockIsDefaultInRegion($block_id, $layout_identifier, $region_identifier)
+    /**
+     * @param $block_id
+     * @param $layout_identifier
+     * @param $region_identifier
+     * @return bool
+     */
+    public function checkBlockIsDefaultInRegion($block_id, $layout_identifier, $region_identifier)
 	{
 		$block = $this->getBlockById($block_id);
 
 		return $this->layout_region_model->whereLayoutBlockId($block->id)->whereLayoutIdentifier($layout_identifier)->whereRegionIdentifier($region_identifier)->whereModule('*')->count() > 0;
 	}
 
-	public function removeDefaultBlockFromRegion($block_id, $layout_identifier, $region_identifier)
+    /**
+     * @param $block_id
+     * @param $layout_identifier
+     * @param $region_identifier
+     */
+    public function removeDefaultBlockFromRegion($block_id, $layout_identifier, $region_identifier)
 	{
 		$block = $this->getBlockById($block_id);
 
@@ -320,7 +426,10 @@ class EloquentLayoutBlockRepository implements \CoandaCMS\Coanda\Layout\Reposito
 		}
 	}
 
-	public function updateRegionOrdering($ordering)
+    /**
+     * @param $ordering
+     */
+    public function updateRegionOrdering($ordering)
 	{
 		foreach ($ordering as $region_id => $new_order)
 		{
@@ -328,7 +437,14 @@ class EloquentLayoutBlockRepository implements \CoandaCMS\Coanda\Layout\Reposito
 		}
 	}
 
-	public function addCustomBlockToRegion($block_id, $layout_identifier, $region_identifier, $module, $module_identifier)
+    /**
+     * @param $block_id
+     * @param $layout_identifier
+     * @param $region_identifier
+     * @param $module
+     * @param $module_identifier
+     */
+    public function addCustomBlockToRegion($block_id, $layout_identifier, $region_identifier, $module, $module_identifier)
 	{
 		$block = $this->getBlockById($block_id);
 

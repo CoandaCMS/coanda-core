@@ -2,8 +2,15 @@
 
 use Lang;
 
+/**
+ * Class LayoutBlock
+ * @package CoandaCMS\Coanda\Layout\Presenters
+ */
 class LayoutBlock extends \CoandaCMS\Coanda\Core\Presenters\Presenter {
 
+    /**
+     * @return mixed
+     */
     public function name()
 	{
 		if ($this->model->name !== '')
@@ -14,21 +21,33 @@ class LayoutBlock extends \CoandaCMS\Coanda\Core\Presenters\Presenter {
 		return Lang::get('coanda::layout.name_not_set');
 	}
 
+    /**
+     * @return mixed
+     */
     public function status()
 	{
 		return Lang::get('coanda::layout.status_' . $this->model->status);
 	}
 
+    /**
+     * @return mixed
+     */
     public function type()
 	{
 		return $this->model->blockType()->name();
 	}
 
+    /**
+     * @return string
+     */
     public function visibility()
 	{
 		return $this->model->is_visible ? 'Visble' : 'Hidden';
 	}
 
+    /**
+     * @return string
+     */
     public function visible_dates()
 	{
 		$from = $this->model->visible_from;
@@ -59,6 +78,9 @@ class LayoutBlock extends \CoandaCMS\Coanda\Core\Presenters\Presenter {
 		return $visibility_text;
 	}
 
+    /**
+     * @return string
+     */
     public function visible_dates_short()
 	{
 		$from = $this->model->visible_from;

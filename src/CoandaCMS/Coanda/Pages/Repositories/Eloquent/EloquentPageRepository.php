@@ -34,9 +34,21 @@ class EloquentPageRepository implements PageRepositoryInterface {
      * @var Models\Page
      */
     private $page_model;
+    /**
+     * @var Models\PageVersion
+     */
     private $page_version_model;
+    /**
+     * @var Models\PageAttribute
+     */
     private $page_attribute_model;
+    /**
+     * @var Models\PageLocation
+     */
     private $page_location_model;
+    /**
+     * @var Models\PageVersionSlug
+     */
     private $page_version_slug_model;
 
     /**
@@ -49,7 +61,11 @@ class EloquentPageRepository implements PageRepositoryInterface {
     private $historyRepository;
 
     /**
-     * @param PageModel $model
+     * @param PageLocationModel $page_location_model
+     * @param PageModel $page_model
+     * @param PageVersionModel $page_version_model
+     * @param PageAttributeModel $page_attribute_model
+     * @param PageVersionSlugModel $page_version_slug_model
      * @param CoandaCMS\Coanda\Urls\Repositories\UrlRepositoryInterface $urlRepository
      * @param CoandaCMS\Coanda\History\Repositories\HistoryRepositoryInterface $historyRepository
      */
@@ -98,7 +114,12 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		return $page;
 	}
 
-	public function locationById($id)
+    /**
+     * @param $id
+     * @return mixed
+     * @throws \CoandaCMS\Coanda\Exceptions\PageNotFound
+     */
+    public function locationById($id)
 	{
 		$location = $this->page_location_model->find($id);
 
@@ -136,7 +157,12 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		return $pages;
 	}
 
-	private function subLocationsForLocation($parent_location_id, $per_page = 10)
+    /**
+     * @param $parent_location_id
+     * @param int $per_page
+     * @return mixed
+     */
+    private function subLocationsForLocation($parent_location_id, $per_page = 10)
 	{
 		return $this->page_location_model->where('parent_page_id', $parent_location_id)->whereHas('page', function ($query) { $query->where('is_trashed', '=', '0'); })->orderBy('order', 'asc')->paginate($per_page);
 	}
@@ -153,7 +179,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 	}
 
     /**
-     * @param $page_id
+     * @param $location_id
      * @param $per_page
      * @return mixed
      */
@@ -164,7 +190,14 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		// return $this->page_location_model->where('parent_page_id', $page_id)->orderBy('order', 'asc')->paginate($per_page);
 	}
 
-	private function createNewPage($type, $is_home, $user_id, $parent_pagelocation_id = false)
+    /**
+     * @param $type
+     * @param $is_home
+     * @param $user_id
+     * @param bool $parent_pagelocation_id
+     * @return mixed
+     */
+    private function createNewPage($type, $is_home, $user_id, $parent_pagelocation_id = false)
 	{
 		// Create the page...
 		$page_data = [
@@ -235,8 +268,9 @@ class EloquentPageRepository implements PageRepositoryInterface {
     /**
      * @param $type
      * @param $user_id
-     * @param bool $parent_page_id
-     * @return PageModel
+     * @param bool $parent_pagelocation_id
+     * @return mixed
+     * @throws \CoandaCMS\Coanda\Pages\Exceptions\SubPagesNotAllowed
      */
     public function create($type, $user_id, $parent_pagelocation_id = false)
 	{
@@ -257,7 +291,13 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		}
 	}
 
-	public function createHome($type, $user_id)
+    /**
+     * @param $type
+     * @param $user_id
+     * @return mixed
+     * @throws \CoandaCMS\Coanda\Pages\Exceptions\HomePageAlreadyExists
+     */
+    public function createHome($type, $user_id)
 	{
 		// Check we don't already have a home page...
 		$home = $this->getHomePage();
@@ -270,7 +310,11 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		throw new HomePageAlreadyExists('You already have a home page defined');
 	}
 
-	public function addNewVersionSlug($version_id, $page_location_id)
+    /**
+     * @param $version_id
+     * @param $page_location_id
+     */
+    public function addNewVersionSlug($version_id, $page_location_id)
 	{
 		$version = $this->getVersionById($version_id);
 
@@ -592,6 +636,9 @@ class EloquentPageRepository implements PageRepositoryInterface {
 
     /**
      * @param $version
+     * @param $publish_handler
+     * @param $data
+     * @return mixed
      */
     public function executePublishHandler($version, $publish_handler, $data)
 	{
@@ -696,7 +743,6 @@ class EloquentPageRepository implements PageRepositoryInterface {
 
     /**
      * @param $page_id
-     * @param int $limit
      * @return mixed
      */
     public function history($page_id)
@@ -755,7 +801,10 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		}
 	}
 
-	public function deleteLocation($location)
+    /**
+     * @param $location
+     */
+    public function deleteLocation($location)
 	{
 		$this->urlRepository->delete('pagelocation', $location->id);
 
@@ -839,7 +888,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 
     /**
      * @param $page_id
-     * @param bool $restore_sub_pages
+     * @param array $restore_sub_pages
      * @throws \CoandaCMS\Coanda\Exceptions\PageNotFound
      */
     public function restore($page_id, $restore_sub_pages = [])
@@ -907,7 +956,10 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		return $this->page_version_model->whereStatus('pending')->take($limit)->offset($offset)->get();
 	}
 
-	public function getHomePage()
+    /**
+     * @return mixed
+     */
+    public function getHomePage()
 	{
 		return $this->page_model->whereIsHome(true)->first();
 	}

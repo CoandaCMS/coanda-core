@@ -2,35 +2,67 @@
 
 use Coanda, App, View;
 
+/**
+ * Class Layout
+ * @package CoandaCMS\Coanda\Layout
+ */
 abstract class Layout {
 
-	private $blocks;
-	private $block_repository;
+    /**
+     * @var
+     */
+    private $blocks;
+    /**
+     * @var
+     */
+    private $block_repository;
 
-	abstract public function identifier();
+    /**
+     * @return mixed
+     */
+    abstract public function identifier();
 
-	abstract public function template();
+    /**
+     * @return mixed
+     */
+    abstract public function template();
 
-	abstract public function name();
+    /**
+     * @return mixed
+     */
+    abstract public function name();
 
-	public function regions()
+    /**
+     * @return array
+     */
+    public function regions()
 	{
 		// TODO - allowed block types for the region.
 		// TODO - maxium block count for the region - e.g. they can only add one block of a certain type in this region
 		return [];
 	}
 
-	public function pageTypes()
+    /**
+     * @return array
+     */
+    public function pageTypes()
 	{
 		return [];
 	}
 
-	public function regionCount()
+    /**
+     * @return int
+     */
+    public function regionCount()
 	{
 		return count($this->regions());
 	}
 
-	public function region($region_identifier)
+    /**
+     * @param $region_identifier
+     * @return bool
+     */
+    public function region($region_identifier)
 	{
 		if (array_key_exists($region_identifier, $this->regions()))
 		{
@@ -40,7 +72,10 @@ abstract class Layout {
 		return false;		
 	}
 
-	private function blockRepository()
+    /**
+     * @return mixed
+     */
+    private function blockRepository()
 	{
 		if (!$this->block_repository)
 		{
@@ -50,17 +85,31 @@ abstract class Layout {
 		return $this->block_repository;	
 	}
 
-	public function defaultBlocks($region)
+    /**
+     * @param $region
+     * @return mixed
+     */
+    public function defaultBlocks($region)
 	{
 		return $this->blockRepository()->defaultBlocksForRegion($this->identifier(), $region);
 	}
 
-	public function defaultBlockCount($region)
+    /**
+     * @param $region
+     * @return mixed
+     */
+    public function defaultBlockCount($region)
 	{
 		return $this->defaultBlocks($region)->count();
 	}
 
-	public function blocks($region, $module, $module_identifier)
+    /**
+     * @param $region
+     * @param $module
+     * @param $module_identifier
+     * @return $this
+     */
+    public function blocks($region, $module, $module_identifier)
 	{
 		$blocks = $this->blockRepository()->blocksForRegionAndModule($this->identifier(), $region, $module, $module_identifier);
 
@@ -75,12 +124,22 @@ abstract class Layout {
 		return $this;
 	}
 
-	public function regionBlocks($region, $module, $module_identifier)
+    /**
+     * @param $region
+     * @param $module
+     * @param $module_identifier
+     * @return mixed
+     */
+    public function regionBlocks($region, $module, $module_identifier)
 	{
 		return $this->blockRepository()->regionBlocks($this->identifier(), $region, $module, $module_identifier);
 	}
 
-	public function get()
+    /**
+     * @return $this
+     * @throws \Exception
+     */
+    public function get()
 	{
 		if ($this->blocks)
 		{
@@ -90,7 +149,11 @@ abstract class Layout {
 		throw new \Exception('Please call the blocks() method prior to calling get().');
 	}
 
-	public function render()
+    /**
+     * @return string
+     * @throws \Exception
+     */
+    public function render()
 	{
 		if ($this->blocks)
 		{

@@ -2,18 +2,40 @@
 
 use Coanda, App;
 
+/**
+ * Class LayoutBlock
+ * @package CoandaCMS\Coanda\Layout\Repositories\Eloquent\Models
+ */
 class LayoutBlock extends \Illuminate\Database\Eloquent\Model {
 
     use \CoandaCMS\Coanda\Core\Presenters\PresentableTrait;
 
+    /**
+     * @var string
+     */
     protected $presenter = 'CoandaCMS\Coanda\Layout\Presenters\LayoutBlock';
 
+    /**
+     * @var string
+     */
     protected $table = 'layoutblocks';
 
+    /**
+     * @var
+     */
     private $currentVersion;
+    /**
+     * @var
+     */
     private $blockType;
+    /**
+     * @var
+     */
     private $defaultRegions;
 
+    /**
+     *
+     */
     public function delete()
     {
         foreach ($this->versions as $version)
@@ -24,16 +46,25 @@ class LayoutBlock extends \Illuminate\Database\Eloquent\Model {
         parent::delete();
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function versions()
     {
     	return $this->hasMany('CoandaCMS\Coanda\Layout\Repositories\Eloquent\Models\LayoutBlockVersion');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function regions()
     {
         return $this->hasMany('CoandaCMS\Coanda\Layout\Repositories\Eloquent\Models\LayoutRegion');
     }
 
+    /**
+     * @return mixed
+     */
     public function defaultRegions()
     {
         if (!$this->defaultRegions)
@@ -44,6 +75,9 @@ class LayoutBlock extends \Illuminate\Database\Eloquent\Model {
         return $this->defaultRegions;
     }
 
+    /**
+     * @return mixed
+     */
     public function currentVersion()
     {
     	if (!$this->currentVersion)
@@ -54,11 +88,17 @@ class LayoutBlock extends \Illuminate\Database\Eloquent\Model {
     	return $this->currentVersion;
     }
 
+    /**
+     * @return mixed
+     */
     public function drafts()
     {
         return $this->versions()->whereStatus('draft')->get();
     }
 
+    /**
+     * @return mixed
+     */
     public function blockType()
     {
         if (!$this->blockType)
@@ -69,21 +109,33 @@ class LayoutBlock extends \Illuminate\Database\Eloquent\Model {
         return $this->blockType;
     }
 
+    /**
+     * @return mixed
+     */
     public function getAttributesAttribute()
     {
         return $this->currentVersion()->attributes()->get();
     }
 
+    /**
+     * @return mixed
+     */
     public function getStatusAttribute()
     {
         return $this->currentVersion()->status;
     }
 
+    /**
+     * @return bool
+     */
     public function getIsDraftAttribute()
     {
         return $this->currentVersion()->status == 'draft';
     }
 
+    /**
+     * @return array
+     */
     public function availableRegions()
     {
         $regions = [];

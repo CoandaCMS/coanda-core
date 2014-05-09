@@ -4,14 +4,30 @@
  * Interface PageTypeInterface
  * @package CoandaCMS\Coanda\Pages
  */
+/**
+ * Interface PageTypeInterface
+ * @package CoandaCMS\Coanda\Pages
+ */
 interface PageTypeInterface {
-	
+
+    /**
+     * @return mixed
+     */
     public function name();
 
+    /**
+     * @return mixed
+     */
     public function identifier();
 
+    /**
+     * @return mixed
+     */
     public function icon();
 
+    /**
+     * @return mixed
+     */
     public function allowsSubPages();
 
     /**

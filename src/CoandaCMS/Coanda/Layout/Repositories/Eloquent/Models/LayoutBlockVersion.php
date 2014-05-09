@@ -2,14 +2,27 @@
 
 use Coanda;
 
+/**
+ * Class LayoutBlockVersion
+ * @package CoandaCMS\Coanda\Layout\Repositories\Eloquent\Models
+ */
 class LayoutBlockVersion extends \Illuminate\Database\Eloquent\Model {
 
     use \CoandaCMS\Coanda\Core\Presenters\PresentableTrait;
 
+    /**
+     * @var string
+     */
     protected $presenter = 'CoandaCMS\Coanda\Layout\Presenters\LayoutBlockVersion';
 
+    /**
+     * @var string
+     */
     protected $table = 'layoutblockversions';
 
+    /**
+     *
+     */
     public function delete()
 	{
 		foreach ($this->attributes()->get() as $attribute)
@@ -20,16 +33,25 @@ class LayoutBlockVersion extends \Illuminate\Database\Eloquent\Model {
 		parent::delete();
 	}
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function block()
     {
     	return $this->belongsTo('CoandaCMS\Coanda\Layout\Repositories\Eloquent\Models\LayoutBlock', 'layout_block_id');
     }
 
+    /**
+     * @return mixed
+     */
     public function attributes()
     {
     	return $this->hasMany('CoandaCMS\Coanda\Layout\Repositories\Eloquent\Models\LayoutBlockAttribute')->orderBy('order', 'asc');;
     }
 
+    /**
+     *
+     */
     public function checkAttributes()
 	{
 		$type = $this->block->blockType();		
@@ -79,7 +101,11 @@ class LayoutBlockVersion extends \Illuminate\Database\Eloquent\Model {
 		}
 	}
 
-	public function getAttributeByIdentifier($identifier)
+    /**
+     * @param $identifier
+     * @return mixed
+     */
+    public function getAttributeByIdentifier($identifier)
 	{
 		return $this->attributes()->whereIdentifier($identifier)->first();
 	}

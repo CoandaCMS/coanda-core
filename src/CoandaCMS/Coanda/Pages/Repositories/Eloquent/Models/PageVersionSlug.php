@@ -5,28 +5,50 @@ use Carbon\Carbon;
 
 use CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageLocation as PageLocationModel;
 
+/**
+ * Class PageVersionSlug
+ * @package CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models
+ */
 class PageVersionSlug extends Eloquent {
 
-	protected $table = 'pageversionslugs';
+    /**
+     * @var string
+     */
+    protected $table = 'pageversionslugs';
 
-	protected $fillable = ['version_id', 'page_location_id', 'slug'];
+    /**
+     * @var array
+     */
+    protected $fillable = ['version_id', 'page_location_id', 'slug'];
 
-	public function version()
+    /**
+     * @return mixed
+     */
+    public function version()
 	{
 		return $this->belongsTo('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageVersion');
 	}
 
-	public function location()
+    /**
+     * @return mixed
+     */
+    public function location()
 	{
 		return PageLocationModel::wherePageId($this->version->page->id)->whereParentPageId($this->page_location_id)->first(); 
 	}
 
-	public function getLocationAttribute()
+    /**
+     * @return mixed
+     */
+    public function getLocationAttribute()
 	{
 		return $this->location();
 	}
 
-	public function getFullSlugAttribute()
+    /**
+     * @return string
+     */
+    public function getFullSlugAttribute()
 	{
 		$base_slug = $this->base_slug;
 
@@ -38,7 +60,10 @@ class PageVersionSlug extends Eloquent {
 		return $base_slug . $this->slug;
 	}
 
-	public function baseSlug()
+    /**
+     * @return string
+     */
+    public function baseSlug()
 	{
 		$location = $this->location;
 
@@ -59,7 +84,10 @@ class PageVersionSlug extends Eloquent {
 		return '';
 	}
 
-	public function getBaseSlugAttribute()
+    /**
+     * @return string
+     */
+    public function getBaseSlugAttribute()
 	{
 		return $this->baseSlug();
 	}

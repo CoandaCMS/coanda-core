@@ -3,16 +3,35 @@
 use Eloquent, Coanda, App;
 use Carbon\Carbon;
 
+/**
+ * Class PageLocation
+ * @package CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models
+ */
 class PageLocation extends Eloquent {
 
-	protected $table = 'pagelocations';
+    /**
+     * @var string
+     */
+    protected $table = 'pagelocations';
 
-	protected $fillable = ['page_id', 'parent_page_id'];
+    /**
+     * @var array
+     */
+    protected $fillable = ['page_id', 'parent_page_id'];
 
-	private $parents;
-	private $subTreeCount;
+    /**
+     * @var
+     */
+    private $parents;
+    /**
+     * @var
+     */
+    private $subTreeCount;
 
-	public function save(array $options = [])
+    /**
+     * @param array $options
+     */
+    public function save(array $options = [])
 	{
 		// If we have a parent page, but no path, then we need to sort out the path
 		if ($this->parent_page_id != 0 && $this->path == '')
@@ -28,21 +47,33 @@ class PageLocation extends Eloquent {
 		parent::save($options);
 	}
 
-	public function page()
+    /**
+     * @return mixed
+     */
+    public function page()
 	{
 		return $this->belongsTo('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\Page');
 	}
 
-	public function parent()
+    /**
+     * @return mixed
+     */
+    public function parent()
 	{
 		return $this->belongsTo('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageLocation', 'parent_page_id');
 	}
 
-	public function children()
+    /**
+     * @return mixed
+     */
+    public function children()
 	{
 		return $this->hasMany('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageLocation', 'parent_page_id');
 	}
 
+    /**
+     * @return mixed
+     */
     public function subTreeCount()
 	{
 		if (!$this->subTreeCount)
@@ -55,22 +86,34 @@ class PageLocation extends Eloquent {
 		return $this->subTreeCount;
 	}
 
+    /**
+     * @return array
+     */
     public function pathArray()
 	{
 		return explode('/', $this->path);
 	}
 
+    /**
+     * @return int
+     */
     public function depth()
 	{
 		return count($this->pathArray());
 	}
 
+    /**
+     * @return int
+     */
     public function getDepthAttribute()
 	{
 		return $this->depth();
 	}
 
-	public function parents()
+    /**
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function parents()
 	{
 		if (!$this->parents)
 		{
@@ -90,7 +133,10 @@ class PageLocation extends Eloquent {
 		return $this->parents;
 	}
 
-	public function getSlugAttribute()
+    /**
+     * @return string
+     */
+    public function getSlugAttribute()
 	{
 		$urlRepository = App::make('CoandaCMS\Coanda\Urls\Repositories\UrlRepositoryInterface');
 
@@ -104,7 +150,10 @@ class PageLocation extends Eloquent {
 		}
 	}
 
-	public function getBaseSlugAttribute()
+    /**
+     * @return string
+     */
+    public function getBaseSlugAttribute()
 	{
 		if ($this->parent)
 		{

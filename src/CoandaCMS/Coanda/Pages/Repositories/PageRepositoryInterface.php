@@ -4,6 +4,10 @@
  * Interface PageRepositoryInterface
  * @package CoandaCMS\Coanda\Pages\Repositories
  */
+/**
+ * Interface PageRepositoryInterface
+ * @package CoandaCMS\Coanda\Pages\Repositories
+ */
 interface PageRepositoryInterface {
 
     /**
@@ -18,6 +22,10 @@ interface PageRepositoryInterface {
      */
     public function findById($id);
 
+    /**
+     * @param $id
+     * @return mixed
+     */
     public function locationById($id);
 
     /**
@@ -47,6 +55,11 @@ interface PageRepositoryInterface {
      */
     public function create($type, $user_id, $parent_page_id);
 
+    /**
+     * @param $type
+     * @param $user_id
+     * @return mixed
+     */
     public function createHome($type, $user_id);
     
     /**
@@ -74,6 +87,11 @@ interface PageRepositoryInterface {
      */
     public function saveDraftVersion($version, $data);
 
+    /**
+     * @param $version_id
+     * @param $page_location_id
+     * @return mixed
+     */
     public function addNewVersionSlug($version_id, $page_location_id);
 
     /**
@@ -100,6 +118,8 @@ interface PageRepositoryInterface {
 
     /**
      * @param $version
+     * @param $publish_handler
+     * @param $data
      * @return mixed
      */
     public function executePublishHandler($version, $publish_handler, $data);
@@ -168,5 +188,8 @@ interface PageRepositoryInterface {
      */
     public function getPendingVersions($offset, $limit);
 
+    /**
+     * @return mixed
+     */
     public function getHomePage();
 }

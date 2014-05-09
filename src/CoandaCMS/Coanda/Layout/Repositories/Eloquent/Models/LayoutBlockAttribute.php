@@ -2,66 +2,106 @@
 
 use Coanda;
 
+/**
+ * Class LayoutBlockAttribute
+ * @package CoandaCMS\Coanda\Layout\Repositories\Eloquent\Models
+ */
 class LayoutBlockAttribute extends \Illuminate\Database\Eloquent\Model {
 
+    /**
+     * @var string
+     */
     protected $table = 'layoutblockattributes';
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function version()
     {
     	return $this->belongsTo('CoandaCMS\Coanda\Layout\Repositories\Eloquent\Models\LayoutBlockVersion', 'layout_block_version_id');
     }
 
-	public function block()
+    /**
+     * @return mixed
+     */
+    public function block()
 	{
 		return $this->version->block;
 	}
 
-	public function type()
+    /**
+     * @return mixed
+     */
+    public function type()
 	{
 		return Coanda::getAttributeType($this->type);
 	}
 
-	public function blockType()
+    /**
+     * @return mixed
+     */
+    public function blockType()
 	{
 		return $this->block()->blockType();
 	}
 
-	public function name()
+    /**
+     * @return mixed
+     */
+    public function name()
 	{
 		$attributes = $this->block()->blockType()->attributes();
 
 		return isset($attributes[$this->identifier]) ? $attributes[$this->identifier]['name'] : $this->identifier;
 	}
 
-	public function getNameAttribute()
+    /**
+     * @return mixed
+     */
+    public function getNameAttribute()
 	{
 		return $this->name();
 	}
 
-	public function typeData()
+    /**
+     * @return mixed
+     */
+    public function typeData()
 	{
 		// Let the type do whatever with the attribute to return the data required...
 		return $this->type()->data($this->attribute_data);
 	}
 
-	public function getTypeDataAttribute()
+    /**
+     * @return mixed
+     */
+    public function getTypeDataAttribute()
 	{
 		return $this->typeData();
 	}
 
-	public function isRequired()
+    /**
+     * @return bool
+     */
+    public function isRequired()
 	{
 		$attributes = $this->blockType()->attributes();
 
 		return isset($attributes[$this->identifier]['required']) ? $attributes[$this->identifier]['required'] : false;
 	}
 
-	public function getIsRequiredAttribute()
+    /**
+     * @return bool
+     */
+    public function getIsRequiredAttribute()
 	{
 		return $this->isRequired();
 	}
 
-	public function store($data)
+    /**
+     * @param $data
+     */
+    public function store($data)
 	{
 		// Let the type class validate/manipulate the data...
 		$this->attribute_data = $this->type()->store($data, $this->isRequired(), $this->name());

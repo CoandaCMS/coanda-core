@@ -76,7 +76,11 @@ class PagesAdminController extends BaseController {
 		}
 	}
 
-	public function getView($id)
+    /**
+     * @param $id
+     * @return mixed
+     */
+    public function getView($id)
 	{
 		try
 		{
@@ -238,6 +242,10 @@ class PagesAdminController extends BaseController {
 		}
 	}
 
+    /**
+     * @param $page_type
+     * @return mixed
+     */
     public function getCreateHome($page_type)
 	{
 		Coanda::checkAccess('pages', 'create', ['page_type' => $page_type]);
@@ -460,7 +468,13 @@ class PagesAdminController extends BaseController {
 		}
 	}
 
-	public function getBrowseAddLocation($page_id, $version_number, $parent_page_id = 0)
+    /**
+     * @param $page_id
+     * @param $version_number
+     * @param int $parent_page_id
+     * @return mixed
+     */
+    public function getBrowseAddLocation($page_id, $version_number, $parent_page_id = 0)
 	{
 		try
 		{
@@ -492,7 +506,12 @@ class PagesAdminController extends BaseController {
 		}
 	}
 
-	public function postAddLocation($page_id, $version_number)
+    /**
+     * @param $page_id
+     * @param $version_number
+     * @return mixed
+     */
+    public function postAddLocation($page_id, $version_number)
 	{
 		try
 		{

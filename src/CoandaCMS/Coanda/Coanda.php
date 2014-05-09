@@ -34,8 +34,14 @@ class Coanda {
      */
     private $routers = [];
 
+    /**
+     * @var array
+     */
     private $attribute_types = [];
 
+    /**
+     * @var
+     */
     private $theme_provider;
 
     /**
@@ -54,7 +60,10 @@ class Coanda {
 		$this->loadAttributes();
 	}
 
-	private function loadAttributes()
+    /**
+     *
+     */
+    private function loadAttributes()
 	{
 		// Load the attributes
 		$attribute_types = Config::get('coanda::coanda.attribute_types');
@@ -70,6 +79,11 @@ class Coanda {
 		}
 	}
 
+    /**
+     * @param $type_identifier
+     * @return mixed
+     * @throws Core\Attributes\Exceptions\AttributeTypeNotFound
+     */
     public function getAttributeType($type_identifier)
 	{
 		if (array_key_exists($type_identifier, $this->attribute_types))
@@ -80,7 +94,10 @@ class Coanda {
 		throw new AttributeTypeNotFound;
 	}
 
-	public function theme()
+    /**
+     * @return mixed
+     */
+    public function theme()
 	{
 		return $this->theme_provider;
 	}
@@ -134,7 +151,13 @@ class Coanda {
 									];
 	}
 
-	public function canView($module, $permission, $parameters = [])
+    /**
+     * @param $module
+     * @param $permission
+     * @param array $parameters
+     * @return bool
+     */
+    public function canView($module, $permission, $parameters = [])
 	{
 		try
 		{
@@ -148,12 +171,21 @@ class Coanda {
 		}
 	}
 
-	public function currentUserPermissions()
+    /**
+     * @return mixed
+     */
+    public function currentUserPermissions()
 	{
 		return $this->user->currentUserPermissions();
 	}
 
-	public function checkAccess($module, $permission, $parameters = [])
+    /**
+     * @param $module
+     * @param $permission
+     * @param array $parameters
+     * @throws Exceptions\PermissionDenied
+     */
+    public function checkAccess($module, $permission, $parameters = [])
 	{
 		$user_permissions = $this->currentUserPermissions();
 
@@ -280,6 +312,7 @@ class Coanda {
     /**
      * @param $module
      * @return mixed
+     * @throws Exceptions\ModuleNotFound
      */
     public function module($module)
 	{
@@ -300,7 +333,10 @@ class Coanda {
 		$this->routers[$for] = $closure;
 	}
 
-	public function routeHome()
+    /**
+     * @return mixed
+     */
+    public function routeHome()
 	{
 		// TODO - let other modules have a go at rendering the home page if the pages module doesn't!
 		// Does the pages module want to render the home page?

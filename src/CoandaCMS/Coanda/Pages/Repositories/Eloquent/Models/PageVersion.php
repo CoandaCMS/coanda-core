@@ -15,6 +15,9 @@ class PageVersion extends Eloquent {
      */
     protected $dates = ['visible_from', 'visible_to'];
 
+    /**
+     * @var array
+     */
     protected $fillable = ['page_id', 'version', 'status', 'created_by', 'edited_by', 'meta_page_title', 'meta_description', 'visible_from', 'visible_to', 'layout_identifier'];
 
     /**
@@ -69,12 +72,19 @@ class PageVersion extends Eloquent {
 		return $this->hasMany('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageAttribute')->orderBy('order', 'asc');
 	}
 
-	public function slugs()
+    /**
+     * @return mixed
+     */
+    public function slugs()
 	{
 		return $this->hasMany('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageVersionSlug', 'version_id');
 	}
 
-	public function slugForLocation($page_location_id)
+    /**
+     * @param $page_location_id
+     * @return string
+     */
+    public function slugForLocation($page_location_id)
 	{
 		$slug = $this->slugs()->wherePageLocationId($page_location_id)->first();
 
@@ -157,7 +167,10 @@ class PageVersion extends Eloquent {
 		}
 	}
 
-	public function layout()
+    /**
+     * @return bool
+     */
+    public function layout()
     {
         if ($this->layout_identifier !== '')
         {
@@ -167,11 +180,18 @@ class PageVersion extends Eloquent {
         return false;
     }
 
+    /**
+     * @return bool
+     */
     public function getLayoutAttribute()
     {
         return $this->layout();
     }
 
+    /**
+     * @param $region
+     * @return array
+     */
     public function layoutRegionBlocks($region)
     {
     	$layout = $this->layout();

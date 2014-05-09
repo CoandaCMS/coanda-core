@@ -22,6 +22,9 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
      */
     private $page_types = [];
 
+    /**
+     * @var array
+     */
     private $home_page_types = [];
 
     /**
@@ -29,10 +32,13 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
      */
     private $publish_handlers = [];
 
+    /**
+     * @var
+     */
     private $theme;
 
     /**
-     * @param \CoandaCMS\Coanda\Coanda $coanda
+     * @param CoandaCMS\Coanda\Coanda $coanda
      */
     public function boot(\CoandaCMS\Coanda\Coanda $coanda)
 	{
@@ -42,7 +48,10 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		$this->loadPermissions($coanda);
 	}
 
-	private function loadRouter($coanda)
+    /**
+     * @param $coanda
+     */
+    private function loadRouter($coanda)
 	{
 		// Add the router to handle slug views
 		$coanda->addRouter('pagelocation', function ($url) use ($coanda) {
@@ -63,7 +72,10 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		});
 	}
 
-	private function loadPageTypes($coanda)
+    /**
+     * @param $coanda
+     */
+    private function loadPageTypes($coanda)
 	{
 		// load the page types
 		$page_types = Config::get('coanda::coanda.page_types');
@@ -92,7 +104,10 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		}
 	}
 
-	private function loadPublishHandlers($coanda)
+    /**
+     * @param $coanda
+     */
+    private function loadPublishHandlers($coanda)
 	{
 		// Load the publish handlers
 		$core_publish_handlers = [
@@ -114,7 +129,10 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		}
 	}
 
-	private function loadPermissions($coanda)
+    /**
+     * @param $coanda
+     */
+    private function loadPermissions($coanda)
 	{
 		$publish_handler_options = [];
 
@@ -157,11 +175,11 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		$coanda->addModulePermissions('pages', 'Pages', $permissions);		
 	}
 
-	/**
-	 * Returns the available page types
-	 * @return Array
-	 */
-	public function availablePageTypes($page = false)
+    /**
+     * @param bool $page
+     * @return array
+     */
+    public function availablePageTypes($page = false)
 	{
 		$user_permissions = \Coanda::currentUserPermissions();
 
@@ -203,7 +221,11 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		return [];
 	}
 
-	public function availableHomePageTypes($page = false)
+    /**
+     * @param bool $page
+     * @return array
+     */
+    public function availableHomePageTypes($page = false)
 	{
 		return $this->home_page_types;
 	}
@@ -223,6 +245,11 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		throw new PageTypeNotFound;
 	}
 
+    /**
+     * @param $type
+     * @return mixed
+     * @throws \CoandaCMS\Coanda\Exceptions\PageTypeNotFound
+     */
     public function getHomePageType($type)
 	{
 		if (array_key_exists($type, $this->home_page_types))
@@ -277,7 +304,13 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		$app->bind('CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface', 'CoandaCMS\Coanda\Pages\Repositories\Eloquent\EloquentPageRepository');
 	}
 
-	public function checkAccess($permission, $parameters, $user_permissions = [])
+    /**
+     * @param $permission
+     * @param $parameters
+     * @param array $user_permissions
+     * @throws \CoandaCMS\Coanda\Exceptions\PermissionDenied
+     */
+    public function checkAccess($permission, $parameters, $user_permissions = [])
 	{
 		if (in_array('*', $user_permissions))
 		{
@@ -315,7 +348,10 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		}
 	}
 
-	private function getTheme()
+    /**
+     * @return mixed
+     */
+    private function getTheme()
 	{
 		if (!$this->theme)
 		{
@@ -325,7 +361,10 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		return $this->theme;
 	}
 
-	private function templateDirectory()
+    /**
+     * @return string
+     */
+    private function templateDirectory()
 	{
 		$directory = '';
 
@@ -339,7 +378,11 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		return $directory;
 	}
 
-	private function preRender($render_data)
+    /**
+     * @param $render_data
+     * @return mixed
+     */
+    private function preRender($render_data)
 	{
 		$theme = $this->getTheme();
 
@@ -351,7 +394,11 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		return $render_data;
 	}
 
-	private function getLayout($page)
+    /**
+     * @param $page
+     * @return mixed
+     */
+    private function getLayout($page)
 	{
 		if ($page->currentVersion()->layout_identifier)
 		{
@@ -373,7 +420,11 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		return Coanda::module('layout')->layoutByIdentifier('single-column');
 	}
 
-	public function renderHome()
+    /**
+     * @return mixed
+     * @throws \Exception
+     */
+    public function renderHome()
 	{
 		$pageRepository = App::make('CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface');
 		
@@ -387,7 +438,12 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		throw new \Exception('Home page not created yet!');
 	}
 
-	private function renderPage($page, $pagelocation = false)
+    /**
+     * @param $page
+     * @param bool $pagelocation
+     * @return mixed
+     */
+    private function renderPage($page, $pagelocation = false)
 	{
 		if ($page->is_trashed)
 		{
@@ -433,7 +489,11 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		return View::make($layout->template(), $layout_data);
 	}
 
-	private function buildAttributes($page)
+    /**
+     * @param $page
+     * @return array
+     */
+    private function buildAttributes($page)
 	{
 		$attributes = [];
 
@@ -451,7 +511,11 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		return $attributes;
 	}
 
-	private function buildMeta($page)
+    /**
+     * @param $page
+     * @return array
+     */
+    private function buildMeta($page)
 	{
 		return [
 			'title' => $page->currentVersion()->meta_page_title,

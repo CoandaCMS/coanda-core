@@ -12,10 +12,20 @@ use CoandaCMS\Coanda\Layout\Exceptions\LayoutBlockVersionNotFound;
 
 use CoandaCMS\Coanda\Controllers\BaseController;
 
+/**
+ * Class LayoutAdminController
+ * @package CoandaCMS\Coanda\Controllers\Admin
+ */
 class LayoutAdminController extends BaseController {
 
+    /**
+     * @var \CoandaCMS\Coanda\Layout\Repositories\LayoutBlockRepositoryInterface
+     */
     private $layoutBlockRepository;
 
+    /**
+     * @param CoandaCMS\Coanda\Layout\Repositories\LayoutBlockRepositoryInterface $layoutBlockRepository
+     */
     public function __construct(\CoandaCMS\Coanda\Layout\Repositories\LayoutBlockRepositoryInterface $layoutBlockRepository)
 	{
 		$this->layoutBlockRepository = $layoutBlockRepository;
@@ -23,6 +33,9 @@ class LayoutAdminController extends BaseController {
 		$this->beforeFilter('csrf', array('on' => 'post'));
 	}
 
+    /**
+     * @return mixed
+     */
     public function getIndex()
 	{
 		// Coanda::checkAccess('layout', 'edit');
@@ -33,7 +46,12 @@ class LayoutAdminController extends BaseController {
 		return View::make('coanda::admin.modules.layout.index', [ 'layouts' => $layouts, 'block_list' => $block_list ]);
 	}
 
-	public function getViewRegion($layout_identifier, $region_identifier)
+    /**
+     * @param $layout_identifier
+     * @param $region_identifier
+     * @return mixed
+     */
+    public function getViewRegion($layout_identifier, $region_identifier)
 	{
 		try
 		{
@@ -55,7 +73,12 @@ class LayoutAdminController extends BaseController {
 		}
 	}
 
-	public function postViewRegion($layout_identifier, $region_identifier)
+    /**
+     * @param $layout_identifier
+     * @param $region_identifier
+     * @return mixed
+     */
+    public function postViewRegion($layout_identifier, $region_identifier)
 	{
 		try
 		{
@@ -81,7 +104,13 @@ class LayoutAdminController extends BaseController {
 
 	}
 
-	public function getBlockCreate($block_type_identifier, $layout_identifier, $region_identifier)
+    /**
+     * @param $block_type_identifier
+     * @param $layout_identifier
+     * @param $region_identifier
+     * @return mixed
+     */
+    public function getBlockCreate($block_type_identifier, $layout_identifier, $region_identifier)
 	{
 		try
 		{
@@ -96,7 +125,11 @@ class LayoutAdminController extends BaseController {
 		}
 	}
 
-	public function getBlockEdit($block_id)
+    /**
+     * @param $block_id
+     * @return mixed
+     */
+    public function getBlockEdit($block_id)
 	{
 		try
 		{
@@ -120,7 +153,12 @@ class LayoutAdminController extends BaseController {
 		}
 	}
 
-	public function getBlockEditversion($block_id, $version_number)
+    /**
+     * @param $block_id
+     * @param $version_number
+     * @return mixed
+     */
+    public function getBlockEditversion($block_id, $version_number)
 	{
 		try
 		{
@@ -141,7 +179,12 @@ class LayoutAdminController extends BaseController {
 		}
 	}
 
-	public function postBlockEditversion($block_id, $version_number)
+    /**
+     * @param $block_id
+     * @param $version_number
+     * @return mixed
+     */
+    public function postBlockEditversion($block_id, $version_number)
 	{
 		try
 		{
@@ -193,7 +236,11 @@ class LayoutAdminController extends BaseController {
 		}
 	}
 
-	public function getBlockView($block_id)
+    /**
+     * @param $block_id
+     * @return mixed
+     */
+    public function getBlockView($block_id)
 	{
 		try
 		{
@@ -208,7 +255,11 @@ class LayoutAdminController extends BaseController {
 		}
 	}
 
-	public function postBlockView($block_id)
+    /**
+     * @param $block_id
+     * @return mixed
+     */
+    public function postBlockView($block_id)
 	{
 		try
 		{
@@ -231,7 +282,11 @@ class LayoutAdminController extends BaseController {
 
 	}
 
-	public function getBlockDelete($block_id)
+    /**
+     * @param $block_id
+     * @return mixed
+     */
+    public function getBlockDelete($block_id)
 	{
 		try
 		{
@@ -245,7 +300,11 @@ class LayoutAdminController extends BaseController {
 		}
 	}
 
-	public function postBlockDelete($block_id)
+    /**
+     * @param $block_id
+     * @return mixed
+     */
+    public function postBlockDelete($block_id)
 	{
 		try
 		{
@@ -259,7 +318,12 @@ class LayoutAdminController extends BaseController {
 		}
 	}
 
-	public function getBlockRemoveversion($block_id, $version_number)
+    /**
+     * @param $block_id
+     * @param $version_number
+     * @return mixed
+     */
+    public function getBlockRemoveversion($block_id, $version_number)
 	{
 		try
 		{
@@ -279,7 +343,11 @@ class LayoutAdminController extends BaseController {
 		}
 	}
 
-	public function getBlockExistingDrafts($block_id)
+    /**
+     * @param $block_id
+     * @return mixed
+     */
+    public function getBlockExistingDrafts($block_id)
 	{
 		try
 		{
@@ -293,7 +361,11 @@ class LayoutAdminController extends BaseController {
 		}
 	}
 
-	public function postBlockExistingDrafts($block_id)
+    /**
+     * @param $block_id
+     * @return mixed
+     */
+    public function postBlockExistingDrafts($block_id)
 	{
 		try
 		{
@@ -307,7 +379,13 @@ class LayoutAdminController extends BaseController {
 		}
 	}
 
-	public function getRemoveBlockFromRegion($block_id, $layout_identifier, $region_identifier)
+    /**
+     * @param $block_id
+     * @param $layout_identifier
+     * @param $region_identifier
+     * @return mixed
+     */
+    public function getRemoveBlockFromRegion($block_id, $layout_identifier, $region_identifier)
 	{
 		try
 		{
@@ -321,7 +399,14 @@ class LayoutAdminController extends BaseController {
 		}
 	}
 
-	public function getPageCustomRegionBlock($page_id, $version_number, $layout_identifier, $region_identifier)
+    /**
+     * @param $page_id
+     * @param $version_number
+     * @param $layout_identifier
+     * @param $region_identifier
+     * @return mixed
+     */
+    public function getPageCustomRegionBlock($page_id, $version_number, $layout_identifier, $region_identifier)
 	{
 		$data = [
 			'block_list' => $this->layoutBlockRepository->getBlockList(10),
@@ -334,7 +419,14 @@ class LayoutAdminController extends BaseController {
 		return View::make('coanda::admin.modules.layout.pagecustomregion', $data);
 	}
 
-	public function postPageCustomRegionBlock($page_id, $version_number, $layout_identifier, $region_identifier)
+    /**
+     * @param $page_id
+     * @param $version_number
+     * @param $layout_identifier
+     * @param $region_identifier
+     * @return mixed
+     */
+    public function postPageCustomRegionBlock($page_id, $version_number, $layout_identifier, $region_identifier)
 	{
 		if (Input::has('add_block_list') && count(Input::get('add_block_list')))
 		{
