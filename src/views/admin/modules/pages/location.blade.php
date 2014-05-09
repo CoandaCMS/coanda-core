@@ -211,6 +211,11 @@
 								@if (!$page->is_trashed)
 									<div class="buttons">
 										<div class="btn-group pull-right">
+
+											@if ($pagelocation->sub_location_order == 'manual')
+												{{ Form::button('Update orders', ['name' => 'update_order', 'value' => 'true', 'type' => 'submit', 'class' => 'btn btn-default']) }}
+											@endif
+
 											<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
 												Order: {{ $pagelocation->present()->sub_location_order }} <span class="caret"></span>
 											</button>
@@ -221,10 +226,6 @@
 												<li><a href="{{ Coanda::adminUrl('pages/change-location-order/' . $pagelocation->id . '/created:desc') }}"><i class="fa fa-sort-amount-asc"></i> Created date (Newest-Oldest)</a></li>
 												<li><a href="{{ Coanda::adminUrl('pages/change-location-order/' . $pagelocation->id . '/created:asc') }}"><i class="fa fa-sort-amount-desc"></i> Created date (Oldest-Newest)</a></li>
 											</ul>
-
-											@if ($pagelocation->sub_location_order == 'manual')
-												{{ Form::button('Update orders', ['name' => 'update_order', 'value' => 'true', 'type' => 'submit', 'class' => 'pull-right btn btn-default']) }}
-											@endif
 										</div>
 
 										@if (Coanda::canView('pages', 'remove'))
