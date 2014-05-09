@@ -320,19 +320,19 @@ class Coanda {
 
 			if ($url)
 			{
-				$route_method = camel_case('route_' . $url->urlable_type);
+				$route_method = camel_case('route_' . $url->type);
 
 				if (method_exists($this, $route_method))
 				{
 					return $this->$route_method($url);
 				}
-				else if(array_key_exists($url->urlable_type, $this->routers))
+				else if(array_key_exists($url->type, $this->routers))
 				{
-					return $this->routers[$url->urlable_type]($url);
+					return $this->routers[$url->type]($url);
 				}
 				else
 				{
-					throw new \Exception('No method exists to route this type of URL: "' . $url->urlable_type . '"');
+					throw new \Exception('No method exists to route this type of URL: "' . $url->type . '"');
 				}
 			}
 		}
@@ -348,7 +348,7 @@ class Coanda {
      */
     public function routeRedirect($url)
 	{
-		$url = $this->urlRepository->findById($url->urlable_id);
+		$url = $this->urlRepository->findById($url->type_id);
 
 		if ($url)
 		{
@@ -362,7 +362,7 @@ class Coanda {
      */
     public function routeWildcard($wildcard_url)
 	{
-		$url = $this->urlRepository->findById($wildcard_url->urlable_id);
+		$url = $this->urlRepository->findById($wildcard_url->type_id);
 
 		if ($url)
 		{

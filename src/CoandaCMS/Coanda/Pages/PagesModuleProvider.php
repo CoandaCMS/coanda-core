@@ -51,7 +51,7 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 
 			try
 			{
-				$location = $pageRepository->locationById($url->urlable_id);	
+				$location = $pageRepository->locationById($url->type_id);	
 
 				return $this->renderPage($location->page, $location);
 			}

@@ -40,7 +40,7 @@ class EloquentUrlRepository implements \CoandaCMS\Coanda\Urls\Repositories\UrlRe
      */
     public function findFor($for, $for_id)
 	{
-		$url = $this->model->whereUrlableType($for)->whereUrlableId($for_id)->first();
+		$url = $this->model->whereType($for)->whereTypeId($for_id)->first();
 
 		if ($url)
 		{
@@ -93,7 +93,7 @@ class EloquentUrlRepository implements \CoandaCMS\Coanda\Urls\Repositories\UrlRe
 			{
 				$wildcard_slug .= ($wildcard_slug !== '' ? '/' : '') . $slug_part;
 
-				$url = $this->model->whereSlug($wildcard_slug)->whereUrlableType('wildcard')->first();
+				$url = $this->model->whereSlug($wildcard_slug)->whereType('wildcard')->first();
 
 				if ($url)
 				{
@@ -127,20 +127,20 @@ class EloquentUrlRepository implements \CoandaCMS\Coanda\Urls\Repositories\UrlRe
 		if ($existing)
 		{
 			// If the existing url matches the type and id, then we don't need to do anything..
-			if ($existing->urlable_type == $for && $existing->urlable_id == $for_id)
+			if ($existing->type == $for && $existing->type_id == $for_id)
 			{
 				return $existing;
 			}
 
 			// If the existing one is a url, then we can overwrite it, otherwise it is alreay taken.
-			if ($existing->urlable_type !== 'wildcard')
+			if ($existing->type !== 'wildcard')
 			{
 				throw new UrlAlreadyExists('The requested URL: ' . $slug . ' is already in use.');
 			}
 		}
 
-		// Do we have a record for this urlable_type and urlable_id
-		$current_url = $this->model->whereUrlableType($for)->whereUrlableId($for_id)->first();
+		// Do we have a record for this type and type_id
+		$current_url = $this->model->whereType($for)->whereTypeId($for_id)->first();
 
 		$url = $existing ? $existing : false;
 
@@ -150,8 +150,8 @@ class EloquentUrlRepository implements \CoandaCMS\Coanda\Urls\Repositories\UrlRe
 			$url = $this->model->create(['slug' => $slug]);
 		}
 
-		$url->urlable_type = $for;
-		$url->urlable_id = $for_id;
+		$url->type = $for;
+		$url->type_id = $for_id;
 
 		$url->save();
 
@@ -161,8 +161,8 @@ class EloquentUrlRepository implements \CoandaCMS\Coanda\Urls\Repositories\UrlRe
 			// Update any child URL's to have the new slug
 			$this->updateSubTree($current_url->slug, $slug);
 
-			$current_url->urlable_type = 'wildcard';
-			$current_url->urlable_id = $url->id;
+			$current_url->type = 'wildcard';
+			$current_url->type_id = $url->id;
 			$current_url->save();
 		}
 
@@ -184,7 +184,7 @@ class EloquentUrlRepository implements \CoandaCMS\Coanda\Urls\Repositories\UrlRe
      */
     public function delete($for, $for_id)
 	{
-		$url = $this->model->whereUrlableType($for)->whereUrlableId($for_id)->first();
+		$url = $this->model->whereType($for)->whereTypeId($for_id)->first();
 
 		if ($url)
 		{
@@ -213,13 +213,13 @@ class EloquentUrlRepository implements \CoandaCMS\Coanda\Urls\Repositories\UrlRe
 		if ($existing)
 		{
 			// If the existing matches the type and id, then we can use it
-			if ($existing->urlable_type == $for && $existing->urlable_id == $for_id)
+			if ($existing->type == $for && $existing->type_id == $for_id)
 			{
 				return true;
 			}
 
 			// If the exisitng type is a url, then it can be overwritten (otherwise this would be 'reserved' forever)
-			if ($existing->urlable_type == 'wildcard')
+			if ($existing->type == 'wildcard')
 			{
 				return true;
 			}

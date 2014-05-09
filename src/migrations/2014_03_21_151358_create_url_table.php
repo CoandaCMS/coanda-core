@@ -17,8 +17,8 @@ class CreateUrlTable extends Migration {
 			$table->increments('id');
 			$table->text('slug');
 
-			$table->integer('urlable_id');
-			$table->string('urlable_type');
+			$table->string('type');
+			$table->integer('type_id');
 
 			$table->timestamps();
 
