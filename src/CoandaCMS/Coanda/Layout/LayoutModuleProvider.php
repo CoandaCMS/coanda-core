@@ -198,4 +198,9 @@ class LayoutModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 	{
 	}
 
+    public function buildAdminMenu($coanda)
+    {
+        $coanda->addMenuItem('layout', 'Layouts');
+    }
+
 }

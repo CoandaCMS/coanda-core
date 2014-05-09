@@ -24,6 +24,8 @@ class Coanda {
      * @var array
      */
     private $permissions = [];
+
+    private $admin_menu = [];
     /**
      * @var
      */
@@ -209,10 +211,10 @@ class Coanda {
 	public function loadModules()
 	{
 		$core_modules = [
-			'CoandaCMS\Coanda\Users\UsersModuleProvider',
 			'CoandaCMS\Coanda\Pages\PagesModuleProvider',
-			'CoandaCMS\Coanda\Layout\LayoutModuleProvider',
-			'CoandaCMS\Coanda\Media\MediaModuleProvider'
+			'CoandaCMS\Coanda\Media\MediaModuleProvider',
+			'CoandaCMS\Coanda\Users\UsersModuleProvider',
+			'CoandaCMS\Coanda\Layout\LayoutModuleProvider'
 		];
 
 		$enabled_modules = Config::get('coanda::coanda.enabled_modules');
@@ -322,6 +324,21 @@ class Coanda {
 		}
 
 		throw new ModuleNotFound('Module ' . $module . ' does not exist or has not been loaded.');		
+	}
+
+	public function addMenuItem($url, $name)
+	{
+		$this->admin_menu[] = ['url' => $url, 'name' => $name];
+	}
+
+	public function adminMenu()
+	{
+		foreach ($this->modules as $module)
+		{
+			$module->buildAdminMenu($this);
+		}
+
+		return $this->admin_menu;
 	}
 
     /**

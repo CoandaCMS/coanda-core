@@ -2,10 +2,10 @@
 	<div class="container-fluid">
 		<ul class="nav navbar-nav">
 			<li><a href="{{ Coanda::adminUrl('/') }}">Dashboard</a></li>
-			<li><a href="{{ Coanda::adminUrl('pages') }}">Pages</a></li>
-			<li><a href="{{ Coanda::adminUrl('media') }}">Media</a></li>
-			<li><a href="{{ Coanda::adminUrl('layout') }}">Layout</a></li>
-			<li><a href="{{ Coanda::adminUrl('users') }}">Users</a></li>
+
+			@foreach (Coanda::adminMenu() as $menu_item)
+				<li><a href="{{ Coanda::adminUrl($menu_item['url']) }}">{{ $menu_item['name'] }}</a></li>
+			@endforeach
 		</ul>
 
 		<ul class="nav navbar-nav navbar-right">

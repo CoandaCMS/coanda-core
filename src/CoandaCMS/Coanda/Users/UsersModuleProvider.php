@@ -89,4 +89,9 @@ class UsersModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
         }
     }
 
+    public function buildAdminMenu($coanda)
+    {
+        $coanda->addMenuItem('users', 'Users');
+    }
+
 }

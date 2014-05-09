@@ -39,4 +39,6 @@ interface CoandaModuleProvider {
      */
     public function checkAccess($permission, $parameters, $user_permissions);
 
+    public function buildAdminMenu($coanda);
+
 }
