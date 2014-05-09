@@ -219,7 +219,9 @@
 							<div class="form-group @if (isset($invalid_fields['slug_' . $slug->id])) has-error @endif">
 
 								<div class="input-group">
-									<span class="input-group-addon">{{ $slug->base_slug }}/</span>
+									<span class="input-group-addon" style="overflow: hidden; max-width: 150px; text-align: right;">
+										<span style="float: right;">{{ $slug->base_slug }}/</span>
+									</span>
 							    	<input type="text" class="form-control slugiwugy" id="slug_{{ $slug->id }}" name="slug_{{ $slug->id }}" value="{{ Input::old('slug_' . $slug->id, $slug->slug) }}">
 								</div>
 
