@@ -39,7 +39,7 @@
 </div>
 
 <div class="row">
-	<div class="col-md-8">
+	<div class="col-md-12">
 		<div class="page-tabs">
 			<ul class="nav nav-tabs">
 				<li class="active"><a href="#users" data-toggle="tab">Users</a></li>
@@ -72,23 +72,6 @@
 				</div>
 				<div class="tab-pane" id="permissions">
 					@include('coanda::admin.modules.users.includes.permissionsview', [ 'permissions' => Coanda::availablePermissions(), 'existing_permissions' => $group->access_list ])
-				</div>
-			</div>
-		</div>
-	</div>
-	<div class="col-md-4">
-		<div class="page-tabs">
-			<ul class="nav nav-tabs">
-				<li class="active"><a href="#search" data-toggle="tab">Search</a></li>
-				<li><a href="#other" data-toggle="tab">Other</a></li>
-			</ul>
-			<div class="tab-content">
-				<div class="tab-pane active" id="search">
-					<input type="text" class="form-control" placeholder="Search users">
-				</div>
-
-				<div class="tab-pane" id="other">
-					Something else
 				</div>
 			</div>
 		</div>

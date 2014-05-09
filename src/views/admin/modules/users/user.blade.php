@@ -30,7 +30,7 @@
 </div>
 
 <div class="row">
-	<div class="col-md-8">
+	<div class="col-md-12">
 		<div class="page-tabs">
 			<ul class="nav nav-tabs">
 				<li {{ $selected_tab == '' || $selected_tab == 'details' ? 'class="active"' : '' }}><a href="#details" data-toggle="tab">Details</a></li>
@@ -94,23 +94,6 @@
 							@endforeach
 						</table>
 					@endif
-				</div>
-			</div>
-		</div>
-	</div>
-	<div class="col-md-4">
-		<div class="page-tabs">
-			<ul class="nav nav-tabs">
-				<li class="active"><a href="#search" data-toggle="tab">Search</a></li>
-				<li><a href="#other" data-toggle="tab">Other</a></li>
-			</ul>
-			<div class="tab-content">
-				<div class="tab-pane active" id="search">
-					<input type="text" class="form-control" placeholder="Search users">
-				</div>
-
-				<div class="tab-pane" id="other">
-					Something else
 				</div>
 			</div>
 		</div>
