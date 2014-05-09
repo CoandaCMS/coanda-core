@@ -11,6 +11,9 @@ use CoandaCMS\Coanda\Pages\Exceptions\PublishHandlerException;
 use CoandaCMS\Coanda\Pages\Exceptions\HomePageAlreadyExists;
 use CoandaCMS\Coanda\Pages\Exceptions\SubPagesNotAllowed;
 
+use CoandaCMS\Coanda\Urls\Exceptions\InvalidSlug;
+use CoandaCMS\Coanda\Urls\Exceptions\UrlAlreadyExists;
+
 use CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageLocation as PageLocationModel;
 use CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\Page as PageModel;
 use CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageVersion as PageVersionModel;
@@ -30,7 +33,9 @@ class EloquentPageRepository implements PageRepositoryInterface {
     /**
      * @var Models\Page
      */
-    private $model;
+    private $page_model;
+    private $page_version_model;
+    private $page_attribute_model;
     private $page_location_model;
     private $page_version_slug_model;
 
@@ -48,11 +53,13 @@ class EloquentPageRepository implements PageRepositoryInterface {
      * @param CoandaCMS\Coanda\Urls\Repositories\UrlRepositoryInterface $urlRepository
      * @param CoandaCMS\Coanda\History\Repositories\HistoryRepositoryInterface $historyRepository
      */
-    public function __construct(PageLocationModel $page_location_model, PageModel $model, PageVersionSlugModel $page_version_slug_model, \CoandaCMS\Coanda\Urls\Repositories\UrlRepositoryInterface $urlRepository, \CoandaCMS\Coanda\History\Repositories\HistoryRepositoryInterface $historyRepository)
+    public function __construct(PageLocationModel $page_location_model, PageModel $page_model, PageVersionModel $page_version_model, PageAttributeModel $page_attribute_model, PageVersionSlugModel $page_version_slug_model, \CoandaCMS\Coanda\Urls\Repositories\UrlRepositoryInterface $urlRepository, \CoandaCMS\Coanda\History\Repositories\HistoryRepositoryInterface $historyRepository)
 	{
 		$this->page_location_model = $page_location_model;
+		$this->page_version_model = $page_version_model;
+		$this->page_attribute_model = $page_attribute_model;
 		$this->page_version_slug_model = $page_version_slug_model;
-		$this->model = $model;
+		$this->page_model = $page_model;
 		$this->urlRepository = $urlRepository;
 		$this->historyRepository = $historyRepository;
 	}
@@ -64,7 +71,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
      */
     public function find($id)
 	{
-		$page = $this->model->find($id);
+		$page = $this->page_model->find($id);
 
 		if (!$page)
 		{
@@ -81,7 +88,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
      */
     public function findById($id)
 	{
-		$page = $this->model->find($id);
+		$page = $this->page_model->find($id);
 
 		if (!$page)
 		{
@@ -118,7 +125,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 
 		foreach ($ids as $id)
 		{
-			$page = $this->model->find($id);
+			$page = $this->page_model->find($id);
 
 			if ($page)
 			{
@@ -159,44 +166,43 @@ class EloquentPageRepository implements PageRepositoryInterface {
 
 	private function createNewPage($type, $is_home, $user_id, $parent_pagelocation_id = false)
 	{
-		// create a page model
-		$page = new PageModel;
+		// Create the page...
+		$page_data = [
+			'is_home' => $is_home,
+			'type' => $type->identifier(),
+			'created_by' => $user_id,
+			'edited_by' => $user_id,
+			'current_version' => 1
+		];
 
-		if ($is_home)
-		{
-			$page->is_home = true;
-		}
+		$page = $this->page_model->create($page_data);
 
-		$page->type = $type->identifier();
-		$page->created_by = $user_id;
-		$page->edited_by = $user_id;
-		$page->current_version = 1;
+		// Create the version...
+		$version_data = [
+			'page_id' => $page->id,
+			'version' => 1,
+			'status' => 'draft',
+			'created_by' => $user_id,
+			'edited_by' => $user_id,
+		];
 
-		$page->save();
+		$version = $this->page_version_model->create($version_data);
 
-		// Create the version
-		$version = new PageVersionModel;
-		$version->version = 1;
-		$version->status = 'draft';
-		$version->created_by = $user_id;
-		$version->edited_by = $user_id;
-
-		$page->versions()->save($version);
-
-		// Add all the attributes..
+		// Create all the attributes...
 		$index = 1;
 
 		foreach ($type->attributes() as $type_attribute)
 		{
 			$page_attribute_type = Coanda::getAttributeType($type_attribute['type']);
 
-			$attribute = new PageAttributeModel;
+			$attribute_data = [
+				'page_version_id' => $version->id,
+				'identifier' => $type_attribute['identifier'],
+				'type' => $page_attribute_type->identifier(),
+				'order' => $index
+			];
 
-			$attribute->type = $page_attribute_type->identifier();
-			$attribute->identifier = $type_attribute['identifier'];
-			$attribute->order = $index;
-
-			$version->attributes()->save($attribute);
+			$attribute = $this->page_attribute_model->create($attribute_data);
 
 			$index ++;
 		}
@@ -204,25 +210,20 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		// If we are dealing with the home page, then we don't need to add a location
 		if (!$is_home)
 		{
-			$location = new $this->page_location_model;
-			$location->page_id = $page->id;
+			$location_data = [
+				'page_id' => $page->id,
+				'parent_page_id' => $parent_pagelocation_id ? $parent_pagelocation_id : 0
+			];
 
-			// Work out the parent and path fields...
-			if ($parent_pagelocation_id)
-			{
-				$parent_location = $this->page_location_model->find($parent_pagelocation_id);
+			$location = $this->page_location_model->create($location_data);
 
-				if ($parent_location)
-				{
-					$location->parent_page_id = $parent_location->id;
+			$version_slug_data = [
+				'version_id' => $version->id,
+				'page_location_id' => $parent_pagelocation_id ? $parent_pagelocation_id : 0,
+				'slug' => ''
+			];
 
-					$path = $parent_location->path == '' ? '/' : $parent_location->path;
-
-					$location->path = $path . $parent_location->id . '/';
-				}
-			}
-
-			$location->save();
+			$version_slug = $this->page_version_slug_model->create($version_slug_data);
 		}
 
 		// Log the history
@@ -267,6 +268,24 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		}
 
 		throw new HomePageAlreadyExists('You already have a home page defined');
+	}
+
+	public function addNewVersionSlug($version_id, $page_location_id)
+	{
+		$version = $this->getVersionById($version_id);
+
+		$existing = $version->slugs()->wherePageLocationId($page_location_id)->first();
+
+		if (!$existing)
+		{
+			$version_slug_data = [
+				'version_id' => $version->id,
+				'page_location_id' => $page_location_id,
+				'slug' => ''
+			];
+
+			$version_slug = $this->page_version_slug_model->create($version_slug_data);
+		}
 	}
 
     /**
@@ -357,22 +376,22 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		if (!$version->page->is_home)
 		{
 			// Check each of the locations to see if the slug is OK
-			foreach ($version->page->locations as $location)
+			foreach ($version->slugs as $slug)
 			{
 				try
 				{
-					$this->urlRepository->canUse($location->slug . $data['slug_' . $location->id], 'pagelocation', $location->id);
+					$this->urlRepository->canUse($slug->base_slug . $data['slug_' . $slug->id], 'pagelocation', $slug->location ? $slug->location->id : 0);
 
-					$version->setLocationSlug($location->id, $data['slug_' . $location->id]);
-
+					$slug->slug = $data['slug_' . $slug->id];
+					$slug->save();
 				}
-				catch(\CoandaCMS\Coanda\Urls\Exceptions\InvalidSlug $exception)
+				catch(InvalidSlug $exception)
 				{
-					$failed['slug_' . $location->id] = 'The slug is not valid';
+					$failed['slug_' . $slug->id] = 'The slug is not valid';
 				}
-				catch(\CoandaCMS\Coanda\Urls\Exceptions\UrlAlreadyExists $exception)
+				catch(UrlAlreadyExists $exception)
 				{
-					$failed['slug_' . $location->id] = 'The slug is already in use';
+					$failed['slug_' . $slug->id] = 'The slug is already in use';
 				}
 			}
 		}
@@ -546,17 +565,22 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		// If we are dealing with the home page, not need to worry about the URL...
 		if (!$version->page->is_home)
 		{
-			// Register the URL for this version with the Url Repo
-			foreach ($version->page->locations as $location)
+			foreach ($version->slugs as $slug)
 			{
-				$base_slug = $location->base_slug;
+				// Is the location already registered for this page?
+				$location = $page->locations()->whereParentPageId($slug->page_location_id)->first();
 
-				if ($base_slug !== '')
+				if (!$location)
 				{
-					$base_slug .= '/';
+					$location_data = [
+						'page_id' => $page->id,
+						'parent_page_id' => $slug->page_location_id ? $slug->page_location_id : 0
+					];
+
+					$location = $this->page_location_model->create($location_data);
 				}
 
-				$url = $urlRepository->register($base_slug . $version->slugForLocation($location->id), 'pagelocation', $location->id);
+				$url = $urlRepository->register($slug->full_slug, 'pagelocation', $location->id);				
 			}
 		}
 
@@ -590,7 +614,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
      */
     public function createNewVersion($page_id, $user_id)
 	{
-		$page = PageModel::find($page_id);
+		$page = $this->page_model->find($page_id);
 		$type = $page->pageType();
 
 		$current_version = $page->currentVersion();
@@ -598,37 +622,35 @@ class EloquentPageRepository implements PageRepositoryInterface {
 
 		$new_version_number = $latest_version->version + 1;
 
-		// Create the version
-		$version = new PageVersionModel;
-		$version->version = $new_version_number;
-		$version->status = 'draft';
-		$version->created_by = $user_id;
-		$version->edited_by = $user_id;
+		// Create the new version...
+		$version_data = [
+			'page_id' => $page->id,
+			'version' => $new_version_number,
+			'status' => 'draft',
+			'created_by' => $user_id,
+			'edited_by' => $user_id,
+			'meta_page_title' => $current_version->meta_page_title,
+			'meta_description' => $current_version->meta_description,
+			'visible_from' => $current_version->visible_from,
+			'visible_to' => $current_version->visible_to,
+			'layout_identifier' => $current_version->layout_identifier
+		];
 
-		// Carry over the meta
-		$version->meta_page_title = $current_version->meta_page_title;
-		$version->meta_description = $current_version->meta_description;
-
-		// Carry over the visible date
-		$version->visible_from = $current_version->visible_from;
-		$version->visible_to = $current_version->visible_to;
-
-		// Carry over the layout
-		$version->layout_identifier = $current_version->layout_identifier;
+		$version = $this->page_version_model->create($version_data);
 
 		// Ask the layout module to replicate the custom region blocks for this
 		Coanda::module('layout')->copyCustomRegionBlock('pages', $page->id . ':' . $current_version->version, $page->id . ':' . $new_version_number);
 
-		$page->versions()->save($version);
-
 		// Now lets replicate the slugs
 		foreach ($current_version->slugs as $slug)
 		{
-			$new_slug = new $this->page_version_slug_model;
-			$new_slug->version_id = $version->id;
-			$new_slug->slug = $slug->slug;
-			$new_slug->location_id = $slug->location_id;
-			$new_slug->save();
+			$version_slug_data = [
+				'version_id' => $version->id,
+				'page_location_id' => $slug->page_location_id,
+				'slug' => $slug->slug
+			];
+
+			$version_slug = $this->page_version_slug_model->create($version_slug_data);
 		}
 
 		// Add all the attributes..
@@ -638,24 +660,24 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		{
 			$page_attribute_type = Coanda::getAttributeType($type_attribute['type']);
 
-			$attribute = new PageAttributeModel;
-
-			$attribute->type = $page_attribute_type->identifier();
-			$attribute->identifier = $type_attribute['identifier'];
-			$attribute->order = $index;
-
 			// Copy the attribute data from the current version
 			$existing_attribute = $current_version->getAttributeByIdentifier($type_attribute['identifier']);
 
-			$attribute->attribute_data = $existing_attribute ? $existing_attribute->attribute_data : '';
+			$attribute_data = [
+				'page_version_id' => $version->id,
+				'identifier' => $type_attribute['identifier'],
+				'type' => $page_attribute_type->identifier(),
+				'order' => $index,
+				'attribute_data' => $existing_attribute ? $existing_attribute->attribute_data : ''
+			];
 
-			$version->attributes()->save($attribute);
+			$attribute = $this->page_attribute_model->create($attribute_data);
 
 			$index ++;
 		}
 
 		// Log the history
-		$this->historyRepository->add('pages', $page_id, Coanda::currentUser()->id, 'new_version', ['version' => $new_version_number]);
+		$this->historyRepository->add('pages', $page_id, $user_id, 'new_version', ['version' => $new_version_number]);
 
 		return $new_version_number;
 	}
@@ -696,7 +718,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
      */
     public function deletePage($page_id, $permanent = false)
 	{
-		$page = $this->model->find($page_id);
+		$page = $this->page_model->find($page_id);
 
 		if (!$page)
 		{
@@ -780,7 +802,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 					{
 						foreach ($sub_page_ids as $sub_page_id)
 						{
-							$page = $this->model->find($sub_page_id);
+							$page = $this->page_model->find($sub_page_id);
 
 							if ($page)
 							{
@@ -798,26 +820,11 @@ class EloquentPageRepository implements PageRepositoryInterface {
 					}
 					else
 					{
-						$this->model->whereIn('id', $sub_page_ids)->update(['is_trashed' => true]);	
+						$this->page_model->whereIn('id', $sub_page_ids)->update(['is_trashed' => true]);	
 					}
 				}
 			}
 		}
-		// if ($permanent)
-		// {
-		// 	$pages = $this->model->where('path', 'like', $base_path . $page->id . '/%')->get();
-
-		// 	foreach ($pages as $page)
-		// 	{
-		// 		$this->urlRepository->delete('page', $page->id);
-
-		// 		$page->delete();	
-		// 	}
-		// }
-		// else
-		// {
-		// 	$this->model->where('path', 'like', $base_path . $page->id . '/%')->update(['is_trashed' => true]);		
-		// }
 	}
 
     /**
@@ -825,7 +832,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
      */
     public function trashed()
 	{
-		return $this->model->whereIsTrashed(true)->get();
+		return $this->page_model->whereIsTrashed(true)->get();
 	}
 
     /**
@@ -835,12 +842,15 @@ class EloquentPageRepository implements PageRepositoryInterface {
      */
     public function restore($page_id, $restore_sub_pages = [])
 	{
-		$page = $this->model->find($page_id);
+		$page = $this->page_model->find($page_id);
 
 		if (!$page)
 		{
 			throw new PageNotFound;
 		}
+
+		$page->is_trashed = false;
+		$page->save();
 
 		if ($page->locations->count() > 0)
 		{
@@ -864,14 +874,11 @@ class EloquentPageRepository implements PageRepositoryInterface {
 
 					if (count($sub_page_ids) > 0)
 					{
-						$this->model->whereIn('id', $sub_page_ids)->update(['is_trashed' => false]);
+						$this->page_model->whereIn('id', $sub_page_ids)->update(['is_trashed' => false]);
 					}			
 				}
 			}
 		}
-
-		$page->is_trashed = false;
-		$page->save();
 
 		$this->historyRepository->add('pages', $page->id, Coanda::currentUser()->id, 'restored');
 	}
@@ -900,6 +907,6 @@ class EloquentPageRepository implements PageRepositoryInterface {
 
 	public function getHomePage()
 	{
-		return $this->model->whereIsHome(true)->first();
+		return $this->page_model->whereIsHome(true)->first();
 	}
 }

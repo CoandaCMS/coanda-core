@@ -74,6 +74,8 @@ interface PageRepositoryInterface {
      */
     public function saveDraftVersion($version, $data);
 
+    public function addNewVersionSlug($version_id, $page_location_id);
+
     /**
      * @param $version
      * @return mixed

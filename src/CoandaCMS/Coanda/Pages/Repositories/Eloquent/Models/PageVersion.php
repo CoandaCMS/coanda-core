@@ -15,6 +15,8 @@ class PageVersion extends Eloquent {
      */
     protected $dates = ['visible_from', 'visible_to'];
 
+    protected $fillable = ['page_id', 'version', 'status', 'created_by', 'edited_by', 'meta_page_title', 'meta_description', 'visible_from', 'visible_to', 'layout_identifier'];
+
     /**
      * @var string
      */
@@ -72,9 +74,9 @@ class PageVersion extends Eloquent {
 		return $this->hasMany('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageVersionSlug', 'version_id');
 	}
 
-	public function slugForLocation($location_id)
+	public function slugForLocation($page_location_id)
 	{
-		$slug = $this->slugs()->whereLocationId($location_id)->first();
+		$slug = $this->slugs()->wherePageLocationId($page_location_id)->first();
 
 		if ($slug)
 		{
@@ -82,21 +84,6 @@ class PageVersion extends Eloquent {
 		}
 
 		return '';
-	}
-
-	public function setLocationSlug($location_id, $slug)
-	{
-		$version_slug = $this->slugs()->whereLocationId($location_id)->first();
-
-		if (!$version_slug)
-		{
-			$version_slug = new PageVersionSlug;
-		}
-
-		$version_slug->version_id = $this->id;
-		$version_slug->location_id = $location_id;
-		$version_slug->slug = $slug;
-		$version_slug->save();
 	}
 
 	/**

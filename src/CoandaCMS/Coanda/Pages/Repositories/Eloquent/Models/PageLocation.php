@@ -7,8 +7,26 @@ class PageLocation extends Eloquent {
 
 	protected $table = 'pagelocations';
 
+	protected $fillable = ['page_id', 'parent_page_id'];
+
 	private $parents;
 	private $subTreeCount;
+
+	public function save(array $options = [])
+	{
+		// If we have a parent page, but no path, then we need to sort out the path
+		if ($this->parent_page_id != 0 && $this->path == '')
+		{
+			$parent = $this->find($this->parent_page_id);
+
+			if ($parent)
+			{
+				$this->path = ($parent->path == '' ? '/' : $parent->path) . $parent->id . '/';
+			}
+		}
+
+		parent::save($options);
+	}
 
 	public function page()
 	{

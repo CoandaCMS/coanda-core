@@ -57,7 +57,6 @@
 									@if ($page->locations->count() > 0)
 										@foreach ($page->locations as $location)
 											<p>
-												/
 												@foreach ($location->parents() as $parent)
 													{{ $parent->page->present()->name }} /
 												@endforeach

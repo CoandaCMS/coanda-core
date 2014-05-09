@@ -20,6 +20,8 @@ class PageAttribute extends Eloquent {
 	 */
 	protected $table = 'pageattributes';
 
+	protected $fillable = ['page_version_id', 'identifier', 'type', 'order', 'attribute_data'];
+
 	/**
 	 * Returns the version for this attribute
 	 * @return CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageVersion

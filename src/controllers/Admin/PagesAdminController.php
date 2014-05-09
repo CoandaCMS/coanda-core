@@ -301,6 +301,7 @@ class PagesAdminController extends BaseController {
 		try
 		{
 			$version = $this->pageRepository->getDraftVersion($page_id, $version_number);
+
 			$page = $version->page;
 
 			Coanda::checkAccess('pages', 'edit', ['page_id' => $page->id, 'page_type' => $page->type]);
@@ -341,14 +342,12 @@ class PagesAdminController extends BaseController {
 
 			if (Input::has('discard'))
 			{
-				$parent_page_id = $version->page->parent_page_id;
-
 				$this->pageRepository->discardDraftVersion($version);
 
 				// If this was the first version, then we need to redirect back to the parent
 				if ($version_number == 1)
-				{
-					return Redirect::to(Coanda::adminUrl('pages/view/' . $parent_page_id));
+				{					
+					return Redirect::to(Coanda::adminUrl('pages'));
 				}
 				else
 				{
@@ -379,6 +378,11 @@ class PagesAdminController extends BaseController {
 			if (Input::has('add_custom_block'))
 			{
 				return Redirect::to(Coanda::adminUrl('layout/page-custom-region-block/' . $page_id . '/' . $version_number . '/' . Input::get('add_custom_block')));
+			}
+
+			if (Input::has('add_location'))
+			{
+				return Redirect::to(Coanda::adminUrl('pages/browse-add-location/' . $page_id . '/' . $version_number));
 			}
 
 			if (Input::has('save_exit') && Input::get('save_exit') == 'true')
@@ -414,6 +418,11 @@ class PagesAdminController extends BaseController {
 		}
 		catch (ValidationException $exception)
 		{
+			if (Input::has('add_location'))
+			{
+				return Redirect::to(Coanda::adminUrl('pages/browse-add-location/' . $page_id . '/' . $version_number));
+			}
+
 			if (Input::has('save_exit') && Input::get('save_exit') == 'true')
 			{
 				return Redirect::to(Coanda::adminUrl('pages/view/' . $page_id));
@@ -440,6 +449,67 @@ class PagesAdminController extends BaseController {
 			$this->pageRepository->discardDraftVersion($version);
 
 			return Redirect::to(Coanda::adminUrl('pages/view/' . $page_id));	
+		}
+		catch (PageNotFound $exception)
+		{
+			return Redirect::to(Coanda::adminUrl('pages'));
+		}
+		catch (PageVersionNotFound $exception)
+		{
+			return Redirect::to(Coanda::adminUrl('pages/view/' . $page_id));
+		}
+	}
+
+	public function getBrowseAddLocation($page_id, $version_number, $parent_page_id = 0)
+	{
+		try
+		{
+			$version = $this->pageRepository->getDraftVersion($page_id, $version_number);
+			$page = $version->page;
+
+			Coanda::checkAccess('pages', 'edit', ['page_id' => $page->id, 'page_type' => $page->type]);
+
+			$per_page = 10;
+
+			$location = false;
+
+			if ($parent_page_id !== 0)			
+			{
+				$location = $this->pageRepository->locationById($parent_page_id);
+			}
+			
+			$pages = $this->pageRepository->subPages($parent_page_id, $per_page);
+
+			return View::make('coanda::admin.modules.pages.browseaddlocation', [ 'pages' => $pages, 'page_id' => $page_id, 'version_number' => $version_number, 'location' => $location ]);
+		}
+		catch (PageNotFound $exception)
+		{
+			return Redirect::to(Coanda::adminUrl('pages'));
+		}
+		catch (PageVersionNotFound $exception)
+		{
+			return Redirect::to(Coanda::adminUrl('pages/view/' . $page_id));
+		}
+	}
+
+	public function postAddLocation($page_id, $version_number)
+	{
+		try
+		{
+			$version = $this->pageRepository->getDraftVersion($page_id, $version_number);
+			$page = $version->page;
+
+			Coanda::checkAccess('pages', 'edit', ['page_id' => $page->id, 'page_type' => $page->type]);
+
+			if (Input::has('add_locations') && count(Input::get('add_locations')) > 0)
+			{
+				foreach (Input::get('add_locations') as $new_location_id)
+				{
+					$this->pageRepository->addNewVersionSlug($version->id, $new_location_id);
+				}
+			}
+
+			return Redirect::to(Coanda::adminUrl('pages/editversion/' . $page_id . '/' . $version_number));
 		}
 		catch (PageNotFound $exception)
 		{
@@ -637,9 +707,7 @@ class PagesAdminController extends BaseController {
 		{
 			Coanda::checkAccess('pages', 'remove');
 
-			$sub_pages = Input::has('restore_sub_pages') ? Input::get('restore_sub_pages') : [];
-
-			$this->pageRepository->restore($page_id, $sub_pages);
+			$this->pageRepository->restore($page_id, Input::has('restore_sub_pages') ? Input::get('restore_sub_pages') : []);
 
 			return Redirect::to(Coanda::adminUrl('pages/view/' . $page_id));
 		}

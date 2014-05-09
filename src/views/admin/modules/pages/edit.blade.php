@@ -215,20 +215,23 @@
 				<div class="tab-pane active" id="details">
 					@if (!$version->page->is_home)
 
-						@foreach ($version->page->locations as $location)
-							<div class="form-group @if (isset($invalid_fields['slug_' . $location->id])) has-error @endif">
-								<label class="control-label" for="slug_{{ $location->id }}">Location: {{ $location->base_slug }}</label>
+						@foreach ($version->slugs as $slug)
+							<div class="form-group @if (isset($invalid_fields['slug_' . $slug->id])) has-error @endif">
 
 								<div class="input-group">
-									<span class="input-group-addon">/</span>
-							    	<input type="text" class="form-control slugiwugy" id="slug_{{ $location->id }}" name="slug_{{ $location->id }}" value="{{ Input::old('slug_' . $location->id, $version->slugForLocation($location->id)) }}">
+									<span class="input-group-addon">{{ $slug->base_slug }}/</span>
+							    	<input type="text" class="form-control slugiwugy" id="slug_{{ $slug->id }}" name="slug_{{ $slug->id }}" value="{{ Input::old('slug_' . $slug->id, $slug->slug) }}">
 								</div>
 
-							    @if (isset($invalid_fields['slug_' . $location->id]))
-							    	<span class="help-block">{{ $invalid_fields['slug_' . $location->id] }}</span>
+							    @if (isset($invalid_fields['slug_' . $slug->id]))
+							    	<span class="help-block">{{ $invalid_fields['slug_' . $slug->id] }}</span>
 							    @endif
 							</div>
 						@endforeach
+
+						<div class="form-group">
+							{{ Form::button('Add location', ['name' => 'add_location', 'value' => 'true', 'type' => 'submit', 'class' => 'btn btn-default btn-sm']) }}
+						</div>
 					@endif
 
 					<div class="row">
