@@ -3,6 +3,7 @@
 use CoandaCMS\Coanda\Urls\Exceptions\UrlAlreadyExists;
 use CoandaCMS\Coanda\Urls\Exceptions\InvalidSlug;
 use CoandaCMS\Coanda\Urls\Exceptions\UrlNotFound;
+use CoandaCMS\Coanda\Exceptions\ValidationException;
 
 /**
  * Class EloquentUrlRepository
@@ -21,15 +22,18 @@ class EloquentUrlRepository implements \CoandaCMS\Coanda\Urls\Repositories\UrlRe
 
     private $db;
 
+    private $promourl_model;
+
     /**
      * @param UrlModel $model
      * @param CoandaCMS\Coanda\Urls\Slugifier $slugifier
      */
-    public function __construct(\CoandaCMS\Coanda\Urls\Repositories\Eloquent\Models\Url $model, \CoandaCMS\Coanda\Urls\Slugifier $slugifier, \Illuminate\Database\DatabaseManager $db)
+    public function __construct(\CoandaCMS\Coanda\Urls\Repositories\Eloquent\Models\Url $model, \CoandaCMS\Coanda\Urls\Repositories\Eloquent\Models\PromoUrl $promourl_model, \CoandaCMS\Coanda\Urls\Slugifier $slugifier, \Illuminate\Database\DatabaseManager $db)
 	{
 		$this->model = $model;
 		$this->slugifier = $slugifier;
 		$this->db = $db;
+		$this->promourl_model = $promourl_model;
 	}
 
     /**
@@ -200,7 +204,7 @@ class EloquentUrlRepository implements \CoandaCMS\Coanda\Urls\Repositories\UrlRe
      * @throws \CoandaCMS\Coanda\Urls\Exceptions\UrlAlreadyExists
      * @throws \CoandaCMS\Coanda\Urls\Exceptions\InvalidSlug
      */
-    public function canUse($slug, $for, $for_id)
+    public function canUse($slug, $for, $for_id = false)
 	{
 		if (!$this->slugifier->validate($slug))
 		{
@@ -212,10 +216,13 @@ class EloquentUrlRepository implements \CoandaCMS\Coanda\Urls\Repositories\UrlRe
 
 		if ($existing)
 		{
-			// If the existing matches the type and id, then we can use it
-			if ($existing->type == $for && $existing->type_id == $for_id)
+			if ($for_id)
 			{
-				return true;
+				// If the existing matches the type and id, then we can use it
+				if ($existing->type == $for && $existing->type_id == $for_id)
+				{
+					return true;
+				}				
 			}
 
 			// If the exisitng type is a url, then it can be overwritten (otherwise this would be 'reserved' forever)
@@ -226,5 +233,68 @@ class EloquentUrlRepository implements \CoandaCMS\Coanda\Urls\Repositories\UrlRe
 
 			throw new UrlAlreadyExists('The requested URL is already in use.');
 		}
+
+		return true;
 	}
+
+    /**
+     * @param $per_page
+     * @return mixed
+     */
+    public function getList($per_page)
+	{
+		return $this->model->orderBy('created_at', 'desc')->paginate($per_page);
+	}
+
+    /**
+     * @param $type
+     * @param $per_page
+     * @return mixed
+     */
+    public function getListByType($type, $per_page)
+	{
+		return $this->model->whereType($type)->orderBy('created_at', 'desc')->paginate($per_page);
+	}
+
+
+	public function addPromo($from, $to)
+	{
+		$from = trim($from, '/');
+
+		// Can we use this URL?
+		if ($this->canUse($from, 'promourl'))
+		{
+			$to = trim($to, '/');
+
+			if ($to == '')
+			{
+				throw new ValidationException(['to' => 'Please specify a to url']);
+			}
+
+			$url_data = [
+				'destination' => $to
+			];
+
+			$promo_url = $this->promourl_model->create($url_data);
+
+			$url = $this->register($from, 'promourl', $promo_url->id);
+
+			return $promo_url;			
+		}
+	}
+
+    public function getPromoUrl($id)
+	{
+		return $this->promourl_model->find($id);
+	}
+
+    /**
+     * @param $per_page
+     * @return mixed
+     */
+    public function getPromoUrls($per_page)
+	{
+		return $this->promourl_model->orderBy('created_at', 'desc')->paginate($per_page);
+	}
+
 }

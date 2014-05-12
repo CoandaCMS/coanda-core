@@ -47,4 +47,18 @@ interface UrlRepositoryInterface {
      * @return mixed
      */
     public function canUse($slug, $for, $for_id);
+
+    /**
+     * @param $per_page
+     * @return mixed
+     */
+    public function getList($per_page);
+
+    /**
+     * @param $type
+     * @param $per_page
+     * @return mixed
+     */
+    public function getListByType($type, $per_page);
+    
 }

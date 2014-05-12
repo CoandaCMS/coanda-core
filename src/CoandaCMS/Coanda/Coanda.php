@@ -234,7 +234,8 @@ class Coanda {
 			'CoandaCMS\Coanda\Pages\PagesModuleProvider',
 			'CoandaCMS\Coanda\Media\MediaModuleProvider',
 			'CoandaCMS\Coanda\Users\UsersModuleProvider',
-			'CoandaCMS\Coanda\Layout\LayoutModuleProvider'
+			'CoandaCMS\Coanda\Layout\LayoutModuleProvider',
+			'CoandaCMS\Coanda\Urls\UrlModuleProvider'
 		];
 
 		$enabled_modules = Config::get('coanda::coanda.enabled_modules');
