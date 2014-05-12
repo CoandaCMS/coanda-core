@@ -1,25 +1,25 @@
 <?php namespace CoandaCMS\Coanda\Core\Attributes;
 
 /**
- * Interface AttributeTypeInterface
+ * Interface AttributeType
  * @package CoandaCMS\Coanda\Core\Attributes
  */
-interface AttributeTypeInterface {
+abstract class AttributeType {
 
     /**
      * @return mixed
      */
-    public function identifier();
+    abstract public function identifier();
 
     /**
      * @return mixed
      */
-    public function edit_template();
+    abstract public function edit_template();
 
     /**
      * @return mixed
      */
-    public function view_template();
+    abstract public function view_template();
 
     /**
      * @param $data
@@ -27,12 +27,17 @@ interface AttributeTypeInterface {
      * @param $name
      * @return mixed
      */
-    public function store($data, $is_required, $name);
+    abstract public function store($data, $is_required, $name);
 
     /**
      * @param $data
      * @return mixed
      */
-    public function data($data);
+    abstract public function data($data);
 
+
+    public function handleAction($action, $data)
+    {
+
+    }
 }

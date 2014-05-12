@@ -154,8 +154,18 @@ class PageAttribute extends Eloquent {
 	{
 		// Let the type class validate/manipulate the data...
 		$this->attribute_data = $this->type()->store($data, $this->isRequired(), $this->name());
-
 		$this->save();
+	}
+
+	public function handleAction($action, $data)
+	{
+		$action_result = $this->type()->handleAction($action, $data);
+
+		if ($action_result)
+		{
+			$this->attribute_data = $action_result;
+			$this->save();
+		}
 	}
 
 }

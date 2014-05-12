@@ -447,7 +447,9 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		{
 			try
 			{
-				$attribute->store($data['attribute_' . $attribute->id]);
+				$attribute_data = isset($data['attribute_' . $attribute->id]) ? $data['attribute_' . $attribute->id] : false;
+
+				$attribute->store($attribute_data);
 			}
 			catch (AttributeValidationException $exception)
 			{
@@ -1009,5 +1011,17 @@ class EloquentPageRepository implements PageRepositoryInterface {
 
 		$pagelocation->sub_location_order = $new_sub_page_order;
 		$pagelocation->save();
+	}
+
+	public function handleAttributeAction($version, $action_data, $data)
+	{
+		foreach ($version->attributes as $attribute)
+		{
+			if (array_key_exists('attribute_' . $attribute->id, $action_data))
+			{
+				$attribute_data = isset($data['attribute_' . $attribute->id]) ? $data['attribute_' . $attribute->id] : false;
+				$attribute->handleAction($action_data['attribute_' . $attribute->id], $attribute_data);
+			}
+		}
 	}
 }

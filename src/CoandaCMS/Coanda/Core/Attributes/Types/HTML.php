@@ -1,13 +1,13 @@
 <?php namespace CoandaCMS\Coanda\Core\Attributes\Types;
 
-use CoandaCMS\Coanda\Core\Attributes\AttributeTypeInterface;
+use CoandaCMS\Coanda\Core\Attributes\AttributeType;
 use CoandaCMS\Coanda\Exceptions\AttributeValidationException;
 
 /**
  * Class HTML
  * @package CoandaCMS\Coanda\Core\Attributes\Types
  */
-class HTML implements AttributeTypeInterface {
+class HTML extends AttributeType {
 
     /**
      * @return string

@@ -1,13 +1,13 @@
 <?php namespace CoandaCMS\Coanda\Core\Attributes\Types;
 
-use CoandaCMS\Coanda\Core\Attributes\AttributeTypeInterface;
+use CoandaCMS\Coanda\Core\Attributes\AttributeType;
 use CoandaCMS\Coanda\Exceptions\AttributeValidationException;
 
 /**
  * Class Textline
  * @package CoandaCMS\Coanda\Core\Attributes\Types
  */
-class Textline implements AttributeTypeInterface {
+class Textline extends AttributeType {
 
     /**
      * @return string
@@ -59,5 +59,4 @@ class Textline implements AttributeTypeInterface {
 	{
 		return $data;
 	}
-
 }

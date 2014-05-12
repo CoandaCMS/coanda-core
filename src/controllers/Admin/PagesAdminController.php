@@ -366,11 +366,6 @@ class PagesAdminController extends BaseController {
 			$this->pageRepository->saveDraftVersion($version, Input::all());
 
 			// Everything went OK, so now we can determine what to do based on the button
-			if (Input::has('save') && Input::get('save') == 'true')
-			{
-				return Redirect::to(Coanda::adminUrl('pages/editversion/' . $page_id . '/' . $version_number))->with('page_saved', true)->withInput();
-			}
-
 			if (Input::has('choose_layout') && Input::get('choose_layout') == 'true')
 			{
 				return Redirect::to(Coanda::adminUrl('pages/editversion/' . $page_id . '/' . $version_number))->with('layout_chosen', true)->withInput();
@@ -391,6 +386,18 @@ class PagesAdminController extends BaseController {
 			if (Input::has('add_location'))
 			{
 				return Redirect::to(Coanda::adminUrl('pages/browse-add-location/' . $page_id . '/' . $version_number));
+			}
+
+			if (Input::has('attribute_action'))
+			{
+				$this->pageRepository->handleAttributeAction($version, Input::get('attribute_action'), Input::all());
+
+				return Redirect::to(Coanda::adminUrl('pages/editversion/' . $page_id . '/' . $version_number))->withInput();
+			}
+
+			if (Input::has('save') && Input::get('save') == 'true')
+			{
+				return Redirect::to(Coanda::adminUrl('pages/editversion/' . $page_id . '/' . $version_number))->with('page_saved', true)->withInput();
 			}
 
 			if (Input::has('save_exit') && Input::get('save_exit') == 'true')
@@ -426,6 +433,13 @@ class PagesAdminController extends BaseController {
 		}
 		catch (ValidationException $exception)
 		{
+			if (Input::has('attribute_action'))
+			{
+				$this->pageRepository->handleAttributeAction($version, Input::get('attribute_action'), Input::all());
+
+				return Redirect::to(Coanda::adminUrl('pages/editversion/' . $page_id . '/' . $version_number))->withInput();
+			}
+
 			if (Input::has('add_location'))
 			{
 				return Redirect::to(Coanda::adminUrl('pages/browse-add-location/' . $page_id . '/' . $version_number));
