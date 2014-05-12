@@ -10,7 +10,7 @@ $prefill_data
     <input type="text" class="form-control" id="attribute_{{ $attribute_identifier }}" name="attribute_{{ $attribute_identifier }}" value="{{ Input::old('attribute_' . $attribute_identifier, $prefill_data) }}">
 
     @if (isset($invalid_fields['attribute_' . $attribute_identifier]))
-    	<span class="help-block">{{ $invalid_fields['attribute_' . $attribute_identifier] }}</span>
+    	<span class="help-block">{{ $invalid_fields['attribute_' . $attribute_identifier]['message'] }}</span>
     @endif
 
 </div>

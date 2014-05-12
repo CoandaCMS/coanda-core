@@ -40,7 +40,7 @@ class Textline extends AttributeType {
      * @return mixed
      * @throws \CoandaCMS\Coanda\Exceptions\AttributeValidationException
      */
-    public function store($data, $is_required, $name)
+    public function store($data, $is_required, $name, $parameters = [])
 	{
 		// Is this required?
 		if ($is_required && (!$data || $data == ''))
@@ -55,7 +55,7 @@ class Textline extends AttributeType {
      * @param $data
      * @return mixed
      */
-    public function data($data)
+    public function data($data, $parameters = [])
 	{
 		return $data;
 	}

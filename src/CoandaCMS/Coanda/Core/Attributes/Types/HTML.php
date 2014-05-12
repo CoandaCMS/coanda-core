@@ -40,7 +40,7 @@ class HTML extends AttributeType {
      * @return string
      * @throws \CoandaCMS\Coanda\Exceptions\AttributeValidationException
      */
-    public function store($data, $is_required, $name)
+    public function store($data, $is_required, $name, $parameters = [])
 	{
 		if ($data == '<p><br></p>')
 		{
@@ -61,7 +61,7 @@ class HTML extends AttributeType {
      * @param $data
      * @return mixed
      */
-    public function data($data)
+    public function data($data, $parameters = [])
 	{
 		// TODO - tidy up the HTML ready for displaying...
 		return $data;

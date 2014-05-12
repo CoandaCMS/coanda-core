@@ -27,17 +27,23 @@ abstract class AttributeType {
      * @param $name
      * @return mixed
      */
-    abstract public function store($data, $is_required, $name);
+    abstract public function store($data, $is_required, $name, $parameters);
 
     /**
      * @param $data
      * @return mixed
      */
-    abstract public function data($data);
-
+    abstract public function data($data, $parameters);
 
     public function handleAction($action, $data)
     {
+    }
 
+    public function delete($parameters)
+    {
+    }
+
+    public function initialise($from_parameters, $to_parameters)
+    {
     }
 }

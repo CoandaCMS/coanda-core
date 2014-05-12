@@ -25,6 +25,19 @@ class PageAttribute extends Eloquent {
      */
     protected $fillable = ['page_version_id', 'identifier', 'type', 'order', 'attribute_data'];
 
+    public function delete()
+	{
+		$parameters = [
+			'attribute_id' => $this->id,
+			'page_id' => $this->page()->id,
+			'version_number' => $this->version->version
+		];
+
+		$this->type()->delete($parameters);
+
+		parent::delete();
+	}
+
 	/**
 	 * Returns the version for this attribute
 	 * @return CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageVersion
@@ -133,7 +146,13 @@ class PageAttribute extends Eloquent {
 	public function typeData()
 	{
 		// Let the type do whatever with the attribute to return the data required...
-		return $this->type()->data($this->attribute_data);
+		$parameters = [
+			'attribute_id' => $this->id,
+			'page_id' => $this->page()->id,
+			'version_number' => $this->version->version
+		];
+
+		return $this->type()->data($this->attribute_data, $parameters);
 	}
 
 	/**
@@ -152,14 +171,27 @@ class PageAttribute extends Eloquent {
 	 */
 	public function store($data)
 	{
+		// Let the type do whatever with the attribute to return the data required...
+		$parameters = [
+			'page_id' => $this->page()->id,
+			'version_number' => $this->version->version
+		];
+
 		// Let the type class validate/manipulate the data...
-		$this->attribute_data = $this->type()->store($data, $this->isRequired(), $this->name());
+		$this->attribute_data = $this->type()->store($data, $this->isRequired(), $this->name(), $parameters);
 		$this->save();
 	}
 
 	public function handleAction($action, $data)
 	{
-		$action_result = $this->type()->handleAction($action, $data);
+		// Let the type do whatever with the attribute to return the data required...
+		$parameters = [
+			'attribute_id' => $this->id,
+			'page_id' => $this->page()->id,
+			'version_number' => $this->version->version
+		];
+
+		$action_result = $this->type()->handleAction($action, $data, $parameters);
 
 		if ($action_result)
 		{

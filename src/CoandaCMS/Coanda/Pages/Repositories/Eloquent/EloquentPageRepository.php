@@ -453,7 +453,8 @@ class EloquentPageRepository implements PageRepositoryInterface {
 			}
 			catch (AttributeValidationException $exception)
 			{
-				$failed['attribute_' . $attribute->id] = $exception->getMessage();
+				$failed['attribute_' . $attribute->id]['message'] = $exception->getMessage();
+				$failed['attribute_' . $attribute->id]['validation_data'] = $exception->getValidationData();
 			}
 		}
 
@@ -762,6 +763,25 @@ class EloquentPageRepository implements PageRepositoryInterface {
 			];
 
 			$attribute = $this->page_attribute_model->create($attribute_data);
+
+			$from_attribute_data = [];
+
+			if ($existing_attribute)
+			{
+				$from_attribute_data = [
+					'attribute_id' => $existing_attribute->id,
+					'page_id' => $existing_attribute->page()->id,
+					'version_number' => $existing_attribute->version->version
+				];
+			}
+
+			$to_attribute_data = [
+				'attribute_id' => $attribute->id,
+				'page_id' => $attribute->page()->id,
+				'version_number' => $attribute->version->version
+			];
+
+			$page_attribute_type->initialise($from_attribute_data, $to_attribute_data);
 
 			$index ++;
 		}
