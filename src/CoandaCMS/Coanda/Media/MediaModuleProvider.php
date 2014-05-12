@@ -84,7 +84,10 @@ class MediaModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 
     public function buildAdminMenu($coanda)
     {
-        $coanda->addMenuItem('media', 'Media');
+        if ($coanda->canViewModule('media'))
+        {
+            $coanda->addMenuItem('media', 'Media');
+        }
     }
 
 }

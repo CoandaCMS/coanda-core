@@ -38,6 +38,9 @@ class LayoutModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 	{
 		$this->loadLayouts();
 		$this->loadBlockTypes($coanda);
+
+        // Add the permissions
+        $coanda->addModulePermissions('layout', 'Layouts', []); // No specific views for this module...
 	}
 
     /**
@@ -200,7 +203,10 @@ class LayoutModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 
     public function buildAdminMenu($coanda)
     {
-        $coanda->addMenuItem('layout', 'Layouts');
+        if ($coanda->canViewModule('layout'))
+        {
+            $coanda->addMenuItem('layout', 'Layouts');    
+        }
     }
 
 }

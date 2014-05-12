@@ -153,13 +153,31 @@ class Coanda {
 									];
 	}
 
+	public function canViewModule($module)
+	{
+		$user_permissions = $this->currentUserPermissions();
+
+		if (isset($user_permissions['everything']) && in_array('*', $user_permissions['everything']))
+		{
+			return true;
+		}
+
+		// Do we have some permissions for this module? If not, then they can not pass!
+		if (isset($user_permissions[$module]))
+		{
+			return true;
+		}
+
+		return false;
+	}
+
     /**
      * @param $module
      * @param $permission
      * @param array $parameters
      * @return bool
      */
-    public function canView($module, $permission, $parameters = [])
+    public function canView($module, $permission = '', $parameters = [])
 	{
 		try
 		{

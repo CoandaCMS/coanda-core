@@ -350,7 +350,10 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 
 	public function buildAdminMenu($coanda)
 	{
-		$coanda->addMenuItem('pages', 'Pages');
+		if ($coanda->canViewModule('pages'))
+		{
+			$coanda->addMenuItem('pages', 'Pages');	
+		}
 	}
 
     /**
