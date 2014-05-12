@@ -60,6 +60,8 @@ class Coanda {
 		$this->theme_provider->boot($this);
 		
 		$this->loadAttributes();
+
+		$this->loadSearchProvider();
 	}
 
     /**
@@ -322,6 +324,14 @@ class Coanda {
 		$app->bind('CoandaCMS\Coanda\Urls\Repositories\UrlRepositoryInterface', 'CoandaCMS\Coanda\Urls\Repositories\Eloquent\EloquentUrlRepository');
 		$app->bind('CoandaCMS\Coanda\History\Repositories\HistoryRepositoryInterface', 'CoandaCMS\Coanda\History\Repositories\Eloquent\EloquentHistoryRepository');
 
+		$search_provider = Config::get('coanda::coanda.search_provider');
+
+		// Only supporting elastic search right now...
+		if ($search_provider == 'elasticsearch')
+		{
+			$app->bind('CoandaCMS\Coanda\CoandaSearchProvider', 'CoandaCMS\Coanda\Search\ElasticSearch\CoandaElasticSearchProvider');	
+		}
+
 		// Let the module output any bindings
 		foreach ($this->modules as $module)
 		{
@@ -445,4 +455,15 @@ class Coanda {
 			return Redirect::to(url($requested_url));
 		}
 	}
+
+	private function loadSearchProvider()
+	{
+		$this->search_provider = App::make('CoandaCMS\Coanda\CoandaSearchProvider');
+	}
+
+	public function search()
+	{
+		return $this->search_provider;
+	}
+
 }

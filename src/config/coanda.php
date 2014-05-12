@@ -81,4 +81,16 @@ return array(
 
 	'file_cache_directory' => 'f',
 
+
+	/*
+	|--------------------------------------------------------------------------
+	| Search settings
+	|--------------------------------------------------------------------------
+	|
+	*/
+	'search_provider' => 'elasticsearch',
+
+	'elastic_search_settings' => [
+	]
+
 );
