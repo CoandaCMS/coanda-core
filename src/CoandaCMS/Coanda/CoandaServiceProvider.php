@@ -22,7 +22,7 @@ class CoandaServiceProvider extends ServiceProvider {
 	 */
 	public function boot()
 	{
-		$this->package('dover/coanda');
+		$this->package('coandacms/coanda');
 
 		// Let the main class load any modules prior to handling the bindings
 		$this->app->make('coanda')->loadModules();
