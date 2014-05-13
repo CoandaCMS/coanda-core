@@ -46,4 +46,9 @@ abstract class AttributeType {
     public function initialise($from_parameters, $to_parameters)
     {
     }
+
+    public function render($data, $parameters = [])
+    {
+        return $data;
+    }
 }

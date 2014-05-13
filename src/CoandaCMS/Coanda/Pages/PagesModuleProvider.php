@@ -370,23 +370,6 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 	}
 
     /**
-     * @return string
-     */
-    private function templateDirectory()
-	{
-		$directory = '';
-
-		$theme = $this->getTheme();
-
-		if (method_exists($theme, 'themeDirectory'))
-		{
-			$directory = $theme->themeDirectory() . '.';
-		}
-
-		return $directory;
-	}
-
-    /**
      * @param $render_data
      * @return mixed
      */
@@ -468,18 +451,12 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		$data = [
 			'page' => $page,
 			'location' => $pagelocation,
-			'name' => $page->present()->name,
-			'type' => $page->type,
 			'meta' => $meta,
-			'attributes' => $this->buildAttributes($page),
-			'template' => $this->templateDirectory() . 'pagetypes.' . $page->type
+			'attributes' => $this->renderAttributes($page, $pagelocation)
 		];
 
-		// Let the theme provider have a look at (and potentially change) the render data...
-		$data = $this->preRender($data);
-
 		// Make the view and pass all the render data to it...
-		$rendered_page = View::make($data['template'], $data);
+		$rendered_page = View::make($page->pageType()->template($data), $data);
 
 		// Get the layout template...
 		$layout = $this->getLayout($page);
@@ -488,7 +465,7 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		$layout_data = [
 			'content' => $rendered_page,
 			'meta' => $meta,
-			'data' => $data,
+			'page_data' => $data,
 			'layout' => $layout,
 			'module' => 'pages',
 			'module_identifier' => $page->id . ':' . $page->current_version
@@ -497,23 +474,13 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		return View::make($layout->template(), $layout_data);
 	}
 
-    /**
-     * @param $page
-     * @return array
-     */
-    private function buildAttributes($page)
+	private function renderAttributes($page, $pagelocation)
 	{
-		$attributes = [];
+		$attributes = new \stdClass;
 
 		foreach ($page->attributes as $attribute)
 		{
-			$attributes[$attribute->identifier] = [
-				'identifier' => $attribute->identifier,
-				'type' => $attribute->type,
-				'order' => $attribute->order,
-				'content' => $attribute->typeData(),
-				'attribute_data' => $attribute->attribute_data,
-			];
+			$attributes->{$attribute->identifier} = $attribute->render($page, $pagelocation);
 		}
 
 		return $attributes;

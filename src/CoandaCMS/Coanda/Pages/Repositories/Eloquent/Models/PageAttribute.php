@@ -200,4 +200,16 @@ class PageAttribute extends Eloquent {
 		}
 	}
 
+	public function render($page = false, $pagelocation = false)
+	{
+		$parameters = [
+			'attribute_id' => $this->id,
+			'page_id' => $this->page()->id,
+			'version_number' => $this->version->version,
+			'page' => $page,
+			'pagelocation' => $pagelocation
+		];
+
+		return $this->type()->render($this->typeData(), $parameters);
+	}
 }
