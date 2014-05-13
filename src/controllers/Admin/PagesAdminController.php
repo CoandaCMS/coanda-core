@@ -445,6 +445,11 @@ class PagesAdminController extends BaseController {
 				return Redirect::to(Coanda::adminUrl('pages/browse-add-location/' . $page_id . '/' . $version_number));
 			}
 
+			if (Input::has('add_custom_block'))
+			{
+				return Redirect::to(Coanda::adminUrl('layout/page-custom-region-block/' . $page_id . '/' . $version_number . '/' . Input::get('add_custom_block')));
+			}
+
 			if (Input::has('save_exit') && Input::get('save_exit') == 'true')
 			{
 				return Redirect::to(Coanda::adminUrl('pages/view/' . $page_id));
