@@ -272,7 +272,7 @@ class PagesAdminController extends BaseController {
      * @param $page_id
      * @return mixed
      */
-    public function getEdit($page_id)
+    public function getEdit($page_id, $version_number = false)
 	{
 		try
 		{
@@ -288,7 +288,7 @@ class PagesAdminController extends BaseController {
 			}
 			else
 			{
-				$new_version = $this->pageRepository->createNewVersion($page_id, Coanda::currentUser()->id);
+				$new_version = $this->pageRepository->createNewVersion($page_id, Coanda::currentUser()->id, $version_number);
 
 				return Redirect::to(Coanda::adminUrl('pages/editversion/' . $page->id . '/' . $new_version));
 			}

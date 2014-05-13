@@ -703,12 +703,25 @@ class EloquentPageRepository implements PageRepositoryInterface {
      * @param $user_id
      * @return mixed
      */
-    public function createNewVersion($page_id, $user_id)
+    public function createNewVersion($page_id, $user_id, $base_version_number = false)
 	{
 		$page = $this->page_model->find($page_id);
 		$type = $page->pageType();
 
-		$current_version = $page->currentVersion();
+		if ($base_version_number)
+		{
+			$current_version = $page->getVersion($base_version_number);
+		}
+		else
+		{
+			$current_version = $page->currentVersion();	
+		}
+
+		if (!$current_version)
+		{
+			throw new PageVersionNotFound('Version #' . $base_version_number . ' could not be found');
+		}
+
 		$latest_version = $page->versions()->orderBy('version', 'desc')->first();
 
 		$new_version_number = $latest_version->version + 1;
