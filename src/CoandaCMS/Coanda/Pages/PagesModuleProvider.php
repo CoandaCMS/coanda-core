@@ -492,8 +492,10 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
      */
     private function buildMeta($page)
 	{
+		$meta_title = $page->currentVersion()->meta_page_title;
+
 		return [
-			'title' => $page->currentVersion()->meta_page_title,
+			'title' => $meta_title !== '' ? $meta_title : $page->present()->name,
 			'description' => $page->currentVersion()->meta_description
 		];
 	}
