@@ -394,3 +394,8 @@ td table.table
 	color: #ccc;
 	white-space: nowrap;
 }
+
+.option-group .input-group
+{
+	margin-bottom: 5px;	
+}

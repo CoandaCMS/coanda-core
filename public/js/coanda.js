@@ -61,4 +61,14 @@ $(document).ready( function () {
 			}
 		};
 
+	$('.btn-add-option').click( function () {
+
+		var input_name = $(this).parents('.option-group').find('.options input').attr('name');
+
+		var new_option_html = '<div class="input-group"><span class="input-group-addon">&bull;</span><input class="form-control" type="text" name="' + input_name + '" value=""></div>';
+
+		$(this).parents('.option-group').find('.options').append(new_option_html);
+
+	})
+
 });
