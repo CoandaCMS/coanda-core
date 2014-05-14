@@ -2161,13 +2161,13 @@
                 }
               }
 
-              $('#medialibrary-pages').append(pagination_ul);
+              $dialog.find('.medialibrary-pages').append(pagination_ul);
 
         };
 
         var $loadImages = function (page) {
 
-            $('#medialibrary-list').html('<i class="fa fa-spinner fa-spin"></i>');
+            $dialog.find('.medialibrary-list').html('<div style="padding: 10px; text-align: center"><i class="fa fa-spinner fa-spin"></i></div>');
 
             $.ajax({
               type: 'GET',
@@ -2180,14 +2180,14 @@
 
               if (result.data.length > 0)
               {
-                $('#medialibrary-list').html('');
-                $('#medialibrary-pages').html('');
+                $dialog.find('.medialibrary-list').html('');
+                $dialog.find('.medialibrary-pages').html('');
 
                 for(var i = 0; i < result.data.length; i ++)
                 {
                   if (i % 4 == 0)
                   {
-                    $('#medialibrary-list').append('<div class="clearfix"></div>');
+                    $dialog.find('.medialibrary-list').append('<div class="clearfix"></div>');
                   }
 
                   var col = $('<div />').addClass('col-xs-3');
@@ -2220,7 +2220,7 @@
 
                   col.append(thumbnail);
 
-                  $('#medialibrary-list').append(col);
+                  $dialog.find('.medialibrary-list').append(col);
 
                 }
 
@@ -3222,10 +3222,10 @@
                        '<h4>Browse media library</h4>' +
                      '</div>' +
                      '<div class="modal-body">' +
-                       '<div class="row" id="medialibrary-list">' +
-                       '<i class="fa fa-spinner fa-spin"></i>' + 
+                       '<div class="row medialibrary-list">' +
+                       '<div style="padding: 10px; text-align: center"><i class="fa fa-spinner fa-spin"></i></div>' + 
                        '</div>' +
-                       '<div id="medialibrary-pages"></div>' +
+                       '<div class="medialibrary-pages"></div>' +
                        '<h5>Upload</h5>' +
                        '<input class="note-medialibrary-image-input" type="file" name="files" accept="image/*" />' +
                      '</div>' +
