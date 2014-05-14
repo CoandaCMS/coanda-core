@@ -1,4 +1,4 @@
-<?php namespace CoandaCMS\Coanda;
+<?php namespace CoandaCMS\Coanda\Search;
 
 interface CoandaSearchProvider {
 

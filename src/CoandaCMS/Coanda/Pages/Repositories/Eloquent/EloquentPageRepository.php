@@ -673,8 +673,37 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		}
 
 		// Log the history
-		$historyRepository->add('pages', $page->id, $user_id, 'publish_version', ['version' => (int)$version->version]);		
+		$historyRepository->add('pages', $page->id, $user_id, 'publish_version', ['version' => (int)$version->version]);
+
+		// Tell the search engine about it!
+		foreach ($page->locations as $location)
+		{
+			$this->registerLocationWithSearchProvider($location);
+		}
 	}
+
+
+	public function registerLocationWithSearchProvider($location)
+	{
+		$page = $location->page;
+		$version = $page->currentVersion();
+
+		$search_data = [
+			'url' => $location->slug,
+			'name' => $page->present()->name,
+			'type' => $page->type,
+			'visible_from' => $version->visible_from,
+			'visible_to' => $version->visible_to,
+		];
+
+		foreach ($page->attributes as $attribute)
+		{
+			$search_data[$attribute->identifier] = $attribute->render($page, $location);
+		}
+
+		Coanda::search()->register('pagelocation', $location->id, $search_data);
+	}
+
 
     /**
      * @param $version

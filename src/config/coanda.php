@@ -88,7 +88,7 @@ return array(
 	|--------------------------------------------------------------------------
 	|
 	*/
-	'search_provider' => 'elasticsearch',
+	'search_provider' => 'CoandaCMS\Coanda\Search\ElasticSearch\CoandaElasticSearchProvider',
 
 	'elastic_search_settings' => [
 	]

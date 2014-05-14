@@ -327,10 +327,9 @@ class Coanda {
 
 		$search_provider = Config::get('coanda::coanda.search_provider');
 
-		// Only supporting elastic search right now...
-		if ($search_provider == 'elasticsearch')
+		if (class_exists($search_provider))
 		{
-			$app->bind('CoandaCMS\Coanda\CoandaSearchProvider', 'CoandaCMS\Coanda\Search\ElasticSearch\CoandaElasticSearchProvider');	
+			$app->bind('CoandaCMS\Coanda\Search\CoandaSearchProvider', 'CoandaCMS\Coanda\Search\ElasticSearch\CoandaElasticSearchProvider');
 		}
 
 		// Let the module output any bindings
@@ -459,7 +458,7 @@ class Coanda {
 
 	private function loadSearchProvider()
 	{
-		$this->search_provider = App::make('CoandaCMS\Coanda\CoandaSearchProvider');
+		$this->search_provider = App::make('CoandaCMS\Coanda\Search\CoandaSearchProvider');
 	}
 
 	public function search()

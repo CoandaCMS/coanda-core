@@ -1,10 +1,13 @@
 <?php namespace CoandaCMS\Coanda\Search\ElasticSearch;
 
-class CoandaElasticSearchProvider {
+use CoandaCMS\Coanda\Search\CoandaSearchProvider;
+
+class CoandaElasticSearchProvider implements CoandaSearchProvider {
 
 	public function register($type, $id, $search_data)
 	{
-		// dd('register with ES');
+		\Log::info('Register with ES: ' . $type . '->' . $id);
+		\Log::info($search_data);
 	}
 
 	public function unRegister($type, $id)
