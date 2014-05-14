@@ -331,6 +331,10 @@ class Coanda {
 		{
 			$app->bind('CoandaCMS\Coanda\Search\CoandaSearchProvider', 'CoandaCMS\Coanda\Search\ElasticSearch\CoandaElasticSearchProvider');
 		}
+		else
+		{
+			$app->bind('CoandaCMS\Coanda\Search\CoandaSearchProvider', 'CoandaCMS\Coanda\Search\Dummy\CoandaDummySearchProvider');	
+		}
 
 		// Let the module output any bindings
 		foreach ($this->modules as $module)
