@@ -499,4 +499,32 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 			'description' => $page->currentVersion()->meta_description
 		];
 	}
+
+	public function getPage($page_id)
+	{
+		$pageRepository = App::make('CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface');
+
+		try
+		{
+			return $pageRepository->find($page_id);
+		}
+		catch (PageNotFound $exception)
+		{
+			return false;
+		}
+	}
+
+	public function getLocation($location_id)
+	{
+		$pageRepository = App::make('CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface');
+		
+		try
+		{
+			return $pageRepository->locationById($location_id);
+		}
+		catch (PageNotFound $exception)
+		{
+			return false;
+		}
+	}	
 }
