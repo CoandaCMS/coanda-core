@@ -19,6 +19,7 @@ return array(
 	'attribute_types' => [
 		'CoandaCMS\Coanda\Core\Attributes\Types\Textline',
 		'CoandaCMS\Coanda\Core\Attributes\Types\HTML',
+		'CoandaCMS\Coanda\Core\Attributes\Types\Boolean',
 	],
 
 	/*

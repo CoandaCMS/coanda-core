@@ -1,0 +1,1 @@
+{{ $content == 'yes' ? 'Yes' : 'No' }}
