@@ -122,7 +122,7 @@ class PagesAdminController extends BaseController {
 		{
 			$pagelocation = $this->pageRepository->locationById($id);
 
-			Coanda::checkAccess('pages', 'view', ['page_location_id' => $pagelocation->id, 'page_type' => $pagelocation->page->type]);
+			Coanda::checkAccess('pages', 'view', ['page_location_id' => $pagelocation->id, 'page_location_path' => $pagelocation->path, 'page_type' => $pagelocation->page->type]);
 
 			$view_data = [
 							'pagelocation' => $pagelocation,

@@ -312,6 +312,42 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
      */
     public function checkAccess($permission, $parameters, $user_permissions = [])
 	{
+		// $user_permissions['paths'] = [
+		// 	'/0/30/',
+		// 	'/0/42/',
+		// ];
+
+		// $pass_path_check = true;
+
+		// if (isset($parameters['page_location_id']))
+		// {
+		// 	if (isset($user_permissions['paths']) && count($user_permissions['paths']) > 0)
+		// 	{
+		// 		$pass_path_check = false;
+
+		// 		foreach ($user_permissions['paths'] as $allowed_path)
+		// 		{
+		// 			$path_parts = explode('/', $allowed_path);
+
+		// 			if (count($path_parts) > 0)
+		// 			{
+		// 				foreach ($path_parts as $path_part)
+		// 				{
+		// 					if ($path_part == $parameters['page_location_id'])
+		// 					{
+		// 						$pass_path_check = true;
+		// 					}
+		// 				}
+		// 			}
+		// 		}
+		// 	}
+		// }
+
+		// if (!$pass_path_check)
+		// {
+		// 	throw new PermissionDenied('Your are not allowed access to this location');
+		// }
+
 		if (in_array('*', $user_permissions))
 		{
 			return;
