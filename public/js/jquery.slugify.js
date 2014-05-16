@@ -75,6 +75,7 @@
 
 		$('.refresh-slug').each ( function () {
 
+			$(this).css('cursor', 'pointer');
 			$(this).on('click', function () {
 
 				var slug = convertToSlug($source.val());
