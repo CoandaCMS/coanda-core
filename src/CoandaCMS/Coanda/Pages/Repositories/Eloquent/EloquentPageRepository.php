@@ -449,7 +449,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 			{
 				$attribute_data = isset($data['attribute_' . $attribute->id]) ? $data['attribute_' . $attribute->id] : false;
 
-				$attribute->store($attribute_data);
+				$attribute->store($attribute_data, 'attribute_' . $attribute->id);
 			}
 			catch (AttributeValidationException $exception)
 			{

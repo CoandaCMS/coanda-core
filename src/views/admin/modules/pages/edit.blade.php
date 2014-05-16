@@ -30,7 +30,7 @@
 </div>
 
 
-{{ Form::open(['url' => Coanda::adminUrl('pages/editversion/' . $version->page_id . '/' . $version->version)]) }}
+{{ Form::open(['url' => Coanda::adminUrl('pages/editversion/' . $version->page_id . '/' . $version->version), 'files' => true]) }}
 <div class="edit-container">
 
 	@if (Session::has('page_saved'))

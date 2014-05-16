@@ -20,6 +20,7 @@ return array(
 		'CoandaCMS\Coanda\Core\Attributes\Types\Textline',
 		'CoandaCMS\Coanda\Core\Attributes\Types\HTML',
 		'CoandaCMS\Coanda\Core\Attributes\Types\Boolean',
+		'CoandaCMS\Coanda\Core\Attributes\Types\Image',
 	],
 
 	/*

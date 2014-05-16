@@ -169,12 +169,13 @@ class PageAttribute extends Eloquent {
 	 * @param  array $data
 	 * @return void
 	 */
-	public function store($data)
+	public function store($data, $data_key)
 	{
 		// Let the type do whatever with the attribute to return the data required...
 		$parameters = [
 			'page_id' => $this->page()->id,
-			'version_number' => $this->version->version
+			'version_number' => $this->version->version,
+			'data_key' => $data_key
 		];
 
 		// Let the type class validate/manipulate the data...
