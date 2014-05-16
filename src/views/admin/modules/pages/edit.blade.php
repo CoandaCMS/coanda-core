@@ -29,6 +29,7 @@
 	<div class="page-options col-md-12"></div>
 </div>
 
+
 {{ Form::open(['url' => Coanda::adminUrl('pages/editversion/' . $version->page_id . '/' . $version->version)]) }}
 <div class="edit-container">
 
@@ -64,7 +65,7 @@
 						@if ($attribute->generates_slug)
 							@section('footer')
 								<script type="text/javascript">
-									// $('.slugiwugy').slugify('#attribute_{{ $attribute->id }}');
+									$('#attribute_{{ $attribute->id }}').slugify('.slugiwugy');
 								</script>
 							@append
 						@endif
@@ -223,6 +224,7 @@
 										<span style="float: right;">{{ $slug->base_slug }}/</span>
 									</span>
 							    	<input type="text" class="form-control slugiwugy" id="slug_{{ $slug->id }}" name="slug_{{ $slug->id }}" value="{{ Input::old('slug_' . $slug->id, $slug->slug) }}">
+							    	<span class="input-group-addon refresh-slug"><i class="fa fa-refresh"></i></span>
 								</div>
 
 							    @if (isset($invalid_fields['slug_' . $slug->id]))
