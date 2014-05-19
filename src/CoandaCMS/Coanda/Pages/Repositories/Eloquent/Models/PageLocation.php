@@ -78,6 +78,11 @@ class PageLocation extends Eloquent {
 		return $this->hasMany('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageLocation', 'parent_page_id');
 	}
 
+	public function childCount()
+	{
+		return $this->children()->whereHas('page', function ($query) { $query->where('is_trashed', '=', '0'); })->count();
+	}
+
     /**
      * @return mixed
      */

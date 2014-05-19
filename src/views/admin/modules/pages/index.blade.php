@@ -138,7 +138,7 @@
 										<td>{{ $pagelocation->page->present()->type }}</td>
 										<td>
 											@if ($pagelocation->page->pageType()->allowsSubPages())
-												{{ $pagelocation->children->count() }} sub page{{ $pagelocation->children->count() !== 1 ? 's' : '' }}
+												{{ $pagelocation->childCount() }} sub page{{ $pagelocation->childCount() !== 1 ? 's' : '' }}
 											@endif
 										</td>
 										<td>
