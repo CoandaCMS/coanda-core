@@ -56,4 +56,9 @@ abstract class PageType {
     {
         return true;
     }
+
+    public function canStaticCache()
+    {
+        return false;
+    }
 }

@@ -1,6 +1,6 @@
 <?php namespace CoandaCMS\Coanda\Pages;
 
-use Route, App, Config, Coanda, View;
+use Route, App, Config, Coanda, View, Cache;
 
 use CoandaCMS\Coanda\Exceptions\PageTypeNotFound;
 use CoandaCMS\Coanda\Exceptions\PageAttributeTypeNotFound;
@@ -55,6 +55,11 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 	{
 		// Add the router to handle slug views
 		$coanda->addRouter('pagelocation', function ($url) use ($coanda) {
+
+			// if (Cache::has('location_' . $url->type_id))
+			// {
+			// 	return Cache::get('location_' . $url->type_id) . '<!-- cached -->';
+			// }
 
 			$pageRepository = App::make('CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface');
 
@@ -453,13 +458,22 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
      */
     public function renderHome()
 	{
+		// if (Cache::has('home_page'))
+		// {
+		// 	return Cache::get('home_page');
+		// }
+
 		$pageRepository = App::make('CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface');
 		
 		$home_page = $pageRepository->getHomePage();
 
 		if ($home_page)
 		{
-			return $this->renderPage($home_page);
+			$content = $this->renderPage($home_page);
+
+			// Cache::put('home_page', $content, 2);
+
+			return $content;
 		}
 
 		throw new \Exception('Home page not created yet!');
@@ -507,7 +521,15 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 			'module_identifier' => $page->id . ':' . $page->current_version
 		];
 
-		return View::make($layout->template(), $layout_data);
+		$content = View::make($layout->template(), $layout_data)->render();
+
+		// if ($page->pageType()->canStaticCache() && $pagelocation)
+		// {
+		// 	$content = str_replace('</body>', '<strong>CACHED!</strong></body>', $content);
+		// 	Cache::put('location_' . $pagelocation, $content, 2);
+		// }
+
+		return $content;
 	}
 
 	private function renderAttributes($page, $pagelocation)
