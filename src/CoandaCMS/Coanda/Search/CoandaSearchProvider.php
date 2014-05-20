@@ -2,8 +2,8 @@
 
 interface CoandaSearchProvider {
 
-	public function register($index, $type, $id, $search_data);
+	public function register($module, $module_id, $url, $search_data);
 
-	public function unRegister($index, $type, $id);
+	public function unRegister($module, $module_id);
 
 }

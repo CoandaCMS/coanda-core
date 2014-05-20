@@ -694,7 +694,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		$version = $page->currentVersion();
 
 		$search_data = [
-			'url' => $location->slug,
+			'page_type' => $page->type,
 			'name' => $page->present()->name,
 			'visible_from' => $version->visible_from,
 			'visible_to' => $version->visible_to,
@@ -705,7 +705,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 			$search_data[$attribute->identifier] = $attribute->render($page, $location, true);
 		}
 
-		Coanda::search()->register('pages', $page->type, $location->id, $search_data);
+		Coanda::search()->register('pages', $location->id, $location->slug, $search_data);
 	}
 
 	public function unRegisterLocationWithSearchProvider($location)
