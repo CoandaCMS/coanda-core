@@ -131,6 +131,11 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		return $location;
 	}
 
+	public function locations($limit, $offset)
+	{
+		return $this->page_location_model->take($limit)->skip($offset)->get();
+	}
+
     /**
      * @param $ids
      * @return \Illuminate\Database\Eloquent\Collection
@@ -691,19 +696,24 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		$search_data = [
 			'url' => $location->slug,
 			'name' => $page->present()->name,
-			'type' => $page->type,
 			'visible_from' => $version->visible_from,
 			'visible_to' => $version->visible_to,
 		];
 
 		foreach ($page->attributes as $attribute)
 		{
-			$search_data[$attribute->identifier] = $attribute->render($page, $location);
+			$search_data[$attribute->identifier] = $attribute->render($page, $location, true);
 		}
 
-		Coanda::search()->register('pagelocation', $location->id, $search_data);
+		Coanda::search()->register('pages', $page->type, $location->id, $search_data);
 	}
 
+	public function unRegisterLocationWithSearchProvider($location)
+	{
+		$page = $location->page;
+
+		Coanda::search()->unRegister('pages', $page->type, $location->id);
+	}
 
     /**
      * @param $version

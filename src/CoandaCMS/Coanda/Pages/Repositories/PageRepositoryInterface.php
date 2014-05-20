@@ -28,6 +28,8 @@ interface PageRepositoryInterface {
      */
     public function locationById($id);
 
+    public function locations($limit, $offset);
+
     /**
      * @param $ids
      * @return mixed

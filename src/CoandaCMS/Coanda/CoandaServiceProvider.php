@@ -68,6 +68,12 @@ class CoandaServiceProvider extends ServiceProvider {
 
 		$this->commands('coanda.delayedpublish');
 		
+		$this->app['coanda.reindex'] = $this->app->share(function($app)
+		{
+		    return new \CoandaCMS\Coanda\Pages\Commands\Reindex($app);
+		});
+
+		$this->commands('coanda.reindex');
 	}
 
 	/**
