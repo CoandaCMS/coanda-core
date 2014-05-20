@@ -49,7 +49,7 @@
 								<tr class="status-{{ $pagelocation->page->status }}">
 
 									@if (!$pagelocation->is_trashed)
-										<td class="tight"><input type="checkbox" name="add_locations[]" value="{{ $pagelocation->id }}" @if (in_array($pagelocation->id, $existing_locations)) disabled="disabled" @endif></td>
+										<td class="tight"><input type="checkbox" name="add_locations[]" value="{{ $pagelocation->id }}" @if (in_array($pagelocation->id, $existing_locations) || !$pagelocation->page->pageType()->allowsSubPages()) disabled="disabled" @endif></td>
 									@endif
 
 									<td>
@@ -59,7 +59,7 @@
 											<i class="fa {{ $pagelocation->page->pageType()->icon() }}"></i>
 										@endif
 
-										@if (in_array($pagelocation->id, $existing_locations))
+										@if (in_array($pagelocation->id, $existing_locations) || !$pagelocation->page->pageType()->allowsSubPages())
 											{{ $pagelocation->page->present()->name }}
 										@else
 											<a href="{{ Coanda::adminUrl('pages/browse-add-location/' . $page_id . '/' . $version_number . '/' . $pagelocation->id) }}">{{ $pagelocation->page->present()->name }}</a>
