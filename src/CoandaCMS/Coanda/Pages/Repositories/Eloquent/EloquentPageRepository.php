@@ -376,6 +376,18 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		}
 	}
 
+	public function removeVersionSlug($version_id, $slug_id)
+	{
+		$version = $this->getVersionById($version_id);
+
+		$slug = $version->slugs()->whereId($slug_id)->first();
+
+		if ($slug)
+		{
+			$slug->delete();
+		}
+	}
+
     /**
      * @param $page_id
      * @param $version
@@ -466,26 +478,33 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		// If we are dealing with the home page, then the slug doesn't matter
 		if (!$version->page->is_home)
 		{
-			// Check each of the locations to see if the slug is OK
-			foreach ($version->slugs as $slug)
+			if ($version->slugs()->count() > 0)
 			{
-				try
+				// Check each of the locations to see if the slug is OK
+				foreach ($version->slugs as $slug)
 				{
-					$location_id = $slug->location ? $slug->location->id : 0;
+					try
+					{
+						$location_id = $slug->location ? $slug->location->id : 0;
 
-					$this->urlRepository->canUse($slug->base_slug . $data['slug_' . $slug->id], 'pagelocation', $location_id);
+						$this->urlRepository->canUse($slug->base_slug . $data['slug_' . $slug->id], 'pagelocation', $location_id);
 
-					$slug->slug = $data['slug_' . $slug->id];
-					$slug->save();
+						$slug->slug = $data['slug_' . $slug->id];
+						$slug->save();
+					}
+					catch(InvalidSlug $exception)
+					{
+						$failed['slug_' . $slug->id] = 'The slug is not valid';
+					}
+					catch(UrlAlreadyExists $exception)
+					{
+						$failed['slug_' . $slug->id] = 'The slug is already in use';
+					}
 				}
-				catch(InvalidSlug $exception)
-				{
-					$failed['slug_' . $slug->id] = 'The slug is not valid';
-				}
-				catch(UrlAlreadyExists $exception)
-				{
-					$failed['slug_' . $slug->id] = 'The slug is already in use';
-				}
+			}
+			else
+			{
+				$failed['slugs'] = 'Please choose at least one location';
 			}
 		}
 
@@ -658,6 +677,21 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		// If we are dealing with the home page, not need to worry about the URL...
 		if (!$version->page->is_home)
 		{
+			$version_locations = $version->slugs()->lists('page_location_id');
+
+			// Work out if we need to remove any locations...
+			foreach ($page->locations as $location)
+			{
+				if (!in_array($location->parent_page_id, $version_locations))
+				{
+					$urlRepository->delete('pagelocation', $location->id);
+
+					$this->unRegisterLocationWithSearchProvider($location);
+
+					$location->delete();
+				}
+			}
+
 			foreach ($version->slugs as $slug)
 			{
 				// Is the location already registered for this page?
@@ -673,7 +707,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 					$location = $this->page_location_model->create($location_data);
 				}
 
-				$url = $urlRepository->register($slug->full_slug, 'pagelocation', $location->id);				
+				$url = $urlRepository->register($slug->full_slug, 'pagelocation', $location->id);
 			}
 		}
 

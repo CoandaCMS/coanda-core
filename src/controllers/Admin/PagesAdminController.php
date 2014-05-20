@@ -388,6 +388,18 @@ class PagesAdminController extends BaseController {
 				return Redirect::to(Coanda::adminUrl('pages/browse-add-location/' . $page_id . '/' . $version_number));
 			}
 
+			if (Input::has('remove_locations'))
+			{
+				$slug_ids = Input::has('remove_slug_list') ? Input::get('remove_slug_list') : [];
+				
+				foreach ($slug_ids as $slug_id)
+				{
+					$this->pageRepository->removeVersionSlug($version->id, $slug_id);
+				}
+
+				return Redirect::to(Coanda::adminUrl('pages/editversion/' . $page_id . '/' . $version_number))->withInput();
+			}
+
 			if (Input::has('attribute_action'))
 			{
 				$this->pageRepository->handleAttributeAction($version, Input::get('attribute_action'), Input::all());
@@ -443,6 +455,16 @@ class PagesAdminController extends BaseController {
 			if (Input::has('add_location'))
 			{
 				return Redirect::to(Coanda::adminUrl('pages/browse-add-location/' . $page_id . '/' . $version_number));
+			}
+
+			if (Input::has('remove_locations'))
+			{
+				$slug_ids = Input::has('remove_slug_list') ? Input::get('remove_slug_list') : [];
+
+				foreach ($slug_ids as $slug_id)
+				{
+					$this->pageRepository->removeVersionSlug($version->id, $slug_id);
+				}
 			}
 
 			if (Input::has('add_custom_block'))
@@ -520,7 +542,7 @@ class PagesAdminController extends BaseController {
 			
 			$pages = $this->pageRepository->subPages($parent_page_id, $per_page);
 
-			return View::make('coanda::admin.modules.pages.browseaddlocation', [ 'pages' => $pages, 'page_id' => $page_id, 'version_number' => $version_number, 'location' => $location ]);
+			return View::make('coanda::admin.modules.pages.browseaddlocation', [ 'pages' => $pages, 'page_id' => $page_id, 'version_number' => $version_number, 'existing_locations' => $existing_locations, 'location' => $location ]);
 		}
 		catch (PageNotFound $exception)
 		{
@@ -801,6 +823,12 @@ class PagesAdminController extends BaseController {
 		{
 			App::abort('404');
 		}
-   	
+    }
+
+    public function getIndexLocationTest($location_id)
+    {
+		$pagelocation = $this->pageRepository->locationById($location_id);
+
+		$this->pageRepository->registerLocationWithSearchProvider($pagelocation);
     }
 }

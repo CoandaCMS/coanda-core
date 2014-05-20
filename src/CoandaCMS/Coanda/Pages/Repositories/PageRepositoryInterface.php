@@ -96,6 +96,8 @@ interface PageRepositoryInterface {
      */
     public function addNewVersionSlug($version_id, $page_location_id);
 
+    public function removeVersionSlug($version_id, $slug_id);
+
     /**
      * @param $version
      * @return mixed

@@ -216,26 +216,38 @@
 				<div class="tab-pane active" id="details">
 					@if (!$version->page->is_home)
 
-						@foreach ($version->slugs as $slug)
-							<div class="form-group @if (isset($invalid_fields['slug_' . $slug->id])) has-error @endif">
+						@if ($version->slugs()->count() > 0)
+							@foreach ($version->slugs as $slug)
+								<div class="form-group @if (isset($invalid_fields['slug_' . $slug->id])) has-error @endif">
 
-								<div class="input-group">
-									<span class="input-group-addon" style="overflow: hidden; max-width: 150px; text-align: right;">
-										<span style="float: right;">{{ $slug->base_slug }}/</span>
-									</span>
-							    	<input type="text" class="form-control slugiwugy" id="slug_{{ $slug->id }}" name="slug_{{ $slug->id }}" value="{{ Input::old('slug_' . $slug->id, $slug->slug) }}">
-							    	<span class="input-group-addon refresh-slug"><i class="fa fa-refresh"></i></span>
+									<div class="input-group">
+										<span class="input-group-addon" style="overflow: hidden; max-width: 150px; text-align: right;">
+											<span style="float: right;">{{ $slug->base_slug }}/</span>
+										</span>
+								    	<input type="text" class="form-control slugiwugy" id="slug_{{ $slug->id }}" name="slug_{{ $slug->id }}" value="{{ Input::old('slug_' . $slug->id, $slug->slug) }}">
+								    	<span class="input-group-addon refresh-slug"><i class="fa fa-refresh"></i></span>
+								    	<span class="input-group-addon"><input type="checkbox" name="remove_slug_list[]" value="{{ $slug->id }}"></span>
+									</div>
+
+								    @if (isset($invalid_fields['slug_' . $slug->id]))
+								    	<span class="help-block">{{ $invalid_fields['slug_' . $slug->id] }}</span>
+								    @endif
+
 								</div>
+							@endforeach
+						@else
+							<div class="form-group @if (isset($invalid_fields['slugs'])) has-error @endif">
+								<p>No locations for this page.</p>
 
-							    @if (isset($invalid_fields['slug_' . $slug->id]))
-							    	<span class="help-block">{{ $invalid_fields['slug_' . $slug->id] }}</span>
+							    @if (isset($invalid_fields['slugs']))
+							    	<span class="help-block">{{ $invalid_fields['slugs'] }}</span>
 							    @endif
-
 							</div>
-						@endforeach
+						@endif
 
 						<div class="form-group">
 							{{ Form::button('Add location', ['name' => 'add_location', 'value' => 'true', 'type' => 'submit', 'class' => 'btn btn-default btn-sm']) }}
+							{{ Form::button('Remove selected', ['name' => 'remove_locations', 'value' => 'true', 'type' => 'submit', 'class' => 'btn btn-default btn-sm pull-right']) }}
 						</div>
 					@endif
 
