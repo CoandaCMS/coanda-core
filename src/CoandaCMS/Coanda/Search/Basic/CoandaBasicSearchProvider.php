@@ -12,4 +12,8 @@ class CoandaBasicSearchProvider implements CoandaSearchProvider {
 	{
 	}
 
+	public function handleSearch()
+	{
+	}
+
 }

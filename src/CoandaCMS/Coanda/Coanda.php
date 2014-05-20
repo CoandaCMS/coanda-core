@@ -1,6 +1,6 @@
 <?php namespace CoandaCMS\Coanda;
 
-use App, Route, Config, Redirect, Request, Session;
+use App, Route, Config, Redirect, Request, Session, View;
 
 use CoandaCMS\Coanda\Core\Attributes\Exceptions\AttributeTypeNotFound;
 use CoandaCMS\Coanda\Exceptions\PermissionDenied;
@@ -299,6 +299,13 @@ class Coanda {
 		}
 
 		App::before( function () {
+
+			Route::match(['GET', 'POST'], 'search', function () {
+				
+				// Pass this route to the search provider, it can do whatever it likes!
+				return Coanda::search()->handleSearch();
+
+			});
 
 			Route::match(['GET', 'POST'], '{slug}', function ($slug)
 			{

@@ -6,4 +6,6 @@ interface CoandaSearchProvider {
 
 	public function unRegister($module, $module_id);
 
+	public function handleSearch();
+
 }
