@@ -72,6 +72,14 @@ class Image extends AttributeType {
      */
     public function data($data, $parameters = [])
 	{
-        return Coanda::module('media')->getMedia($data);
+        $media_id = (int)$data;
+
+        if ($media_id)
+        {
+            return Coanda::module('media')->getMedia($media_id);
+        }
+
+        return false;
+        
 	}
 }
