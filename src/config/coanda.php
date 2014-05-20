@@ -90,9 +90,6 @@ return array(
 	|--------------------------------------------------------------------------
 	|
 	*/
-	'search_provider' => 'CoandaCMS\Coanda\Search\ElasticSearch\CoandaElasticSearchProvider',
-
-	'elastic_search_settings' => [
-	]
+	'search_provider' => '',
 
 );
