@@ -329,7 +329,7 @@ class Coanda {
 
 		if (class_exists($search_provider))
 		{
-			$app->bind('CoandaCMS\Coanda\Search\CoandaSearchProvider', 'CoandaCMS\Coanda\Search\ElasticSearch\CoandaElasticSearchProvider');
+			$app->bind('CoandaCMS\Coanda\Search\CoandaSearchProvider', $search_provider);
 		}
 		else
 		{
