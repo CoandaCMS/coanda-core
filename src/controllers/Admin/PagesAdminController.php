@@ -500,6 +500,13 @@ class PagesAdminController extends BaseController {
 			$version = $this->pageRepository->getDraftVersion($page_id, $version_number);
 			$page = $version->page;
 
+			$existing_locations = [];
+
+			foreach ($version->slugs as $version_slug)
+			{
+				$existing_locations[] = $version_slug->page_location_id;
+			}
+
 			Coanda::checkAccess('pages', 'edit', ['page_id' => $page->id, 'page_type' => $page->type]);
 
 			$per_page = 10;
