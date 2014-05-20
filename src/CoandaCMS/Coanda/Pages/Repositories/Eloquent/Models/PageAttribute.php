@@ -201,14 +201,15 @@ class PageAttribute extends Eloquent {
 		}
 	}
 
-	public function render($page = false, $pagelocation = false)
+	public function render($page = false, $pagelocation = false, $indexing = false)
 	{
 		$parameters = [
 			'attribute_id' => $this->id,
 			'page_id' => $this->page()->id,
 			'version_number' => $this->version->version,
 			'page' => $page,
-			'pagelocation' => $pagelocation
+			'pagelocation' => $pagelocation,
+			'indexing' => $indexing
 		];
 
 		return $this->type()->render($this->typeData(), $parameters);
