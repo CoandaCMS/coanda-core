@@ -65,7 +65,7 @@ class CreatePagesTable extends Migration {
 			$table->increments('id');
 			
 			$table->integer('version_id');
-			$table->integer('location_id');
+			$table->integer('page_location_id');
 			$table->text('slug');
 
 			$table->timestamps();
