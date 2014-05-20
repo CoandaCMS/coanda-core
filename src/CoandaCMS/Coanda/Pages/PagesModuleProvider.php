@@ -430,11 +430,11 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
      * @param $page
      * @return mixed
      */
-    private function getLayout($page)
+    private function getLayout($version)
 	{
-		if ($page->currentVersion()->layout_identifier)
+		if ($version->layout_identifier)
 		{
-			$layout = Coanda::module('layout')->layoutByIdentifier($page->currentVersion()->layout_identifier);
+			$layout = Coanda::module('layout')->layoutByIdentifier($version->layout_identifier);
 
 			if ($layout)
 			{
@@ -509,7 +509,7 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		$rendered_page = View::make($page->pageType()->template($data), $data);
 
 		// Get the layout template...
-		$layout = $this->getLayout($page);
+		$layout = $this->getLayout($page->currentVersion());
 
 		// Give the layout the rendered page and the data, and it can work some magic to give us back a complete page...
 		$layout_data = [
@@ -556,6 +556,53 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 			'title' => $meta_title !== '' ? $meta_title : $page->present()->name,
 			'description' => $page->currentVersion()->meta_description
 		];
+	}
+
+	public function renderVersion($version)
+	{
+		$page = $version->page;
+		$pagelocation = false;
+
+		$meta_title = $version->meta_page_title;
+
+		$meta = [
+			'title' => $meta_title !== '' ? $meta_title : $version->present()->name,
+			'description' => $version->meta_description
+		];
+
+		$attributes = new \stdClass;
+
+		foreach ($version->attributes as $attribute)
+		{
+			$attributes->{$attribute->identifier} = $attribute->render($page, $pagelocation);
+		}
+
+		$data = [
+			'page' => $version->page,
+			'location' => false,
+			'meta' => $meta,
+			'attributes' => $attributes
+		];
+
+		// Make the view and pass all the render data to it...
+		$rendered_version = View::make($page->pageType()->template($data), $data);
+
+		// Get the layout template...
+		$layout = $this->getLayout($version);
+
+		// Give the layout the rendered page and the data, and it can work some magic to give us back a complete page...
+		$layout_data = [
+			'content' => $rendered_version,
+			'meta' => $meta,
+			'page_data' => $data,
+			'layout' => $layout,
+			'module' => 'pages',
+			'module_identifier' => $page->id . ':' . $version->version
+		];
+
+		$content = View::make($layout->template(), $layout_data)->render();
+
+		return $content;
 	}
 
 	public function getPage($page_id)

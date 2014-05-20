@@ -1,6 +1,6 @@
 <?php namespace CoandaCMS\Coanda\Controllers;
 
-use View, Redirect;
+use View, Redirect, App, Coanda;
 
 use CoandaCMS\Coanda\Exceptions\PageVersionNotFound;
 
@@ -33,12 +33,27 @@ class PagesController extends BaseController {
 		{
 			$version = $this->pageRepository->getVersionByPreviewKey($preview_key);
 
-			return View::make('coanda::pages.preview', [ 'version' => $version ]);
+			return View::make('coanda::pages.preview', [ 'version' => $version, 'preview_key' => $preview_key ]);
 		}
 		catch(PageVersionNotFound $exception)
 		{
-			return Redirect::to('/');
+			return App::abort('404');
 		}
+	}
+
+	public function getRenderPreview($preview_key, $location = false)
+	{
+		try
+		{
+			$version = $this->pageRepository->getVersionByPreviewKey($preview_key);
+
+			return Coanda::module('pages')->renderVersion($version);
+		}
+		catch(PageVersionNotFound $exception)
+		{
+			return App::abort('404');
+		}
+
 	}
 
 }
