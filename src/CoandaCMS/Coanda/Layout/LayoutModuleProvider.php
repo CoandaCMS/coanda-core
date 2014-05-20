@@ -145,6 +145,14 @@ class LayoutModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		return [];
 	}
 
+    public function layoutFor($for_identifier)
+    {
+        // Just returns the default for the moment.
+        $default_layout = Config::get('coanda::coanda.default_layout');
+
+        return $this->layouts[$default_layout];
+    }
+
     /**
      * @param $new_orders
      */
