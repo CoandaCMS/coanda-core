@@ -333,7 +333,7 @@ class Coanda {
 		}
 		else
 		{
-			$app->bind('CoandaCMS\Coanda\Search\CoandaSearchProvider', 'CoandaCMS\Coanda\Search\Dummy\CoandaDummySearchProvider');	
+			$app->bind('CoandaCMS\Coanda\Search\CoandaSearchProvider', 'CoandaCMS\Coanda\Search\Basic\CoandaBasicSearchProvider');
 		}
 
 		// Let the module output any bindings

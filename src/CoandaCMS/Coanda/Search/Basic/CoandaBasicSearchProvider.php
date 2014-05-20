@@ -1,8 +1,8 @@
-<?php namespace CoandaCMS\Coanda\Search\Dummy;
+<?php namespace CoandaCMS\Coanda\Search\Basic;
 
 use CoandaCMS\Coanda\Search\CoandaSearchProvider;
 
-class CoandaDummySearchProvider implements CoandaSearchProvider {
+class CoandaBasicSearchProvider implements CoandaSearchProvider {
 
 	public function register($type, $id, $search_data)
 	{
