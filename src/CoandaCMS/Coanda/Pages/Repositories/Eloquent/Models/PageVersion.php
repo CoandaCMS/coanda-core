@@ -80,6 +80,11 @@ class PageVersion extends Eloquent {
 		return $this->hasMany('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageVersionSlug', 'version_id');
 	}
 
+    public function comments()
+	{
+		return $this->hasMany('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageVersionComment', 'version_id')->orderBy('created_at', 'desc');;
+	}
+
     /**
      * @param $page_location_id
      * @return string

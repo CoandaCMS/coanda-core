@@ -399,3 +399,8 @@ td table.table
 {
 	margin-bottom: 5px;	
 }
+
+.version-comment p.lead
+{
+	font-size: 16px;
+}

@@ -208,7 +208,7 @@
 
 			<ul class="nav nav-tabs">
 				<li class="active"><a href="#details" data-toggle="tab">Details</a></li>
-				<li><a href="#preview" data-toggle="tab">Preview</a></li>
+				<li><a href="#preview" data-toggle="tab">Preview @if ($version->comments->count() > 0) <span class="label label-info">{{ $version->comments->count() }} comments</span> @endif</a></li>
 			</ul>
 
 			<div class="edit-container tab-content">
@@ -289,7 +289,17 @@
 						</div>
 					</div>
 
-					{{-- <p>Show comments on the draft here</p> --}}
+					@if ($version->comments->count() > 0)
+						<h2>Comments</h2>
+						@foreach ($version->comments as $comment)
+							<div class="well well-sm version-comment">
+								<p class="lead">"{{ nl2br($comment->comment) }}"</p>
+								<div class="pull-right">{{ $comment->present()->created_at }} from <strong>{{ $comment->name }}</strong></div>
+								<div class="clearfix"></div>
+							</div>
+						@endforeach
+					@endif
+
 				</div>
 			</div>
 

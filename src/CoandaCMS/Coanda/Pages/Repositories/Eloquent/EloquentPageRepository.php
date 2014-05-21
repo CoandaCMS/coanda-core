@@ -18,6 +18,7 @@ use CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageLocation as PageLoca
 use CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\Page as PageModel;
 use CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageVersion as PageVersionModel;
 use CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageVersionSlug as PageVersionSlugModel;
+use CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageVersionComment as PageVersionCommentModel;
 use CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageAttribute as PageAttributeModel;
 
 use CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface;
@@ -51,6 +52,8 @@ class EloquentPageRepository implements PageRepositoryInterface {
      */
     private $page_version_slug_model;
 
+    private $page_version_comment_model;
+
     /**
      * @var \CoandaCMS\Coanda\Urls\Repositories\UrlRepositoryInterface
      */
@@ -69,12 +72,13 @@ class EloquentPageRepository implements PageRepositoryInterface {
      * @param CoandaCMS\Coanda\Urls\Repositories\UrlRepositoryInterface $urlRepository
      * @param CoandaCMS\Coanda\History\Repositories\HistoryRepositoryInterface $historyRepository
      */
-    public function __construct(PageLocationModel $page_location_model, PageModel $page_model, PageVersionModel $page_version_model, PageAttributeModel $page_attribute_model, PageVersionSlugModel $page_version_slug_model, \CoandaCMS\Coanda\Urls\Repositories\UrlRepositoryInterface $urlRepository, \CoandaCMS\Coanda\History\Repositories\HistoryRepositoryInterface $historyRepository)
+    public function __construct(PageLocationModel $page_location_model, PageModel $page_model, PageVersionModel $page_version_model, PageAttributeModel $page_attribute_model, PageVersionSlugModel $page_version_slug_model, PageVersionCommentModel $page_version_comment_model, \CoandaCMS\Coanda\Urls\Repositories\UrlRepositoryInterface $urlRepository, \CoandaCMS\Coanda\History\Repositories\HistoryRepositoryInterface $historyRepository)
 	{
 		$this->page_location_model = $page_location_model;
 		$this->page_version_model = $page_version_model;
 		$this->page_attribute_model = $page_attribute_model;
 		$this->page_version_slug_model = $page_version_slug_model;
+		$this->page_version_comment_model = $page_version_comment_model;
 		$this->page_model = $page_model;
 		$this->urlRepository = $urlRepository;
 		$this->historyRepository = $historyRepository;
@@ -1129,5 +1133,37 @@ class EloquentPageRepository implements PageRepositoryInterface {
 				$attribute->handleAction($action_data['attribute_' . $attribute->id], $attribute_data);
 			}
 		}
+	}
+
+	public function addVersionComment($version, $data)
+	{
+		$invalid_fields = [];
+
+		if (!$data['name'] || $data['name'] == '')
+		{
+			$invalid_fields['name'] = 'Please enter your name';
+		}
+
+		if (!$data['comment'] || $data['comment'] == '')
+		{
+			$invalid_fields['comment'] = 'Please enter a comment';
+		}
+
+		if (count($invalid_fields) > 0)
+		{
+			throw new ValidationException($invalid_fields);
+		}
+
+		$comment_data = [
+			'version_id' => $version->id,
+			'name' => $data['name'],
+			'comment' => $data['comment']
+		];
+
+		$comment = $this->page_version_comment_model->create($comment_data);
+
+		// Send email to the version 'owner' - e.g. New coment on your draft,
+
+		return $comment;
 	}
 }

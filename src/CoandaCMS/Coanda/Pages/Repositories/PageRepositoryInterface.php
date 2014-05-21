@@ -198,4 +198,6 @@ interface PageRepositoryInterface {
     public function getHomePage();
 
     public function updateLocationSubPageOrder($location_id, $new_sub_page_order);
+
+    public function addVersionComment($version, $data);
 }
