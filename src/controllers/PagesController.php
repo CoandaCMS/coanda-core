@@ -2,7 +2,7 @@
 
 use View, Redirect, App, Coanda, Input, Session;
 
-use CoandaCMS\Coanda\Exceptions\PageVersionNotFound;
+use CoandaCMS\Coanda\Exceptions\Pages\PageVersionNotFound;
 use CoandaCMS\Coanda\Exceptions\ValidationException;
 /**
  * Class PagesController

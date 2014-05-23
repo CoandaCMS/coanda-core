@@ -2,8 +2,8 @@
 
 use Coanda;
 
-use CoandaCMS\Coanda\Exceptions\PageNotFound;
-use CoandaCMS\Coanda\Exceptions\PageVersionNotFound;
+use CoandaCMS\Coanda\Exceptions\Pages\PageNotFound;
+use CoandaCMS\Coanda\Exceptions\Pages\PageVersionNotFound;
 use CoandaCMS\Coanda\Exceptions\AttributeValidationException;
 use CoandaCMS\Coanda\Exceptions\ValidationException;
 
@@ -90,7 +90,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
     /**
      * @param $id
      * @return mixed
-     * @throws \CoandaCMS\Coanda\Exceptions\PageNotFound
+     * @throws \CoandaCMS\Coanda\Exceptions\Pages\PageNotFound
      */
     public function find($id)
 	{
@@ -107,7 +107,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
     /**
      * @param $id
      * @return mixed
-     * @throws \CoandaCMS\Coanda\Exceptions\PageNotFound
+     * @throws \CoandaCMS\Coanda\Exceptions\Pages\PageNotFound
      */
     public function findById($id)
 	{
@@ -124,7 +124,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
     /**
      * @param $id
      * @return mixed
-     * @throws \CoandaCMS\Coanda\Exceptions\PageNotFound
+     * @throws \CoandaCMS\Coanda\Exceptions\Pages\PageNotFound
      */
     public function locationById($id)
 	{
@@ -408,8 +408,8 @@ class EloquentPageRepository implements PageRepositoryInterface {
      * @param $page_id
      * @param $version
      * @return mixed
-     * @throws \CoandaCMS\Coanda\Exceptions\PageNotFound
-     * @throws \CoandaCMS\Coanda\Exceptions\PageVersionNotFound
+     * @throws \CoandaCMS\Coanda\Exceptions\Pages\Pages\PageNotFound
+     * @throws \CoandaCMS\Coanda\Exceptions\Pages\Pages\PageVersionNotFound
      */
     public function getDraftVersion($page_id, $version)
 	{
@@ -436,7 +436,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
     /**
      * @param $id
      * @return mixed
-     * @throws \CoandaCMS\Coanda\Exceptions\PageVersionNotFound
+     * @throws \CoandaCMS\Coanda\Exceptions\Pages\PageVersionNotFound
      */
     public function getVersionById($id)
 	{
@@ -453,7 +453,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
     /**
      * @param $preview_key
      * @return mixed
-     * @throws \CoandaCMS\Coanda\Exceptions\PageVersionNotFound
+     * @throws \CoandaCMS\Coanda\Exceptions\Pages\PageVersionNotFound
      */
     public function getVersionByPreviewKey($preview_key)
 	{
@@ -650,7 +650,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
      * @param $page_id
      * @param $user_id
      * @return mixed
-     * @throws \CoandaCMS\Coanda\Exceptions\PageNotFound
+     * @throws \CoandaCMS\Coanda\Exceptions\Pages\PageNotFound
      */
     public function draftsForUser($page_id, $user_id)
 	{
@@ -928,7 +928,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
     /**
      * @param $page_id
      * @param bool $permanent
-     * @throws \CoandaCMS\Coanda\Exceptions\PageNotFound
+     * @throws \CoandaCMS\Coanda\Exceptions\Pages\PageNotFound
      */
     public function deletePage($page_id, $permanent = false)
 	{
@@ -1055,7 +1055,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
     /**
      * @param $page_id
      * @param array $restore_sub_pages
-     * @throws \CoandaCMS\Coanda\Exceptions\PageNotFound
+     * @throws \CoandaCMS\Coanda\Exceptions\Pages\PageNotFound
      */
     public function restore($page_id, $restore_sub_pages = [])
 	{

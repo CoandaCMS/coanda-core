@@ -164,7 +164,7 @@ class Delayed implements PublishHandlerInterface {
 
 				$command->info('Version #' . $version->version . ' of page #' . $version->page->id . ' published');
 			}
-			catch (\CoandaCMS\Coanda\Exceptions\PageVersionNotFound $exception)
+			catch (\CoandaCMS\Coanda\Exceptions\Pages\PageVersionNotFound $exception)
 			{
 				$command->error('Page version id: ' . $publish_version_id . ' not found');
 			}

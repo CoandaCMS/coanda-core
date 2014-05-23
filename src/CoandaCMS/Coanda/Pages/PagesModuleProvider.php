@@ -2,8 +2,8 @@
 
 use Route, App, Config, Coanda, View, Cache;
 
-use CoandaCMS\Coanda\Exceptions\PageTypeNotFound;
-use CoandaCMS\Coanda\Exceptions\PageAttributeTypeNotFound;
+use CoandaCMS\Coanda\Pages\Exceptions\PageTypeNotFound;
+use CoandaCMS\Coanda\Pages\Exceptions\PageAttributeTypeNotFound;
 use CoandaCMS\Coanda\Exceptions\PermissionDenied;
 
 /**
@@ -69,7 +69,7 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 
 				return $this->renderPage($location->page, $location);
 			}
-			catch(\CoandaCMS\Coanda\Exceptions\PageNotFound $exception)
+			catch(PageNotFound $exception)
 			{
 				App::abort('404');
 			}
