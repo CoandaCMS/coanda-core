@@ -58,8 +58,6 @@ return array(
 	|--------------------------------------------------------------------------
 	|
 	*/
-	'theme_provider' => 'MySite\Theme\MySiteThemeProvider',
-
 	'layouts' => [
 		'MySite\Layouts\SingleColumn',
 		'MySite\Layouts\TwoColumn',

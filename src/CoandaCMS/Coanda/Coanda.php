@@ -45,11 +45,6 @@ class Coanda {
     private $attribute_types = [];
 
     /**
-     * @var
-     */
-    private $theme_provider;
-
-    /**
      * @param \Illuminate\Foundation\Application $app
      */
     public function boot(\Illuminate\Foundation\Application $app)
@@ -57,11 +52,6 @@ class Coanda {
 		$this->urlRepository = $app->make('CoandaCMS\Coanda\Urls\Repositories\UrlRepositoryInterface');
 		$this->user = $app->make('CoandaCMS\Coanda\Users\Repositories\UserRepositoryInterface');
 
-		$theme_provider = Config::get('coanda::coanda.theme_provider');
-
-		$this->theme_provider = new $theme_provider;
-		$this->theme_provider->boot($this);
-		
 		$this->loadAttributes();
 
 		$this->loadSearchProvider();
@@ -99,14 +89,6 @@ class Coanda {
 		}
 
 		throw new AttributeTypeNotFound;
-	}
-
-    /**
-     * @return mixed
-     */
-    public function theme()
-	{
-		return $this->theme_provider;
 	}
 
 	/**
