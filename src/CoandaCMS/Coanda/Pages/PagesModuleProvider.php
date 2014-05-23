@@ -389,7 +389,10 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		}
 	}
 
-	public function buildAdminMenu($coanda)
+    /**
+     * @param $coanda
+     */
+    public function buildAdminMenu($coanda)
 	{
 		if ($coanda->canViewModule('pages'))
 		{
@@ -532,7 +535,12 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		return $content;
 	}
 
-	private function renderAttributes($page, $pagelocation)
+    /**
+     * @param $page
+     * @param $pagelocation
+     * @return \stdClass
+     */
+    private function renderAttributes($page, $pagelocation)
 	{
 		$attributes = new \stdClass;
 
@@ -558,7 +566,11 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		];
 	}
 
-	public function renderVersion($version)
+    /**
+     * @param $version
+     * @return mixed
+     */
+    public function renderVersion($version)
 	{
 		$page = $version->page;
 		$pagelocation = false;
@@ -605,7 +617,11 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		return $content;
 	}
 
-	public function getPage($page_id)
+    /**
+     * @param $page_id
+     * @return bool
+     */
+    public function getPage($page_id)
 	{
 		$pageRepository = App::make('CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface');
 
@@ -619,7 +635,11 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		}
 	}
 
-	public function getLocation($location_id)
+    /**
+     * @param $location_id
+     * @return bool
+     */
+    public function getLocation($location_id)
 	{
 		$pageRepository = App::make('CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface');
 		

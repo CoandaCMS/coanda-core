@@ -25,6 +25,9 @@ class PageAttribute extends Eloquent {
      */
     protected $fillable = ['page_version_id', 'identifier', 'type', 'order', 'attribute_data'];
 
+    /**
+     *
+     */
     public function delete()
 	{
 		$parameters = [
@@ -183,7 +186,11 @@ class PageAttribute extends Eloquent {
 		$this->save();
 	}
 
-	public function handleAction($action, $data)
+    /**
+     * @param $action
+     * @param $data
+     */
+    public function handleAction($action, $data)
 	{
 		// Let the type do whatever with the attribute to return the data required...
 		$parameters = [
@@ -201,7 +208,13 @@ class PageAttribute extends Eloquent {
 		}
 	}
 
-	public function render($page = false, $pagelocation = false, $indexing = false)
+    /**
+     * @param bool $page
+     * @param bool $pagelocation
+     * @param bool $indexing
+     * @return mixed
+     */
+    public function render($page = false, $pagelocation = false, $indexing = false)
 	{
 		$parameters = [
 			'attribute_id' => $this->id,

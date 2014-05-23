@@ -25,6 +25,9 @@ class Coanda {
      */
     private $permissions = [];
 
+    /**
+     * @var array
+     */
     private $admin_menu = [];
     /**
      * @var
@@ -155,7 +158,11 @@ class Coanda {
 									];
 	}
 
-	public function canViewModule($module)
+    /**
+     * @param $module
+     * @return bool
+     */
+    public function canViewModule($module)
 	{
 		$user_permissions = $this->currentUserPermissions();
 
@@ -365,12 +372,19 @@ class Coanda {
 		throw new ModuleNotFound('Module ' . $module . ' does not exist or has not been loaded.');		
 	}
 
-	public function addMenuItem($url, $name)
+    /**
+     * @param $url
+     * @param $name
+     */
+    public function addMenuItem($url, $name)
 	{
 		$this->admin_menu[] = ['url' => $url, 'name' => $name];
 	}
 
-	public function adminMenu()
+    /**
+     * @return array
+     */
+    public function adminMenu()
 	{
 		foreach ($this->modules as $module)
 		{
@@ -467,12 +481,18 @@ class Coanda {
 		}
 	}
 
-	private function loadSearchProvider()
+    /**
+     *
+     */
+    private function loadSearchProvider()
 	{
 		$this->search_provider = App::make('CoandaCMS\Coanda\Search\CoandaSearchProvider');
 	}
 
-	public function search()
+    /**
+     * @return mixed
+     */
+    public function search()
 	{
 		return $this->search_provider;
 	}

@@ -78,7 +78,10 @@ class PageLocation extends Eloquent {
 		return $this->hasMany('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageLocation', 'parent_page_id');
 	}
 
-	public function childCount()
+    /**
+     * @return mixed
+     */
+    public function childCount()
 	{
 		return $this->children()->whereHas('page', function ($query) { $query->where('is_trashed', '=', '0'); })->count();
 	}
@@ -176,7 +179,12 @@ class PageLocation extends Eloquent {
 	}
 
 
-	public function scopeOrderByPageName($query, $order)
+    /**
+     * @param $query
+     * @param $order
+     * @return mixed
+     */
+    public function scopeOrderByPageName($query, $order)
 	{
 		$query->select('pagelocations.*');
 		$query->join('pages', 'pagelocations.page_id', '=', 'pages.id');
@@ -185,7 +193,12 @@ class PageLocation extends Eloquent {
 		return $query;
 	}
 
-	public function scopeOrderByPageCreated($query, $order)
+    /**
+     * @param $query
+     * @param $order
+     * @return mixed
+     */
+    public function scopeOrderByPageCreated($query, $order)
 	{
 		$query->select('pagelocations.*');
 		$query->join('pages', 'pagelocations.page_id', '=', 'pages.id');

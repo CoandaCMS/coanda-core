@@ -63,6 +63,12 @@ class UsersModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		$app->bind('CoandaCMS\Coanda\Users\Repositories\UserRepositoryInterface', 'CoandaCMS\Coanda\Users\Repositories\Eloquent\EloquentUserRepository');
 	}
 
+    /**
+     * @param $permission
+     * @param $parameters
+     * @param $user_permissions
+     * @throws \CoandaCMS\Coanda\Exceptions\PermissionDenied
+     */
     public function checkAccess($permission, $parameters, $user_permissions)
     {
         if (in_array('*', $user_permissions))
@@ -89,6 +95,9 @@ class UsersModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
         }
     }
 
+    /**
+     * @param $coanda
+     */
     public function buildAdminMenu($coanda)
     {
         if ($coanda->canViewModule('users'))

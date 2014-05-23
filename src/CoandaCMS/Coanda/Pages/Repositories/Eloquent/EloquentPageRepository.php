@@ -52,6 +52,9 @@ class EloquentPageRepository implements PageRepositoryInterface {
      */
     private $page_version_slug_model;
 
+    /**
+     * @var Models\PageVersionComment
+     */
     private $page_version_comment_model;
 
     /**
@@ -135,7 +138,12 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		return $location;
 	}
 
-	public function locations($limit, $offset)
+    /**
+     * @param $limit
+     * @param $offset
+     * @return mixed
+     */
+    public function locations($limit, $offset)
 	{
 		return $this->page_location_model->take($limit)->skip($offset)->get();
 	}
@@ -380,7 +388,11 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		}
 	}
 
-	public function removeVersionSlug($version_id, $slug_id)
+    /**
+     * @param $version_id
+     * @param $slug_id
+     */
+    public function removeVersionSlug($version_id, $slug_id)
 	{
 		$version = $this->getVersionById($version_id);
 
@@ -726,7 +738,10 @@ class EloquentPageRepository implements PageRepositoryInterface {
 	}
 
 
-	public function registerLocationWithSearchProvider($location)
+    /**
+     * @param $location
+     */
+    public function registerLocationWithSearchProvider($location)
 	{
 		$page = $location->page;
 		$version = $page->currentVersion();
@@ -746,7 +761,10 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		Coanda::search()->register('pages', $location->id, $location->slug, $search_data);
 	}
 
-	public function unRegisterLocationWithSearchProvider($location)
+    /**
+     * @param $location
+     */
+    public function unRegisterLocationWithSearchProvider($location)
 	{
 		$page = $location->page;
 
@@ -1115,7 +1133,11 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		return $this->page_model->whereIsHome(true)->first();
 	}
 
-	public function updateLocationSubPageOrder($location_id, $new_sub_page_order)
+    /**
+     * @param $location_id
+     * @param $new_sub_page_order
+     */
+    public function updateLocationSubPageOrder($location_id, $new_sub_page_order)
 	{
 		$pagelocation = $this->locationById($location_id);
 
@@ -1123,7 +1145,12 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		$pagelocation->save();
 	}
 
-	public function handleAttributeAction($version, $action_data, $data)
+    /**
+     * @param $version
+     * @param $action_data
+     * @param $data
+     */
+    public function handleAttributeAction($version, $action_data, $data)
 	{
 		foreach ($version->attributes as $attribute)
 		{
@@ -1135,7 +1162,13 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		}
 	}
 
-	public function addVersionComment($version, $data)
+    /**
+     * @param $version
+     * @param $data
+     * @return mixed
+     * @throws \CoandaCMS\Coanda\Exceptions\ValidationException
+     */
+    public function addVersionComment($version, $data)
 	{
 		$invalid_fields = [];
 

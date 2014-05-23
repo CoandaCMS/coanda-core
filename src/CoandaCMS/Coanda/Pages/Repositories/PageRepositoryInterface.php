@@ -4,10 +4,6 @@
  * Interface PageRepositoryInterface
  * @package CoandaCMS\Coanda\Pages\Repositories
  */
-/**
- * Interface PageRepositoryInterface
- * @package CoandaCMS\Coanda\Pages\Repositories
- */
 interface PageRepositoryInterface {
 
     /**
@@ -28,6 +24,11 @@ interface PageRepositoryInterface {
      */
     public function locationById($id);
 
+    /**
+     * @param $limit
+     * @param $offset
+     * @return mixed
+     */
     public function locations($limit, $offset);
 
     /**
@@ -96,6 +97,11 @@ interface PageRepositoryInterface {
      */
     public function addNewVersionSlug($version_id, $page_location_id);
 
+    /**
+     * @param $version_id
+     * @param $slug_id
+     * @return mixed
+     */
     public function removeVersionSlug($version_id, $slug_id);
 
     /**
@@ -197,7 +203,17 @@ interface PageRepositoryInterface {
      */
     public function getHomePage();
 
+    /**
+     * @param $location_id
+     * @param $new_sub_page_order
+     * @return mixed
+     */
     public function updateLocationSubPageOrder($location_id, $new_sub_page_order);
 
+    /**
+     * @param $version
+     * @param $data
+     * @return mixed
+     */
     public function addVersionComment($version, $data);
 }

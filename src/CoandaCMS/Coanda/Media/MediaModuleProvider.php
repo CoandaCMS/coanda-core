@@ -4,6 +4,10 @@ use Route, App, Config;
 
 use CoandaCMS\Coanda\Exceptions\PermissionDenied;
 
+/**
+ * Class MediaModuleProvider
+ * @package CoandaCMS\Coanda\Media
+ */
 class MediaModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 
     /**
@@ -60,6 +64,13 @@ class MediaModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		$app->bind('CoandaCMS\Coanda\Media\Repositories\MediaRepositoryInterface', 'CoandaCMS\Coanda\Media\Repositories\Eloquent\EloquentMediaRepository');
 	}
 
+    /**
+     * @param $permission
+     * @param $parameters
+     * @param $user_permissions
+     * @return bool
+     * @throws \CoandaCMS\Coanda\Exceptions\PermissionDenied
+     */
     public function checkAccess($permission, $parameters, $user_permissions)
     {
         if (in_array('*', $user_permissions))
@@ -82,6 +93,9 @@ class MediaModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
         return;
     }
 
+    /**
+     * @param $coanda
+     */
     public function buildAdminMenu($coanda)
     {
         if ($coanda->canViewModule('media'))
@@ -90,6 +104,10 @@ class MediaModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
         }
     }
 
+    /**
+     * @param $file
+     * @return mixed
+     */
     public function handleUpload($file)
     {
         $mediaRepository = App::make('CoandaCMS\Coanda\Media\Repositories\MediaRepositoryInterface');
@@ -97,6 +115,10 @@ class MediaModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
         return $mediaRepository->handleUpload($file);
     }
 
+    /**
+     * @param $id
+     * @return mixed
+     */
     public function getMedia($id)
     {
         $mediaRepository = App::make('CoandaCMS\Coanda\Media\Repositories\MediaRepositoryInterface');

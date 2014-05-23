@@ -1,7 +1,7 @@
 <?php namespace CoandaCMS\Coanda\Pages;
 
 /**
- * Interface PageTypeInterface
+ * Class PageType
  * @package CoandaCMS\Coanda\Pages
  */
 abstract class PageType {
@@ -27,6 +27,10 @@ abstract class PageType {
      */
     abstract public function generateName($version);
 
+
+    /**
+     * @return string
+     */
     public function template()
     {
         // Return a sensible default...
@@ -57,6 +61,9 @@ abstract class PageType {
         return true;
     }
 
+    /**
+     * @return bool
+     */
     public function canStaticCache()
     {
         return false;

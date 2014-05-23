@@ -20,8 +20,14 @@ class EloquentUrlRepository implements \CoandaCMS\Coanda\Urls\Repositories\UrlRe
      */
     private $slugifier;
 
+    /**
+     * @var \Illuminate\Database\DatabaseManager
+     */
     private $db;
 
+    /**
+     * @var Models\PromoUrl
+     */
     private $promourl_model;
 
     /**
@@ -257,7 +263,13 @@ class EloquentUrlRepository implements \CoandaCMS\Coanda\Urls\Repositories\UrlRe
 	}
 
 
-	public function addPromo($from, $to)
+    /**
+     * @param $from
+     * @param $to
+     * @return \Illuminate\Database\Eloquent\Model|static
+     * @throws \CoandaCMS\Coanda\Exceptions\ValidationException
+     */
+    public function addPromo($from, $to)
 	{
 		$from = trim($from, '/');
 
@@ -283,6 +295,10 @@ class EloquentUrlRepository implements \CoandaCMS\Coanda\Urls\Repositories\UrlRe
 		}
 	}
 
+    /**
+     * @param $id
+     * @return \Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|static
+     */
     public function getPromoUrl($id)
 	{
 		return $this->promourl_model->find($id);

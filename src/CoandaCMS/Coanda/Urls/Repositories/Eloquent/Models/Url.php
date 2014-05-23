@@ -11,6 +11,9 @@ class Url extends \Illuminate\Database\Eloquent\Model {
      */
     protected $table = 'urls';
 
+    /**
+     * @var array
+     */
     protected $fillable = ['slug', 'for', 'for_id'];
 
 }

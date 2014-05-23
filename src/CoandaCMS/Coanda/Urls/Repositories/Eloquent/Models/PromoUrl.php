@@ -1,5 +1,9 @@
 <?php namespace CoandaCMS\Coanda\Urls\Repositories\Eloquent\Models;
 
+/**
+ * Class PromoUrl
+ * @package CoandaCMS\Coanda\Urls\Repositories\Eloquent\Models
+ */
 class PromoUrl extends \Illuminate\Database\Eloquent\Model {
 
     /**
@@ -7,14 +11,23 @@ class PromoUrl extends \Illuminate\Database\Eloquent\Model {
      */
     protected $table = 'promourls';
 
+    /**
+     * @var array
+     */
     protected $fillable = ['destination'];
 
+    /**
+     *
+     */
     public function addHit()
     {
     	$this->counter = $this->counter + 1;
     	$this->save();
     }
 
+    /**
+     * @return string
+     */
     public function fromUrl()
     {
     	$urlRepository = \App::make('CoandaCMS\Coanda\Urls\Repositories\UrlRepositoryInterface');
@@ -29,6 +42,9 @@ class PromoUrl extends \Illuminate\Database\Eloquent\Model {
     	return '';
     }
 
+    /**
+     * @return string
+     */
     public function getFromUrlAttribute()
     {
     	return $this->fromUrl();

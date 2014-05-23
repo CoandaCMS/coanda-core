@@ -16,6 +16,9 @@ class Page extends Eloquent {
      */
     protected $presenter = 'CoandaCMS\Coanda\Pages\Presenters\Page';
 
+    /**
+     * @var array
+     */
     protected $fillable = ['is_home', 'type', 'created_by', 'edited_by', 'current_version'];
     
     /**
@@ -63,7 +66,10 @@ class Page extends Eloquent {
 		parent::delete();
 	}
 
-	public function locations()
+    /**
+     * @return mixed
+     */
+    public function locations()
 	{
 		return $this->hasMany('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageLocation');
 	}

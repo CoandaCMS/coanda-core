@@ -4,6 +4,10 @@ use Route, App, Config;
 
 use CoandaCMS\Coanda\Exceptions\PermissionDenied;
 
+/**
+ * Class UrlModuleProvider
+ * @package CoandaCMS\Coanda\Urls
+ */
 class UrlModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 
     /**
@@ -76,6 +80,13 @@ class UrlModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 	{
 	}
 
+    /**
+     * @param $permission
+     * @param $parameters
+     * @param $user_permissions
+     * @return bool
+     * @throws \CoandaCMS\Coanda\Exceptions\PermissionDenied
+     */
     public function checkAccess($permission, $parameters, $user_permissions)
     {
         if (in_array('*', $user_permissions))
@@ -98,6 +109,9 @@ class UrlModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
         return;
     }
 
+    /**
+     * @param $coanda
+     */
     public function buildAdminMenu($coanda)
     {
         if ($coanda->canViewModule('urls'))
