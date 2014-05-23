@@ -371,18 +371,6 @@ class PagesAdminController extends BaseController {
 				return Redirect::to(Coanda::adminUrl('pages/editversion/' . $page_id . '/' . $version_number))->with('layout_chosen', true)->withInput();
 			}
 
-			if (Input::has('update_region_block_order') && Input::get('update_region_block_order') == 'true')
-			{
-				Coanda::module('layout')->updateCustomRegionBlockOrders(Input::get('region_block_ordering'));
-
-				return Redirect::to(Coanda::adminUrl('pages/editversion/' . $page_id . '/' . $version_number))->with('ordering_updated', true)->withInput();
-			}
-
-			if (Input::has('add_custom_block'))
-			{
-				return Redirect::to(Coanda::adminUrl('layout/page-custom-region-block/' . $page_id . '/' . $version_number . '/' . Input::get('add_custom_block')));
-			}
-
 			if (Input::has('add_location'))
 			{
 				return Redirect::to(Coanda::adminUrl('pages/browse-add-location/' . $page_id . '/' . $version_number));
@@ -465,11 +453,6 @@ class PagesAdminController extends BaseController {
 				{
 					$this->pageRepository->removeVersionSlug($version->id, $slug_id);
 				}
-			}
-
-			if (Input::has('add_custom_block'))
-			{
-				return Redirect::to(Coanda::adminUrl('layout/page-custom-region-block/' . $page_id . '/' . $version_number . '/' . Input::get('add_custom_block')));
 			}
 
 			if (Input::has('save_exit') && Input::get('save_exit') == 'true')

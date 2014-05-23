@@ -837,9 +837,6 @@ class EloquentPageRepository implements PageRepositoryInterface {
 
 		$version = $this->page_version_model->create($version_data);
 
-		// Ask the layout module to replicate the custom region blocks for this
-		Coanda::module('layout')->copyCustomRegionBlock('pages', $page->id . ':' . $current_version->version, $page->id . ':' . $new_version_number);
-
 		// Now lets replicate the slugs
 		foreach ($current_version->slugs as $slug)
 		{

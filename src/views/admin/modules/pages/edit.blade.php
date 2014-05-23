@@ -98,43 +98,6 @@
 							</div>
 						</div>
 
-						@if ($version->layout_identifier)
-							<div class="edit-container">
-								<div class="panel-group" id="accordion">
-									@foreach ($version->layout->regions() as $region)
-										<div class="panel panel-default">
-											<div class="panel-heading">
-												<a data-toggle="collapse" data-parent="#accordion" href="#region_{{ $region->identifier() }}">{{ $region->name() }}</a>
-											</div>
-											<div id="region_{{ $region->identifier() }}" class="panel-collapse collapse">
-												<div class="panel-body">
-
-													@if (count($version->layoutRegionBlocks($region->identifier())) > 0)
-														<table class="table table-striped">
-															@foreach ($version->layoutRegionBlocks($region->identifier()) as $region_block)
-																<tr>
-																	<td class="tight"><a href="{{ Coanda::adminUrl('pages/remove-custom-region-block/' . $region_block->block->id . '/' . $version->page->id . '/' . $version->version) }}"><i class="fa fa-minus-circle"></i></a></td>
-																	<td>{{ $region_block->block->name }}</td>
-																	<td class="order-column">{{ Form::text('region_block_ordering[' . $region_block->id . ']', $region_block->order, ['class' => 'form-control input-sm']) }}</td>
-																</tr>
-															@endforeach
-														</table>
-
-														{{ Form::button('Update ordering', ['name' => 'update_region_block_order', 'value' => 'true', 'type' => 'submit', 'class' => 'pull-right btn btn-default']) }}
-													@else
-														<p>No custom blocks have been added, the defaults will be used.</p>
-													@endif
-
-													{{ Form::button('Add custom block', ['name' => 'add_custom_block', 'value' => $version->layout->identifier() . '/' . $region->identifier(), 'type' => 'submit', 'class' => 'btn btn-default']) }}
-
-												</div>
-											</div>
-										</div>
-									@endforeach
-								</div>
-							</div>
-						@endif
-
 					</div>
 				</div>
 

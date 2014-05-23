@@ -3,7 +3,6 @@
 use Route, App, Config, Coanda, View;
 
 use CoandaCMS\Coanda\Layout\Exceptions\LayoutNotFound;
-use CoandaCMS\Coanda\Layout\Exceptions\LayoutBlockTypeNotFound;
 
 /**
  * Class LayoutModuleProvider
@@ -27,62 +26,14 @@ class LayoutModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
     private $layouts_by_page_type = [];
 
     /**
-     * @var array
-     */
-    private $block_types = [];
-
-    /**
      * @param CoandaCMS\Coanda\Coanda $coanda
      */
     public function boot(\CoandaCMS\Coanda\Coanda $coanda)
 	{
 		$this->loadLayouts();
-		$this->loadBlockTypes($coanda);
 
         // Add the permissions
         $coanda->addModulePermissions('layout', 'Layouts', []); // No specific views for this module...
-	}
-
-    /**
-     * @param $coanda
-     */
-    private function loadBlockTypes($coanda)
-	{
-		// load the block types
-		$block_types = Config::get('coanda::coanda.layout_block_types');
-
-		foreach ($block_types as $block_type)
-		{
-			if (class_exists($block_type))
-			{
-				$type = new $block_type($this);
-
-				$this->block_types[$type->identifier()] = $type;
-			}
-		}
-	}
-
-    /**
-     * @return array
-     */
-    public function availableBlockTypes()
-	{
-		return $this->block_types;
-	}
-
-    /**
-     * @param $identifier
-     * @return mixed
-     * @throws Exceptions\LayoutBlockTypeNotFound
-     */
-    public function blockTypeByIdentifier($identifier)
-	{
-		if (array_key_exists($identifier, $this->block_types))
-		{
-			return $this->block_types[$identifier];
-		}
-
-		throw new LayoutBlockTypeNotFound('Block type: ' . $identifier . ' not found.');
 	}
 
     /**
@@ -154,34 +105,12 @@ class LayoutModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
     }
 
     /**
-     * @param $new_orders
-     */
-    public function updateCustomRegionBlockOrders($new_orders)
-	{
-		$layoutBlockRepository = \App::make('CoandaCMS\Coanda\Layout\Repositories\LayoutBlockRepositoryInterface');
-
-		$layoutBlockRepository->updateRegionOrdering($new_orders);
-	}
-
-    /**
-     * @param $module
-     * @param $from_identifier
-     * @param $to_identifier
-     */
-    public function copyCustomRegionBlock($module, $from_identifier, $to_identifier)
-	{
-		$layoutBlockRepository = \App::make('CoandaCMS\Coanda\Layout\Repositories\LayoutBlockRepositoryInterface');
-
-		$layoutBlockRepository->copyBlocks($module, $from_identifier, $to_identifier);
-	}
-
-    /**
      *
      */
     public function adminRoutes()
 	{
 		// Load the layout controller
-		Route::controller('layout', 'CoandaCMS\Coanda\Controllers\Admin\LayoutAdminController');
+		// Route::controller('layout', 'CoandaCMS\Coanda\Controllers\Admin\LayoutAdminController');
 	}
 
     /**
@@ -197,7 +126,6 @@ class LayoutModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
      */
     public function bindings(\Illuminate\Foundation\Application $app)
 	{
-		$app->bind('CoandaCMS\Coanda\Layout\Repositories\LayoutBlockRepositoryInterface', 'CoandaCMS\Coanda\Layout\Repositories\Eloquent\EloquentLayoutBlockRepository');
 	}
 
     /**
