@@ -110,7 +110,7 @@ class LayoutModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
     public function adminRoutes()
 	{
 		// Load the layout controller
-		// Route::controller('layout', 'CoandaCMS\Coanda\Controllers\Admin\LayoutAdminController');
+		Route::controller('layout', 'CoandaCMS\Coanda\Controllers\Admin\LayoutAdminController');
 	}
 
     /**
