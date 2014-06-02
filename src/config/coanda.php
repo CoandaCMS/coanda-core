@@ -65,10 +65,6 @@ return array(
 
 	'default_layout' => 'single-column',
 
-	'layout_block_types' => [
-		'MySite\LayoutBlocks\TextWithButton',
-	],
-
 	/*
 	|--------------------------------------------------------------------------
 	| Media settings
