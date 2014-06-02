@@ -47,7 +47,7 @@ class Coanda {
     /**
      * @var
      */
-    private $theme_provider;
+    private $search_provider;
 
     /**
      * @param \Illuminate\Foundation\Application $app
@@ -94,14 +94,6 @@ class Coanda {
 		}
 
 		throw new AttributeTypeNotFound;
-	}
-
-    /**
-     * @return mixed
-     */
-    public function theme()
-	{
-		return $this->theme_provider;
 	}
 
 	/**
