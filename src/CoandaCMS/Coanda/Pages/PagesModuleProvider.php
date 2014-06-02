@@ -2,6 +2,7 @@
 
 use Route, App, Config, Coanda, View, Cache;
 
+use CoandaCMS\Coanda\Pages\Exceptions\PageNotFound;
 use CoandaCMS\Coanda\Pages\Exceptions\PageTypeNotFound;
 use CoandaCMS\Coanda\Pages\Exceptions\PageAttributeTypeNotFound;
 use CoandaCMS\Coanda\Exceptions\PermissionDenied;
