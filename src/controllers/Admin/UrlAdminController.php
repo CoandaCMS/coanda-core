@@ -47,8 +47,6 @@ class UrlAdminController extends BaseController {
 	{
 		$invalid_fields = Session::has('invalid_fields') ? Session::get('invalid_fields') : [];
 
-// dd($invalid_fields);
-
 		if (Session::has('invalid_from'))
 		{
 			$invalid_fields['from'] = 'The URL is invalid';
