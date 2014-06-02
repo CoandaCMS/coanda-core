@@ -1,7 +1,7 @@
-<?php namespace CoandaCMS\Coanda\Exceptions;
+<?php namespace CoandaCMS\Coanda\Pages\Exceptions;
 
 /**
  * Class PageTypeNotFound
- * @package CoandaCMS\Coanda\Exceptions
+ * @package CoandaCMS\Coanda\Pages\Exceptions
  */
 class PageTypeNotFound extends \Exception {};
