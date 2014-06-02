@@ -1,13 +1,71 @@
 <?php
 
-use \Mockery as M;
-
 class EloquentRepo extends BaseTest {
 
-	public function test_dummy()
+	public function test_register_slug()
 	{
+		$repo = App::make('CoandaCMS\Coanda\Urls\Repositories\Eloquent\EloquentUrlRepository');
 		
+		$url = $repo->register('test-slug', 'test', 1);
+
+		$this->assertEquals($url->slug, 'test-slug');
 	}
+
+	public function test_register_slug_already_in_use()
+	{
+		$repo = App::make('CoandaCMS\Coanda\Urls\Repositories\Eloquent\EloquentUrlRepository');
+		
+		$repo->register('test-slug', 'test', 1);
+
+		$this->setExpectedException('CoandaCMS\Coanda\Urls\Exceptions\UrlAlreadyExists');
+
+		$repo->register('test-slug', 'something-else', 1);
+	}
+
+	public function test_find_methods()
+	{
+		$repo = App::make('CoandaCMS\Coanda\Urls\Repositories\Eloquent\EloquentUrlRepository');
+		
+		$repo->register('test-slug', 'test', 1);
+
+		$url = $repo->findFor('test', 1);
+		$this->assertEquals($url->id, 1);
+
+		$url = $repo->findById(1);
+		$this->assertEquals($url->id, 1);
+
+		$url = $repo->findBySlug('test-slug');
+		$this->assertEquals($url->id, 1);
+	}
+
+	public function test_find_wildcard()
+	{
+		$repo = App::make('CoandaCMS\Coanda\Urls\Repositories\Eloquent\EloquentUrlRepository');
+
+		$url = $repo->register('new-url', 'test', 1);
+		$wildcard_url = $repo->register('old-url', 'wildcard', $url->id);
+
+		$result_url = $repo->findBySlug('old-url/something');
+
+		// We should get back a pointer to the new url
+		$this->assertEquals($result_url->type_id, 1);
+	}
+
+	public function test_delete()
+	{
+		$repo = App::make('CoandaCMS\Coanda\Urls\Repositories\Eloquent\EloquentUrlRepository');
+
+		$url = $repo->register('new-url', 'test', 1);
+
+		$repo->delete('test', 1);
+
+		// Try to get the delete URL...
+		$this->setExpectedException('CoandaCMS\Coanda\Urls\Exceptions\UrlNotFound');
+		$url = $repo->findFor('test', 1);
+	}
+
+
+
 
 	// private function get_mock_slugifier()
 	// {
@@ -32,7 +90,7 @@ class EloquentRepo extends BaseTest {
 	// public function test_can_instantiate()
 	// {
 	// 	// Make a repo
-	// 	$repo = new \CoandaCMS\Coanda\Urls\Repositories\Eloquent\EloquentUrlRepository($this->get_mock_url_model(), $this->get_mock_slugifier(), $this->get_mock_db());
+	// 	$repo = new \CoandaCMS\Coanda\Urls\Repositories\Eloquent\EloquentUrlRepository;
 
 	// 	// Check the repo is correct
 	// 	$this->assertInstanceOf('CoandaCMS\Coanda\Urls\Repositories\Eloquent\EloquentUrlRepository', $repo);
