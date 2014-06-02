@@ -1,5 +1,7 @@
 <?php namespace CoandaCMS\Coanda\Urls\Repositories\Eloquent;
 
+use DB;
+
 use CoandaCMS\Coanda\Urls\Exceptions\UrlAlreadyExists;
 use CoandaCMS\Coanda\Urls\Exceptions\InvalidSlug;
 use CoandaCMS\Coanda\Urls\Exceptions\UrlNotFound;
@@ -21,11 +23,6 @@ class EloquentUrlRepository implements \CoandaCMS\Coanda\Urls\Repositories\UrlRe
     private $slugifier;
 
     /**
-     * @var \Illuminate\Database\DatabaseManager
-     */
-    private $db;
-
-    /**
      * @var Models\PromoUrl
      */
     private $promourl_model;
@@ -34,11 +31,10 @@ class EloquentUrlRepository implements \CoandaCMS\Coanda\Urls\Repositories\UrlRe
      * @param UrlModel $model
      * @param CoandaCMS\Coanda\Urls\Slugifier $slugifier
      */
-    public function __construct(\CoandaCMS\Coanda\Urls\Repositories\Eloquent\Models\Url $model, \CoandaCMS\Coanda\Urls\Repositories\Eloquent\Models\PromoUrl $promourl_model, \CoandaCMS\Coanda\Urls\Slugifier $slugifier, \Illuminate\Database\DatabaseManager $db)
+    public function __construct(\CoandaCMS\Coanda\Urls\Repositories\Eloquent\Models\Url $model, \CoandaCMS\Coanda\Urls\Repositories\Eloquent\Models\PromoUrl $promourl_model, \CoandaCMS\Coanda\Urls\Slugifier $slugifier)
 	{
 		$this->model = $model;
 		$this->slugifier = $slugifier;
-		$this->db = $db;
 		$this->promourl_model = $promourl_model;
 	}
 
@@ -157,7 +153,8 @@ class EloquentUrlRepository implements \CoandaCMS\Coanda\Urls\Repositories\UrlRe
 		// If we don't have a URL, then create a new one
 		if (!$url)
 		{
-			$url = $this->model->create(['slug' => $slug]);
+			$url = new $this->model;
+			$url->slug = $slug;
 		}
 
 		$url->type = $for;
@@ -185,7 +182,7 @@ class EloquentUrlRepository implements \CoandaCMS\Coanda\Urls\Repositories\UrlRe
      */
     private function updateSubTree($slug, $new_slug)
 	{
-		$this->model->where('slug', 'like', $slug . '/%')->update(['slug' => $this->db->raw("REPLACE(slug, '" . $slug . "/', '" . $new_slug . "/')")]);
+		$this->model->where('slug', 'like', $slug . '/%')->update(['slug' => DB::raw("REPLACE(slug, '" . $slug . "/', '" . $new_slug . "/')")]);
 	}
 
     /**
