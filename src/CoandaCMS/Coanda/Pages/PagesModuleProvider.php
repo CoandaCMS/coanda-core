@@ -33,6 +33,11 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
     private $publish_handlers = [];
 
     /**
+     * @var
+     */
+    private $theme;
+
+    /**
      * @param CoandaCMS\Coanda\Coanda $coanda
      */
     public function boot(\CoandaCMS\Coanda\Coanda $coanda)
@@ -396,6 +401,35 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 	}
 
     /**
+     * @return mixed
+     */
+    private function getTheme()
+	{
+		if (!$this->theme)
+		{
+			$this->theme = Coanda::theme();
+		}
+
+		return $this->theme;
+	}
+
+    /**
+     * @param $render_data
+     * @return mixed
+     */
+    private function preRender($render_data)
+	{
+		$theme = $this->getTheme();
+
+		if (method_exists($theme, 'preRender'))
+		{
+			$render_data = $theme->preRender($render_data);
+		}
+
+		return $render_data;
+	}
+
+    /**
      * @param $page
      * @return mixed
      */
@@ -411,7 +445,14 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 			}
 		}
 
-		return Coanda::module('layout')->layoutFor('pages:default');
+		$theme = $this->getTheme();
+
+		if (method_exists($theme, 'defaultLayoutTemplate'))
+		{
+			return $theme->defaultLayoutTemplate();
+		}
+
+		return Coanda::module('layout')->layoutByIdentifier('single-column');
 	}
 
     /**
