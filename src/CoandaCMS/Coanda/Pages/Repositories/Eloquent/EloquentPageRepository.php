@@ -768,7 +768,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 	{
 		$page = $location->page;
 
-		Coanda::search()->unRegister('pages', $page->type, $location->id);
+		Coanda::search()->unRegister('pages', $location->id);
 	}
 
     /**
@@ -973,6 +973,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
     public function deleteLocation($location)
 	{
 		$this->urlRepository->delete('pagelocation', $location->id);
+		$this->unRegisterLocationWithSearchProvider($location);
 
 		$location->delete();
 	}
