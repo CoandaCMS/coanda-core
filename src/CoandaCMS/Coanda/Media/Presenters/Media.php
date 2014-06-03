@@ -96,6 +96,16 @@ class Media extends \CoandaCMS\Coanda\Core\Presenters\Presenter {
         return $this->generateResized(800, 800);
     }
 
+    private function uploadsDirectory()
+    {
+    	return base_path() . '/' . Config::get('coanda::coanda.uploads_directory');
+    }
+
+    private function cacheDirectory()
+    {
+    	return public_path() . '/' .Config::get('coanda::coanda.image_cache_directory');
+    }
+
     /**
      * @param $width
      * @param $height
@@ -107,28 +117,23 @@ class Media extends \CoandaCMS\Coanda\Core\Presenters\Presenter {
     	if ($this->type == 'image')
     	{
 	        ini_set('memory_limit', '64M');
-	        
-	        $uploads_directory = base_path() . '/' . Config::get('coanda::coanda.uploads_directory');
-	        $cache_base = Config::get('coanda::coanda.image_cache_directory');
 
-	        $cache_directory = $cache_base . '/' . $this->model->id;
+	        $file_name = 'r' . $width . '.' . $this->extension;
 
-	        $cache_path = $cache_directory . '/r' . $width . '.' . $this->extension;
+	        $cache_path = $this->cacheDirectory() . '/' . $this->model->id;
 
-	        if(!file_exists($cache_path))
+	        if (!file_exists($cache_path . '/' . $file_name))
 	        {
-	            if( !is_dir($cache_directory))
+	            if (!is_dir($cache_path))
 	            {
-					mkdir($cache_directory);
+					mkdir($cache_path);
 	            }
 
-	            $file_path = $uploads_directory . '/' . $this->model->filename;
-
-	            $imageFactory = ImageFactory::make($file_path);
-	            $imageFactory->resize($width, $height, $maintain_ratio, false)->save($cache_path);
+	            $imageFactory = ImageFactory::make($this->uploadsDirectory() . '/' . $this->model->filename);
+	            $imageFactory->resize($width, $height, $maintain_ratio, false)->save($cache_path . '/' . $file_name);
 	        }
 
-	        return url($cache_path);
+	        return '/' . Config::get('coanda::coanda.image_cache_directory') . '/' . $this->model->id . '/' . $file_name;
     	}
 
     	return false;
