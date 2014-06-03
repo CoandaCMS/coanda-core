@@ -11,12 +11,15 @@ class ValidationException extends \Exception {
      */
     private $invalid_fields = [];
 
+    private $invalid_identifier;
+
     /**
      * @param string $invalid_fields
      */
-    public function __construct($invalid_fields)
+    public function __construct($invalid_fields, $invalid_identifier = false)
 	{
 		$this->invalid_fields = $invalid_fields;
+        $this->invalid_identifier = $invalid_identifier;
 	}
 
     /**
@@ -27,4 +30,11 @@ class ValidationException extends \Exception {
 		return $this->invalid_fields;
 	}
 
+    /**
+     * @return array|string
+     */
+    public function getInvalidIdentifier()
+    {
+        return $this->invalid_identifier;
+    }
 }
