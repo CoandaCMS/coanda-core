@@ -611,5 +611,12 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		{
 			return false;
 		}
-	}	
+	}
+
+	public function subPages($location_id, $per_page = 50)
+	{
+		$pageRepository = App::make('CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface');
+
+		return $pageRepository->subPages($location_id, $per_page);		
+	}
 }
