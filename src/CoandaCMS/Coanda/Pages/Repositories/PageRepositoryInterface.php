@@ -118,7 +118,7 @@ interface PageRepositoryInterface {
      * @param $version
      * @return mixed
      */
-    public function discardDraftVersion($version);
+    public function discardDraftVersion($version, $user_id);
 
     /**
      * @param $page_id

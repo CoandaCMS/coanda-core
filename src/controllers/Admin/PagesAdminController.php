@@ -350,7 +350,7 @@ class PagesAdminController extends BaseController {
 
 			if (Input::has('discard'))
 			{
-				$this->pageRepository->discardDraftVersion($version);
+				$this->pageRepository->discardDraftVersion($version, Coanda::currentUser()->id);
 
 				// If this was the first version, then we need to redirect back to the parent
 				if ($version_number == 1)
