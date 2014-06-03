@@ -38,6 +38,12 @@ interface MediaRepositoryInterface {
     public function handleUpload($file);
 
     /**
+     * @param $url
+     * @return mixed
+     */
+    public function fromURL($url);
+
+    /**
      * @param $media_id
      * @return mixed
      */
