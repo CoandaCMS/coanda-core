@@ -139,6 +139,23 @@ class EloquentPageRepository implements PageRepositoryInterface {
 	}
 
     /**
+     * @param $id
+     * @return mixed
+     * @throws \CoandaCMS\Coanda\Pages\Exceptions\PageNotFound
+     */
+	public function getByRemoteId($remote_id)
+	{
+		$page = $this->page_model->whereRemoteId($remote_id)->first();
+
+		if (!$page)
+		{
+			throw new PageNotFound('Page with remote id: ' . $remote_id . ' not found');
+		}
+		
+		return $page;
+	}
+
+    /**
      * @param $limit
      * @param $offset
      * @return mixed
