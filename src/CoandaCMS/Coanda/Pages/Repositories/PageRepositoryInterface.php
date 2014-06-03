@@ -64,13 +64,17 @@ interface PageRepositoryInterface {
      */
     public function create($type, $user_id, $parent_page_id);
 
+    public function createAndPublish($type, $user_id, $parent_page_id, $data);
+
     /**
      * @param $type
      * @param $user_id
      * @return mixed
      */
     public function createHome($type, $user_id);
-    
+
+    public function createAndPublishHome($type, $user_id, $data);
+
     /**
      * @param $page_id
      * @param $version

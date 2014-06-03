@@ -364,6 +364,23 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		}
 	}
 
+	public function createAndPublish($type, $user_id, $parent_pagelocation_id, $page_data)
+	{
+		$page = $this->create($type, $user_id, $parent_pagelocation_id);
+		$version = $page->currentVersion();
+
+		// Add the slug data
+		foreach ($version->slugs as $slug)
+		{
+			$page_data['slug_' . $slug->id] = $page_data['slug'];
+		}
+
+		$this->saveDraftVersion($version, $page_data);
+		$this->publishVersion($version, $user_id, $this->urlRepository, $this->historyRepository);
+
+		return $this->find($page->id);
+	}
+
     /**
      * @param $type
      * @param $user_id
@@ -381,6 +398,17 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		}
 
 		throw new HomePageAlreadyExists('You already have a home page defined');
+	}
+
+	public function createAndPublishHome($type, $user_id, $page_data)
+	{
+		$page = $this->createHome($type, $user_id);
+		$version = $page->currentVersion();
+
+		$this->saveDraftVersion($version, $page_data);
+		$this->publishVersion($version, $user_id, $this->urlRepository, $this->historyRepository);
+
+		return $page;
 	}
 
     /**
