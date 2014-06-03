@@ -148,6 +148,16 @@ class PageLocation extends Eloquent {
 		return $this->parents;
 	}
 
+	public function getParentsAttribute()
+	{
+		return $this->parents();
+	}
+
+	public function getNameAttribute()
+	{
+		return $this->page->present()->name;
+	}
+
     /**
      * @return string
      */
