@@ -25,6 +25,12 @@ interface PageRepositoryInterface {
     public function locationById($id);
 
     /**
+     * @param $id
+     * @return mixed
+     */
+    public function getByRemoteId($remote_id);
+
+    /**
      * @param $limit
      * @param $offset
      * @return mixed
