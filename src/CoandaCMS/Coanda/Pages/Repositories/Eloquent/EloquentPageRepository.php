@@ -525,14 +525,14 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		{
 			try
 			{
-				$attribute_data = isset($data['attribute_' . $attribute->id]) ? $data['attribute_' . $attribute->id] : false;
+				$attribute_data = isset($data['attribute_' . $attribute->identifier]) ? $data['attribute_' . $attribute->identifier] : null;
 
-				$attribute->store($attribute_data, 'attribute_' . $attribute->id);
+				$attribute->store($attribute_data, 'attribute_' . $attribute->identifier);
 			}
 			catch (AttributeValidationException $exception)
 			{
-				$failed['attribute_' . $attribute->id]['message'] = $exception->getMessage();
-				$failed['attribute_' . $attribute->id]['validation_data'] = $exception->getValidationData();
+				$failed['attribute_' . $attribute->identifier]['message'] = $exception->getMessage();
+				$failed['attribute_' . $attribute->identifier]['validation_data'] = $exception->getValidationData();
 			}
 		}
 
@@ -572,8 +572,8 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		// Get the meta
 		if ($version->page->show_meta)
 		{
-			$version->meta_page_title = $data['meta_page_title'];
-			$version->meta_description = $data['meta_description'];
+			$version->meta_page_title = isset($data['meta_page_title']) ? $data['meta_page_title'] : false;
+			$version->meta_description = isset($data['meta_description']) ? $data['meta_description'] : false;
 		}
 
 		// Get the visible_from and to dates
@@ -665,19 +665,19 @@ class EloquentPageRepository implements PageRepositoryInterface {
 
 		if (count($failed) > 0)
 		{
-			throw new ValidationException($failed);
+			throw new ValidationException($failed, $version->id);
 		}
 	}
 
     /**
      * @param $version
      */
-    public function discardDraftVersion($version)
+    public function discardDraftVersion($version, $user_id)
 	{
 		$page = $version->page;
 
 		// Log the history
-		$this->historyRepository->add('pages', $page->id, Coanda::currentUser()->id, 'discard_version', ['version' => $version->version]);
+		$this->historyRepository->add('pages', $page->id, $user_id, 'discard_version', ['version' => $version->version]);
 
 		$version->delete();
 
@@ -685,7 +685,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		if ($page->versions->count() == 0)
 		{
 			// Log the history
-			$this->historyRepository->add('pages', $page->id, Coanda::currentUser()->id, 'page_deleted');
+			$this->historyRepository->add('pages', $page->id, $user_id, 'page_deleted');
 
 			$page->delete();
 		}
