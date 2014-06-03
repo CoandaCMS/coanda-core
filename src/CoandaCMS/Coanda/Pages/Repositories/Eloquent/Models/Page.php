@@ -268,4 +268,10 @@ class Page extends Eloquent {
 
 		return $type->showMeta();
 	}
+
+	public function setRemoteId($remote_id)
+	{
+		$this->remote_id = $remote_id;
+		$this->save();
+	}
 }
