@@ -327,15 +327,15 @@ class EloquentPageFactory implements PageFactoryInterface {
     /**
      * @param $type
      * @param $user_id
-     * @param bool $parent_pagelocation_id
+     * @param bool $parent_location_id
      * @return mixed
      * @throws \CoandaCMS\Coanda\Pages\Exceptions\SubPagesNotAllowed
      */
-    public function create($type, $user_id, $parent_pagelocation_id = false)
+    public function create($type, $user_id, $parent_location_id = false)
 	{
-		if ($parent_pagelocation_id)
+		if ($parent_location_id)
 		{
-			$parent_location = $this->locationById($parent_pagelocation_id);
+			$parent_location = $this->locationById($parent_location_id);
 
 			if ($parent_location->page->pageType()->allowsSubPages())
 			{
@@ -346,13 +346,13 @@ class EloquentPageFactory implements PageFactoryInterface {
 		}
 		else
 		{
-			return $this->createNewPage($type, false, $user_id, $parent_pagelocation_id);
+			return $this->createNewPage($type, false, $user_id, $parent_location_id);
 		}
 	}
 
-	public function createAndPublish($type, $user_id, $parent_pagelocation_id, $page_data)
+	public function createAndPublish($type, $user_id, $parent_location_id, $page_data)
 	{
-		$page = $this->create($type, $user_id, $parent_pagelocation_id);
+		$page = $this->create($type, $user_id, $parent_location_id);
 		$version = $page->currentVersion();
 
 		// Add the slug data
