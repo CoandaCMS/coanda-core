@@ -44,7 +44,7 @@
 						<div class="@if ($media->present()->has_preview) col-md-8 @else col-md-4 @endif">
 							<a href="{{ Coanda::adminUrl('media/download/' . $media->id) }}">
 								@if ($media->present()->has_preview)
-									<img src="{{ $media->present()->large_url }}" class="img-thumbnail">
+									<img src="{{ url($media->present()->large_url) }}" class="img-thumbnail">
 								@else
 									<img src="{{ asset('packages/coanda/images/file.png') }}" width="200" height="200" class="img-thumbnail">
 								@endif

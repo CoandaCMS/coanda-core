@@ -53,7 +53,7 @@
 									<div class="thumbnail">
 										<a href="{{ Coanda::adminUrl('media/view/' . $media->id) }}">
 											@if ($media->present()->has_preview)
-												<img src="{{ $media->present()->thumbnail_url }}" width="100" height="100">
+												<img src="{{ url($media->present()->thumbnail_url) }}" width="100" height="100">
 											@else
 												<img src="{{ asset('packages/coanda/images/file.png') }}" width="100" height="100">
 											@endif
