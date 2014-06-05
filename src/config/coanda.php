@@ -21,6 +21,7 @@ return array(
 		'CoandaCMS\Coanda\Core\Attributes\Types\HTML',
 		'CoandaCMS\Coanda\Core\Attributes\Types\Boolean',
 		'CoandaCMS\Coanda\Core\Attributes\Types\Image',
+		'CoandaCMS\Coanda\Core\Attributes\Types\Date',
 	],
 
 	/*

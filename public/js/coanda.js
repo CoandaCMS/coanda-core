@@ -32,7 +32,8 @@ $(document).ready( function () {
 
 			$(this).datetimepicker({
 				useSeconds: false,
-				sideBySide: false
+				sideBySide: false,
+				pickTime: ($(this).data('hide-time') == true ? false : true)
 			});
 
 			$(this).find('.date-field').on('focus', function () {
