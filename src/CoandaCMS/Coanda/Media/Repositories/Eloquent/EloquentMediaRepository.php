@@ -353,6 +353,8 @@ class EloquentMediaRepository implements MediaRepositoryInterface {
 	private function getMimeType($extension)
 	{
 	    $mimeTypes = array(
+
+	    	"png" => "image/png",
 	        "323"       => "text/h323",
 	        "acx"       => "application/internet-property-stream",
 	        "ai"        => "application/postscript",
