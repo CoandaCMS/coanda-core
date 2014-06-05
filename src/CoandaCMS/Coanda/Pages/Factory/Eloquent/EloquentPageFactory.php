@@ -1,4 +1,4 @@
-<?php namespace CoandaCMS\Coanda\Pages\Repositories\Eloquent;
+<?php namespace CoandaCMS\Coanda\Pages\Factory\Eloquent;
 
 use Coanda;
 
@@ -14,22 +14,18 @@ use CoandaCMS\Coanda\Pages\Exceptions\SubPagesNotAllowed;
 use CoandaCMS\Coanda\Urls\Exceptions\InvalidSlug;
 use CoandaCMS\Coanda\Urls\Exceptions\UrlAlreadyExists;
 
-use CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageLocation as PageLocationModel;
-use CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\Page as PageModel;
-use CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageVersion as PageVersionModel;
-use CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageVersionSlug as PageVersionSlugModel;
-use CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageVersionComment as PageVersionCommentModel;
-use CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageAttribute as PageAttributeModel;
+use CoandaCMS\Coanda\Pages\Factory\Eloquent\Models\PageLocation as PageLocationModel;
+use CoandaCMS\Coanda\Pages\Factory\Eloquent\Models\Page as PageModel;
+use CoandaCMS\Coanda\Pages\Factory\Eloquent\Models\PageVersion as PageVersionModel;
+use CoandaCMS\Coanda\Pages\Factory\Eloquent\Models\PageVersionSlug as PageVersionSlugModel;
+use CoandaCMS\Coanda\Pages\Factory\Eloquent\Models\PageVersionComment as PageVersionCommentModel;
+use CoandaCMS\Coanda\Pages\Factory\Eloquent\Models\PageAttribute as PageAttributeModel;
 
-use CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface;
+use CoandaCMS\Coanda\Pages\Factory\PageFactoryInterface;
 
 use Carbon\Carbon;
 
-/**
- * Class EloquentPageRepository
- * @package CoandaCMS\Coanda\Pages\Repositories\Eloquent
- */
-class EloquentPageRepository implements PageRepositoryInterface {
+class EloquentPageFactory implements PageFactoryInterface {
 
     /**
      * @var Models\Page
@@ -83,6 +79,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		$this->page_version_slug_model = $page_version_slug_model;
 		$this->page_version_comment_model = $page_version_comment_model;
 		$this->page_model = $page_model;
+		
 		$this->urlRepository = $urlRepository;
 		$this->historyRepository = $historyRepository;
 	}
@@ -94,14 +91,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
      */
     public function find($id)
 	{
-		$page = $this->page_model->find($id);
-
-		if (!$page)
-		{
-			throw new PageNotFound('Page #' . $id . ' not found');
-		}
-		
-		return $page;
+		return $this->findById($id);
 	}
 
     /**
@@ -196,7 +186,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
      * @param int $per_page
      * @return mixed
      */
-    private function subLocationsForLocation($parent_location_id, $per_page = 10)
+    private function subLocations($parent_location_id, $per_page = 10)
 	{
 		$order = 'manual';
 
@@ -246,9 +236,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
      */
     public function topLevel($per_page = 10)
 	{
-		return $this->subLocationsForLocation(0, $per_page);
-
-		// return $this->model->where('parent_page_id', 0)->whereIsHome(false)->whereIsTrashed(false)->orderBy('order', 'asc')->paginate($per_page);
+		return $this->subLocations(0, $per_page);
 	}
 
     /**
@@ -258,9 +246,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
      */
     public function subPages($location_id, $per_page)
 	{
-		return $this->subLocationsForLocation($location_id, $per_page);
-
-		// return $this->page_location_model->where('parent_page_id', $page_id)->orderBy('order', 'asc')->paginate($per_page);
+		return $this->subLocations($location_id, $per_page);
 	}
 
     /**
@@ -485,7 +471,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
      */
     public function getVersionById($id)
 	{
-		$version = PageVersionModel::find($id);
+		$version = $this->page_version_model->find($id);
 
 		if (!$version)
 		{

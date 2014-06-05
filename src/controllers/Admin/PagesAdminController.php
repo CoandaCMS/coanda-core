@@ -21,16 +21,16 @@ use CoandaCMS\Coanda\Controllers\BaseController;
 class PagesAdminController extends BaseController {
 
     /**
-     * @var \CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface
+     * @var \CoandaCMS\Coanda\Pages\Factory\PageFactoryInterface
      */
-    private $pageRepository;
+    private $pageFactory;
 
     /**
-     * @param CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface $pageRepository
+     * @param CoandaCMS\Coanda\Pages\Factory\PageFactoryInterface $pageFactory
      */
-    public function __construct(\CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface $pageRepository)
+    public function __construct(\CoandaCMS\Coanda\Pages\Factory\PageFactoryInterface $pageFactory)
 	{
-		$this->pageRepository = $pageRepository;
+		$this->pageFactory = $pageFactory;
 
 		$this->beforeFilter('csrf', array('on' => 'post'));
 	}
@@ -43,11 +43,11 @@ class PagesAdminController extends BaseController {
 	{
 		Coanda::checkAccess('pages', 'view');
 
-		$home_page = $this->pageRepository->getHomePage();
+		$home_page = $this->pageFactory->getHomePage();
 
 		$per_page = 10;
 
-		$pages = $this->pageRepository->topLevel($per_page);
+		$pages = $this->pageFactory->topLevel($per_page);
 
 		return View::make('coanda::admin.modules.pages.index', [ 'home_page' => $home_page, 'pages' => $pages ]);
 	}
@@ -70,7 +70,7 @@ class PagesAdminController extends BaseController {
 
 		if (Input::has('update_order') && Input::get('update_order') == 'true')
 		{
-			$this->pageRepository->updateOrdering(Input::get('ordering'));
+			$this->pageFactory->updateOrdering(Input::get('ordering'));
 
 			return Redirect::to(Coanda::adminUrl('pages'))->with('ordering_updated', true);
 		}
@@ -84,7 +84,7 @@ class PagesAdminController extends BaseController {
 	{
 		try
 		{
-			$page = $this->pageRepository->find($id);
+			$page = $this->pageFactory->find($id);
 
 			// If the page is only in one place, lets redirect and view it there
 			if ($page->locations->count() == 1)
@@ -94,8 +94,8 @@ class PagesAdminController extends BaseController {
 
 			$view_data = [
 				'page' => $page,
-				'history' => $this->pageRepository->recentHistory($id, 5),
-				'contributors' => $this->pageRepository->contributors($id)				
+				'history' => $this->pageFactory->recentHistory($id, 5),
+				'contributors' => $this->pageFactory->contributors($id)				
 			];
 
 			return View::make('coanda::admin.modules.pages.view', $view_data);
@@ -120,16 +120,16 @@ class PagesAdminController extends BaseController {
 
 		try
 		{
-			$pagelocation = $this->pageRepository->locationById($id);
+			$pagelocation = $this->pageFactory->locationById($id);
 
 			Coanda::checkAccess('pages', 'view', ['page_location_id' => $pagelocation->id, 'page_location_path' => $pagelocation->path, 'page_type' => $pagelocation->page->type]);
 
 			$view_data = [
 							'pagelocation' => $pagelocation,
 							'page' => $pagelocation->page,
-							'children' => $this->pageRepository->subPages($id, 10),
-							'history' => $this->pageRepository->recentHistory($pagelocation->page->id, 5),
-							'contributors' => $this->pageRepository->contributors($pagelocation->page->id)
+							'children' => $this->pageFactory->subPages($id, 10),
+							'history' => $this->pageFactory->recentHistory($pagelocation->page->id, 5),
+							'contributors' => $this->pageFactory->contributors($pagelocation->page->id)
 						];
 
 			return View::make('coanda::admin.modules.pages.location', $view_data);
@@ -164,7 +164,7 @@ class PagesAdminController extends BaseController {
 
 		if (Input::has('update_order') && Input::get('update_order') == 'true')
 		{
-			$this->pageRepository->updateOrdering(Input::get('ordering'));
+			$this->pageFactory->updateOrdering(Input::get('ordering'));
 
 			return Redirect::to(Coanda::adminUrl('pages/location/' . $id))->with('ordering_updated', true);
 		}
@@ -187,7 +187,7 @@ class PagesAdminController extends BaseController {
 			return Redirect::to(Coanda::adminUrl('pages/location/' . $previous_location_id));
 		}
 
-		$pages = $this->pageRepository->findByIds(Session::get('remove_page_list'));
+		$pages = $this->pageFactory->findByIds(Session::get('remove_page_list'));
 
 		return View::make('coanda::admin.modules.pages.confirmdelete', ['pages' => $pages, 'previous_location_id' => $previous_location_id]);
 
@@ -210,7 +210,7 @@ class PagesAdminController extends BaseController {
 			return Redirect::to(Coanda::adminUrl('pages/location/' . $previous_page_id));
 		}
 
-		$this->pageRepository->deletePages(Input::get('confirmed_remove_list'));
+		$this->pageFactory->deletePages(Input::get('confirmed_remove_list'));
 
 		return Redirect::to(Coanda::adminUrl('pages/location/' . $previous_page_id));
 	}
@@ -227,7 +227,7 @@ class PagesAdminController extends BaseController {
 		try
 		{
 			$type = Coanda::module('pages')->getPageType($page_type);
-			$page = $this->pageRepository->create($type, Coanda::currentUser()->id, $parent_page_id);
+			$page = $this->pageFactory->create($type, Coanda::currentUser()->id, $parent_page_id);
 
 			// Redirect to edit (version 1 - which should be the only version, given this is the create method!)
 			return Redirect::to(Coanda::adminUrl('pages/editversion/' . $page->id . '/1'));
@@ -253,7 +253,7 @@ class PagesAdminController extends BaseController {
 		try
 		{
 			$type = Coanda::module('pages')->getHomePageType($page_type);
-			$page = $this->pageRepository->createHome($type, Coanda::currentUser()->id);
+			$page = $this->pageFactory->createHome($type, Coanda::currentUser()->id);
 
 			// Redirect to edit (version 1 - which should be the only version, give this is the create method!)
 			return Redirect::to(Coanda::adminUrl('pages/editversion/' . $page->id . '/1'));
@@ -276,11 +276,11 @@ class PagesAdminController extends BaseController {
 	{
 		try
 		{
-			$page = $this->pageRepository->find($page_id);
+			$page = $this->pageFactory->find($page_id);
 
 			Coanda::checkAccess('pages', 'edit', ['page_id' => $page->id, 'page_type' => $page->type]);
 
-			$existing_drafts = $this->pageRepository->draftsForUser($page_id, Coanda::currentUser()->id);	
+			$existing_drafts = $this->pageFactory->draftsForUser($page_id, Coanda::currentUser()->id);	
 
 			if ($existing_drafts->count() > 0)
 			{
@@ -288,7 +288,7 @@ class PagesAdminController extends BaseController {
 			}
 			else
 			{
-				$new_version = $this->pageRepository->createNewVersion($page_id, Coanda::currentUser()->id, $version_number);
+				$new_version = $this->pageFactory->createNewVersion($page_id, Coanda::currentUser()->id, $version_number);
 
 				return Redirect::to(Coanda::adminUrl('pages/editversion/' . $page->id . '/' . $new_version));
 			}
@@ -308,7 +308,7 @@ class PagesAdminController extends BaseController {
 	{
 		try
 		{
-			$version = $this->pageRepository->getDraftVersion($page_id, $version_number);
+			$version = $this->pageFactory->getDraftVersion($page_id, $version_number);
 
 			$page = $version->page;
 
@@ -343,14 +343,14 @@ class PagesAdminController extends BaseController {
 	{
 		try
 		{
-			$version = $this->pageRepository->getDraftVersion($page_id, $version_number);
+			$version = $this->pageFactory->getDraftVersion($page_id, $version_number);
 			$page = $version->page;
 
 			Coanda::checkAccess('pages', 'edit', ['page_id' => $page->id, 'page_type' => $page->type]);
 
 			if (Input::has('discard'))
 			{
-				$this->pageRepository->discardDraftVersion($version, Coanda::currentUser()->id);
+				$this->pageFactory->discardDraftVersion($version, Coanda::currentUser()->id);
 
 				// If this was the first version, then we need to redirect back to the parent
 				if ($version_number == 1)
@@ -363,7 +363,7 @@ class PagesAdminController extends BaseController {
 				}
 			}
 
-			$this->pageRepository->saveDraftVersion($version, Input::all());
+			$this->pageFactory->saveDraftVersion($version, Input::all());
 
 			// Everything went OK, so now we can determine what to do based on the button
 			if (Input::has('choose_layout') && Input::get('choose_layout') == 'true')
@@ -382,7 +382,7 @@ class PagesAdminController extends BaseController {
 				
 				foreach ($slug_ids as $slug_id)
 				{
-					$this->pageRepository->removeVersionSlug($version->id, $slug_id);
+					$this->pageFactory->removeVersionSlug($version->id, $slug_id);
 				}
 
 				return Redirect::to(Coanda::adminUrl('pages/editversion/' . $page_id . '/' . $version_number))->withInput();
@@ -390,7 +390,7 @@ class PagesAdminController extends BaseController {
 
 			if (Input::has('attribute_action'))
 			{
-				$this->pageRepository->handleAttributeAction($version, Input::get('attribute_action'), Input::all());
+				$this->pageFactory->handleAttributeAction($version, Input::get('attribute_action'), Input::all());
 
 				return Redirect::to(Coanda::adminUrl('pages/editversion/' . $page_id . '/' . $version_number))->withInput();
 			}
@@ -415,7 +415,7 @@ class PagesAdminController extends BaseController {
 				{
 					try
 					{
-						$redirect = $this->pageRepository->executePublishHandler($version, Input::get('publish_handler'), Input::all());
+						$redirect = $this->pageFactory->executePublishHandler($version, Input::get('publish_handler'), Input::all());
 
 						if ($redirect)
 						{
@@ -435,7 +435,7 @@ class PagesAdminController extends BaseController {
 		{
 			if (Input::has('attribute_action'))
 			{
-				$this->pageRepository->handleAttributeAction($version, Input::get('attribute_action'), Input::all());
+				$this->pageFactory->handleAttributeAction($version, Input::get('attribute_action'), Input::all());
 
 				return Redirect::to(Coanda::adminUrl('pages/editversion/' . $page_id . '/' . $version_number))->withInput();
 			}
@@ -451,7 +451,7 @@ class PagesAdminController extends BaseController {
 
 				foreach ($slug_ids as $slug_id)
 				{
-					$this->pageRepository->removeVersionSlug($version->id, $slug_id);
+					$this->pageFactory->removeVersionSlug($version->id, $slug_id);
 				}
 			}
 
@@ -473,12 +473,12 @@ class PagesAdminController extends BaseController {
 	{
 		try
 		{
-			$version = $this->pageRepository->getDraftVersion($page_id, $version_number);
+			$version = $this->pageFactory->getDraftVersion($page_id, $version_number);
 			$page = $version->page;
 
 			Coanda::checkAccess('pages', 'edit', ['page_id' => $page->id, 'page_type' => $page->type]);
 
-			$this->pageRepository->discardDraftVersion($version);
+			$this->pageFactory->discardDraftVersion($version);
 
 			return Redirect::to(Coanda::adminUrl('pages/view/' . $page_id));	
 		}
@@ -502,7 +502,7 @@ class PagesAdminController extends BaseController {
 	{
 		try
 		{
-			$version = $this->pageRepository->getDraftVersion($page_id, $version_number);
+			$version = $this->pageFactory->getDraftVersion($page_id, $version_number);
 			$page = $version->page;
 
 			$existing_locations = [];
@@ -520,10 +520,10 @@ class PagesAdminController extends BaseController {
 
 			if ($parent_page_id !== 0)			
 			{
-				$location = $this->pageRepository->locationById($parent_page_id);
+				$location = $this->pageFactory->locationById($parent_page_id);
 			}
 			
-			$pages = $this->pageRepository->subPages($parent_page_id, $per_page);
+			$pages = $this->pageFactory->subPages($parent_page_id, $per_page);
 
 			return View::make('coanda::admin.modules.pages.browseaddlocation', [ 'pages' => $pages, 'page_id' => $page_id, 'version_number' => $version_number, 'existing_locations' => $existing_locations, 'location' => $location ]);
 		}
@@ -546,7 +546,7 @@ class PagesAdminController extends BaseController {
 	{
 		try
 		{
-			$version = $this->pageRepository->getDraftVersion($page_id, $version_number);
+			$version = $this->pageFactory->getDraftVersion($page_id, $version_number);
 			$page = $version->page;
 
 			Coanda::checkAccess('pages', 'edit', ['page_id' => $page->id, 'page_type' => $page->type]);
@@ -555,7 +555,7 @@ class PagesAdminController extends BaseController {
 			{
 				foreach (Input::get('add_locations') as $new_location_id)
 				{
-					$this->pageRepository->addNewVersionSlug($version->id, $new_location_id);
+					$this->pageFactory->addNewVersionSlug($version->id, $new_location_id);
 				}
 			}
 
@@ -579,11 +579,11 @@ class PagesAdminController extends BaseController {
 	{
 		try
 		{
-			$page = $this->pageRepository->find($page_id);
+			$page = $this->pageFactory->find($page_id);
 
 			Coanda::checkAccess('pages', 'edit', ['page_id' => $page->id, 'page_type' => $page->type]);
 
-			$drafts = $this->pageRepository->draftsForUser($page_id, Coanda::currentUser()->id);
+			$drafts = $this->pageFactory->draftsForUser($page_id, Coanda::currentUser()->id);
 
 			return View::make('coanda::admin.modules.pages.existingdrafts', ['page' => $page, 'drafts' => $drafts ]);
 		}
@@ -601,13 +601,13 @@ class PagesAdminController extends BaseController {
 	{
 		try
 		{
-			$page = $this->pageRepository->find($page_id);
+			$page = $this->pageFactory->find($page_id);
 
 			Coanda::checkAccess('pages', 'edit', ['page_id' => $page->id, 'page_type' => $page->type]);
 
 			if (Input::has('new_version') && Input::get('new_version') == 'true')
 			{
-				$new_version = $this->pageRepository->createNewVersion($page->id, Coanda::currentUser()->id);
+				$new_version = $this->pageFactory->createNewVersion($page->id, Coanda::currentUser()->id);
 
 				return Redirect::to(Coanda::adminUrl('pages/editversion/' . $page_id . '/' . $new_version));
 			}
@@ -626,7 +626,7 @@ class PagesAdminController extends BaseController {
 	{
 		try
 		{
-			$page = $this->pageRepository->find($page_id);
+			$page = $this->pageFactory->find($page_id);
 
 			Coanda::checkAccess('pages', 'remove', ['page_id' => $page->id, 'page_type' => $page->type]);
 
@@ -646,11 +646,11 @@ class PagesAdminController extends BaseController {
 	{
 		try
 		{
-			$page = $this->pageRepository->find($page_id);
+			$page = $this->pageFactory->find($page_id);
 
 			Coanda::checkAccess('pages', 'remove', ['page_id' => $page->id, 'page_type' => $page->type]);
 
-			$this->pageRepository->deletePage($page_id);
+			$this->pageFactory->deletePage($page_id);
 
 			return Redirect::to(Coanda::adminUrl('pages/view/' . $page_id));
 		}
@@ -667,7 +667,7 @@ class PagesAdminController extends BaseController {
 	{
 		Coanda::checkAccess('pages', 'remove');
 
-		$pages = $this->pageRepository->trashed();
+		$pages = $this->pageFactory->trashed();
 
 		return View::make('coanda::admin.modules.pages.trash', ['pages' => $pages ]);
 	}
@@ -699,7 +699,7 @@ class PagesAdminController extends BaseController {
 			return Redirect::to(Coanda::adminUrl('pages/trash'));
 		}
 
-		$pages = $this->pageRepository->findByIds(Session::get('confirm_permanent_remove_list'));
+		$pages = $this->pageFactory->findByIds(Session::get('confirm_permanent_remove_list'));
 
 		return View::make('coanda::admin.modules.pages.confirmdeletefromtrash', ['pages' => $pages ]);
 	}
@@ -716,7 +716,7 @@ class PagesAdminController extends BaseController {
 			return Redirect::to(Coanda::adminUrl('pages/trash'));
 		}
 
-		$this->pageRepository->deletePages(Input::get('confirmed_remove_list'), true);
+		$this->pageFactory->deletePages(Input::get('confirmed_remove_list'), true);
 
 		return Redirect::to(Coanda::adminUrl('pages/trash'));
 	}
@@ -730,7 +730,7 @@ class PagesAdminController extends BaseController {
 		try
 		{
 			// Get the page to be restored
-			$page = $this->pageRepository->find($page_id);
+			$page = $this->pageFactory->find($page_id);
 
 			Coanda::checkAccess('pages', 'remove');
 
@@ -757,7 +757,7 @@ class PagesAdminController extends BaseController {
 		{
 			Coanda::checkAccess('pages', 'remove');
 
-			$this->pageRepository->restore($page_id, Input::has('restore_sub_pages') ? Input::get('restore_sub_pages') : []);
+			$this->pageFactory->restore($page_id, Input::has('restore_sub_pages') ? Input::get('restore_sub_pages') : []);
 
 			return Redirect::to(Coanda::adminUrl('pages/view/' . $page_id));
 		}
@@ -775,12 +775,12 @@ class PagesAdminController extends BaseController {
     {
         try
         {
-            $page = $this->pageRepository->find($page_id);
+            $page = $this->pageFactory->find($page_id);
  
 			Coanda::checkAccess('pages', 'view', ['page_id' => $page->id, 'page_type' => $page->type]);
 
-            $history = $this->pageRepository->history($page->id);
-            $contributors = $this->pageRepository->contributors($page->id);
+            $history = $this->pageFactory->history($page->id);
+            $contributors = $this->pageFactory->contributors($page->id);
 
             return View::make('coanda::admin.modules.pages.history', [ 'page' => $page, 'histories' => $history, 'contributors' => $contributors]);
         }
@@ -794,11 +794,11 @@ class PagesAdminController extends BaseController {
     {
  		try
 		{
-			$pagelocation = $this->pageRepository->locationById($location_id);
+			$pagelocation = $this->pageFactory->locationById($location_id);
 
 			Coanda::checkAccess('pages', 'view', ['page_location_id' => $pagelocation->id, 'page_type' => $pagelocation->page->type]);
 
-			$this->pageRepository->updateLocationSubPageOrder($pagelocation->id, $new_sub_page_order);
+			$this->pageFactory->updateLocationSubPageOrder($pagelocation->id, $new_sub_page_order);
 
 			return Redirect::to(Coanda::adminUrl('pages/location/' . $location_id));
 		}
@@ -810,8 +810,8 @@ class PagesAdminController extends BaseController {
 
     public function getIndexLocationTest($location_id)
     {
-		$pagelocation = $this->pageRepository->locationById($location_id);
+		$pagelocation = $this->pageFactory->locationById($location_id);
 
-		$this->pageRepository->registerLocationWithSearchProvider($pagelocation);
+		$this->pageFactory->registerLocationWithSearchProvider($pagelocation);
     }
 }

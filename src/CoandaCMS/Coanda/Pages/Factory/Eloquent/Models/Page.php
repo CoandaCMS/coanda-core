@@ -1,12 +1,8 @@
-<?php namespace CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models;
+<?php namespace CoandaCMS\Coanda\Pages\Factory\Eloquent\Models;
 
 use Eloquent, Coanda, App;
 use Carbon\Carbon;
 
-/**
- * Class Page
- * @package CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models
- */
 class Page extends Eloquent {
 
 	use \CoandaCMS\Coanda\Core\Presenters\PresentableTrait;
@@ -14,7 +10,7 @@ class Page extends Eloquent {
     /**
      * @var string
      */
-    protected $presenter = 'CoandaCMS\Coanda\Pages\Presenters\Page';
+    protected $presenter = 'CoandaCMS\Coanda\Pages\Factory\Eloquent\Presenters\Page';
 
     /**
      * @var array
@@ -71,7 +67,7 @@ class Page extends Eloquent {
      */
     public function locations()
 	{
-		return $this->hasMany('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageLocation');
+		return $this->hasMany('CoandaCMS\Coanda\Pages\Factory\Eloquent\Models\PageLocation');
 	}
 
 	/**
@@ -80,7 +76,7 @@ class Page extends Eloquent {
 	 */
 	public function versions()
 	{
-		return $this->hasMany('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageVersion');
+		return $this->hasMany('CoandaCMS\Coanda\Pages\Factory\Eloquent\Models\PageVersion');
 	}
 
     /**
@@ -264,9 +260,7 @@ class Page extends Eloquent {
      */
     public function getShowMetaAttribute()
 	{
-		$type = $this->pageType();
-
-		return $type->showMeta();
+		return $this->pageType()->showMeta();
 	}
 
 	public function setRemoteId($remote_id)

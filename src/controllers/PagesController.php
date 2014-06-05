@@ -11,16 +11,16 @@ use CoandaCMS\Coanda\Exceptions\ValidationException;
 class PagesController extends BaseController {
 
     /**
-     * @var \CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface
+     * @var \CoandaCMS\Coanda\Pages\Factory\PageFactoryInterface
      */
-    private $pageRepository;
+    private $pageFactory;
 
     /**
-     * @param \CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface $pageRepository
+     * @param \CoandaCMS\Coanda\Pages\Factory\PageFactoryInterface $pageFactory
      */
-    public function __construct(\CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface $pageRepository)
+    public function __construct(\CoandaCMS\Coanda\Pages\Factory\PageFactoryInterface $pageFactory)
 	{
-		$this->pageRepository = $pageRepository;
+		$this->pageFactory = $pageFactory;
 	}
 
     /**
@@ -31,7 +31,7 @@ class PagesController extends BaseController {
 	{
 		try
 		{
-			$version = $this->pageRepository->getVersionByPreviewKey($preview_key);
+			$version = $this->pageFactory->getVersionByPreviewKey($preview_key);
 			$invalid_fields = Session::has('invalid_fields') ? Session::get('invalid_fields') : [];
 
 			return View::make('coanda::pages.preview', [ 'version' => $version, 'preview_key' => $preview_key, 'invalid_fields' => $invalid_fields ]);
@@ -46,7 +46,7 @@ class PagesController extends BaseController {
 	{
 		try
 		{
-			$version = $this->pageRepository->getVersionByPreviewKey($preview_key);
+			$version = $this->pageFactory->getVersionByPreviewKey($preview_key);
 
 			return Coanda::module('pages')->renderVersion($version);
 		}
@@ -60,9 +60,9 @@ class PagesController extends BaseController {
 	{
 		try
 		{
-			$version = $this->pageRepository->getVersionByPreviewKey($preview_key);
+			$version = $this->pageFactory->getVersionByPreviewKey($preview_key);
 
-			$this->pageRepository->addVersionComment($version, Input::all());
+			$this->pageFactory->addVersionComment($version, Input::all());
 
 			return Redirect::to('pages/preview/' . $preview_key)->with('comment_saved', true);
 		}

@@ -1,10 +1,10 @@
-<?php namespace CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models;
+<?php namespace CoandaCMS\Coanda\Pages\Factory\Eloquent\Models;
 
 use Eloquent, Coanda;
 
 /**
  * Class PageVersion
- * @package CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models
+ * @package CoandaCMS\Coanda\Pages\Factory\Eloquent\Models
  */
 class PageVersion extends Eloquent {
 
@@ -23,7 +23,7 @@ class PageVersion extends Eloquent {
     /**
      * @var string
      */
-    protected $presenter = 'CoandaCMS\Coanda\Pages\Presenters\PageVersion';
+    protected $presenter = 'CoandaCMS\Coanda\Pages\Factory\Eloquent\Presenters\PageVersion';
 
 	/**
 	 * The database table used by the model.
@@ -69,7 +69,7 @@ class PageVersion extends Eloquent {
 	 */
 	public function attributes()
 	{
-		return $this->hasMany('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageAttribute')->orderBy('order', 'asc');
+		return $this->hasMany('CoandaCMS\Coanda\Pages\Factory\Eloquent\Models\PageAttribute')->orderBy('order', 'asc');
 	}
 
     /**
@@ -77,7 +77,7 @@ class PageVersion extends Eloquent {
      */
     public function slugs()
 	{
-		return $this->hasMany('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageVersionSlug', 'version_id');
+		return $this->hasMany('CoandaCMS\Coanda\Pages\Factory\Eloquent\Models\PageVersionSlug', 'version_id');
 	}
 
     /**
@@ -85,7 +85,7 @@ class PageVersion extends Eloquent {
      */
     public function comments()
 	{
-		return $this->hasMany('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageVersionComment', 'version_id')->orderBy('created_at', 'desc');;
+		return $this->hasMany('CoandaCMS\Coanda\Pages\Factory\Eloquent\Models\PageVersionComment', 'version_id')->orderBy('created_at', 'desc');;
 	}
 
     /**
@@ -116,11 +116,11 @@ class PageVersion extends Eloquent {
 
 	/**
 	 * Gets the page for this version
-	 * @return CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\Page The page
+	 * @return CoandaCMS\Coanda\Pages\Factory\Eloquent\Models\Page The page
 	 */
 	public function page()
 	{
-		return $this->belongsTo('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\Page');
+		return $this->belongsTo('CoandaCMS\Coanda\Pages\Factory\Eloquent\Models\Page');
 	}
 
     /**
@@ -156,7 +156,7 @@ class PageVersion extends Eloquent {
 				// We need to add this new attribute
 				$page_attribute_type = Coanda::getAttributeType($definition['type']);
 
-				$new_attribute = new \CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageAttribute;
+				$new_attribute = new \CoandaCMS\Coanda\Pages\Factory\Eloquent\Models\PageAttribute;
 
 				$new_attribute->type = $page_attribute_type->identifier();
 				$new_attribute->identifier = $definition['identifier'];

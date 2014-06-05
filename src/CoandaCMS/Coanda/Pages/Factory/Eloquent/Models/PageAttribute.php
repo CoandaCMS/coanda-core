@@ -1,11 +1,7 @@
-<?php namespace CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models;
+<?php namespace CoandaCMS\Coanda\Pages\Factory\Eloquent\Models;
 
 use Eloquent, Coanda;
 
-/**
- * Class PageAttribute
- * @package CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models
- */
 class PageAttribute extends Eloquent {
 
     /**
@@ -47,7 +43,7 @@ class PageAttribute extends Eloquent {
 	 */
 	public function version()
 	{
-		return $this->belongsTo('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageVersion', 'page_version_id');
+		return $this->belongsTo('CoandaCMS\Coanda\Pages\Factory\Eloquent\Models\PageVersion', 'page_version_id');
 	}
 
 	/**

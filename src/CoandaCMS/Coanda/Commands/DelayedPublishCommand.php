@@ -28,7 +28,7 @@ class DelayedPublishCommand extends Command {
     /**
      * @var
      */
-    private $pageRepository;
+    private $pageFactory;
     /**
      * @var
      */
@@ -43,7 +43,7 @@ class DelayedPublishCommand extends Command {
      */
     public function __construct($app)
     {
-        $this->pageRepository = $app->make('CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface');
+        $this->pageFactory = $app->make('CoandaCMS\Coanda\Pages\Factory\PageFactoryInterface');
         $this->urlRepository = $app->make('CoandaCMS\Coanda\Urls\Repositories\UrlRepositoryInterface');
         $this->historyRepository = $app->make('CoandaCMS\Coanda\History\Repositories\HistoryRepositoryInterface');
 
@@ -57,6 +57,6 @@ class DelayedPublishCommand extends Command {
     {        
         $this->info('Running delayed publish handler');
 
-        DelayedPublishHandler::executeFromCommand($this, $this->pageRepository, $this->urlRepository, $this->historyRepository);
+        DelayedPublishHandler::executeFromCommand($this, $this->pageFactory, $this->urlRepository, $this->historyRepository);
     }
 }

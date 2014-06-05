@@ -35,12 +35,12 @@ class Immediate implements PublishHandlerInterface {
     /**
      * @param $version
      * @param $data
-     * @param $pageRepository
+     * @param $pageFactory
      * @param $urlRepository
      * @param $historyRepository
      */
-    public function execute($version, $data, $pageRepository, $urlRepository, $historyRepository)
+    public function execute($version, $data, $pageFactory, $urlRepository, $historyRepository)
 	{
-		$pageRepository->publishVersion($version, Coanda::currentUser()->id, $urlRepository, $historyRepository);
+		$pageFactory->publishVersion($version, Coanda::currentUser()->id, $urlRepository, $historyRepository);
 	}
 }

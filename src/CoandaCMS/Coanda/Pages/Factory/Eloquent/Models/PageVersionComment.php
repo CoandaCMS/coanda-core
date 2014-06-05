@@ -1,11 +1,11 @@
-<?php namespace CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models;
+<?php namespace CoandaCMS\Coanda\Pages\Factory\Eloquent\Models;
 
 use Eloquent, Coanda, App;
 use Carbon\Carbon;
 
 /**
  * Class PageVersionComment
- * @package CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models
+ * @package CoandaCMS\Coanda\Pages\Factory\Eloquent\Models
  */
 class PageVersionComment extends Eloquent {
 
@@ -14,7 +14,7 @@ class PageVersionComment extends Eloquent {
     /**
      * @var string
      */
-    protected $presenter = 'CoandaCMS\Coanda\Pages\Presenters\PageVersionComment';
+    protected $presenter = 'CoandaCMS\Coanda\Pages\Factory\Eloquent\Presenters\PageVersionComment';
 
     /**
      * @var string
@@ -31,6 +31,6 @@ class PageVersionComment extends Eloquent {
      */
     public function version()
 	{
-		return $this->belongsTo('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageVersion');
+		return $this->belongsTo('CoandaCMS\Coanda\Pages\Factory\Eloquent\Models\PageVersion');
 	}
 }

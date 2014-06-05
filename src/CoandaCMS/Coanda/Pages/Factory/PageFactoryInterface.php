@@ -1,10 +1,10 @@
-<?php namespace CoandaCMS\Coanda\Pages\Repositories;
+<?php namespace CoandaCMS\Coanda\Pages\Factory;
 
 /**
- * Interface PageRepositoryInterface
+ * Interface PageFactoryInterface
  * @package CoandaCMS\Coanda\Pages\Repositories
  */
-interface PageRepositoryInterface {
+interface PageFactoryInterface {
 
     /**
      * @param $id

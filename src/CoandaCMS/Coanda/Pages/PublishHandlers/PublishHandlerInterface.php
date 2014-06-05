@@ -17,5 +17,5 @@ interface PublishHandlerInterface {
     /**
      * @return mixed
      */
-    public function execute($version, $data, $pageRepository, $urlRepository, $historyRepository);
+    public function execute($version, $data, $pageFactory, $urlRepository, $historyRepository);
 }

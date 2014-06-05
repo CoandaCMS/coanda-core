@@ -57,11 +57,9 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 			// 	return Cache::get('location_' . $url->type_id) . '<!-- cached -->';
 			// }
 
-			$pageRepository = App::make('CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface');
-
 			try
 			{
-				$location = $pageRepository->locationById($url->type_id);	
+				$location = $this->getPageFactory()->locationById($url->type_id);	
 
 				return $this->renderPage($location->page, $location);
 			}
@@ -222,6 +220,11 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		return [];
 	}
 
+	public function getPageFactory()
+	{
+		return App::make('CoandaCMS\Coanda\Pages\Factory\PageFactoryInterface');
+	}
+
     /**
      * @param bool $page
      * @return array
@@ -302,7 +305,7 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
      */
     public function bindings(\Illuminate\Foundation\Application $app)
 	{
-		$app->bind('CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface', 'CoandaCMS\Coanda\Pages\Repositories\Eloquent\EloquentPageRepository');
+		$app->bind('CoandaCMS\Coanda\Pages\Factory\PageFactoryInterface', 'CoandaCMS\Coanda\Pages\Factory\Eloquent\EloquentPageFactory');
 	}
 
     /**
@@ -426,9 +429,7 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		// 	return Cache::get('home_page');
 		// }
 
-		$pageRepository = App::make('CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface');
-		
-		$home_page = $pageRepository->getHomePage();
+		$home_page = $this->getPageFactory()->getHomePage();
 
 		if ($home_page)
 		{
@@ -583,11 +584,9 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
      */
     public function getPage($page_id)
 	{
-		$pageRepository = App::make('CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface');
-
 		try
 		{
-			return $pageRepository->find($page_id);
+			return $this->getPageFactory()->findById($page_id);
 		}
 		catch (PageNotFound $exception)
 		{
@@ -601,11 +600,9 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
      */
     public function getLocation($location_id)
 	{
-		$pageRepository = App::make('CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface');
-		
 		try
 		{
-			return $pageRepository->locationById($location_id);
+			return $this->getPageFactory()->locationById($location_id);
 		}
 		catch (PageNotFound $exception)
 		{
@@ -615,8 +612,6 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 
 	public function subPages($location_id, $per_page = 50)
 	{
-		$pageRepository = App::make('CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface');
-
-		return $pageRepository->subPages($location_id, $per_page);		
+		return $this->getPageFactory()->subPages($location_id, $per_page);		
 	}
 }
