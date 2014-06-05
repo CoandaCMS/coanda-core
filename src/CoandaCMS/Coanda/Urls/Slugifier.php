@@ -17,7 +17,7 @@ class Slugifier {
 			return false;
 		}
 		
-		if ( preg_match('/^[\/\-_a-z0-9]*$/', $slug))
+		if ( preg_match('/^[\/\-_.a-z0-9]*$/', $slug))
 		{
 			return true;
 		}
