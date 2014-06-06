@@ -56,21 +56,21 @@ class CoandaServiceProvider extends ServiceProvider {
 
 		$this->app['coanda.setup'] = $this->app->share(function($app)
 		{
-		    return new \CoandaCMS\Coanda\Commands\SetupCommand($app);
+		    return new \CoandaCMS\Coanda\Artisan\SetupCommand($app);
 		});
 		
 		$this->commands('coanda.setup');
 
 		$this->app['coanda.delayedpublish'] = $this->app->share(function($app)
 		{
-		    return new \CoandaCMS\Coanda\Commands\DelayedPublishCommand($app);
+		    return new \CoandaCMS\Coanda\Artisan\DelayedPublishCommand($app);
 		});
 
 		$this->commands('coanda.delayedpublish');
 		
 		$this->app['coanda.reindex'] = $this->app->share(function($app)
 		{
-		    return new \CoandaCMS\Coanda\Pages\Commands\Reindex($app);
+		    return new \CoandaCMS\Coanda\Pages\Artisan\Reindex($app);
 		});
 
 		$this->commands('coanda.reindex');

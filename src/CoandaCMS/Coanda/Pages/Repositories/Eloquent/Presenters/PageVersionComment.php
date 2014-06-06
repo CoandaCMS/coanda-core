@@ -1,4 +1,4 @@
-<?php namespace CoandaCMS\Coanda\Pages\Factory\Eloquent\Presenters;
+<?php namespace CoandaCMS\Coanda\Pages\Repositories\Eloquent\Presenters;
 
 use Lang;
 

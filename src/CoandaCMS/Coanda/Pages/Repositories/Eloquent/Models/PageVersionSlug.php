@@ -1,13 +1,13 @@
-<?php namespace CoandaCMS\Coanda\Pages\Factory\Eloquent\Models;
+<?php namespace CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models;
 
 use Eloquent, Coanda, App;
 use Carbon\Carbon;
 
-use CoandaCMS\Coanda\Pages\Factory\Eloquent\Models\PageLocation as PageLocationModel;
+use CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageLocation as PageLocationModel;
 
 /**
  * Class PageVersionSlug
- * @package CoandaCMS\Coanda\Pages\Factory\Eloquent\Models
+ * @package CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models
  */
 class PageVersionSlug extends Eloquent {
 
@@ -26,7 +26,7 @@ class PageVersionSlug extends Eloquent {
      */
     public function version()
 	{
-		return $this->belongsTo('CoandaCMS\Coanda\Pages\Factory\Eloquent\Models\PageVersion');
+		return $this->belongsTo('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageVersion');
 	}
 
     /**

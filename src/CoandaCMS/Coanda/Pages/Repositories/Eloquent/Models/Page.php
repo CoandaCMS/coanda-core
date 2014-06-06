@@ -1,4 +1,4 @@
-<?php namespace CoandaCMS\Coanda\Pages\Factory\Eloquent\Models;
+<?php namespace CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models;
 
 use Eloquent, Coanda, App;
 use Carbon\Carbon;
@@ -10,7 +10,7 @@ class Page extends Eloquent {
     /**
      * @var string
      */
-    protected $presenter = 'CoandaCMS\Coanda\Pages\Factory\Eloquent\Presenters\Page';
+    protected $presenter = 'CoandaCMS\Coanda\Pages\Repositories\Eloquent\Presenters\Page';
 
     /**
      * @var array
@@ -67,7 +67,7 @@ class Page extends Eloquent {
      */
     public function locations()
 	{
-		return $this->hasMany('CoandaCMS\Coanda\Pages\Factory\Eloquent\Models\PageLocation');
+		return $this->hasMany('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageLocation');
 	}
 
 	/**
@@ -76,7 +76,7 @@ class Page extends Eloquent {
 	 */
 	public function versions()
 	{
-		return $this->hasMany('CoandaCMS\Coanda\Pages\Factory\Eloquent\Models\PageVersion');
+		return $this->hasMany('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageVersion');
 	}
 
     /**

@@ -1,4 +1,4 @@
-<?php namespace CoandaCMS\Coanda\Commands;
+<?php namespace CoandaCMS\Coanda\Artisan;
 
 use Illuminate\Console\Command;
 use Coanda;
@@ -7,7 +7,7 @@ use CoandaCMS\Coanda\Pages\PublishHandlers\Delayed as DelayedPublishHandler;
 
 /**
  * Class DelayedPublishCommand
- * @package CoandaCMS\Coanda\Commands
+ * @package CoandaCMS\Coanda\Artisan
  */
 class DelayedPublishCommand extends Command {
 
@@ -28,7 +28,7 @@ class DelayedPublishCommand extends Command {
     /**
      * @var
      */
-    private $pageFactory;
+    private $pageRepository;
     /**
      * @var
      */
@@ -43,7 +43,7 @@ class DelayedPublishCommand extends Command {
      */
     public function __construct($app)
     {
-        $this->pageFactory = $app->make('CoandaCMS\Coanda\Pages\Factory\PageFactoryInterface');
+        $this->pageRepository = $app->make('CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface');
         $this->urlRepository = $app->make('CoandaCMS\Coanda\Urls\Repositories\UrlRepositoryInterface');
         $this->historyRepository = $app->make('CoandaCMS\Coanda\History\Repositories\HistoryRepositoryInterface');
 
@@ -57,6 +57,6 @@ class DelayedPublishCommand extends Command {
     {        
         $this->info('Running delayed publish handler');
 
-        DelayedPublishHandler::executeFromCommand($this, $this->pageFactory, $this->urlRepository, $this->historyRepository);
+        DelayedPublishHandler::executeFromCommand($this, $this->pageRepository, $this->urlRepository, $this->historyRepository);
     }
 }

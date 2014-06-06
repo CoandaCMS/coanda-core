@@ -1,11 +1,11 @@
-<?php namespace CoandaCMS\Coanda\Commands;
+<?php namespace CoandaCMS\Coanda\Artisan;
 
 use Illuminate\Console\Command;
 use Coanda;
 
 /**
  * Class SetupCommand
- * @package CoandaCMS\Coanda\Commands
+ * @package CoandaCMS\Coanda\Artisan
  */
 class SetupCommand extends Command {
 

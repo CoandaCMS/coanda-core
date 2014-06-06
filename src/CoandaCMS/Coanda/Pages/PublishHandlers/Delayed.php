@@ -56,11 +56,11 @@ class Delayed implements PublishHandlerInterface {
     /**
      * @param $version
      * @param $data
-     * @param $pageFactory
+     * @param $pageRepository
      * @param $urlRepository
      * @param $historyRepository
      */
-    public function execute($version, $data, $pageFactory, $urlRepository, $historyRepository)
+    public function execute($version, $data, $pageRepository, $urlRepository, $historyRepository)
 	{
 		$page = $version->page;
 
@@ -93,11 +93,11 @@ class Delayed implements PublishHandlerInterface {
 
     /**
      * @param $command
-     * @param $pageFactory
+     * @param $pageRepository
      * @param $urlRepository
      * @param $historyRepository
      */
-    public static function executeFromCommand($command, $pageFactory, $urlRepository, $historyRepository)
+    public static function executeFromCommand($command, $pageRepository, $urlRepository, $historyRepository)
 	{
 		$offset = 0;
 		$limit = 5;
@@ -109,7 +109,7 @@ class Delayed implements PublishHandlerInterface {
 		while(true)
 		{
 	        // Get any pending versions
-	        $pending_versions = $pageFactory->getPendingVersions($offset, $limit);
+	        $pending_versions = $pageRepository->getPendingVersions($offset, $limit);
 
 	        if ($pending_versions->count() == 0)
 	        {
@@ -143,7 +143,7 @@ class Delayed implements PublishHandlerInterface {
 		{
 			try
 			{
-				$version = $pageFactory->getVersionById($publish_version_id);
+				$version = $pageRepository->getVersionById($publish_version_id);
 
 	            $handler_data = json_decode($version->publish_handler_data);
 
@@ -160,7 +160,7 @@ class Delayed implements PublishHandlerInterface {
 	            	}
 	            }
 
-				$pageFactory->publishVersion($version, false, $urlRepository, $historyRepository);
+				$pageRepository->publishVersion($version, false, $urlRepository, $historyRepository);
 
 				$command->info('Version #' . $version->version . ' of page #' . $version->page->id . ' published');
 			}

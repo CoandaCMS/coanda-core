@@ -1,4 +1,4 @@
-<?php namespace CoandaCMS\Coanda\Pages\Commands;
+<?php namespace CoandaCMS\Coanda\Pages\Artisan;
 
 use Illuminate\Console\Command;
 use Coanda;
@@ -22,14 +22,14 @@ class Reindex extends Command {
     /**
      * @var
      */
-    private $pageFactory;
+    private $pageRepository;
 
     /**
      * @param $app
      */
     public function __construct($app)
     {
-        $this->pageFactory = $app->make('CoandaCMS\Coanda\Pages\Factory\PageFactoryInterface');
+        $this->pageRepository = $app->make('CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface');
 
         parent::__construct();
     }
@@ -51,7 +51,7 @@ class Reindex extends Command {
 
         while (true)
         {
-            $locations = $this->pageFactory->locations($limit, $offset);
+            $locations = $this->pageRepository->locations($limit, $offset);
 
             if ($locations->count() == 0)
             {
@@ -67,12 +67,12 @@ class Reindex extends Command {
                     if ($location->page->is_trashed)
                     {
                         $this->info('Remove from index location: #' . $location->id);    
-                        $this->pageFactory->unRegisterLocationWithSearchProvider($location);
+                        $this->pageRepository->unRegisterLocationWithSearchProvider($location);
                     }
                     else
                     {
                         $this->info('Indexing location: #' . $location->id);
-                        $this->pageFactory->registerLocationWithSearchProvider($location);
+                        $this->pageRepository->registerLocationWithSearchProvider($location);
                     }
                 }
             }

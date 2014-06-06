@@ -59,7 +59,7 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 
 			try
 			{
-				$location = $this->getPageFactory()->locationById($url->type_id);	
+				$location = $this->getPageRepository()->locationById($url->type_id);	
 
 				return $this->renderPage($location->page, $location);
 			}
@@ -220,9 +220,9 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		return [];
 	}
 
-	public function getPageFactory()
+	public function getPageRepository()
 	{
-		return App::make('CoandaCMS\Coanda\Pages\Factory\PageFactoryInterface');
+		return App::make('CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface');
 	}
 
     /**
@@ -305,7 +305,7 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
      */
     public function bindings(\Illuminate\Foundation\Application $app)
 	{
-		$app->bind('CoandaCMS\Coanda\Pages\Factory\PageFactoryInterface', 'CoandaCMS\Coanda\Pages\Factory\Eloquent\EloquentPageFactory');
+		$app->bind('CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface', 'CoandaCMS\Coanda\Pages\Repositories\Eloquent\EloquentPageRepository');
 	}
 
     /**
@@ -429,7 +429,7 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		// 	return Cache::get('home_page');
 		// }
 
-		$home_page = $this->getPageFactory()->getHomePage();
+		$home_page = $this->getPageRepository()->getHomePage();
 
 		if ($home_page)
 		{
@@ -586,7 +586,7 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 	{
 		try
 		{
-			return $this->getPageFactory()->findById($page_id);
+			return $this->getPageRepository()->findById($page_id);
 		}
 		catch (PageNotFound $exception)
 		{
@@ -602,7 +602,7 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 	{
 		try
 		{
-			return $this->getPageFactory()->locationById($location_id);
+			return $this->getPageRepository()->locationById($location_id);
 		}
 		catch (PageNotFound $exception)
 		{
@@ -612,6 +612,6 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 
 	public function subPages($location_id, $per_page = 50)
 	{
-		return $this->getPageFactory()->subPages($location_id, $per_page);		
+		return $this->getPageRepository()->subPages($location_id, $per_page);		
 	}
 }

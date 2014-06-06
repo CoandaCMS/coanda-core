@@ -1,4 +1,4 @@
-<?php namespace CoandaCMS\Coanda\Pages\Factory\Eloquent;
+<?php namespace CoandaCMS\Coanda\Pages\Repositories\Eloquent;
 
 use Coanda;
 
@@ -14,18 +14,18 @@ use CoandaCMS\Coanda\Pages\Exceptions\SubPagesNotAllowed;
 use CoandaCMS\Coanda\Urls\Exceptions\InvalidSlug;
 use CoandaCMS\Coanda\Urls\Exceptions\UrlAlreadyExists;
 
-use CoandaCMS\Coanda\Pages\Factory\Eloquent\Models\PageLocation as PageLocationModel;
-use CoandaCMS\Coanda\Pages\Factory\Eloquent\Models\Page as PageModel;
-use CoandaCMS\Coanda\Pages\Factory\Eloquent\Models\PageVersion as PageVersionModel;
-use CoandaCMS\Coanda\Pages\Factory\Eloquent\Models\PageVersionSlug as PageVersionSlugModel;
-use CoandaCMS\Coanda\Pages\Factory\Eloquent\Models\PageVersionComment as PageVersionCommentModel;
-use CoandaCMS\Coanda\Pages\Factory\Eloquent\Models\PageAttribute as PageAttributeModel;
+use CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageLocation as PageLocationModel;
+use CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\Page as PageModel;
+use CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageVersion as PageVersionModel;
+use CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageVersionSlug as PageVersionSlugModel;
+use CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageVersionComment as PageVersionCommentModel;
+use CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageAttribute as PageAttributeModel;
 
-use CoandaCMS\Coanda\Pages\Factory\PageFactoryInterface;
+use CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface;
 
 use Carbon\Carbon;
 
-class EloquentPageFactory implements PageFactoryInterface {
+class EloquentPageRepository implements PageRepositoryInterface {
 
     /**
      * @var Models\Page
