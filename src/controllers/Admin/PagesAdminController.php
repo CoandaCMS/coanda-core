@@ -316,13 +316,15 @@ class PagesAdminController extends BaseController {
 
 			$invalid_fields = Session::has('invalid_fields') ? Session::get('invalid_fields') : [];
 
+			$old_attribute_input = Input::old('attributes', []);
+
 			$publish_handlers = Coanda::module('pages')->publishHandlers();
 			$publish_handler_invalid_fields = Session::has('publish_handler_invalid_fields') ? Session::get('publish_handler_invalid_fields') : [];
 			$default_publish_handler = array_keys($publish_handlers)[0];
 
 			$layouts = Coanda::module('layout')->layoutsByPageType($page->type);
 
-			return View::make('coanda::admin.modules.pages.edit', ['version' => $version, 'invalid_fields' => $invalid_fields, 'publish_handler_invalid_fields' => $publish_handler_invalid_fields, 'publish_handlers' => $publish_handlers, 'default_publish_handler' => $default_publish_handler, 'layouts' => $layouts ]);
+			return View::make('coanda::admin.modules.pages.edit', ['version' => $version, 'invalid_fields' => $invalid_fields, 'publish_handler_invalid_fields' => $publish_handler_invalid_fields, 'publish_handlers' => $publish_handlers, 'default_publish_handler' => $default_publish_handler, 'layouts' => $layouts, 'old_attribute_input' => $old_attribute_input ]);
 		}
 		catch (PageNotFound $exception)
 		{

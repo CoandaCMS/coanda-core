@@ -511,14 +511,14 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		{
 			try
 			{
-				$attribute_data = isset($data['attribute_' . $attribute->identifier]) ? $data['attribute_' . $attribute->identifier] : null;
+				$attribute_data = isset($data['attributes'][$attribute->identifier]) ? $data['attributes'][$attribute->identifier] : null;
 
 				$attribute->store($attribute_data, 'attribute_' . $attribute->identifier);
 			}
 			catch (AttributeValidationException $exception)
 			{
-				$failed['attribute_' . $attribute->identifier]['message'] = $exception->getMessage();
-				$failed['attribute_' . $attribute->identifier]['validation_data'] = $exception->getValidationData();
+				$failed['attributes'][$attribute->identifier]['message'] = $exception->getMessage();
+				$failed['attributes'][$attribute->identifier]['validation_data'] = $exception->getValidationData();
 			}
 		}
 

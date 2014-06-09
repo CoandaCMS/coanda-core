@@ -8,7 +8,7 @@ $prefill_data
 <div class="form-group @if (isset($invalid_fields['attribute_' . $attribute_identifier])) has-error @endif">
     <div class="checkbox">
     	<label>
-    		<input type="checkbox" name="attribute_{{ $attribute_identifier }}" value="yes" @if ($prefill_data == 'yes') checked="checked" @endif>
+    		<input type="checkbox" name="attributes[{{ $attribute_identifier }}]" value="yes" @if ($prefill_data == 'yes') checked="checked" @endif>
     		{{ $attribute_name }}
     	</label>
     </div>
