@@ -145,6 +145,20 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		return $page;
 	}
 
+	public function getLocationByRemoteId($remote_id)
+	{
+		$page = $this->page_model->whereRemoteId($remote_id)->first();
+
+		if (!$page)
+		{
+			throw new PageNotFound('Page with remote id: ' . $remote_id . ' not found');
+		}
+
+		$location = $page->locations()->first();
+
+		return $location;
+	}
+
     /**
      * @param $limit
      * @param $offset
