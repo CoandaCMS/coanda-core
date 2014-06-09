@@ -168,7 +168,7 @@
 							@if ($children->count() > 0)
 								<table class="table table-striped">
 								@foreach ($children as $childlocation)
-									<tr class="status-{{ $childlocation->page->status }}">
+									<tr class="status-{{ $childlocation->page->status }} @if (!$childlocation->page->is_visible) info @endif">
 
 										@if (!$childlocation->is_trashed)
 											<td class="tight"><input type="checkbox" name="remove_page_list[]" value="{{ $childlocation->page->id }}" @if (!Coanda::canView('pages', 'remove')) disabled="disabled" @endif></td>
@@ -188,7 +188,12 @@
 												{{ $childlocation->childCount() }} sub page{{ $childlocation->childCount() !== 1 ? 's' : '' }}
 											@endif
 										</td>
-										<td>{{ $childlocation->page->present()->status }}</td>
+										<td>
+											{{ $childlocation->page->present()->status }}
+											@if (!$childlocation->page->is_visible)
+												<span class="label label-info show-tooltip" title="{{ $childlocation->page->present()->visible_dates }}">Hidden</span>
+											@endif
+										</td>
 										<td>{{ $childlocation->page->present()->created_at }}</td>
 										@if (!$childlocation->is_trashed)
 											@if ($pagelocation->sub_location_order == 'manual')
