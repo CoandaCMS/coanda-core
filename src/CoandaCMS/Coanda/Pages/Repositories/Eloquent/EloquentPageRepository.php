@@ -1,6 +1,6 @@
 <?php namespace CoandaCMS\Coanda\Pages\Repositories\Eloquent;
 
-use Coanda;
+use Coanda, Config;
 
 use CoandaCMS\Coanda\Pages\Exceptions\PageNotFound;
 use CoandaCMS\Coanda\Pages\Exceptions\PageVersionNotFound;
@@ -366,19 +366,51 @@ class EloquentPageRepository implements PageRepositoryInterface {
 
 	public function createAndPublish($type, $user_id, $parent_location_id, $page_data)
 	{
+		if (is_string($type))
+		{
+			$type = Coanda::module('pages')->getPageType($type);
+		}
+
+		$additional_locations = [];
+
+		if (is_array($parent_location_id))
+		{
+			$additional_locations = $parent_location_id;
+			$parent_location_id = array_shift($additional_locations);
+		}
+
 		$page = $this->create($type, $user_id, $parent_location_id);
+
+		if (isset($page_data['remote_id']))
+		{
+			$page->setRemoteId($page_data['remote_id']);
+		}
+
 		$version = $page->currentVersion();
 
-		// Add the slug data
-		foreach ($version->slugs as $slug)
+		if (count($additional_locations))
 		{
-			$page_data['slug_' . $slug->id] = $page_data['slug'];
+			foreach ($additional_locations as $additional_location)
+			{
+				$this->addNewVersionSlug($version->id, $additional_location);	
+			}
+		}
+
+		// Add the slug data
+		if (isset($page_data['slug']))
+		{
+			foreach ($version->slugs as $slug)
+			{
+				$page_data['slug_' . $slug->id] = $page_data['slug'];
+			}			
 		}
 
 		$this->saveDraftVersion($version, $page_data);
 		$this->publishVersion($version, $user_id, $this->urlRepository, $this->historyRepository);
 
-		return $this->find($page->id);
+		$page = $this->find($page->id);
+
+		return $page;
 	}
 
     /**
@@ -578,8 +610,8 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		// Get the meta
 		if ($version->page->show_meta)
 		{
-			$version->meta_page_title = isset($data['meta_page_title']) ? $data['meta_page_title'] : false;
-			$version->meta_description = isset($data['meta_description']) ? $data['meta_description'] : false;
+			$version->meta_page_title = isset($data['meta_page_title']) ? $data['meta_page_title'] : '';
+			$version->meta_description = isset($data['meta_description']) ? $data['meta_description'] : '';
 		}
 
 		// Get the visible_from and to dates
@@ -799,10 +831,22 @@ class EloquentPageRepository implements PageRepositoryInterface {
 
 		$search_data = [
 			'page_type' => $page->type,
-			'name' => $page->present()->name,
-			'visible_from' => $version->visible_from,
-			'visible_to' => $version->visible_to,
+			'name' => $page->present()->name
 		];
+
+		$visible_from = (string) $version->visible_from;
+
+		if ($visible_from !== '')
+		{
+			$search_data['visible_from'] = $visible_from;
+		}
+
+		$visible_to = (string) $version->visible_to;
+
+		if ($visible_to !== '')
+		{
+			$search_data['visible_to'] = $visible_to;
+		}
 
 		foreach ($page->attributes as $attribute)
 		{
