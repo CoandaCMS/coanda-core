@@ -47,7 +47,7 @@ class Reindex extends Command {
         }
 
         $offset = 0;
-        $limit = 5;
+        $limit = 50;
 
         while (true)
         {
