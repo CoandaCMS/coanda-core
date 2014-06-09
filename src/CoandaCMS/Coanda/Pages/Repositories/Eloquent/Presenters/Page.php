@@ -72,13 +72,10 @@ class Page extends \CoandaCMS\Coanda\Core\Presenters\Presenter {
 
 		if ($to)
 		{
-			if ($to->gt($now))
-			{
-				$visibility_text .= ' until ' . $to->format('d/m/Y H:i');
-			}			
+			$visibility_text .= ' until ' . $to->format('d/m/Y H:i');
 		}
 
-		$visibility_text .= ' (System time: ' . $now->format('d/m/Y H:i') . ')';
+		// $visibility_text .= ' (System time: ' . $now->format('d/m/Y H:i') . ')';
 
 		return $visibility_text;
 	}
