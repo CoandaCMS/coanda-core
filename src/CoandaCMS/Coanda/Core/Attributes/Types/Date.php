@@ -4,6 +4,7 @@ use CoandaCMS\Coanda\Core\Attributes\AttributeType;
 use CoandaCMS\Coanda\Exceptions\AttributeValidationException;
 
 use Carbon\Carbon;
+use Config;
 
 class Date extends AttributeType {
 
@@ -40,13 +41,16 @@ class Date extends AttributeType {
      */
     public function store($data, $is_required, $name, $parameters = [])
 	{
-        $format = isset($data['format']) ? $data['format'] : false;
+        if (!isset($data['format']))
+        {
+            $data['format'] = Config::get('coanda::coanda.date_format');
+        }
 
-        if ($format)
+        if ($data['format'])
         {
             try
             {
-                $date = Carbon::createFromFormat($format, $data['date'], date_default_timezone_get());
+                $date = Carbon::createFromFormat($data['format'], $data['date'], date_default_timezone_get());
             }
             catch (\InvalidArgumentException $exception)
             {
@@ -71,6 +75,5 @@ class Date extends AttributeType {
         {
             return json_decode($data, true);
         }
-		
 	}
 }

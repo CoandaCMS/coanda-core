@@ -563,31 +563,31 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		}
 
 		// Get the visible_from and to dates
-		$format = isset($data['date_format']) ? $data['date_format'] : false;
+		$format = isset($data['date_format']) ? $data['date_format'] : Config::get('coanda::coanda.datetime_format');
 
 		if ($format)
 		{
 			$dates = [
-					'visible_from' => false,
-					'visible_to' => false
+					'from' => false,
+					'to' => false
 				];
 
 			$date_error = false;
 
 			foreach (array_keys($dates) as $date)
 			{
-				if (isset($data[$date]) && $data[$date] !== '')
+				if (isset($data['visible_dates'][$date]) && $data['visible_dates'][$date] !== '')
 				{
 					try
 					{
-						$dates[$date] = Carbon::createFromFormat($format, $data[$date], date_default_timezone_get());
+						$dates[$date] = Carbon::createFromFormat($format, $data['visible_dates'][$date], date_default_timezone_get());
 
-						if ($dates[$date]->isPast())
-						{
-							$failed[$date] = 'The specified date is in past';
+						// if ($dates[$date]->isPast())
+						// {
+						// 	$failed[$date] = 'The specified date is in past';
 
-							$date_error = true;
-						}
+						// 	$date_error = true;
+						// }
 					}
 					catch(\InvalidArgumentException $exception)
 					{
@@ -598,33 +598,33 @@ class EloquentPageRepository implements PageRepositoryInterface {
 				}
 			}
 
-			if (!$date_error && $dates['visible_from'] && $dates['visible_to'])
+			if (!$date_error && $dates['from'] && $dates['to'])
 			{
 				// Check that the from date is before the to date
-				if (!$dates['visible_from']->lt($dates['visible_to']))
+				if (!$dates['from']->lt($dates['to']))
 				{
-					$failed['visible_to'] = 'The date must be after the visible from date';
+					$failed['visible_dates_to'] = 'The date must be after the visible from date';
 				}
 			}
 
-			if ($dates['visible_from'])
+			if ($dates['from'])
 			{
-				$version->visible_from = $dates['visible_from'];
+				$version->visible_from = $dates['from'];
 			}
 
-			if ($dates['visible_to'])
+			if ($dates['to'])
 			{
-				$version->visible_to = $dates['visible_to'];
+				$version->visible_to = $dates['to'];
 			}
 
 			// If we have a blank date, null it
-			if (isset($data['visible_from']) && $data['visible_from'] == '')
+			if (isset($data['visible_dates']['from']) && $data['visible_dates']['from'] == '')
 			{
 				$version->visible_from = null;
 			}
 
 			// If we have a blank date, null it
-			if (isset($data['visible_to']) && $data['visible_to'] == '')
+			if (isset($data['visible_dates']['to']) && $data['visible_dates']['to'] == '')
 			{
 				$version->visible_to = null;
 			}
