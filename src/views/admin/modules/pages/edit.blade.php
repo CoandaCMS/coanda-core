@@ -214,29 +214,31 @@
 						</div>
 					@endif
 
+					@set($visible_dates_old, Input::old('visible_dates'))
+
 					<div class="row">
 						<input type="hidden" name="date_format" value="d/m/Y H:i">
 						<div class="col-md-6">
-							<div class="form-group @if (isset($invalid_fields['visible_from'])) has-error @endif">
-								<label class="control-label" for="visibility">Visibile from</label>
+							<div class="form-group @if (isset($invalid_fields['visible_dates_from'])) has-error @endif">
+								<label class="control-label" for="visible_dates_from">Visibile from</label>
 								<div class="input-group datetimepicker" data-date-format="DD/MM/YYYY HH:mm">
-									<input type="text" class="date-field form-control" id="visible_from" name="visible_from" value="{{ Input::old('visible_from', $version->present()->visible_from) }}">
+									<input type="text" class="date-field form-control" id="visible_dates_from" name="visible_dates[from]" value="{{ isset($visible_dates_old['from']) ? $visible_dates_old['from'] : $version->present()->visible_from }}">
 									<span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
 								</div>
-							    @if (isset($invalid_fields['visible_from']))
-							    	<span class="help-block">{{ $invalid_fields['visible_from'] }}</span>
+							    @if (isset($invalid_fields['visible_dates_from']))
+							    	<span class="help-block">{{ $invalid_fields['visible_dates_from'] }}</span>
 							    @endif
 							</div>
 						</div>
 						<div class="col-md-6">
-							<div class="form-group @if (isset($invalid_fields['visible_to'])) has-error @endif">
-								<label class="control-label" for="visibility">Visibile to</label>
+							<div class="form-group @if (isset($invalid_fields['visible_dates_to'])) has-error @endif">
+								<label class="control-label" for="visible_dates_to">Visibile to</label>
 								<div class="input-group datetimepicker" data-date-format="DD/MM/YYYY HH:mm">
-									<input type="text" class="date-field form-control" id="visible_to" name="visible_to" value="{{ Input::old('visible_to', $version->present()->visible_to) }}">
+									<input type="text" class="date-field form-control" id="visible_dates_to" name="visible_dates[to]" value="{{ isset($visible_dates_old['to']) ? $visible_dates_old['to'] : $version->present()->visible_to }}">
 									<span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
 								</div>
-							    @if (isset($invalid_fields['visible_to']))
-							    	<span class="help-block">{{ $invalid_fields['visible_to'] }}</span>
+							    @if (isset($invalid_fields['visible_dates_to']))
+							    	<span class="help-block">{{ $invalid_fields['visible_dates_to'] }}</span>
 							    @endif
 							</div>
 						</div>
