@@ -46,7 +46,10 @@ class CoandaServiceProvider extends ServiceProvider {
 	 * @return void
 	 */
 	public function register()
-	{		
+	{
+		// Add the blade @set operator, which is used in this package...
+		$this->app->register(new \Alexdover\BladeSet\BladeSetServiceProvider($this->app));
+
 		// Bind our main facade
 		$this->app->singleton('coanda', function () {
 
@@ -74,6 +77,8 @@ class CoandaServiceProvider extends ServiceProvider {
 		});
 
 		$this->commands('coanda.reindex');
+
+
 	}
 
 	/**
