@@ -187,7 +187,7 @@
 										<span class="input-group-addon" style="overflow: hidden; max-width: 150px; text-align: right;">
 											<span style="float: right;">{{ $slug->base_slug }}/</span>
 										</span>
-								    	<input type="text" class="form-control slugiwugy" id="slug_{{ $slug->id }}" name="slug_{{ $slug->id }}" value="{{ Input::old('slug_' . $slug->id, $slug->slug) }}">
+								    	<input type="text" class="form-control slugiwugy" id="slug_{{ $slug->id }}" name="slug_{{ $slug->id }}" value="{{ (Input::old('slug_' . $slug->id) && Input::old('slug_' . $slug->id) !== '') ? Input::old('slug_' . $slug->id) : $slug->slug }}">
 								    	<span class="input-group-addon refresh-slug"><i class="fa fa-refresh"></i></span>
 								    	<span class="input-group-addon"><input type="checkbox" name="remove_slug_list[]" value="{{ $slug->id }}"></span>
 									</div>

@@ -542,24 +542,30 @@ class EloquentPageRepository implements PageRepositoryInterface {
 			if ($version->slugs()->count() > 0)
 			{
 				// Check each of the locations to see if the slug is OK
-				foreach ($version->slugs as $slug)
+				foreach ($version->slugs as $version_slug)
 				{
 					try
 					{
-						$location_id = $slug->location ? $slug->location->id : 0;
+						$location_id = $version_slug->location ? $version_slug->location->id : 0;
+						$slug = isset($data['slug_' . $version_slug->id]) ? $data['slug_' . $version_slug->id] : false;
 
-						$this->urlRepository->canUse($slug->base_slug . $data['slug_' . $slug->id], 'pagelocation', $location_id);
+						if (!$slug || $slug == '')
+						{
+							$slug = $this->generateSlug($version, $version_slug->base_slug, $location_id);
+						}
 
-						$slug->slug = $data['slug_' . $slug->id];
-						$slug->save();
+						$this->urlRepository->canUse($version_slug->base_slug . '/' . $slug, 'pagelocation', $location_id);
+
+						$version_slug->slug = $slug;
+						$version_slug->save();
 					}
-					catch(InvalidSlug $exception)
+					catch (InvalidSlug $exception)
 					{
-						$failed['slug_' . $slug->id] = 'The slug is not valid';
+						$failed['slug_' . $version_slug->id] = 'The slug is not valid';
 					}
-					catch(UrlAlreadyExists $exception)
+					catch (UrlAlreadyExists $exception)
 					{
-						$failed['slug_' . $slug->id] = 'The slug is already in use';
+						$failed['slug_' . $version_slug->id] = 'The slug is already in use';
 					}
 				}
 			}
@@ -1241,5 +1247,50 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		// Send email to the version 'owner' - e.g. New coment on your draft,
 
 		return $comment;
+	}
+
+	private function generateSlug($version, $version_base_slug, $location_id)
+	{
+		foreach ($version->attributes as $attribute)
+		{
+			if ($attribute->generates_slug)
+			{
+				$content = $attribute->content;
+
+				if ($content && $content !== '')
+				{
+					$slug = \CoandaCMS\Coanda\Urls\Slugifier::convert($content);
+
+					try
+					{
+						$this->urlRepository->canUse($version_base_slug . '/' . $slug, 'pagelocation', $location_id);		
+
+						return $slug;
+					}
+					catch (UrlAlreadyExists $exception)
+					{					
+						$tries = 10;
+
+						for ($i = 1; $i < $tries; $i ++)
+						{
+							$new_slug = $slug . '-' . $i;
+
+							try
+							{
+								$this->urlRepository->canUse($version_base_slug . '/' . $new_slug, 'pagelocation', $location_id);	
+
+								return $new_slug;
+							}
+							catch (UrlAlreadyExists $exception)
+							{
+								// Keep trying!
+							}
+						}
+					}
+				}
+			}
+		}
+
+		return '';
 	}
 }
