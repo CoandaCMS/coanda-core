@@ -154,6 +154,11 @@ class PageAttribute extends Eloquent {
 		return $this->type()->data($this->attribute_data, $parameters);
 	}
 
+	public function getContentAttribute()
+	{
+		return $this->typeData();
+	}
+
 	/**
 	 * Calls the typeData method
 	 * @return array
