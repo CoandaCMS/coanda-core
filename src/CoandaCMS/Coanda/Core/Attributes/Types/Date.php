@@ -76,4 +76,11 @@ class Date extends AttributeType {
             return json_decode($data, true);
         }
 	}
+
+    public function render($data, $parameters = [])
+    {
+        $date = Carbon::createFromFormat($data['format'], $data['date'], date_default_timezone_get());
+        
+        return $date->format(Config::get('coanda::coanda.date_format'));
+    }
 }
