@@ -72,9 +72,18 @@
 						@endforeach
 						</table>
 
-						<input type="hidden" value="{{ $previous_location_id }}" name="previous_location_id">
+						<div class="checkbox">
+							<label>
+								<input type="checkbox" id="permanent_delete" name="permanent_delete" value="true">
+								Delete permanently
+							</label>
+						</div>
+
+						<input type="hidden" name="previous_location_id" value="{{ $previous_location_id }}">
 
 						{{ Form::button('I understand, please delete them', ['name' => 'permanent_remove', 'value' => 'true', 'type' => 'submit', 'class' => 'btn btn-danger']) }}
+						<a class="btn btn-default" href="{{ Coanda::adminUrl('pages/location/' . $previous_location_id) }}">Cancel</a>
+
 					@endif
 				</div>
 			</div>

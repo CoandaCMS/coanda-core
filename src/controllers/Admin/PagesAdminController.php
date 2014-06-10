@@ -198,21 +198,28 @@ class PagesAdminController extends BaseController {
      */
     public function postConfirmDelete()
 	{
-		$previous_page_id = Input::get('previous_page_id');
+		$previous_location_id = Input::get('previous_location_id');
 
-		if (!$previous_page_id)
+		if (!$previous_location_id)
 		{
-			$previous_page_id = 0;
+			$previous_location_id = 0;
 		}
 
 		if (!Input::has('confirmed_remove_list') || count(Input::get('confirmed_remove_list')) == 0)
 		{
-			return Redirect::to(Coanda::adminUrl('pages/location/' . $previous_page_id));
+			return Redirect::to(Coanda::adminUrl('pages/location/' . $previous_location_id));
 		}
 
-		$this->pageRepository->deletePages(Input::get('confirmed_remove_list'));
+		$permanent = false;
 
-		return Redirect::to(Coanda::adminUrl('pages/location/' . $previous_page_id));
+		if (Input::has('permanent_delete') && Input::get('permanent_delete') == 'true')
+		{
+			$permanent = true;
+		}
+
+		$this->pageRepository->deletePages(Input::get('confirmed_remove_list'), $permanent);
+
+		return Redirect::to(Coanda::adminUrl('pages/location/' . $previous_location_id));
 	}
 
     /**
