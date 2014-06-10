@@ -21,7 +21,7 @@
 
 <div class="row">
 	<div class="page-options col-md-12">
-		<a href="{{ Coanda::adminUrl('pages/empty-trash') }}" class="btn btn-primary">Empty trash</a>
+		{{-- <a href="{{ Coanda::adminUrl('pages/empty-trash') }}" class="btn btn-primary">Empty trash</a> --}}
 	</div>
 </div>
 
