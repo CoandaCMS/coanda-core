@@ -66,6 +66,8 @@ interface PageRepositoryInterface {
 
     public function createAndPublish($type, $user_id, $parent_page_id, $data);
 
+    public function updateAndPublish($page_id, $user_id, $parent_page_id, $data);
+
     /**
      * @param $type
      * @param $user_id
