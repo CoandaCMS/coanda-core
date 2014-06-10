@@ -445,6 +445,18 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		throw new \Exception('Home page not created yet!');
 	}
 
+	private function renderAttributes($page, $pagelocation)
+    {
+		$attributes = new \stdClass;
+
+		foreach ($page->attributes as $attribute)
+		{
+			$attributes->{$attribute->identifier} = $attribute->render($page, $pagelocation);
+		}
+ 
+        return $attributes;
+	}
+
     /**
      * @param $page
      * @param bool $pagelocation
@@ -468,7 +480,7 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 			'page' => $page,
 			'location' => $pagelocation,
 			'meta' => $meta,
-			'attributes' => $pagelocation->attributes
+			'attributes' => $this->renderAttributes($page, $pagelocation)
 		];
 
 		// Make the view and pass all the render data to it...
