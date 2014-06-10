@@ -70,6 +70,11 @@ class Page extends Eloquent {
 		return $this->hasMany('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageLocation');
 	}
 
+	public function firstLocation()
+	{
+		return $this->locations()->first();
+	}
+
 	/**
 	 * Get the versions for this page
 	 * @return \Illuminate\Database\Eloquent\Collection
