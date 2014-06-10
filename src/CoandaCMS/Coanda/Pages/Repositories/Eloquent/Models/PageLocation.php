@@ -197,8 +197,6 @@ class PageLocation extends Eloquent {
      */
     public function scopeOrderByPageName($query, $order)
 	{
-		$query->select('pagelocations.*');
-		$query->join('pages', 'pagelocations.page_id', '=', 'pages.id');
 		$query->orderBy('pages.name', $order);
 
 		return $query;
@@ -211,10 +209,31 @@ class PageLocation extends Eloquent {
      */
     public function scopeOrderByPageCreated($query, $order)
 	{
-		$query->select('pagelocations.*');
-		$query->join('pages', 'pagelocations.page_id', '=', 'pages.id');
 		$query->orderBy('pages.created_at', $order);
 
+		return $query;
+	}
+
+	public function scopeVisible($query)
+	{
+		$query->where( function ($query) {
+
+			$query->where( function ($query) {
+
+				$query->whereNull('pageversions.visible_from');
+				$query->orWhere('pageversions.visible_from', '<', \DB::raw('NOW()'));
+	
+			});
+
+			$query->where( function ($query) {
+
+				$query->whereNull('pageversions.visible_to');
+				$query->orWhere('pageversions.visible_to', '>', \DB::raw('NOW()'));
+
+			});
+
+		});
+		
 		return $query;
 	}
 

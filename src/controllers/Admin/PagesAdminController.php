@@ -47,7 +47,7 @@ class PagesAdminController extends BaseController {
 
 		$per_page = 10;
 
-		$pages = $this->pageRepository->topLevel($per_page);
+		$pages = $this->pageRepository->topLevel($per_page, true, true);
 
 		return View::make('coanda::admin.modules.pages.index', [ 'home_page' => $home_page, 'pages' => $pages ]);
 	}
@@ -127,7 +127,7 @@ class PagesAdminController extends BaseController {
 			$view_data = [
 							'pagelocation' => $pagelocation,
 							'page' => $pagelocation->page,
-							'children' => $this->pageRepository->subPages($id, 10),
+							'children' => $this->pageRepository->subPages($id, 10, true, true),
 							'history' => $this->pageRepository->recentHistory($pagelocation->page->id, 5),
 							'contributors' => $this->pageRepository->contributors($pagelocation->page->id)
 						];
@@ -525,7 +525,7 @@ class PagesAdminController extends BaseController {
 				$location = $this->pageRepository->locationById($parent_page_id);
 			}
 			
-			$pages = $this->pageRepository->subPages($parent_page_id, $per_page);
+			$pages = $this->pageRepository->subPages($parent_page_id, $per_page, true, true);
 
 			return View::make('coanda::admin.modules.pages.browseaddlocation', [ 'pages' => $pages, 'page_id' => $page_id, 'version_number' => $version_number, 'existing_locations' => $existing_locations, 'location' => $location ]);
 		}

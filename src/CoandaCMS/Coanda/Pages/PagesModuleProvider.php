@@ -622,8 +622,13 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		}
 	}
 
-	public function subPages($location_id, $per_page = 50)
+	private function getQueryBuilder()
 	{
-		return $this->getPageRepository()->subPages($location_id, $per_page);		
+		return new \CoandaCMS\Coanda\Pages\PageQuery($this->getPageRepository());
+	}
+
+	public function query()
+	{
+		return $this->getQueryBuilder();
 	}
 }

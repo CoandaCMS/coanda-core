@@ -200,7 +200,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
      * @param int $per_page
      * @return mixed
      */
-    private function subLocations($parent_location_id, $per_page = 10)
+    private function subLocations($parent_location_id, $per_page = 10, $include_hidden = false, $include_drafts = false)
 	{
 		$order = 'manual';
 
@@ -214,7 +214,26 @@ class EloquentPageRepository implements PageRepositoryInterface {
 			}
 		}
 
-		$query = $this->page_location_model->where('parent_page_id', $parent_location_id)->whereHas('page', function ($query) { $query->where('is_trashed', '=', '0'); });
+		$query = $this
+					->page_location_model
+					->with('page')
+					->where('parent_page_id', $parent_location_id)
+					->whereHas('page', function ($query) {
+
+						$query->where('is_trashed', '=', '0'); 
+
+					});
+
+		$query->select('pagelocations.*');
+		$query->join('pages', 'pagelocations.page_id', '=', 'pages.id');
+		$query->join('pageversions', 'pagelocations.page_id', '=', 'pageversions.page_id');
+
+		$query->where('pageversions.version', '=', \DB::raw('pages.current_version'));
+
+		if (!$include_drafts)
+		{
+			$query->where('pageversions.status', '=', 'published');	
+		}
 
 		if ($order == 'manual')
 		{
@@ -241,6 +260,11 @@ class EloquentPageRepository implements PageRepositoryInterface {
 			$query->orderByPageCreated('desc');
 		}
 
+		if (!$include_hidden)
+		{
+			$query->visible();
+		}
+
 		return $query->paginate($per_page);
 	}
 
@@ -248,9 +272,9 @@ class EloquentPageRepository implements PageRepositoryInterface {
      * @param int $per_page
      * @return mixed
      */
-    public function topLevel($per_page = 10)
+    public function topLevel($per_page = 10, $include_hidden = false, $include_drafts = false)
 	{
-		return $this->subLocations(0, $per_page);
+		return $this->subLocations(0, $per_page, $include_hidden, $include_drafts);
 	}
 
     /**
@@ -258,9 +282,9 @@ class EloquentPageRepository implements PageRepositoryInterface {
      * @param $per_page
      * @return mixed
      */
-    public function subPages($location_id, $per_page)
+    public function subPages($location_id, $per_page, $include_hidden = false, $include_drafts = false)
 	{
-		return $this->subLocations($location_id, $per_page);
+		return $this->subLocations($location_id, $per_page, $include_hidden, $include_drafts);
 	}
 
     /**
