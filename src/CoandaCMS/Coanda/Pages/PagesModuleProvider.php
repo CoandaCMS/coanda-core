@@ -52,10 +52,12 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		// Add the router to handle slug views
 		$coanda->addRouter('pagelocation', function ($url) use ($coanda) {
 
-			// if (Cache::has('location_' . $url->type_id))
-			// {
-			// 	return Cache::get('location_' . $url->type_id) . '<!-- cached -->';
-			// }
+			$cache_key = $this->generateCacheKey($url->type_id);
+
+			if (Cache::has($cache_key))
+			{
+				return Cache::get($cache_key);
+			}
 
 			try
 			{
@@ -487,13 +489,23 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 
 		$content = View::make($layout->template(), $layout_data)->render();
 
-		// if ($page->pageType()->canStaticCache() && $pagelocation)
-		// {
-		// 	$content = str_replace('</body>', '<strong>CACHED!</strong></body>', $content);
-		// 	Cache::put('location_' . $pagelocation, $content, 2);
-		// }
+		if ($page->pageType()->canStaticCache() && $pagelocation)
+		{
+			$cache_key = $this->generateCacheKey($pagelocation->id);
+
+			$content = str_replace('</body>', '<!-- cached: ' . date('r', time()) . ' --></body>', $content);
+			Cache::put($cache_key, $content, 10);
+		}
 
 		return $content;
+	}
+
+	private function generateCacheKey($location_id)
+	{
+		$cache_key = 'location-' . $location_id;
+		$cache_key .= '-' . md5(var_export(\Input::all(), true));
+
+		return $cache_key;
 	}
 
     /**
