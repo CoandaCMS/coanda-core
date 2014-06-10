@@ -239,6 +239,11 @@ class Page extends Eloquent {
 	 */
 	public function getAttributesAttribute()
 	{
+		return $this->attributes();
+	}
+
+	public function attributes()
+	{
 		return $this->currentVersion()->attributes()->get();
 	}
 

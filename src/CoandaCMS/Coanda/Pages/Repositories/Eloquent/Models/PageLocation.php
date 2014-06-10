@@ -35,6 +35,8 @@ class PageLocation extends Eloquent {
      */
     private $subTreeCount;
 
+    private $cachedAttributes;
+
     /**
      * @param array $options
      */
@@ -235,6 +237,28 @@ class PageLocation extends Eloquent {
 		});
 		
 		return $query;
+	}
+
+	public function getAttributesAttribute()
+	{
+		if (!$this->cachedAttributes)
+		{
+			$this->cachedAttributes = $this->renderAttributes($this->page, $this);
+		}
+
+		return $this->cachedAttributes;
+	}
+
+    private function renderAttributes($page, $pagelocation)
+	{
+		$attributes = new \stdClass;
+
+		foreach ($page->attributes() as $attribute)
+		{
+			$attributes->{$attribute->identifier} = $attribute->render($page, $pagelocation);
+		}
+
+		return $attributes;
 	}
 
 }

@@ -468,7 +468,7 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 			'page' => $page,
 			'location' => $pagelocation,
 			'meta' => $meta,
-			'attributes' => $this->renderAttributes($page, $pagelocation)
+			'attributes' => $pagelocation->attributes
 		];
 
 		// Make the view and pass all the render data to it...
@@ -503,26 +503,18 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 	private function generateCacheKey($location_id)
 	{
 		$cache_key = 'location-' . $location_id;
-		$cache_key .= '-' . md5(var_export(\Input::all(), true));
 
-		return $cache_key;
-	}
+		$all_input = \Input::all();
 
-    /**
-     * @param $page
-     * @param $pagelocation
-     * @return \stdClass
-     */
-    private function renderAttributes($page, $pagelocation)
-	{
-		$attributes = new \stdClass;
-
-		foreach ($page->attributes as $attribute)
+		// If we are viewing ?page=1 - then this is cached the same as without it...
+		if (isset($all_input['page']) && $all_input['page'] == 1)
 		{
-			$attributes->{$attribute->identifier} = $attribute->render($page, $pagelocation);
+			unset($all_input['page']);
 		}
 
-		return $attributes;
+		$cache_key .= '-' . md5(var_export($all_input, true));
+
+		return $cache_key;
 	}
 
     /**
