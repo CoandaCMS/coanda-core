@@ -157,7 +157,7 @@
 							</div>
 						@endif
 
-						{{ Form::open(['url' => Coanda::adminUrl('pages/location/' . $page->id)]) }}
+						{{ Form::open(['url' => Coanda::adminUrl('pages/location/' . $pagelocation->id)]) }}
 
 							@if ($pagelocation->parent)
 								<p><i class="fa fa-level-up"></i> <a href="{{ Coanda::adminUrl('pages/location/' . $pagelocation->parent->id) }}">Up to {{ $pagelocation->parent->page->present()->name }}</a></p>
