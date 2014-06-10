@@ -43,7 +43,7 @@
 						{{ $location->page->present()->name }}
 					</td>
 					<td>
-						<input type="checkbox" id="restore_sub_pages_location_{{ $location->id }}" name="restore_sub_pages[]" value="{{ $location->id }}">
+						<input type="checkbox" id="restore_sub_pages_location_{{ $location->id }}" name="restore_sub_pages[]" value="{{ $location->id }}" checked="checked">
 						Also restore sub pages
 					</td>
 				</tr>
