@@ -413,6 +413,64 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		return $page;
 	}
 
+	private function syncVersionLocations($version, $locations)
+	{
+		$existing_locations = [];
+
+		foreach ($version->slugs as $slug)
+		{
+			if (!in_array($slug->page_location_id, $locations))
+			{
+				$this->removeVersionSlug($version->id, $slug->id);
+			}
+			else
+			{
+				$existing_locations[] = $slug->page_location_id;
+			}
+		}
+
+		$new_locations = array_diff($locations, $existing_locations);
+
+		foreach ($new_locations as $new_location)
+		{
+			$this->addNewVersionSlug($version->id, $new_location);
+		}
+	}
+
+	public function updateAndPublish($page, $user_id, $parent_page_id, $page_data)
+	{
+		$version_number = $this->createNewVersion($page->id, $user_id);
+		$version = $page->getVersion($version_number);
+
+		if (!is_array($parent_page_id))
+		{
+			$locations = [];
+			$locations[] = $parent_page_id;
+
+			$parent_page_id = $locations;
+		}
+
+		$this->syncVersionLocations($version, $parent_page_id);
+
+		$version = $this->getVersionById($version->id);
+
+		// Add the slug data
+		if (isset($page_data['slug']))
+		{
+			foreach ($version->slugs as $slug)
+			{
+				$page_data['slug_' . $slug->id] = $page_data['slug'];
+			}			
+		}
+
+		$this->saveDraftVersion($version, $page_data);		
+		$this->publishVersion($version, $user_id, $this->urlRepository, $this->historyRepository);
+
+		$page = $this->find($page->id);
+
+		return $page;
+	}
+
     /**
      * @param $type
      * @param $user_id
