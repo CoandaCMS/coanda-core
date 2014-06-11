@@ -49,7 +49,12 @@
 		<div class="col-md-8">
 
 			<ul class="nav nav-tabs">
-				<li @if (!Session::has('layout_chosen')) class="active" @endif><a href="#attributes" data-toggle="tab">Content</a></li>
+				<li @if (!Session::has('layout_chosen') && !Session::has('template_chosen')) class="active" @endif><a href="#attributes" data-toggle="tab">Content</a></li>
+				
+				@if (count($version->availableTemplates()) > 0)
+					<li @if (Session::has('template_chosen')) class="active" @endif><a href="#template" data-toggle="tab">Template</a></li>
+				@endif
+
 				<li @if (Session::has('layout_chosen')) class="active" @endif><a href="#layout" data-toggle="tab">Layout</a></li>
 				@if ($version->page->show_meta)
 					<li><a href="#meta" data-toggle="tab">Meta</a></li>
@@ -57,7 +62,7 @@
 			</ul>
 
 			<div class="tab-content edit-container">
-				<div class="tab-pane @if (!Session::has('layout_chosen')) active @endif" id="attributes">
+				<div class="tab-pane @if (!Session::has('layout_chosen') && !Session::has('template_chosen')) active @endif" id="attributes">
 					@foreach ($version->attributes as $attribute)
 
 						@include($attribute->type()->edit_template(), [ 'old_input' => (isset($old_attribute_input[$attribute->identifier]) ? $old_attribute_input[$attribute->identifier] : false), 'attribute_identifier' => $attribute->identifier, 'attribute_name' => $attribute->name, 'invalid_fields' => $invalid_fields, 'is_required' => $attribute->is_required, 'prefill_data' => $attribute->type_data ])
@@ -72,6 +77,37 @@
 
 					@endforeach
 				</div>
+
+				@if (count($version->availableTemplates()) > 0)
+					<div class="tab-pane @if (Session::has('template_chosen')) active @endif" id="template">
+
+						@if (Session::has('template_chosen'))
+							<div class="alert alert-success">
+								Template chosen
+							</div>
+						@endif
+
+						<div class="form-group">
+							<label class="control-label" for="template_identifier">Template</label>
+
+							<div class="row">
+								<div class="col-xs-10">
+									<select name="template_identifier" id="template_identifier" class="form-control">
+										<option value=""></option>
+										@foreach ($version->availableTemplates() as $template)
+											<option @if ($version->template_identifier == $template['identifier']) selected="selected" @endif value="{{ $template['identifier'] }}">{{ $template['name'] }}</option>
+										@endforeach
+									</select>
+								</div>
+								<div class="col-xs-2">
+									{{ Form::button('Choose', ['name' => 'choose_template', 'value' => 'true', 'type' => 'submit', 'class' => 'btn btn-default btn-block']) }}
+								</div>
+							</div>
+
+						</div>
+
+					</div>
+				@endif
 
 				<div class="tab-pane @if (Session::has('layout_chosen')) active @endif" id="layout">
 
@@ -214,7 +250,7 @@
 						</div>
 					@endif
 
-					@set($visible_dates_old, Input::old('visible_dates'))
+					@set('visible_dates_old', Input::old('visible_dates'))
 
 					<div class="row">
 						<input type="hidden" name="date_format" value="d/m/Y H:i">

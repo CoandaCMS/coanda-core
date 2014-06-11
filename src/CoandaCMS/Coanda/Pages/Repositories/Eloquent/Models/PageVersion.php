@@ -196,19 +196,9 @@ class PageVersion extends Eloquent {
         return $this->layout();
     }
 
-    /**
-     * @param $region
-     * @return array
-     */
-    public function layoutRegionBlocks($region)
+    public function availableTemplates()
     {
-    	$layout = $this->layout();
-
-    	if ($layout)
-    	{
-    		return $layout->regionBlocks($region, 'pages', $this->page->id . ':' . $this->version);
-    	}
-
-    	return [];
+    	return $this->page->availableTemplates();
     }
+
 }

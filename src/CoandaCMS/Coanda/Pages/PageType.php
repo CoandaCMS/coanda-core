@@ -31,10 +31,21 @@ abstract class PageType {
     /**
      * @return string
      */
-    public function template()
+    public function template($version, $data = [])
     {
-        // Return a sensible default...
-        return 'pagetypes.' . $this->identifier();
+        $template_name = $this->identifier();
+
+        if ($version->template_identifier && $version->template_identifier !== 'default')
+        {
+            $template_name .= '_' . $version->template_identifier;
+        }
+
+        return 'pagetypes.' . $template_name;
+    }
+
+    public function availableTemplates()
+    {
+        return [];
     }
 
     /**

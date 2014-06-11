@@ -764,6 +764,18 @@ class EloquentPageRepository implements PageRepositoryInterface {
 			}
 		}
 
+		if (isset($data['template_identifier']))
+		{
+			if ($data['template_identifier'] !== '')
+			{
+				$version->template_identifier = $data['template_identifier'];
+			}
+			else
+			{
+				$version->template_identifier = '';
+			}
+		}
+
 		if (isset($data['layout_identifier']))
 		{
 			if ($data['layout_identifier'] !== '')

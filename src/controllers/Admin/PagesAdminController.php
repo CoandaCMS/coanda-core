@@ -380,6 +380,11 @@ class PagesAdminController extends BaseController {
 				return Redirect::to(Coanda::adminUrl('pages/editversion/' . $page_id . '/' . $version_number))->with('layout_chosen', true)->withInput();
 			}
 
+			if (Input::has('choose_template') && Input::get('choose_template') == 'true')
+			{
+				return Redirect::to(Coanda::adminUrl('pages/editversion/' . $page_id . '/' . $version_number))->with('template_chosen', true)->withInput();
+			}
+
 			if (Input::has('add_location'))
 			{
 				return Redirect::to(Coanda::adminUrl('pages/browse-add-location/' . $page_id . '/' . $version_number));

@@ -278,4 +278,9 @@ class Page extends Eloquent {
 		$this->remote_id = $remote_id;
 		$this->save();
 	}
+
+	public function availableTemplates()
+	{
+		return $this->pageType()->availableTemplates();
+	}
 }

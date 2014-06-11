@@ -484,7 +484,7 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		];
 
 		// Make the view and pass all the render data to it...
-		$rendered_page = View::make($page->pageType()->template($data), $data);
+		$rendered_page = View::make($page->pageType()->template($page->currentVersion(), $data), $data);
 
 		// Get the layout template...
 		$layout = $this->getLayout($page->currentVersion());
@@ -574,7 +574,7 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		];
 
 		// Make the view and pass all the render data to it...
-		$rendered_version = View::make($page->pageType()->template($data), $data);
+		$rendered_version = View::make($page->pageType()->template($version, $data), $data);
 
 		// Get the layout template...
 		$layout = $this->getLayout($version);
