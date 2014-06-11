@@ -9,6 +9,11 @@ use Carbon\Carbon;
  */
 class PageVersion extends \CoandaCMS\Coanda\Core\Presenters\Presenter {
 
+    public function name()
+    {
+        return $this->model->page->pageType()->generateName($this->model);
+    }
+
     /**
      * @return mixed
      */

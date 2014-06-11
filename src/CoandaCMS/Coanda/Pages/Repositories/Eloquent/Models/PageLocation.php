@@ -261,4 +261,31 @@ class PageLocation extends Eloquent {
 		return $attributes;
 	}
 
+	public function breadcrumb()
+	{
+		$parents = $this->parents();
+
+		$breadcrumb = [];
+
+		if (count($parents) > 0)
+		{
+			foreach ($parents as $parent)
+			{
+				$breadcrumb[] = [
+					'identifier' => 'location:' . $parent->id,
+					'url' => $parent->slug,
+					'name' => $parent->present()->name
+				];
+			}
+		}
+
+		$breadcrumb[] = [
+			'identifier' => 'location:' . $this->id,
+			'url' => false,
+			'name' => $this->present()->name
+		];
+
+		return $breadcrumb;
+	}
+
 }

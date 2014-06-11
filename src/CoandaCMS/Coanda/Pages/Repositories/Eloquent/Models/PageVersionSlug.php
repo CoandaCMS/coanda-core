@@ -91,4 +91,24 @@ class PageVersionSlug extends Eloquent {
 	{
 		return $this->baseSlug();
 	}
+
+
+	public function tempLocation()
+	{
+		$location = new PageLocationModel;
+		$location->page_id = $this->version->page_id;
+		$location->parent_page_id = $this->page_location_id;
+
+		$parent = PageLocationModel::find($this->page_location_id);
+		$path = '';
+
+		if ($parent)
+		{
+			$path = ($parent->path == '' ? '/' : $parent->path) . $parent->id . '/';
+		}
+
+		$location->path = $path;
+
+		return $location;
+	}
 }

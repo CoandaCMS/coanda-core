@@ -477,10 +477,15 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		$meta = $this->buildMeta($page);
 
 		$data = [
+			'page_id' => $page->id,
+			'version' => $page->current_version,
+			'location_id' => ($pagelocation ? $pagelocation->id : false),
+
 			'page' => $page,
-			'location' => $pagelocation,
+			'attributes' => $this->renderAttributes($page, $pagelocation),
+			
 			'meta' => $meta,
-			'attributes' => $this->renderAttributes($page, $pagelocation)
+			
 		];
 
 		// Make the view and pass all the render data to it...
@@ -491,10 +496,14 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 
 		// Give the layout the rendered page and the data, and it can work some magic to give us back a complete page...
 		$layout_data = [
+			'layout' => $layout,
+
 			'content' => $rendered_page,
 			'meta' => $meta,
+			
 			'page_data' => $data,
-			'layout' => $layout,
+			'breadcrumb' => ($pagelocation ? $pagelocation->breadcrumb() : []),
+			
 			'module' => 'pages',
 			'module_identifier' => $page->id . ':' . $page->current_version
 		];
@@ -566,9 +575,26 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 			$attributes->{$attribute->identifier} = $attribute->render($page, $pagelocation);
 		}
 
+		$first_location = $version->slugs()->first();
+		$temp_location = $first_location->tempLocation();
+
+		// Add 'dummy' versions of these to simulate viewing a location
+		$location_id = $first_location->page_location_id;
+
+		$breadcrumb = $temp_location->breadcrumb();
+
+		// We need to take the last item off and replace it with the version name...
+		array_pop($breadcrumb);
+
+		$breadcrumb[] = [
+			'url' => false,
+			'identifier' => '',
+			'name' => $version->present()->name
+		];
+
 		$data = [
 			'page' => $version->page,
-			'location' => false,
+			'location_id' => $temp_location->id,
 			'meta' => $meta,
 			'attributes' => $attributes
 		];
@@ -581,10 +607,14 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 
 		// Give the layout the rendered page and the data, and it can work some magic to give us back a complete page...
 		$layout_data = [
+			'layout' => $layout,
+			
 			'content' => $rendered_version,
 			'meta' => $meta,
+			
 			'page_data' => $data,
-			'layout' => $layout,
+			'breadcrumb' => $breadcrumb,
+			
 			'module' => 'pages',
 			'module_identifier' => $page->id . ':' . $version->version
 		];
