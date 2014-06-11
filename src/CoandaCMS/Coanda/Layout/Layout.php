@@ -9,15 +9,6 @@ use Coanda, App, View;
 abstract class Layout {
 
     /**
-     * @var
-     */
-    private $blocks;
-    /**
-     * @var
-     */
-    private $block_repository;
-
-    /**
      * @return mixed
      */
     abstract public function identifier();
