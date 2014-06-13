@@ -95,7 +95,7 @@ class EloquentMediaRepository implements MediaRepositoryInterface {
      */
     public function getList($per_page)
 	{
-		return $this->model->orderBy('created_at', 'desc')->paginate($per_page);
+		return $this->model->where('module_identifier', '=', 'media')->orderBy('created_at', 'desc')->paginate($per_page);
 	}
 
     /**
@@ -109,17 +109,17 @@ class EloquentMediaRepository implements MediaRepositoryInterface {
 		{
 			case 'image':
 			{
-				return $this->model->where('mime', 'like', 'image/%')->orderBy('created_at', 'desc')->paginate($per_page);
+				return $this->model->where('module_identifier', '=', 'media')->where('mime', 'like', 'image/%')->orderBy('created_at', 'desc')->paginate($per_page);
 			}
 
 			case 'file':
 			{
-				return $this->model->where('mime', 'like', 'application/%')->orderBy('created_at', 'desc')->paginate($per_page);
+				return $this->model->where('module_identifier', '=', 'media')->where('mime', 'like', 'application/%')->orderBy('created_at', 'desc')->paginate($per_page);
 			}
 
 			default:
 			{
-				return $this->model->orderBy('created_at', 'desc')->paginate($per_page);
+				return $this->model->where('module_identifier', '=', 'media')->orderBy('created_at', 'desc')->paginate($per_page);
 			}
 		}
 	}
@@ -160,7 +160,7 @@ class EloquentMediaRepository implements MediaRepositoryInterface {
      * @param $file
      * @return mixed
      */
-    public function handleUpload($file)
+    public function handleUpload($file, $module_identifier = '')
 	{
 		$new_media = $this->createNewMediaItem($file->getClientOriginalName(), $file->getMimeType(), $file->getClientOriginalExtension(), $file->getClientSize());
 
@@ -177,6 +177,11 @@ class EloquentMediaRepository implements MediaRepositoryInterface {
 
         	$new_media->width = $dimensions[0];
         	$new_media->height = $dimensions[1];
+        }
+
+        if ($module_identifier != '')
+        {
+        	$new_media->module_identifier = $module_identifier;
         }
 
         $new_media->save();

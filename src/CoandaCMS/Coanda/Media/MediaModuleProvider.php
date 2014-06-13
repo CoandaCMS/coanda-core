@@ -108,11 +108,11 @@ class MediaModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
      * @param $file
      * @return mixed
      */
-    public function handleUpload($file)
+    public function handleUpload($file, $module_identifier = '')
     {
         $mediaRepository = App::make('CoandaCMS\Coanda\Media\Repositories\MediaRepositoryInterface');
 
-        return $mediaRepository->handleUpload($file);
+        return $mediaRepository->handleUpload($file, $module_identifier);
     }
 
     /**

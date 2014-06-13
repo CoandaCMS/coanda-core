@@ -35,7 +35,7 @@ interface MediaRepositoryInterface {
      * @param $file
      * @return mixed
      */
-    public function handleUpload($file);
+    public function handleUpload($file, $module_identifier);
 
     /**
      * @param $url
