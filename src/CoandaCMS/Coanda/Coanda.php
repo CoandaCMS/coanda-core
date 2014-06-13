@@ -484,4 +484,11 @@ class Coanda {
 		return $this->search_provider;
 	}
 
+	public function __call($name, $arguments)
+	{
+		if (array_key_exists($name, $this->modules))
+		{
+			return $this->modules[$name];	
+		}
+	}
 }
