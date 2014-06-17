@@ -1021,6 +1021,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 			'meta_description' => $current_version->meta_description,
 			'visible_from' => $current_version->visible_from,
 			'visible_to' => $current_version->visible_to,
+			'template_identifier' => $current_version->template_identifier,
 			'layout_identifier' => $current_version->layout_identifier
 		];
 
