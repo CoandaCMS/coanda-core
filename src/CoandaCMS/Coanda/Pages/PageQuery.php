@@ -10,6 +10,7 @@ class PageQuery {
 	private $limit;
 
 	private $include_hidden = false;
+	private $paginate = false;
 
 	public function __construct($pageRepository)
 	{
@@ -37,9 +38,17 @@ class PageQuery {
 		return $this;
 	}
 
+	public function paginate($limit)
+	{
+		$this->paginate = true;
+		$this->limit = $limit;
+
+		return $this;
+	}
+
 	public function get()
 	{
-		return $this->pageRepository->subPages($this->location_id, $this->limit, $this->include_hidden);
+		return $this->pageRepository->subPages($this->location_id, $this->limit, $this->include_hidden, false, $this->paginate);
 	}
 
 }

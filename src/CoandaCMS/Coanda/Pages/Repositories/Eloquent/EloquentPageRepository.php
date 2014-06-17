@@ -200,7 +200,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
      * @param int $per_page
      * @return mixed
      */
-    private function subLocations($parent_location_id, $per_page = 10, $include_hidden = false, $include_drafts = false)
+    private function subLocations($parent_location_id, $per_page = 10, $include_hidden = false, $include_drafts = false, $paginate = true)
 	{
 		$order = 'manual';
 
@@ -265,16 +265,21 @@ class EloquentPageRepository implements PageRepositoryInterface {
 			$query->visible();
 		}
 
-		return $query->paginate($per_page);
+		if ($paginate)
+		{
+			return $query->paginate($per_page);	
+		}
+
+		return $query->take($per_page)->get($per_page);
 	}
 
     /**
      * @param int $per_page
      * @return mixed
      */
-    public function topLevel($per_page = 10, $include_hidden = false, $include_drafts = false)
+    public function topLevel($per_page = 10, $include_hidden = false, $include_drafts = false, $paginate = true)
 	{
-		return $this->subLocations(0, $per_page, $include_hidden, $include_drafts);
+		return $this->subLocations(0, $per_page, $include_hidden, $include_drafts, $paginate);
 	}
 
     /**
@@ -282,9 +287,9 @@ class EloquentPageRepository implements PageRepositoryInterface {
      * @param $per_page
      * @return mixed
      */
-    public function subPages($location_id, $per_page, $include_hidden = false, $include_drafts = false)
+    public function subPages($location_id, $per_page, $include_hidden = false, $include_drafts = false, $paginate = true)
 	{
-		return $this->subLocations($location_id, $per_page, $include_hidden, $include_drafts);
+		return $this->subLocations($location_id, $per_page, $include_hidden, $include_drafts, $paginate);
 	}
 
     /**
