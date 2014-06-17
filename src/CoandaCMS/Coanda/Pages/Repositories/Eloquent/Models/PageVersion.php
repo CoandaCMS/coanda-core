@@ -18,7 +18,7 @@ class PageVersion extends Eloquent {
     /**
      * @var array
      */
-    protected $fillable = ['page_id', 'version', 'status', 'created_by', 'edited_by', 'meta_page_title', 'meta_description', 'visible_from', 'visible_to', 'layout_identifier'];
+    protected $fillable = ['page_id', 'version', 'status', 'created_by', 'edited_by', 'meta_page_title', 'meta_description', 'visible_from', 'visible_to', 'template_identifier', 'layout_identifier'];
 
     /**
      * @var string

@@ -14,7 +14,7 @@ class AddTemplateIdentifierColumn extends Migration {
 	{
 		Schema::table('pageversions', function($table)
 		{
-		    $table->string('template_identifier')->after('publish_handler_data');
+		    $table->string('template_identifier')->default('')->after('publish_handler_data');
 		});
 	}
 
