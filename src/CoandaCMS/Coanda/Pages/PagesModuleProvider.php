@@ -485,6 +485,8 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 			'attributes' => $this->renderAttributes($page, $pagelocation),
 			
 			'meta' => $meta,
+
+			'slug' => ($pagelocation ? $pagelocation->slug : ''),
 			
 		];
 
