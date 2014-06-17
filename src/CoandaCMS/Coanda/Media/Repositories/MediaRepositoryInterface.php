@@ -41,7 +41,7 @@ interface MediaRepositoryInterface {
      * @param $url
      * @return mixed
      */
-    public function fromURL($url);
+    public function fromURL($url, $module_identifier);
 
     /**
      * @param $media_id

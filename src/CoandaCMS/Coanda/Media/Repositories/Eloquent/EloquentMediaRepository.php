@@ -189,7 +189,7 @@ class EloquentMediaRepository implements MediaRepositoryInterface {
         return $new_media;
 	}
 
-	public function fromURL($url)
+	public function fromURL($url, $module_identifier = '', $default_extension = false)
 	{
 		$path_info = pathinfo($url);
 		$file_name = $path_info['basename'];
@@ -197,12 +197,22 @@ class EloquentMediaRepository implements MediaRepositoryInterface {
 
 		if (!$extension)
 		{
-			return false;
+			if (!$default_extension)
+			{
+				return false;
+			}
+			
+			$extension = $default_extension;
 		}
 		
 		$mime_type = $this->getMimeType($extension);
 
 		$new_media = $this->createNewMediaItem($file_name, $mime_type, $extension, 0);
+
+        if ($module_identifier != '')
+        {
+        	$new_media->module_identifier = $module_identifier;
+        }
 
 		$upload_filename = $this->generateUploadFileName($file_name, $extension);
 		$upload_path = $this->uploadPath();
