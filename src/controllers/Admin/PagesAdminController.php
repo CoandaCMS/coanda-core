@@ -359,11 +359,18 @@ class PagesAdminController extends BaseController {
 
 			if (Input::has('discard'))
 			{
+				$parent_page_id = $version->page->firstLocation()->parent_page_id;
+				
 				$this->pageRepository->discardDraftVersion($version, Coanda::currentUser()->id);
 
 				// If this was the first version, then we need to redirect back to the parent
 				if ($version_number == 1)
-				{					
+				{
+					if ($parent_page_id)
+					{
+						return Redirect::to(Coanda::adminUrl('pages/location/' . $parent_page_id));	
+					}
+
 					return Redirect::to(Coanda::adminUrl('pages'));
 				}
 				else
