@@ -261,7 +261,7 @@ class PageLocation extends Eloquent {
 		return $attributes;
 	}
 
-	public function breadcrumb()
+	public function breadcrumb($link_self = false)
 	{
 		$parents = $this->parents();
 
@@ -281,7 +281,7 @@ class PageLocation extends Eloquent {
 
 		$breadcrumb[] = [
 			'identifier' => 'location:' . $this->id,
-			'url' => false,
+			'url' => $link_self ? $this->slug : false,
 			'name' => $this->present()->name
 		];
 

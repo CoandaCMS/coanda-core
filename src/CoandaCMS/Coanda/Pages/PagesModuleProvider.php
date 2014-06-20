@@ -480,18 +480,27 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 			'page_id' => $page->id,
 			'version' => $page->current_version,
 			'location_id' => ($pagelocation ? $pagelocation->id : false),
-
 			'page' => $page,
 			'attributes' => $this->renderAttributes($page, $pagelocation),
-			
 			'meta' => $meta,
-
 			'slug' => ($pagelocation ? $pagelocation->slug : ''),
-			
 		];
 
+		// Does the page type want to do anything before we carry on with the rendering?
+		// e.g. Redirect, set some additional data variables
+		$data = $page->pageType()->preRender($data);
+
+		// Lets check if we got a redirect request back...
+		if (is_object($data) && get_class($data) == 'Illuminate\Http\RedirectResponse')
+		{
+			return $data;
+		}
+
+		// The page type works out the template to be used. The default is pretty simple, but more complex things could be done if required.
+		$template = $page->pageType()->template($page->currentVersion(), $data);
+
 		// Make the view and pass all the render data to it...
-		$rendered_page = View::make($page->pageType()->template($page->currentVersion(), $data), $data);
+		$rendered_page = View::make($template, $data);
 
 		// Get the layout template...
 		$layout = $this->getLayout($page->currentVersion());
@@ -499,13 +508,10 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		// Give the layout the rendered page and the data, and it can work some magic to give us back a complete page...
 		$layout_data = [
 			'layout' => $layout,
-
 			'content' => $rendered_page,
 			'meta' => $meta,
-			
 			'page_data' => $data,
 			'breadcrumb' => ($pagelocation ? $pagelocation->breadcrumb() : []),
-			
 			'module' => 'pages',
 			'module_identifier' => $page->id . ':' . $page->current_version
 		];
@@ -516,7 +522,7 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		{
 			$cache_key = $this->generateCacheKey($pagelocation->id);
 
-			$content = str_replace('</body>', '<!-- cached: ' . date('r', time()) . ' --></body>', $content);
+			// $content = str_replace('</body>', '<!-- cached: ' . date('r', time()) . ' --></body>', $content);
 			Cache::put($cache_key, $content, 10);
 		}
 

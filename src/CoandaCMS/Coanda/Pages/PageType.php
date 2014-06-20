@@ -43,6 +43,12 @@ abstract class PageType {
         return 'pagetypes.' . $template_name;
     }
 
+    public function preRender($data)
+    {
+        // The default is just to return the data untouched...
+        return $data;
+    }
+
     public function availableTemplates()
     {
         return [];
