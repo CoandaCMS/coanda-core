@@ -650,8 +650,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 			}
 			catch (AttributeValidationException $exception)
 			{
-				$failed['attributes'][$attribute->identifier]['message'] = $exception->getMessage();
-				$failed['attributes'][$attribute->identifier]['validation_data'] = $exception->getValidationData();
+				$failed['attributes'][$attribute->identifier] = $exception->getMessage();
 			}
 		}
 
