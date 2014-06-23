@@ -60,6 +60,8 @@ class Coanda {
 		$this->loadAttributes();
 
 		$this->loadSearchProvider();
+
+		$this->loadHistoryListender();
 	}
 
     /**
@@ -474,6 +476,16 @@ class Coanda {
     private function loadSearchProvider()
 	{
 		$this->search_provider = App::make('CoandaCMS\Coanda\Search\CoandaSearchProvider');
+	}
+
+	private function loadHistoryListender()
+	{
+		\Event::listen('history.log', function($module, $module_identifier, $user_id, $action, $data = '')
+		{
+			$history_repository = \App::make('CoandaCMS\Coanda\History\Repositories\HistoryRepositoryInterface');
+			$history_repository->add($module, $module_identifier, $user_id, $action, $data);
+
+		});		
 	}
 
     /**
