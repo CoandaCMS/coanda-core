@@ -5,7 +5,7 @@ $invalid_fields
 $is_required
 $prefill_data
 --}}
-<div class="form-group @if (isset($invalid_fields['attribute_' . $attribute_identifier])) has-error @endif">
+<div class="form-group @if (isset($invalid_fields[$attribute_identifier])) has-error @endif">
 	<label class="control-label" for="attribute_{{ $attribute_identifier }}_file">{{ $attribute_name }} @if ($is_required) * @endif</label>
 
 	@if ($prefill_data)
@@ -17,8 +17,8 @@ $prefill_data
 
 	<input type="file" name="attribute_{{ $attribute_identifier }}_file" id="attribute_{{ $attribute_identifier }}_file">
 
-    @if (isset($invalid_fields['attribute_' . $attribute_identifier]))
-    	<span class="help-block">{{ $invalid_fields['attribute_' . $attribute_identifier]['message'] }}</span>
+    @if (isset($invalid_fields[$attribute_identifier]))
+    	<span class="help-block">{{ $invalid_fields[$attribute_identifier] }}</span>
     @endif
 
 </div>
