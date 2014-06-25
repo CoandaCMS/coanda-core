@@ -1346,10 +1346,10 @@ class EloquentPageRepository implements PageRepositoryInterface {
 	{
 		foreach ($version->attributes as $attribute)
 		{
-			if (array_key_exists('attribute_' . $attribute->id, $action_data))
+			if (array_key_exists('attribute_' . $attribute->identifier, $action_data))
 			{
-				$attribute_data = isset($data['attribute_' . $attribute->id]) ? $data['attribute_' . $attribute->id] : false;
-				$attribute->handleAction($action_data['attribute_' . $attribute->id], $attribute_data);
+				$attribute_data = isset($data['attribute_' . $attribute->identifier]) ? $data['attribute_' . $attribute->id] : false;
+				$attribute->handleAction($action_data['attribute_' . $attribute->identifier], $attribute_data);
 			}
 		}
 	}

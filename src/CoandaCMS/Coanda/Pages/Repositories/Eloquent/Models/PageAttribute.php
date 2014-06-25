@@ -196,6 +196,7 @@ class PageAttribute extends Eloquent {
 		// Let the type do whatever with the attribute to return the data required...
 		$parameters = [
 			'attribute_id' => $this->id,
+			'attribute_identifier' => $this->identifier,
 			'page_id' => $this->page()->id,
 			'version_number' => $this->version->version
 		];

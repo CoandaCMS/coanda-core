@@ -13,7 +13,7 @@ $prefill_data
     	</label>
     </div>
 
-    @if (isset($invalid_fields['attribute_' . $attribute_identifier]))
+    @if (isset($invalid_fields[$attribute_identifier]))
     	<span class="help-block">{{ $invalid_fields[$attribute_identifier] }}</span>
     @endif
 </div>
