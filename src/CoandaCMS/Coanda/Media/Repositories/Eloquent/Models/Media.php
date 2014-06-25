@@ -199,9 +199,9 @@ class Media extends Eloquent {
 	{
 		return [
 			'id' => $this->id,
-			'original_filename' => $this->downloadUrl(),
-			'original_file_url' => $this->present()->original_file_url,
-			'thumbnail_url' => $this->type == 'image' ? $this->cropUrl(200) : false,
+			'original_filename' => $this->original_filename,
+			'original_file_url' => url($this->downloadUrl()),
+			'thumbnail_url' => $this->type == 'image' ? url($this->cropUrl(200)) : false,
 			'mime' => $this->mime
 		];
 	}
