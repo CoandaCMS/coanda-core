@@ -42,10 +42,19 @@ class Image extends AttributeType {
 	{
         if (isset($parameters['data_key']))
         {
-            $file_key = $parameters['data_key'];
+            $file_key = $parameters['data_key'] . '_file';
 
             if (Input::hasFile($file_key))
             {
+                $allowed_mime_types = ['jpeg', 'png', 'gif', 'bmp'];
+
+                $file = Input::file($file_key);
+
+                if (!in_array($file->guessExtension(), $allowed_mime_types))
+                {
+                    throw new AttributeValidationException($name . ' must be an image, ".' . $file->guessExtension() . '" file was uploaded');
+                }
+
                 $image = Coanda::module('media')->handleUpload(Input::file($file_key));
 
                 return $image->id;
@@ -57,8 +66,7 @@ class Image extends AttributeType {
             return Input::get($parameters['data_key'] . '_media_id');
         }
 
-		// - Tidy up HTML?
-		if ($is_required && (!$data || $data == ''))
+		if ($is_required)
 		{
 			throw new AttributeValidationException($name . ' is required');
 		}
