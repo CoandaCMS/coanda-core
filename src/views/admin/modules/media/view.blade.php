@@ -43,8 +43,8 @@
 					<div class="row">
 						<div class="@if ($media->present()->has_preview) col-md-8 @else col-md-4 @endif">
 							<a href="{{ Coanda::adminUrl('media/download/' . $media->id) }}">
-								@if ($media->present()->has_preview)
-									<img src="{{ url($media->present()->large_url) }}" class="img-thumbnail">
+								@if ($media->type == 'image')
+									<img src="{{ url($media->resizeUrl(500)) }}" class="img-thumbnail">
 								@else
 									<img src="{{ asset('packages/coanda/images/file.png') }}" width="200" height="200" class="img-thumbnail">
 								@endif
@@ -52,9 +52,19 @@
 						</div>
 						<div class="@if ($media->present()->has_preview) col-md-4 @else col-md-8 @endif">
 
-							<p><a href="{{ Coanda::adminUrl('media/download/' . $media->id) }}"><i class="fa fa-download"></i> Download</a></p>
+							<p><a href="{{ Coanda::adminUrl('media/download/' . $media->id) }}"><i class="fa fa-download"></i> Download original file</a></p>
 
 							<table class="table table-striped">
+								<tr>
+									<td>Download URL (for use in content)</td>
+									<td>
+										@if ($media->admin_only)
+											<em>This file is only available via the admin dashboard</em>
+										@else
+											/{{ $media->downloadUrl() }}
+										@endif
+									</td>
+								</tr>
 								<tr>
 									<td>Created</td>
 									<td>{{ $media->present()->created_at }}</td>

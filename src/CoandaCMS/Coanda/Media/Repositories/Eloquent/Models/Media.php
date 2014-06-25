@@ -3,6 +3,11 @@
 use Eloquent, Coanda, App, Config, File;
 use Carbon\Carbon;
 
+use CoandaCMS\Coanda\Media\ImageHandlers\DefaultImageHandler as ImageHandler;
+
+use CoandaCMS\Coanda\Media\Exceptions\ImageGenerationException;
+use CoandaCMS\Coanda\Media\Exceptions\OriginalFileCacheException;
+
 /**
  * Class Media
  * @package CoandaCMS\Coanda\Media\Repositories\Eloquent\Models
@@ -74,6 +79,90 @@ class Media extends Eloquent {
 		return $this->type();
 	}
 
+	public function generateImage($filename)
+	{
+		if ($this->admin_only)
+		{
+			throw new ImageGenerationException;
+		}
+		
+		if ($this->type == 'image')
+		{
+			if (preg_match('/^([c|r])(.*)\.(.*)$/', $filename, $matches))
+			{
+				$original = $this->originalFilePath();
+				$output = $this->cacheDirectory() . '/' . $filename;
+				$size = $matches[2];
+
+				if ($matches[1] == 'c')
+				{
+					return ImageHandler::crop($original, $output, $size);
+				}
+
+				if ($matches[1] == 'r')
+				{
+					return ImageHandler::resize($original, $output, $size);
+				}
+			}
+		}
+
+		throw new ImageGenerationException;
+	}
+
+	public function cropUrl($size)
+	{
+		return $this->generateImageCacheUrl('c', $size);
+	}
+
+	public function resizeUrl($size)
+	{
+		return $this->generateImageCacheUrl('r', $size);
+	}
+
+	private function generateImageCacheUrl($type, $size)
+	{
+		if ($this->admin_only)
+		{
+			throw new ImageGenerationException;
+		}
+
+		return Config::get('coanda::coanda.image_cache_directory') . '/' . $this->id . '/' . $type . $size . '.' . $this->extension;		
+	}
+
+	public function downloadUrl()
+	{
+		if ($this->admin_only)
+		{
+			return false;
+		}
+
+		return Config::get('coanda::coanda.file_cache_directory') . '/' . $this->id . '/' . $this->id . '.' . $this->extension;
+	}
+
+	public function generateOriginalFileCache($filename)
+	{
+		if ($this->admin_only)
+		{
+			throw new OriginalFileCacheException;
+		}
+
+		if ($filename !== ($this->id . '.' . $this->extension))
+		{
+			throw new OriginalFileCacheException;
+		}
+
+		$original = $this->originalFilePath();
+		$cache_directory = public_path() . '/' .Config::get('coanda::coanda.file_cache_directory') . '/' . $this->id;
+		$destination = $cache_directory . '/' . $this->id . '.' . $this->extension;
+
+		if (!is_dir($cache_directory))
+		{
+			mkdir($cache_directory, 0777, true);
+		}
+
+		copy($original, $destination);
+	}
+
     /**
      * @return string
      */
@@ -82,29 +171,18 @@ class Media extends Eloquent {
 		return base_path() . '/' . Config::get('coanda::coanda.uploads_directory') . '/' . $this->filename;
 	}
 
-    /**
-     * @return string
-     */
-    public function originalFileLink()
-	{
-        $original_file = base_path() . '/' . Config::get('coanda::coanda.uploads_directory') . '/' . $this->filename;
-        $cache_base = Config::get('coanda::coanda.file_cache_directory');
+    private function cacheDirectory()
+    {
+    	if ($this->type == 'image')
+    	{
+    		return public_path() . '/' .Config::get('coanda::coanda.image_cache_directory') . '/' . $this->id;
+    	}
+    }
 
-        $cache_directory = $cache_base . '/' . $this->id;
-        $cache_path = $cache_directory . '/' . $this->id . '.' . $this->extension;
-
-        if(!file_exists($cache_path))
-        {
-            if( !is_dir($cache_directory))
-            {
-				mkdir($cache_directory);
-            }
-
-            copy($original_file, $cache_path);
-        }
-
-        return $cache_path;
-	}
+    public function originalFile()
+    {
+    	return base_path() . '/' . Config::get('coanda::coanda.uploads_directory') . '/' . $this->filename;
+    }
 
     /**
      * @return mixed
@@ -121,9 +199,9 @@ class Media extends Eloquent {
 	{
 		return [
 			'id' => $this->id,
-			'original_filename' => $this->original_filename,
+			'original_filename' => $this->downloadUrl(),
 			'original_file_url' => $this->present()->original_file_url,
-			'thumbnail_url' => $this->type == 'image' ? $this->present()->thumbnail_url : false,
+			'thumbnail_url' => $this->type == 'image' ? $this->cropUrl(200) : false,
 			'mime' => $this->mime
 		];
 	}

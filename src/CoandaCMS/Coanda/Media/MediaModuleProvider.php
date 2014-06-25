@@ -1,8 +1,10 @@
 <?php namespace CoandaCMS\Coanda\Media;
 
-use Route, App, Config;
+use Route, App, Config, Coanda, Redirect;
 
 use CoandaCMS\Coanda\Exceptions\PermissionDenied;
+use CoandaCMS\Coanda\Media\Exceptions\ImageGenerationException;
+use CoandaCMS\Coanda\Media\Exceptions\OriginalFileCacheException;
 
 /**
  * Class MediaModuleProvider
@@ -53,6 +55,62 @@ class MediaModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
      */
     public function userRoutes()
 	{
+        $image_cache_directory = Config::get('coanda::coanda.image_cache_directory');
+
+        // Add the image caching route
+        Route::get($image_cache_directory . '/{media_id}/{filename}', function ($media_id, $filename) use ($image_cache_directory) {
+
+            $media = Coanda::media()->getById($media_id);
+
+            // We can only do this for images...
+            if ($media && $media->type == 'image')
+            {
+                try
+                {
+                    $media->generateImage($filename);
+
+                    $redirect_url = $image_cache_directory . '/' . $media->id . '/' . $filename;
+
+                    return Redirect::to(url($redirect_url));
+                }
+                catch (ImageGenerationException $exception)
+                {
+                    App::abort('404');
+                }
+            }
+
+            App::abort('404');
+
+        });
+
+        $file_cache_directory = Config::get('coanda::coanda.file_cache_directory');
+
+        // Add the file caching route
+        Route::get($file_cache_directory . '/{media_id}/{filename}', function ($media_id, $filename) use ($file_cache_directory) {
+
+            $media = Coanda::media()->getById($media_id);
+
+            // We can only do this for images...
+            if ($media)
+            {
+                try
+                {
+                    $media->generateOriginalFileCache($filename);
+
+                    $redirect_url = $file_cache_directory . '/' . $media->id . '/' . $filename;
+
+                    return Redirect::to(url($redirect_url));
+                }
+                catch (OriginalFileCacheException $exception)
+                {
+                    App::abort('404');
+                }
+            }
+
+            App::abort('404');
+
+        });
+
 	}
 
     /**
@@ -108,11 +166,11 @@ class MediaModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
      * @param $file
      * @return mixed
      */
-    public function handleUpload($file, $module_identifier = '')
+    public function handleUpload($file, $module_identifier = '', $admin_only = false)
     {
         $mediaRepository = App::make('CoandaCMS\Coanda\Media\Repositories\MediaRepositoryInterface');
 
-        return $mediaRepository->handleUpload($file, $module_identifier);
+        return $mediaRepository->handleUpload($file, $module_identifier, $admin_only);
     }
 
     public function fromURL($url, $module_identifier = '', $default_extension = false)

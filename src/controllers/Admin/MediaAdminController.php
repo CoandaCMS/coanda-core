@@ -136,9 +136,17 @@ class MediaAdminController extends BaseController {
 
 		try
 		{
-			$link = $this->mediaRepository->downloadLink($media_id);
+			$media = $this->mediaRepository->findById($media_id);
+			$original_file = $media->originalFile();
 
-			return Redirect::to(url($link));
+			$fp = fopen($original_file, 'rb');
+
+			header('Content-Type: ' . $media->mime);
+			header('Content-Length: ' . filesize($original_file));
+
+			fpassthru($fp);
+
+			exit();
 		}
 		catch (MediaNotFound $exception)
 		{

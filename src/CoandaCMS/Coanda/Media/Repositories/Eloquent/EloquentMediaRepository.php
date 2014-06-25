@@ -160,7 +160,7 @@ class EloquentMediaRepository implements MediaRepositoryInterface {
      * @param $file
      * @return mixed
      */
-    public function handleUpload($file, $module_identifier = '')
+    public function handleUpload($file, $module_identifier = '', $admin_only = false)
 	{
 		$new_media = $this->createNewMediaItem($file->getClientOriginalName(), $file->getMimeType(), $file->getClientOriginalExtension(), $file->getClientSize());
 
@@ -184,6 +184,7 @@ class EloquentMediaRepository implements MediaRepositoryInterface {
         	$new_media->module_identifier = $module_identifier;
         }
 
+        $new_media->admin_only = $admin_only;
         $new_media->save();
 
         return $new_media;
@@ -239,17 +240,6 @@ class EloquentMediaRepository implements MediaRepositoryInterface {
 		}
 
 		return false;
-	}
-
-    /**
-     * @param $media_id
-     * @return mixed
-     */
-    public function downloadLink($media_id)
-	{
-		$media = $this->findById($media_id);
-
-		return $media->originalFileLink();
 	}
 
     /**
