@@ -6,7 +6,7 @@ use Intervention\Image\Image as ImageFactory;
 
 class DefaultImageHandler {
 
-    private function initaliseImageFactory($original)
+    private function initaliseImageFactory($original, $output)
     {
         if (file_exists($original))
         {
@@ -27,7 +27,7 @@ class DefaultImageHandler {
 
 	public static function crop($original, $output, $size)
 	{
-        $imageFactory = $this->initaliseImageFactory();
+        $imageFactory = $this->initaliseImageFactory($original, $output);
         $imageFactory->grab($size, $size)->save($output);
 
         return $output;
@@ -38,7 +38,7 @@ class DefaultImageHandler {
 		$maintain_ratio = true;
 		$upscale = false;
 
-        $imageFactory = $this->initaliseImageFactory();
+        $imageFactory = $this->initaliseImageFactory($original, $output);
         $imageFactory->resize($size, $size, $maintain_ratio, $upscale)->save($output);
 	}
 
