@@ -1,6 +1,6 @@
 <?php namespace CoandaCMS\Coanda;
 
-use App, Route, Config, Redirect, Request, Session, View;
+use App, Route, Redirect, Request, Session, View;
 
 use CoandaCMS\Coanda\Core\Attributes\Exceptions\AttributeTypeNotFound;
 use CoandaCMS\Coanda\Exceptions\PermissionDenied;
@@ -49,6 +49,13 @@ class Coanda {
      */
     private $search_provider;
 
+    private $config;
+
+    public function __construct($app)
+    {
+		$this->config = $app['config'];
+    }
+
     /**
      * @param \Illuminate\Foundation\Application $app
      */
@@ -68,7 +75,7 @@ class Coanda {
     private function loadAttributes()
 	{
 		// Load the attributes
-		$attribute_types = Config::get('coanda::coanda.attribute_types');
+		$attribute_types = $this->config->get('coanda::coanda.attribute_types');
 
 		foreach ($attribute_types as $attribute_type_class)
 		{
@@ -101,9 +108,9 @@ class Coanda {
 	 * @param  string $path
 	 * @return string
 	 */
-	public static function adminUrl($path)
+	public function adminUrl($path)
 	{
-		return url(Config::get('coanda::coanda.admin_path') . '/' . $path);
+		return url($this->config->get('coanda::coanda.admin_path') . '/' . $path);
 	}
 
 	/**
@@ -232,7 +239,7 @@ class Coanda {
 			'CoandaCMS\Coanda\Urls\UrlModuleProvider'
 		];
 
-		$enabled_modules = Config::get('coanda::coanda.enabled_modules');
+		$enabled_modules = $this->config->get('coanda::coanda.enabled_modules');
 
 		$modules = array_merge($core_modules, $enabled_modules);
 
@@ -270,7 +277,7 @@ class Coanda {
 	 */
 	public function routes()
 	{
-		Route::group(array('prefix' => Config::get('coanda::coanda.admin_path')), function()
+		Route::group(array('prefix' => $this->config->get('coanda::coanda.admin_path')), function()
 		{
 			// All module admin routes should be wrapper in the auth filter
 			Route::group(array('before' => 'admin_auth'), function()
@@ -326,7 +333,7 @@ class Coanda {
 		$app->bind('CoandaCMS\Coanda\Urls\Repositories\UrlRepositoryInterface', 'CoandaCMS\Coanda\Urls\Repositories\Eloquent\EloquentUrlRepository');
 		$app->bind('CoandaCMS\Coanda\History\Repositories\HistoryRepositoryInterface', 'CoandaCMS\Coanda\History\Repositories\Eloquent\EloquentHistoryRepository');
 
-		$search_provider = Config::get('coanda::coanda.search_provider');
+		$search_provider = $this->config->get('coanda::coanda.search_provider');
 
 		if (class_exists($search_provider))
 		{
