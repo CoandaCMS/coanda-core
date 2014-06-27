@@ -24,20 +24,22 @@ class CoandaServiceProvider extends ServiceProvider {
 	{
 		$this->package('coandacms/coanda');
 
+		$coanda = $this->app->make('coanda');
+
 		// Let the main class load any modules prior to handling the bindings
-		$this->app->make('coanda')->loadModules();
+		$coanda->loadModules();
 
 		// Let the main class handles the bindings
-		$this->app->make('coanda')->bindings($this->app);
+		$coanda->bindings($this->app);
 
 		// Add any filters
-		$this->app->make('coanda')->filters();
+		$coanda->filters();
 
 		// Add the routes
-		$this->app->make('coanda')->routes();
+		$coanda->routes();
 
 		// Boot up coanda...
-		$this->app->make('coanda')->boot($this->app);
+		$coanda->boot($this->app);
 	}
 
 	/**
@@ -51,9 +53,9 @@ class CoandaServiceProvider extends ServiceProvider {
 		$this->app->register(new \Alexdover\BladeSet\BladeSetServiceProvider($this->app));
 
 		// Bind our main facade
-		$this->app->singleton('coanda', function () {
+		$this->app->singleton('coanda', function ($app) {
 
-			return new Coanda;
+			return new Coanda($app);
 
 		});
 
@@ -77,8 +79,6 @@ class CoandaServiceProvider extends ServiceProvider {
 		});
 
 		$this->commands('coanda.reindex');
-
-
 	}
 
 	/**
