@@ -50,7 +50,7 @@ class Date extends AttributeType {
         {
             try
             {
-                $date = Carbon::createFromFormat($data['format'], $data['date'], date_default_timezone_get());
+                Carbon::createFromFormat($data['format'], $data['date'], date_default_timezone_get());
             }
             catch (\InvalidArgumentException $exception)
             {
