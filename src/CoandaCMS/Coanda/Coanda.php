@@ -58,10 +58,8 @@ class Coanda {
 		$this->user = $app->make('CoandaCMS\Coanda\Users\Repositories\UserRepositoryInterface');
 		
 		$this->loadAttributes();
-
 		$this->loadSearchProvider();
-
-		$this->loadHistoryListender();
+		$this->loadHistoryListener();
 	}
 
     /**
@@ -478,7 +476,7 @@ class Coanda {
 		$this->search_provider = App::make('CoandaCMS\Coanda\Search\CoandaSearchProvider');
 	}
 
-	private function loadHistoryListender()
+	private function loadHistoryListener()
 	{
 		\Event::listen('history.log', function($module, $module_identifier, $user_id, $action, $data = '')
 		{
