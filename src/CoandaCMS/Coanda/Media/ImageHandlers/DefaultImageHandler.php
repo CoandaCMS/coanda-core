@@ -6,24 +6,31 @@ use Intervention\Image\Image as ImageFactory;
 
 class DefaultImageHandler {
 
-	public static function crop($original, $output, $size)
-	{
+    private function initaliseImageFactory($original)
+    {
         if (file_exists($original))
         {
-        	$path_parts = pathinfo($output);
+            $path_parts = pathinfo($output);
 
-			if (!is_dir($path_parts['dirname']))
+            if (!is_dir($path_parts['dirname']))
             {
-				mkdir($path_parts['dirname'], 0777, true);
+                mkdir($path_parts['dirname'], 0777, true);
             }
 
             $imageFactory = ImageFactory::make($original);
-            $imageFactory->grab($size, $size)->save($output);
 
-            return $output;
+            return $imageFactory;
         }
 
         throw new ImageGenerationException;
+    }
+
+	public static function crop($original, $output, $size)
+	{
+        $imageFactory = $this->initaliseImageFactory();
+        $imageFactory->grab($size, $size)->save($output);
+
+        return $output;
 	}
 
 	public static function resize($original, $output, $size)
@@ -31,22 +38,8 @@ class DefaultImageHandler {
 		$maintain_ratio = true;
 		$upscale = false;
 
-        if (file_exists($original))
-        {
-        	$path_parts = pathinfo($output);
-
-			if (!is_dir($path_parts['dirname']))
-            {
-				mkdir($path_parts['dirname'], 0777, true);
-            }
-
-            $imageFactory = ImageFactory::make($original);
-            $imageFactory->resize($size, $size, $maintain_ratio, $upscale)->save($output);
-
-            return $output;
-        }
-
-        throw new ImageGenerationException;
+        $imageFactory = $this->initaliseImageFactory();
+        $imageFactory->resize($size, $size, $maintain_ratio, $upscale)->save($output);
 	}
 
 }
