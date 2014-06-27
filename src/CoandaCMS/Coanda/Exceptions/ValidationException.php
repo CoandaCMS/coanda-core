@@ -18,12 +18,16 @@ class ValidationException extends \Exception {
      */
     public function __construct($invalid_fields, $invalid_identifier = false)
 	{
-		$this->invalid_fields = $invalid_fields;
+        if (is_array($invalid_fields))
+        {
+            $this->invalid_fields = $invalid_fields;    
+        }
+
         $this->invalid_identifier = $invalid_identifier;
 	}
 
     /**
-     * @return array|string
+     * @return array
      */
     public function getInvalidFields()
 	{
