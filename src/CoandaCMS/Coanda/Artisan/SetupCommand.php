@@ -97,7 +97,7 @@ class SetupCommand extends Command {
 
         try
         {
-            $user = $this->userRepository->createNew($user_data, $group->id);
+            $this->userRepository->createNew($user_data, $group->id);
 
             $this->info('All done, you can now log in with the details specified.');
         }
