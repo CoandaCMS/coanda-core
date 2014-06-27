@@ -7,7 +7,7 @@
 class PublishHandlerException extends \Exception {
 
     /**
-     * @var array|string
+     * @var array
      */
     private $invalid_fields = [];
 
@@ -16,7 +16,10 @@ class PublishHandlerException extends \Exception {
      */
     public function __construct($invalid_fields)
 	{
-		$this->invalid_fields = $invalid_fields;
+        if (is_array($invalid_fields))
+        {
+            $this->invalid_fields = $invalid_fields;    
+        }
 	}
 
     /**
