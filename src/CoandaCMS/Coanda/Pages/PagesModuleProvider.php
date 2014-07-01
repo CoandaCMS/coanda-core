@@ -650,13 +650,27 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 
     /**
      * @param $location_id
-     * @return bool
      */
     public function getLocation($location_id)
 	{
 		try
 		{
 			return $this->getPageRepository()->locationById($location_id);
+		}
+		catch (PageNotFound $exception)
+		{
+			return false;
+		}
+	}
+
+    /**
+     * @param $remote_id
+     */
+    public function getLocationByRemoteId($remote_id)
+	{
+		try
+		{
+			return $this->getPageRepository()->getLocationByRemoteId($remote_id);
 		}
 		catch (PageNotFound $exception)
 		{
