@@ -1,6 +1,6 @@
 <?php namespace CoandaCMS\Coanda;
 
-use App, Route, Redirect, Request, Session, View;
+use App, Route, Redirect, Request, Session, View, Config;
 
 use CoandaCMS\Coanda\Core\Attributes\Exceptions\AttributeTypeNotFound;
 use CoandaCMS\Coanda\Exceptions\PermissionDenied;
