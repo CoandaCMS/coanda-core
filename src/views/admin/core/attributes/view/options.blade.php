@@ -1,0 +1,1 @@
+{{ isset($attribute_definition['option_list'][$content]) ? $attribute_definition['option_list'][$content] : '' }}
