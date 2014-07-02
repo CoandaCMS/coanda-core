@@ -100,7 +100,7 @@ class Coanda {
 			return $this->attribute_types[$type_identifier];
 		}
 
-		throw new AttributeTypeNotFound;
+		throw new AttributeTypeNotFound('Attribute type: ' . $type_identifier . ' could not be found.');
 	}
 
 	/**
