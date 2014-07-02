@@ -229,4 +229,9 @@ class PageAttribute extends Eloquent {
 
 		return $this->type()->render($this->typeData(), $parameters);
 	}
+
+	public function getDefinitionAttribute()
+	{
+		return $this->pageType()->attributes()[$this->identifier];
+	}
 }

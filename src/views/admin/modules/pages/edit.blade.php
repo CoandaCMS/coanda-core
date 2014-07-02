@@ -65,7 +65,7 @@
 				<div class="tab-pane @if (!Session::has('layout_chosen') && !Session::has('template_chosen')) active @endif" id="attributes">
 					@foreach ($version->attributes as $attribute)
 
-						@include($attribute->type()->edit_template(), [ 'old_input' => (isset($old_attribute_input[$attribute->identifier]) ? $old_attribute_input[$attribute->identifier] : false), 'attribute_identifier' => $attribute->identifier, 'attribute_name' => $attribute->name, 'invalid_fields' => isset($invalid_fields['attributes']) ? $invalid_fields['attributes'] : [], 'is_required' => $attribute->is_required, 'prefill_data' => $attribute->type_data ])
+						@include($attribute->type()->edit_template(), [ 'attribute_definition' => $attribute->definition, 'old_input' => (isset($old_attribute_input[$attribute->identifier]) ? $old_attribute_input[$attribute->identifier] : false), 'attribute_identifier' => $attribute->identifier, 'attribute_name' => $attribute->name, 'invalid_fields' => isset($invalid_fields['attributes']) ? $invalid_fields['attributes'] : [], 'is_required' => $attribute->is_required, 'prefill_data' => $attribute->type_data ])
 
 						@if ($attribute->generates_slug)
 							@section('footer')
