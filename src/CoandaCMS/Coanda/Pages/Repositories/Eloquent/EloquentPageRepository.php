@@ -326,13 +326,13 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		// Create all the attributes...
 		$index = 1;
 
-		foreach ($type->attributes() as $type_attribute)
+		foreach ($type->attributes() as $type_attribute_identifier => $type_attribute)
 		{
 			$page_attribute_type = Coanda::getAttributeType($type_attribute['type']);
 
 			$attribute_data = [
 				'page_version_id' => $version->id,
-				'identifier' => $type_attribute['identifier'],
+				'identifier' => $type_attribute_identifier,
 				'type' => $page_attribute_type->identifier(),
 				'order' => $index
 			];
@@ -1046,16 +1046,16 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		// Add all the attributes..
 		$index = 1;
 
-		foreach ($type->attributes() as $type_attribute)
+		foreach ($type->attributes() as $type_attribute_identifier => $type_attribute)
 		{
 			$page_attribute_type = Coanda::getAttributeType($type_attribute['type']);
 
 			// Copy the attribute data from the current version
-			$existing_attribute = $current_version->getAttributeByIdentifier($type_attribute['identifier']);
+			$existing_attribute = $current_version->getAttributeByIdentifier($type_attribute_identifier);
 
 			$attribute_data = [
 				'page_version_id' => $version->id,
-				'identifier' => $type_attribute['identifier'],
+				'identifier' => $type_attribute_identifier,
 				'type' => $page_attribute_type->identifier(),
 				'order' => $index,
 				'attribute_data' => $existing_attribute ? $existing_attribute->attribute_data : ''
