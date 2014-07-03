@@ -5,6 +5,9 @@ use App, Route, Redirect, Request, Session, View, Config;
 use CoandaCMS\Coanda\Core\Attributes\Exceptions\AttributeTypeNotFound;
 use CoandaCMS\Coanda\Exceptions\PermissionDenied;
 use CoandaCMS\Coanda\Exceptions\ModuleNotFound;
+use CoandaCMS\Coanda\Urls\Exceptions\UrlNotFound;
+
+
 
 /**
  * Class Coanda
@@ -49,8 +52,14 @@ class Coanda {
      */
     private $search_provider;
 
+    /**
+     * @var
+     */
     private $config;
 
+    /**
+     * @param $app
+     */
     public function __construct($app)
     {
 		$this->config = $app['config'];
@@ -403,7 +412,6 @@ class Coanda {
     public function routeHome()
 	{
 		// TODO - let other modules have a go at rendering the home page if the pages module doesn't!
-		// Does the pages module want to render the home page?
 		return $this->module('pages')->renderHome();
 	}
 
@@ -436,7 +444,7 @@ class Coanda {
 				}
 			}
 		}
-		catch(\CoandaCMS\Coanda\Urls\Exceptions\UrlNotFound $exception)
+		catch(UrlNotFound $exception)
 		{
 			App::abort('404');
 		}
@@ -483,14 +491,30 @@ class Coanda {
 		$this->search_provider = App::make('CoandaCMS\Coanda\Search\CoandaSearchProvider');
 	}
 
-	private function loadHistoryListener()
+    /**
+     *
+     */
+    private function loadHistoryListener()
 	{
 		\Event::listen('history.log', function($module, $module_identifier, $user_id, $action, $data = '')
 		{
 			$history_repository = \App::make('CoandaCMS\Coanda\History\Repositories\HistoryRepositoryInterface');
 			$history_repository->add($module, $module_identifier, $user_id, $action, $data);
 
-		});		
+		});
+	}
+
+    /**
+     * @param $module
+     * @param $module_identifier
+     * @param $limit
+     * @return mixed
+     */
+    public function getHistory($module, $module_identifier, $limit)
+	{
+		$history_repository = \App::make('CoandaCMS\Coanda\History\Repositories\HistoryRepositoryInterface');
+		
+		return $history_repository->get($module, $module_identifier, $limit);
 	}
 
     /**
@@ -501,11 +525,30 @@ class Coanda {
 		return $this->search_provider;
 	}
 
-	public function __call($name, $arguments)
+    /**
+     * @param $name
+     * @param $arguments
+     * @return mixed
+     */
+    public function __call($name, $arguments)
 	{
 		if (array_key_exists($name, $this->modules))
 		{
 			return $this->modules[$name];	
+		}
+	}
+
+    /**
+     * @param $name
+     * @return mixed
+     */
+    public function __get($name)
+	{
+		$method = 'get_' . $name . '_attribute';
+
+		if (method_exists($this, camel_case($method)))
+		{
+			return $this->$method;
 		}
 	}
 }
