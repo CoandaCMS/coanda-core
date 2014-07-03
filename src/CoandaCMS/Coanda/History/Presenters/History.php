@@ -52,22 +52,22 @@ class History extends \CoandaCMS\Coanda\Core\Presenters\Presenter {
 
 			case 'new_version':
 			{
-				return 'created version #' . $this->model->action_data->version;
+				return 'created version #' . $this->model->action_data['version'];
 			}
 
 			case 'discard_version':
 			{
-				return 'discarded version #' . $this->model->action_data->version;
+				return 'discarded version #' . $this->model->action_data['version'];
 			}
 
 			case 'publish_version':
 			{
-				return 'published version #' . $this->model->action_data->version;
+				return 'published version #' . $this->model->action_data['version'];
 			}
 
 			case 'order_changed':
 			{
-				return 'order changed to ' . $this->model->action_data->new_order;
+				return 'order changed to ' . $this->model->action_data['new_order'];
 			}
 
 			case 'restored':

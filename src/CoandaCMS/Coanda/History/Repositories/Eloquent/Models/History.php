@@ -52,7 +52,7 @@ class History extends Eloquent {
      */
     public function actionData()
 	{
-		$array = json_decode($this->data);
+		$array = json_decode($this->data, true);
 		
 		return !$array ? $this->data : $array;
 	}
