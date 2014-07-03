@@ -10,7 +10,7 @@ $prefill_data
 
 	@if ($prefill_data)
 		<div>
-			<img src="{{ $prefill_data->present()->thumbnail_url }}" class="img-thumbnail">
+			<img src="{{ url($prefill_data->resizeUrl(150)) }}" width="150" class="img-thumbnail">
 			<input type="hidden" name="attributes[{{ $attribute_identifier }}][media_id]" value="{{ $prefill_data->id }}">
 		</div>
 	@endif

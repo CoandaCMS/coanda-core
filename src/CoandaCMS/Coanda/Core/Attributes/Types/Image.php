@@ -61,9 +61,9 @@ class Image extends AttributeType {
             }
         }
 
-        if (Input::has($parameters['data_key'] . '_media_id'))
+        if (isset($data['media_id']))
         {
-            return Input::get($parameters['data_key'] . '_media_id');
+            return $data['media_id'];
         }
 
 		if ($is_required)
@@ -88,6 +88,16 @@ class Image extends AttributeType {
         }
 
         return false;
-        
 	}
+
+    public function render($data, $parameters = [])
+    {
+        // If we are indexing, then we don't want to return the media object, just an exmpty string will do
+        if ($parameters['indexing'])
+        {
+            return '';
+        }
+
+        return $data;
+    }    
 }
