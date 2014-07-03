@@ -743,13 +743,6 @@ class EloquentPageRepository implements PageRepositoryInterface {
 					try
 					{
 						$dates[$date] = Carbon::createFromFormat($format, $data['visible_dates'][$date], date_default_timezone_get());
-
-						// if ($dates[$date]->isPast())
-						// {
-						// 	$failed[$date] = 'The specified date is in past';
-
-						// 	$date_error = true;
-						// }
 					}
 					catch(\InvalidArgumentException $exception)
 					{
