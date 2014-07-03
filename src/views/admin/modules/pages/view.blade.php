@@ -64,6 +64,19 @@
 </div>
 @endif
 
+@if ($page->is_hidden || $page->is_hidden_navigation)
+<div class="row">
+	<div class="page-hidden col-md-12">
+		@if ($page->is_hidden)
+			<span class="label label-danger">Hidden</span>
+		@endif
+		@if ($page->is_hidden_navigation)
+			<span class="label label-warning">Hidden from Navigation</span>
+		@endif
+	</div>
+</div>
+@endif
+
 <div class="row">
 	<div class="page-options col-md-12">
 		<div class="btn-group">

@@ -215,17 +215,34 @@
 				<div class="tab-pane active" id="details">
 					@if (!$version->page->is_home)
 
+						<div class="form-group">
+							<div class="checkbox">
+								<label>
+									<input type="checkbox" name="is_hidden" value="yes" @if ($version->is_hidden) checked="checked" @endif>
+									Hide page <i class="pull-right fa fa-info-circle show-tooltip" data-toggle="tooltip" data-placement="top" title="Hiding the page will mean it is no longer accessible."></i>
+								</label>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<div class="checkbox">
+								<label>
+									<input type="checkbox" name="is_hidden_navigation" value="yes" @if ($version->is_hidden_navigation) checked="checked" @endif>
+									Hide from navigation <i class="pull-right fa fa-info-circle show-tooltip" data-toggle="tooltip" data-placement="top" title="Hiding the page from navigation will mean the page doesn't appear in any lists or navigation, but can still be accessed directly if the URL is known or linked to."></i>
+								</label>
+							</div>
+						</div>
+
 						@if ($version->slugs()->count() > 0)
 							@foreach ($version->slugs as $slug)
+							<div class="well well-sm slug-box">
 								<div class="form-group @if (isset($invalid_fields['slug_' . $slug->id])) has-error @endif">
 
+									<p>Location: <em>{{ $slug->base_slug }}/</em></p>
 									<div class="input-group">
-										<span class="input-group-addon" style="overflow: hidden; max-width: 150px; text-align: right;">
-											<span style="float: right;">{{ $slug->base_slug }}/</span>
-										</span>
+								    	<span class="input-group-addon"><input type="checkbox" name="remove_slug_list[]" value="{{ $slug->id }}"></span>
 								    	<input type="text" class="form-control slugiwugy" id="slug_{{ $slug->id }}" name="slug_{{ $slug->id }}" value="{{ (Input::old('slug_' . $slug->id) && Input::old('slug_' . $slug->id) !== '') ? Input::old('slug_' . $slug->id) : $slug->slug }}">
 								    	<span class="input-group-addon refresh-slug"><i class="fa fa-refresh"></i></span>
-								    	<span class="input-group-addon"><input type="checkbox" name="remove_slug_list[]" value="{{ $slug->id }}"></span>
 									</div>
 
 								    @if (isset($invalid_fields['slug_' . $slug->id]))
@@ -233,6 +250,7 @@
 								    @endif
 
 								</div>
+							</div>
 							@endforeach
 						@else
 							<div class="form-group @if (isset($invalid_fields['slugs'])) has-error @endif">
@@ -245,8 +263,8 @@
 						@endif
 
 						<div class="form-group">
-							{{ Form::button('Add location', ['name' => 'add_location', 'value' => 'true', 'type' => 'submit', 'class' => 'btn btn-default btn-sm']) }}
-							{{ Form::button('Remove selected', ['name' => 'remove_locations', 'value' => 'true', 'type' => 'submit', 'class' => 'btn btn-default btn-sm pull-right']) }}
+							{{ Form::button('Add location', ['name' => 'add_location', 'value' => 'true', 'type' => 'submit', 'class' => 'btn btn-default btn-sm pull-right']) }}
+							{{ Form::button('Remove selected', ['name' => 'remove_locations', 'value' => 'true', 'type' => 'submit', 'class' => 'btn btn-default btn-sm']) }}
 						</div>
 					@endif
 

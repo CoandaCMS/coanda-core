@@ -89,10 +89,7 @@
 										@endif
 
 										@if (!$home_page->is_visible)
-											<span class="label label-info show-tooltip" data-toggle="tooltip" data-placement="top" title="{{ $home_page->present()->visible_dates_short }}">
-												Hidden
-												<i class="fa fa-calendar"></i>
-											</span>
+											<span class="label label-info show-tooltip" data-toggle="tooltip" data-placement="top" title="{{ $home_page->present()->visible_dates_short }}">Invisible <i class="fa fa-calendar"></i></span>
 										@endif
 
 										@if ($home_page->is_pending)
@@ -123,52 +120,7 @@
 								</div>
 							@endif
 
-							<table class="table table-striped">
-								@foreach ($pages as $pagelocation)
-									<tr class="status-{{ $pagelocation->page->status }} @if (!$pagelocation->page->is_visible || $pagelocation->page->is_pending) info @endif">
-										<td class="tight"><input type="checkbox" name="remove_page_list[]" value="{{ $pagelocation->page->id }}" @if (!Coanda::canView('pages', 'remove')) disabled="disabled" @endif></td>
-										<td>
-											@if ($pagelocation->page->is_draft)
-												<i class="fa fa-circle-o"></i>
-											@else
-												<i class="fa {{ $pagelocation->page->pageType()->icon() }}"></i>
-											@endif
-											<a href="{{ Coanda::adminUrl('pages/location/' . $pagelocation->id) }}">{{ $pagelocation->page->present()->name }}</a>
-										</td>
-										<td>{{ $pagelocation->page->present()->type }}</td>
-										<td>
-											@if ($pagelocation->page->pageType()->allowsSubPages())
-												{{ $pagelocation->childCount() }} sub page{{ $pagelocation->childCount() !== 1 ? 's' : '' }}
-											@endif
-										</td>
-										<td>
-											{{ $pagelocation->page->present()->status }}
-
-											@if (!$pagelocation->page->is_visible)
-												<span class="label label-info show-tooltip" data-toggle="tooltip" data-placement="top" title="{{ $pagelocation->page->present()->visible_dates_short }}">
-													Hidden
-													<i class="fa fa-calendar"></i>
-												</span>
-											@endif
-
-											@if ($pagelocation->page->is_pending)
-												<span class="label label-info show-tooltip" data-toggle="tooltip" data-placement="top" title="{{ $pagelocation->page->currentVersion()->present()->delayed_publish_date }}">
-													Pending
-													<i class="fa fa-calendar"></i>
-												</span>
-											@endif
-										</td>
-										<td class="order-column">{{ Form::text('ordering[' . $pagelocation->id . ']', $pagelocation->order, ['class' => 'form-control input-sm']) }}</td>
-										<td class="tight">
-											@if ($pagelocation->page->is_draft)
-												<a href="{{ Coanda::adminUrl('pages/editversion/' . $pagelocation->page->id . '/1') }}"><i class="fa fa-pencil-square-o"></i></a>
-											@else
-												<a href="{{ Coanda::adminUrl('pages/edit/' . $pagelocation->page->id) }}"><i class="fa fa-pencil-square-o"></i></a>
-											@endif
-										</td>
-									</tr>
-								@endforeach
-							</table>
+							@include('coanda::admin.modules.pages.includes.sublocations', [ 'location' => false, 'children' => $pages ])
 
 							{{ $pages->links() }}
 

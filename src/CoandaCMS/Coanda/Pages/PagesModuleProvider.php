@@ -474,6 +474,11 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 			App::abort('404');
 		}
 
+		if ($page->is_hidden)
+		{
+			App::abort('404');
+		}
+
 		$meta = $this->buildMeta($page);
 
 		$data = [

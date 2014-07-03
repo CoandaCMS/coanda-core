@@ -47,14 +47,14 @@ interface PageRepositoryInterface {
      * @param $per_page
      * @return mixed
      */
-    public function topLevel($per_page);
+    public function topLevel($per_page, $parameters);
 
     /**
      * @param $page_id
      * @param $per_page
      * @return mixed
      */
-    public function subPages($page_id, $per_page);
+    public function subPages($page_id, $per_page, $parameters);
 
     /**
      * @param $type

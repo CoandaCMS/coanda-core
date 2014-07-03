@@ -10,6 +10,7 @@ class PageQuery {
 	private $limit;
 
 	private $include_hidden = false;
+	private $include_invisible = false;
 	private $paginate = false;
 
 	public function __construct($pageRepository)
@@ -38,6 +39,13 @@ class PageQuery {
 		return $this;
 	}
 
+	public function includeInvisible()
+	{
+		$this->include_invisible = true;
+
+		return $this;
+	}
+
 	public function paginate($limit)
 	{
 		$this->paginate = true;
@@ -48,7 +56,13 @@ class PageQuery {
 
 	public function get()
 	{
-		return $this->pageRepository->subPages($this->location_id, $this->limit, $this->include_hidden, false, $this->paginate);
+		$parameters = [
+			'include_invisible' => $this->include_invisible,
+			'include_hidden' => $this->include_hidden,
+			'paginate' => $this->paginate,
+		];
+
+		return $this->pageRepository->subPages($this->location_id, $this->limit, $parameters);
 	}
 
 }

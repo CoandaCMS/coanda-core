@@ -265,6 +265,16 @@ class Page extends Eloquent {
 		return $this->currentVersion()->status == 'pending';
 	}
 
+	public function getIsHiddenAttribute()
+	{
+		return $this->currentVersion()->is_hidden;
+	}
+
+	public function getIsHiddenNavigationAttribute()
+	{
+		return $this->currentVersion()->is_hidden_navigation;
+	}
+
     /**
      * @return mixed
      */

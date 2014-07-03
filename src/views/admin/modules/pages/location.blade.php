@@ -62,9 +62,22 @@
 		@if ($page->is_visible)
 			<span class="label label-success">Visible</span>
 		@else
-			<span class="label label-info">Hidden</span>
+			<span class="label label-info">Invisible</span>
 		@endif
 		<i class="fa fa-calendar"></i> {{ $page->present()->visible_dates }}
+	</div>
+</div>
+@endif
+
+@if ($page->is_hidden || $page->is_hidden_navigation)
+<div class="row">
+	<div class="page-hidden col-md-12">
+		@if ($page->is_hidden)
+			<span class="label label-danger">Hidden</span>
+		@endif
+		@if ($page->is_hidden_navigation)
+			<span class="label label-warning">Hidden from Navigation</span>
+		@endif
 	</div>
 </div>
 @endif
@@ -166,50 +179,8 @@
 							@endif
 
 							@if ($children->count() > 0)
-								<table class="table table-striped">
-								@foreach ($children as $childlocation)
-									<tr class="status-{{ $childlocation->page->status }} @if (!$childlocation->page->is_visible) info @endif">
 
-										@if (!$childlocation->is_trashed)
-											<td class="tight"><input type="checkbox" name="remove_page_list[]" value="{{ $childlocation->page->id }}" @if (!Coanda::canView('pages', 'remove')) disabled="disabled" @endif></td>
-										@endif
-
-										<td>
-											@if ($childlocation->page->is_draft)
-												<i class="fa fa-circle-o"></i>
-											@else
-												<i class="fa {{ $childlocation->page->pageType()->icon() }}"></i>
-											@endif
-											<a href="{{ Coanda::adminUrl('pages/location/' . $childlocation->id) }}">{{ $childlocation->page->present()->name }}</a>
-										</td>
-										<td>{{ $childlocation->page->present()->type }}</td>
-										<td>
-											@if ($childlocation->page->pageType()->allowsSubPages())
-												{{ $childlocation->childCount() }} sub page{{ $childlocation->childCount() !== 1 ? 's' : '' }}
-											@endif
-										</td>
-										<td>
-											{{ $childlocation->page->present()->status }}
-											@if (!$childlocation->page->is_visible)
-												<span class="label label-info show-tooltip" title="{{ $childlocation->page->present()->visible_dates }}">Hidden</span>
-											@endif
-										</td>
-										<td>{{ $childlocation->page->present()->created_at }}</td>
-										@if (!$childlocation->is_trashed)
-											@if ($pagelocation->sub_location_order == 'manual')
-												<td class="order-column">{{ Form::text('ordering[' . $childlocation->id . ']', $childlocation->order, ['class' => 'form-control input-sm']) }}</td>
-											@endif
-											<td class="tight">
-												@if ($childlocation->page->is_draft)
-													<a href="{{ Coanda::adminUrl('pages/editversion/' . $childlocation->page->id . '/1') }}"><i class="fa fa-pencil-square-o"></i></a>
-												@else
-													<a href="{{ Coanda::adminUrl('pages/edit/' . $childlocation->page->id) }}"><i class="fa fa-pencil-square-o"></i></a>
-												@endif
-											</td>
-										@endif
-									</tr>
-								@endforeach
-								</table>
+								@include('coanda::admin.modules.pages.includes.sublocations', [ 'location' => $pagelocation, 'children' => $children ])
 
 								{{ $children->links() }}
 

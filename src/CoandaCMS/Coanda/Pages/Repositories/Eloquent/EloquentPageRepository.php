@@ -200,8 +200,17 @@ class EloquentPageRepository implements PageRepositoryInterface {
      * @param int $per_page
      * @return mixed
      */
-    private function subLocations($parent_location_id, $per_page = 10, $include_hidden = false, $include_drafts = false, $paginate = true)
+    private function subLocations($parent_location_id, $per_page = 10, $parameters = [])
 	{
+		$default_parameters = [
+			'include_invisible' => false,
+			'include_hidden' => false,
+			'include_drafts' => false,
+			'paginate' => true
+		];
+
+		$parameters = array_merge($default_parameters, $parameters);
+
 		$order = 'manual';
 
 		if ($parent_location_id != 0)
@@ -230,7 +239,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 
 		$query->where('pageversions.version', '=', \DB::raw('pages.current_version'));
 
-		if (!$include_drafts)
+		if (!$parameters['include_drafts'])
 		{
 			$query->where('pageversions.status', '=', 'published');	
 		}
@@ -260,12 +269,17 @@ class EloquentPageRepository implements PageRepositoryInterface {
 			$query->orderByPageCreated('desc');
 		}
 
-		if (!$include_hidden)
+		if (!$parameters['include_invisible'])
 		{
 			$query->visible();
 		}
 
-		if ($paginate)
+		if (!$parameters['include_hidden'])
+		{
+			$query->notHidden();
+		}
+
+		if ($parameters['paginate'])
 		{
 			return $query->paginate($per_page);	
 		}
@@ -277,9 +291,9 @@ class EloquentPageRepository implements PageRepositoryInterface {
      * @param int $per_page
      * @return mixed
      */
-    public function topLevel($per_page = 10, $include_hidden = false, $include_drafts = false, $paginate = true)
+    public function topLevel($per_page = 10, $parameters = [])
 	{
-		return $this->subLocations(0, $per_page, $include_hidden, $include_drafts, $paginate);
+		return $this->subLocations(0, $per_page, $parameters);
 	}
 
     /**
@@ -287,9 +301,9 @@ class EloquentPageRepository implements PageRepositoryInterface {
      * @param $per_page
      * @return mixed
      */
-    public function subPages($location_id, $per_page, $include_hidden = false, $include_drafts = false, $paginate = true)
+    public function subPages($location_id, $per_page, $parameters = [])
 	{
-		return $this->subLocations($location_id, $per_page, $include_hidden, $include_drafts, $paginate);
+		return $this->subLocations($location_id, $per_page, $parameters);
 	}
 
     /**
@@ -797,6 +811,24 @@ class EloquentPageRepository implements PageRepositoryInterface {
 			}
 		}
 
+		if (isset($data['is_hidden']) && ($data['is_hidden'] == 'yes' || $data['is_hidden'] === true))
+		{
+			$version->is_hidden = true;
+		}
+		else
+		{
+			$version->is_hidden = false;
+		}
+
+		if (isset($data['is_hidden_navigation']) && ($data['is_hidden_navigation'] == 'yes' || $data['is_hidden_navigation'] === true))
+		{
+			$version->is_hidden_navigation = true;
+		}
+		else
+		{
+			$version->is_hidden_navigation = false;
+		}
+
 		$version->save();
 
 		if (count($failed) > 0)
@@ -1019,6 +1051,8 @@ class EloquentPageRepository implements PageRepositoryInterface {
 			'page_id' => $page->id,
 			'version' => $new_version_number,
 			'status' => 'draft',
+			'is_hidden' => $current_version->is_hidden,
+			'is_hidden_navigation' => $current_version->is_hidden_navigation,
 			'created_by' => $user_id,
 			'edited_by' => $user_id,
 			'meta_page_title' => $current_version->meta_page_title,

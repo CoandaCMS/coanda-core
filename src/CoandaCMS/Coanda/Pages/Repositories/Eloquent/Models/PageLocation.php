@@ -239,6 +239,18 @@ class PageLocation extends Eloquent {
 		return $query;
 	}
 
+	public function scopeNotHidden($query)
+	{
+		$query->where( function ($query) {
+
+			$query->where('pageversions.is_hidden', '=', 0);
+			$query->where('pageversions.is_hidden_navigation', '=', 0);
+
+		});
+		
+		return $query;
+	}
+
 	public function getAttributesAttribute()
 	{
 		if (!$this->cachedAttributes)
