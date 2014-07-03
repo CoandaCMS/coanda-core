@@ -514,6 +514,16 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		return $page;
 	}
 
+	public function hideAndPublish($page, $user_id)
+	{
+		$version_number = $this->createNewVersion($page->id, $user_id);
+		$version = $page->getVersion($version_number);
+
+		$version->is_hidden = true;
+
+		$this->publishVersion($version, $user_id, $this->urlRepository, $this->historyRepository);
+	}
+
     /**
      * @param $type
      * @param $user_id
