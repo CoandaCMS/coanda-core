@@ -28,6 +28,13 @@ class Media extends Eloquent {
 	 */
 	protected $table = 'media';
 
+	private $image_handler;
+
+	public function __construct()
+	{
+		$this->image_handler = new ImageHandler;
+	}
+
     /**
      *
      */
@@ -96,12 +103,12 @@ class Media extends Eloquent {
 
 				if ($matches[1] == 'c')
 				{
-					return ImageHandler::crop($original, $output, $size);
+					return $this->image_handler->crop($original, $output, $size);
 				}
 
 				if ($matches[1] == 'r')
 				{
-					return ImageHandler::resize($original, $output, $size);
+					return $this->image_handler->resize($original, $output, $size);
 				}
 			}
 		}

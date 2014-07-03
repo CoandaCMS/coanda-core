@@ -25,7 +25,7 @@ class DefaultImageHandler {
         throw new ImageGenerationException;
     }
 
-	public static function crop($original, $output, $size)
+	public function crop($original, $output, $size)
 	{
         $imageFactory = $this->initaliseImageFactory($original, $output);
         $imageFactory->grab($size, $size)->save($output);
@@ -33,7 +33,7 @@ class DefaultImageHandler {
         return $output;
 	}
 
-	public static function resize($original, $output, $size)
+	public function resize($original, $output, $size)
 	{
 		$maintain_ratio = true;
 		$upscale = false;
