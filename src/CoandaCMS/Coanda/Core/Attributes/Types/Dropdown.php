@@ -3,14 +3,14 @@
 use CoandaCMS\Coanda\Core\Attributes\AttributeType;
 use CoandaCMS\Coanda\Exceptions\AttributeValidationException;
 
-class Options extends AttributeType {
+class Dropdown extends AttributeType {
 
     /**
      * @return string
      */
     public function identifier()
     {
-        return 'options';
+        return 'dropdown';
     }
 
     /**
@@ -18,7 +18,7 @@ class Options extends AttributeType {
      */
     public function edit_template()
     {
-    	return 'coanda::admin.core.attributes.edit.options';
+    	return 'coanda::admin.core.attributes.edit.dropdown';
     }
 
     /**
@@ -26,7 +26,7 @@ class Options extends AttributeType {
      */
     public function view_template()
     {
-    	return 'coanda::admin.core.attributes.view.options';
+    	return 'coanda::admin.core.attributes.view.dropdown';
     }
 
     /**
