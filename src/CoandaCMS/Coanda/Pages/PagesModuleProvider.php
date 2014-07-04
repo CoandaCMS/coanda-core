@@ -182,11 +182,31 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
      */
     public function availablePageTypes($page = false)
 	{
+		$page_types = $this->page_types;
+
+		if ($page)
+		{
+			$allowed_page_types = $page->pageType()->allowedSubPageTypes();
+
+			if (count($allowed_page_types) > 0)
+			{
+				$page_types = [];
+
+				foreach ($allowed_page_types as $allowed_page_type)
+				{
+					if (isset($this->page_types[$allowed_page_type]))
+					{
+						$page_types[$allowed_page_type] = $this->page_types[$allowed_page_type];
+					}
+				}
+			}
+		}
+
 		$user_permissions = \Coanda::currentUserPermissions();
 
 		if (isset($user_permissions['everything']) && in_array('*', $user_permissions['everything']))
 		{
-			return $this->page_types;
+			return $page_types;
 		}
 
 		if (isset($user_permissions['pages']))
@@ -200,21 +220,21 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 			{
 				if (isset($user_permissions['pages']['page_types']))
 				{
-					$page_types = [];
+					$new_page_types = [];
 
 					foreach ($user_permissions['pages']['page_types'] as $permissioned_page_type)
 					{
-						if (isset($this->page_types[$permissioned_page_type]))
+						if (isset($page_types[$permissioned_page_type]))
 						{
-							$page_types[$permissioned_page_type] = $this->page_types[$permissioned_page_type];
+							$new_page_types[$permissioned_page_type] = $page_types[$permissioned_page_type];
 						}
 					}
 
-					return $page_types;
+					return $new_page_types;
 				}
 				else
 				{
-					return $this->page_types;
+					return $page_types;
 				}
 			}
 		}

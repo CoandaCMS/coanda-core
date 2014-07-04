@@ -85,4 +85,9 @@ abstract class PageType {
     {
         return false;
     }
+
+    public function allowedSubPageTypes()
+    {
+        return [];
+    }
 }

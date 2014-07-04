@@ -127,7 +127,7 @@
 							Add sub page <span class="caret"></span>
 						</button>
 						<ul class="dropdown-menu" role="menu">
-							@foreach (Coanda::module('pages')->availablePageTypes($page) as $page_type)
+							@foreach (Coanda::pages()->availablePageTypes($page) as $page_type)
 								<li><a href="{{ Coanda::adminUrl('pages/create/' . $page_type->identifier() . '/' . $pagelocation->id) }}">{{ $page_type->name() }}</a></li>
 							@endforeach
 						</ul>
