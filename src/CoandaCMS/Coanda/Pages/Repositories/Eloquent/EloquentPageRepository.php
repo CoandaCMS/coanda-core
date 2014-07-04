@@ -1449,7 +1449,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 					}
 					catch (UrlAlreadyExists $exception)
 					{					
-						$tries = 10;
+						$tries = 50;
 
 						for ($i = 1; $i < $tries; $i ++)
 						{
