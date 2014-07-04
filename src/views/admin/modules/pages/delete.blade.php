@@ -25,43 +25,52 @@
 
 <div class="edit-container">
 
-	<div class="alert alert-danger">
-		<i class="fa fa-exclamation-triangle"></i> Are you sure you want to remove this page?
-	</div>
+	{{ Form::open(['url' => Coanda::adminUrl('pages/delete/' . $page->id)]) }}
 
-	@if ($page->locations->count() > 0)
+		<div class="alert alert-danger">
+			<i class="fa fa-exclamation-triangle"></i> Are you sure you want to remove this page?
+		</div>
 
-		<p><i class="fa fa-info-circle"></i> The page will be removed from the following locations.</p>
+		@if ($page->locations->count() > 0)
 
-		<table class="table table-striped">
-			@foreach ($page->locations as $location)
-				<tr>
-					<td>
-						@foreach ($location->parents() as $parent)
-							{{ $parent->page->present()->name }}</a> /
-						@endforeach
+			<p><i class="fa fa-info-circle"></i> The page will be removed from the following locations.</p>
 
-						{{ $location->page->present()->name }}
-					</td>
-					<td>
-						{{ $location->subTreeCount() }} sub page{{ $location->subTreeCount() != 1 ? 's' : '' }} will also be deleted.
-					</td>
-				</tr>
-			@endforeach
-		</table>
+			<table class="table table-striped">
+				@foreach ($page->locations as $location)
+					<tr>
+						<td>
+							@foreach ($location->parents() as $parent)
+								{{ $parent->page->present()->name }}</a> /
+							@endforeach
 
-	@endif
+							{{ $location->page->present()->name }}
+						</td>
+						<td>
+							{{ $location->subTreeCount() }} sub page{{ $location->subTreeCount() != 1 ? 's' : '' }} will also be deleted.
+						</td>
+					</tr>
+				@endforeach
+			</table>
 
-	<div class="row">
-		<div class="col-md-12">
+			<div class="checkbox">
+				<label>
+					<input type="checkbox" id="permanent_delete" name="permanent_delete" value="true">
+					Delete permanently
+				</label>
+			</div>
 
-			{{ Form::open(['url' => Coanda::adminUrl('pages/delete/' . $page->id)]) }}
+		@endif
+
+		<div class="row">
+			<div class="col-md-12">
+
 				{{ Form::button('Yes, I understand', ['name' => 'confirm_delete', 'value' => 'true', 'type' => 'submit', 'class' => 'btn btn-primary']) }}
 				<a class="btn btn-default" href="{{ Coanda::adminUrl('pages/view/' . $page->id) }}">Cancel</a>
-			{{ Form::close() }}
 
+			</div>
 		</div>
-	</div>
+
+	{{ Form::close() }}
 
 </div>
 @stop

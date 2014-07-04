@@ -666,10 +666,23 @@ class PagesAdminController extends BaseController {
 		try
 		{
 			$page = $this->pageRepository->find($page_id);
+			$parent_page_id = $page->firstLocation()->parent_page_id;
 
 			Coanda::checkAccess('pages', 'remove', ['page_id' => $page->id, 'page_type' => $page->type]);
 
-			$this->pageRepository->deletePage($page_id);
+			$permanent = false;
+
+			if (Input::has('permanent_delete') && Input::get('permanent_delete') == 'true')
+			{
+				$permanent = true;
+			}
+
+			$this->pageRepository->deletePage($page_id, $permanent);
+
+			if ($permanent)
+			{
+				return Redirect::to(Coanda::adminUrl('pages/location/' . $parent_page_id));
+			}
 
 			return Redirect::to(Coanda::adminUrl('pages/view/' . $page_id));
 		}
