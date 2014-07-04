@@ -21,7 +21,7 @@ class Date extends AttributeType {
      */
     public function edit_template()
     {
-    	return 'coanda::admin.core.attributes.edit.date';
+    	return 'coanda::admin.core.attributes.edit.date';  
     }
 
     /**
@@ -41,28 +41,26 @@ class Date extends AttributeType {
      */
     public function store($data, $is_required, $name, $parameters = [])
 	{
-        if (!isset($data['format']))
-        {
-            $data['format'] = Config::get('coanda::coanda.date_format');
-        }
+        $format = Config::get('coanda::coanda.date_format');
+        $date_instance = false;
 
-        if ($data['format'])
+        try
         {
-            try
+            $date_instance = Carbon::createFromFormat($format, $data, date_default_timezone_get());
+        }
+        catch (\InvalidArgumentException $exception)
+        {
+            if ($is_required)
             {
-                Carbon::createFromFormat($data['format'], $data['date'], date_default_timezone_get());
-            }
-            catch (\InvalidArgumentException $exception)
-            {
-                throw new AttributeValidationException($name . ' is required');
-            }
-            catch (\ErrorException $exception)
-            {
-                throw new AttributeValidationException($name . ' is invalid');
+                throw new AttributeValidationException($name . ' is required');    
             }
         }
+        catch (\ErrorException $exception)
+        {
+            throw new AttributeValidationException($name . ' is invalid');
+        }
 
-		return json_encode($data);
+        return $date_instance ? $date_instance->timestamp : '';
 	}
 
     /**
@@ -71,16 +69,11 @@ class Date extends AttributeType {
      */
     public function data($data, $parameters = [])
 	{
-        if ($data !== '')
+        if (is_numeric($data))
         {
-            return json_decode($data, true);
+            return Carbon::createFromTimeStamp($data)->format(Config::get('coanda::coanda.date_format'));
         }
-	}
 
-    public function render($data, $parameters = [])
-    {
-        $date = Carbon::createFromFormat($data['format'], $data['date'], date_default_timezone_get());
-        
-        return $date->format(Config::get('coanda::coanda.date_format'));
-    }
+        return '';
+	}
 }

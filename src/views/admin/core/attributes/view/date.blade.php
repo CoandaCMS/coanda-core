@@ -1,1 +1,1 @@
-{{ $content['date'] }}
+{{ $content }}
