@@ -1,3 +1,3 @@
 @if ($content)
-	<img src="{{ $content->present()->thumbnail_url }}" class="img-thumbnail">
+	<img src="{{ url($content->resizeUrl(150)) }}" class="img-thumbnail">
 @endif
