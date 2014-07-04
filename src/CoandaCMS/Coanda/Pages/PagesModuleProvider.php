@@ -33,6 +33,8 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
      */
     private $publish_handlers = [];
 
+    private $meta;
+
     /**
      * @param CoandaCMS\Coanda\Coanda $coanda
      */
@@ -496,32 +498,12 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
      */
     private function renderPage($page, $pagelocation = false)
 	{
-		if ($page->is_trashed)
+		if ($page->is_trashed || !$page->is_visible || $page->is_hidden)
 		{
 			App::abort('404');
 		}
 
-		if (!$page->is_visible)
-		{
-			App::abort('404');
-		}
-
-		if ($page->is_hidden)
-		{
-			App::abort('404');
-		}
-
-		$meta = $this->buildMeta($page);
-
-		$data = [
-			'page_id' => $page->id,
-			'version' => $page->current_version,
-			'location_id' => ($pagelocation ? $pagelocation->id : false),
-			'page' => $page,
-			'attributes' => $this->renderAttributes($page, $pagelocation),
-			'meta' => $meta,
-			'slug' => ($pagelocation ? $pagelocation->slug : ''),
-		];
+		$data = $this->buildPageData($page, $pagelocation);
 
 		// Does the page type want to do anything before we carry on with the rendering?
 		// e.g. Redirect, set some additional data variables
@@ -539,15 +521,20 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		// Make the view and pass all the render data to it...
 		$rendered_page = View::make($template, $data);
 
+		return $this->mergeWithLayout($page, $pagelocation, $rendered_page);
+	}
+
+	private function mergeWithLayout($page, $pagelocation, $rendered_content)
+	{
 		// Get the layout template...
 		$layout = $this->getLayout($page->currentVersion());
 
 		// Give the layout the rendered page and the data, and it can work some magic to give us back a complete page...
 		$layout_data = [
 			'layout' => $layout,
-			'content' => $rendered_page,
-			'meta' => $meta,
-			'page_data' => $data,
+			'content' => $rendered_content,
+			'meta' => $this->buildMeta($page),
+			// 'page_data' => $data,
 			'breadcrumb' => ($pagelocation ? $pagelocation->breadcrumb() : []),
 			'module' => 'pages',
 			'module_identifier' => $page->id . ':' . $page->current_version
@@ -589,11 +576,29 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
      */
     private function buildMeta($page)
 	{
-		$meta_title = $page->currentVersion()->meta_page_title;
+		if (!$this->meta)
+		{
+			$meta_title = $page->currentVersion()->meta_page_title;
 
+			$this->meta = [
+				'title' => $meta_title !== '' ? $meta_title : $page->present()->name,
+				'description' => $page->currentVersion()->meta_description
+			];
+		}
+
+		return $this->meta;
+	}
+
+	private function buildPageData($page, $pagelocation)
+	{
 		return [
-			'title' => $meta_title !== '' ? $meta_title : $page->present()->name,
-			'description' => $page->currentVersion()->meta_description
+			'page_id' => $page->id,
+			'version' => $page->current_version,
+			'location_id' => ($pagelocation ? $pagelocation->id : false),
+			'page' => $page,
+			'attributes' => $this->renderAttributes($page, $pagelocation),
+			'meta' => $this->buildMeta($page),
+			'slug' => ($pagelocation ? $pagelocation->slug : ''),
 		];
 	}
 
