@@ -47,14 +47,54 @@ class HTML extends AttributeType {
 			$data = '';
 		}
 
-		// TODO
-		// - Tidy up HTML?
-		if ($is_required && (!$data || $data == ''))
-		{
-			throw new AttributeValidationException($name . ' is required');
-		}
+        if ($is_required && (!$data || $data == ''))
+        {
+            throw new AttributeValidationException($name . ' is required');
+        }
 
-		return $data;
+        // Allowed tags - http://www.htmldog.com/reference/htmltags/
+        $allowed_tags = [
+            // Text
+            'p','br',
+            'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+            'strong', 'em',
+            'abbr', 'acronym', 'address', 'bdo', 'blockquote', 'cite', 'q', 'code',
+            'ins', 'del',
+            'dfn', 'kbd', 'pre',
+            'samp','var',
+
+            // Lists
+            'ul', 'ol', 'li', 'dl', 'dt', 'dd',
+
+            // Tables
+            'table', 'tr', 'td', 'th',
+            'tbody', 'thead', 'tfoot',
+            'col', 'colgroup', 'caption',
+
+            // Structure
+            'div', 'span',
+
+            // Images
+            'img',
+
+            // Links
+            'a',
+
+            // Object..
+            'object', 'param',
+
+            // iframes
+            'iframe',
+        ];
+
+        $allowed_tag_string = '';
+
+        foreach ($allowed_tags as $allowed_tag)
+        {
+            $allowed_tag_string .= '<' . $allowed_tag . '>';
+        }
+
+		return strip_tags($data, $allowed_tag_string);
 	}
 
     /**
