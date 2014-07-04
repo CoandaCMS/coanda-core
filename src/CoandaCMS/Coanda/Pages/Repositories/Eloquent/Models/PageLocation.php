@@ -1,6 +1,6 @@
 <?php namespace CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models;
 
-use Eloquent, Coanda, App;
+use Eloquent, Coanda, App, DB;
 use Carbon\Carbon;
 
 /**
@@ -248,6 +248,35 @@ class PageLocation extends Eloquent {
 
 		});
 		
+		return $query;
+	}
+
+	public function scopeAttributeFilter($query, $filters)
+	{
+		$query->where( function ($query) use ($filters) {
+
+			foreach ($filters as $filter)
+			{
+				$query->where( function ($query) use ($filter) {
+
+					$nested_query = "select count(*)
+							from pageattributes
+							where page_version_id=pageversions.id
+							and identifier='" . $filter['attribute'] . "'
+							and attribute_data " . 
+							$filter['type'] . ' ' .
+							(is_numeric($filter['value']) ? $filter['value'] : ("'" . $filter['value'] . "'"));
+
+					$nested_query = preg_replace('/\n/', '', $nested_query);
+
+					$query->where(DB::raw('(' . $nested_query . ')'), '>=', 1);
+
+				});
+			}
+
+		});
+
+
 		return $query;
 	}
 

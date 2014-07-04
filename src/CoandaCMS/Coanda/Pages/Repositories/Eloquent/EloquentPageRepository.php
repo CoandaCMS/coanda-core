@@ -206,7 +206,8 @@ class EloquentPageRepository implements PageRepositoryInterface {
 			'include_invisible' => false,
 			'include_hidden' => false,
 			'include_drafts' => false,
-			'paginate' => true
+			'paginate' => true,
+			'attribute_filters' => []
 		];
 
 		$parameters = array_merge($default_parameters, $parameters);
@@ -233,11 +234,17 @@ class EloquentPageRepository implements PageRepositoryInterface {
 
 					});
 
-		$query->select('pagelocations.*');
+		$query->select('pagelocations.*')->distinct();
 		$query->join('pages', 'pagelocations.page_id', '=', 'pages.id');
 		$query->join('pageversions', 'pagelocations.page_id', '=', 'pageversions.page_id');
-
 		$query->where('pageversions.version', '=', \DB::raw('pages.current_version'));
+
+		if ($parameters['attribute_filters'] && count($parameters['attribute_filters']) > 0)
+		{
+			$query->join('pageattributes', 'pageattributes.page_version_id', '=', 'pageversions.id');
+
+			$query->attributeFilter($parameters['attribute_filters']);
+		}
 
 		if (!$parameters['include_drafts'])
 		{

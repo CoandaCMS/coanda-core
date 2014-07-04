@@ -7,6 +7,7 @@ class PageQuery {
 	private $pageRepository;
 
 	private $location_id;
+	private $attribute_filters;
 	private $limit;
 
 	private $include_hidden = false;
@@ -46,6 +47,17 @@ class PageQuery {
 		return $this;
 	}
 
+	public function filter($attribute_identifier, $filter, $query_type = '=')
+	{
+		$this->attribute_filters[] = [
+			'attribute' => $attribute_identifier,
+			'value' => $filter,
+			'type' => $query_type
+		];
+
+		return $this;
+	}
+
 	public function paginate($limit)
 	{
 		$this->paginate = true;
@@ -60,6 +72,7 @@ class PageQuery {
 			'include_invisible' => $this->include_invisible,
 			'include_hidden' => $this->include_hidden,
 			'paginate' => $this->paginate,
+			'attribute_filters' => $this->attribute_filters
 		];
 
 		return $this->pageRepository->subPages($this->location_id, $this->limit, $parameters);
