@@ -289,7 +289,8 @@ class EloquentPageRepository implements PageRepositoryInterface {
 
 		if ($order == 'manual')
 		{
-			$query->orderBy('order', 'asc');
+			$query->orderBy('pagelocations.order', 'asc');
+			$query->orderBy('pagelocations.id', 'asc');
 		}
 
 		if ($order == 'alpha:asc')
