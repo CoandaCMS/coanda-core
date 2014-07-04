@@ -38,6 +38,11 @@ class Boolean extends AttributeType {
      */
     public function store($data, $is_required, $name, $parameters = [])
 	{
+        if ($data == 'yes')
+        {
+            $data = true;
+        }
+        
 		return $data;
 	}
 
