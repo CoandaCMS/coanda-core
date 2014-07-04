@@ -33,6 +33,7 @@ return array(
 		'CoandaCMS\Coanda\Core\Attributes\Types\Image',
 		'CoandaCMS\Coanda\Core\Attributes\Types\Date',
 		'CoandaCMS\Coanda\Core\Attributes\Types\Options',
+		'CoandaCMS\Coanda\Core\Attributes\Types\Integer',
 	],
 
 	/*
