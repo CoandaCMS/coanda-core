@@ -34,6 +34,7 @@ return array(
 		'CoandaCMS\Coanda\Core\Attributes\Types\Date',
 		'CoandaCMS\Coanda\Core\Attributes\Types\Dropdown',
 		'CoandaCMS\Coanda\Core\Attributes\Types\Integer',
+		'CoandaCMS\Coanda\Core\Attributes\Types\Checkboxes',
 	],
 
 	/*
