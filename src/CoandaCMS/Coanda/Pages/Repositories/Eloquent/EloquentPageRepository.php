@@ -1,6 +1,6 @@
 <?php namespace CoandaCMS\Coanda\Pages\Repositories\Eloquent;
 
-use Coanda, Config;
+use Coanda, Config, Input;
 
 use CoandaCMS\Coanda\Pages\Exceptions\PageNotFound;
 use CoandaCMS\Coanda\Pages\Exceptions\PageVersionNotFound;
@@ -255,6 +255,13 @@ class EloquentPageRepository implements PageRepositoryInterface {
 
 			// Add the ordering...
 			$query = $this->addOrdering($query, $parent_location_id);
+
+			$page = Input::has('page') ? Input::get('page') : 1;
+
+			if ($page > 0)
+			{
+				$query->skip(($page - 1) * $per_page);
+			}
 
 			$results = $query->take($per_page)->get($per_page);
 
