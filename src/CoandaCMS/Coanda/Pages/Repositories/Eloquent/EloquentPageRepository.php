@@ -212,18 +212,6 @@ class EloquentPageRepository implements PageRepositoryInterface {
 
 		$parameters = array_merge($default_parameters, $parameters);
 
-		$order = 'manual';
-
-		if ($parent_location_id != 0)
-		{
-			$parent = $this->locationById($parent_location_id);
-
-			if ($parent)
-			{
-				$order = $parent->sub_location_order;
-			}
-		}
-
 		$query = $this
 					->page_location_model
 					->with('page')
@@ -251,6 +239,54 @@ class EloquentPageRepository implements PageRepositoryInterface {
 			$query->where('pageversions.status', '=', 'published');	
 		}
 
+		if (!$parameters['include_invisible'])
+		{
+			$query->visible();
+		}
+
+		if (!$parameters['include_hidden'])
+		{
+			$query->notHidden();
+		}
+
+		if ($parameters['paginate'])
+		{
+			$count = $query->count('pagelocations.id');
+
+			// Add the ordering...
+			$query = $this->addOrdering($query, $parent_location_id);
+
+			$results = $query->take($per_page)->get($per_page);
+
+			$items = [];
+
+			foreach ($results as $result)
+			{
+				$items[] = $result;
+			}
+
+			return \Paginator::make($items, $count, $per_page);
+		}
+
+		$query = $this->addOrdering($query, $parent_location_id);
+
+		return $query->take($per_page)->get($per_page);
+	}
+
+	private function addOrdering($query, $parent_location_id)
+	{
+		$order = 'manual';
+
+		if ($parent_location_id != 0)
+		{
+			$parent = $this->locationById($parent_location_id);
+
+			if ($parent)
+			{
+				$order = $parent->sub_location_order;
+			}
+		}
+
 		if ($order == 'manual')
 		{
 			$query->orderBy('order', 'asc');
@@ -276,22 +312,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 			$query->orderByPageCreated('desc');
 		}
 
-		if (!$parameters['include_invisible'])
-		{
-			$query->visible();
-		}
-
-		if (!$parameters['include_hidden'])
-		{
-			$query->notHidden();
-		}
-
-		if ($parameters['paginate'])
-		{
-			return $query->paginate($per_page);	
-		}
-
-		return $query->take($per_page)->get($per_page);
+		return $query;
 	}
 
     /**
