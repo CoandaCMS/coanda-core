@@ -24,23 +24,9 @@ class Page extends Eloquent {
     /**
      * @var
      */
-    private $slug;
-    /**
-     * @var
-     */
     private $currentVersion;
-    /**
-     * @var
-     */
-    private $parents;
-    /**
-     * @var
-     */
-    private $children;
-    /**
-     * @var
-     */
-    private $subTreeCount;
+
+    private $cachedAttributes;
 
 	/**
 	 * The database table used by the model.
@@ -292,5 +278,32 @@ class Page extends Eloquent {
 	public function availableTemplates()
 	{
 		return $this->pageType()->availableTemplates();
+	}
+
+	public function renderAttributes($location)
+	{
+		if (!$this->cachedAttributes)
+		{
+			$this->cachedAttributes = new \stdClass;
+
+			foreach ($this->attributes() as $attribute)
+			{
+				$this->cachedAttributes->{$attribute->identifier} = $attribute->render($this, $location);
+			}
+
+			// Add any attributes which are on the definition, but not in the object..
+			$pageType = $this->pageType();
+			$attribute_definition_list = $pageType->attributes();
+
+			foreach ($attribute_definition_list as $attribute_definition_identfier => $attribute_definition)
+			{
+				if (!property_exists($this->cachedAttributes, $attribute_definition_identfier))
+				{
+					$this->cachedAttributes->{$attribute_definition_identfier} = '';
+				}
+			}			
+		}
+        
+        return $this->cachedAttributes;
 	}
 }

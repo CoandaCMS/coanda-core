@@ -469,26 +469,7 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 
 	private function renderAttributes($page, $pagelocation)
     {
-		$attributes = new \stdClass;
-
-		foreach ($page->attributes as $attribute)
-		{
-			$attributes->{$attribute->identifier} = $attribute->render($page, $pagelocation);
-		}
-
-		// Add any attributes which are on the definition, but not in the object..
-		$pageType = $page->pageType();
-		$attribute_definition_list = $pageType->attributes();
-
-		foreach ($attribute_definition_list as $attribute_definition_identfier => $attribute_definition)
-		{
-			if (!property_exists($attributes, $attribute_definition_identfier))
-			{
-				$attributes->{$attribute_definition_identfier} = '';
-			}
-		}
-
-        return $attributes;
+    	return $page->renderAttributes($pagelocation);
 	}
 
     /**
