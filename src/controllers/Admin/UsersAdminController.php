@@ -247,7 +247,7 @@ class UsersAdminController extends BaseController {
 
 		try
 		{
-			$user = $this->userRepository->find($user_id);
+			$this->userRepository->find($user_id);
 
 			$this->userRepository->updateExisting($user_id, Input::all());
 
