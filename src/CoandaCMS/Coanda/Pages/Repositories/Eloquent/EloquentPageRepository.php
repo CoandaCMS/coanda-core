@@ -387,7 +387,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 				'order' => $index
 			];
 
-			$attribute = $this->page_attribute_model->create($attribute_data);
+			$this->page_attribute_model->create($attribute_data);
 
 			$index ++;
 		}
@@ -400,7 +400,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 				'parent_page_id' => $parent_pagelocation_id ? $parent_pagelocation_id : 0
 			];
 
-			$location = $this->page_location_model->create($location_data);
+			$this->page_location_model->create($location_data);
 
 			$version_slug_data = [
 				'version_id' => $version->id,
@@ -408,7 +408,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 				'slug' => ''
 			];
 
-			$version_slug = $this->page_version_slug_model->create($version_slug_data);
+			$this->page_version_slug_model->create($version_slug_data);
 		}
 
 		// Log the history
@@ -608,7 +608,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 				'slug' => ''
 			];
 
-			$version_slug = $this->page_version_slug_model->create($version_slug_data);
+			$this->page_version_slug_model->create($version_slug_data);
 		}
 	}
 
@@ -975,7 +975,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 					$location = $this->page_location_model->create($location_data);
 				}
 
-				$url = $urlRepository->register($slug->full_slug, 'pagelocation', $location->id);
+				$urlRepository->register($slug->full_slug, 'pagelocation', $location->id);
 			}
 		}
 
@@ -1030,8 +1030,6 @@ class EloquentPageRepository implements PageRepositoryInterface {
      */
     public function unRegisterLocationWithSearchProvider($location)
 	{
-		$page = $location->page;
-
 		Coanda::search()->unRegister('pages', $location->id);
 	}
 
@@ -1113,7 +1111,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 				'slug' => $slug->slug
 			];
 
-			$version_slug = $this->page_version_slug_model->create($version_slug_data);
+			$this->page_version_slug_model->create($version_slug_data);
 		}
 
 		// Add all the attributes..
