@@ -1201,7 +1201,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 
 		if (!$page)
 		{
-			throw new PageNotFound;
+			return;
 		}
 
 		if ($permanent)
@@ -1253,13 +1253,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		{
 			foreach ($page_ids as $page_id)
 			{
-				try
-				{
-					$this->deletePage($page_id, $permanent);
-				}
-				catch (PageNotFound $exception)
-				{
-				}
+				$this->deletePage($page_id, $permanent);
 			}
 		}
 	}
