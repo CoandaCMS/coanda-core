@@ -286,7 +286,7 @@ class EloquentUrlRepository implements \CoandaCMS\Coanda\Urls\Repositories\UrlRe
 
 			$promo_url = $this->promourl_model->create($url_data);
 
-			$url = $this->register($from, 'promourl', $promo_url->id);
+			$this->register($from, 'promourl', $promo_url->id);
 
 			return $promo_url;			
 		}
