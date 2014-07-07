@@ -64,7 +64,7 @@ class UrlAdminController extends BaseController {
 	{
 		try
 		{
-			$promo_url = $this->urlRepository->addPromo(Input::get('from_url'), Input::get('to_url'));
+			$this->urlRepository->addPromo(Input::get('from_url'), Input::get('to_url'));
 
 			return Redirect::to(Coanda::adminUrl('urls'))->with('promo_add', true);
 		}
