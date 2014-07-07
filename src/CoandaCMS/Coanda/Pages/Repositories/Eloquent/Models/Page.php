@@ -118,6 +118,13 @@ class Page extends Eloquent {
 		return $this->typeName();
 	}
 
+	private function getPageTypeDefinition()
+	{
+		$pageType = $this->pageType();
+		
+		return $pageType->attributes();
+	}
+
 	/**
 	 * Returns the current version object for this page
 	 * @return CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageVersion
@@ -286,24 +293,37 @@ class Page extends Eloquent {
 		{
 			$this->cachedAttributes = new \stdClass;
 
-			foreach ($this->attributes() as $attribute)
-			{
-				$this->cachedAttributes->{$attribute->identifier} = $attribute->render($this, $location);
-			}
+			$this->renderCurrentAttributes($this->cachedAttributes, $location);
 
-			// Add any attributes which are on the definition, but not in the object..
-			$pageType = $this->pageType();
-			$attribute_definition_list = $pageType->attributes();
-
-			foreach ($attribute_definition_list as $attribute_definition_identfier => $attribute_definition)
-			{
-				if (!property_exists($this->cachedAttributes, $attribute_definition_identfier))
-				{
-					$this->cachedAttributes->{$attribute_definition_identfier} = '';
-				}
-			}			
+			$this->addMissingAttributes($this->cachedAttributes);
 		}
         
         return $this->cachedAttributes;
 	}
+
+	private function renderCurrentAttributes($attributes, $location)
+	{
+		foreach ($this->attributes() as $attribute)
+		{
+			$attributes->{$attribute->identifier} = $attribute->render($this, $location);
+		}
+
+		return $attributes;
+	}
+
+	private function addMissingAttributes($attributes)
+	{		
+		// Add any attributes which are on the definition, but not in the object..
+		$attribute_definition_list = $this->getPageTypeDefinition();
+
+		foreach ($attribute_definition_list as $attribute_definition_identfier => $attribute_definition)
+		{
+			if (!property_exists($this->cachedAttributes, $attribute_definition_identfier))
+			{
+				$this->cachedAttributes->{$attribute_definition_identfier} = '';
+			}
+		}			
+	}
+
+
 }
