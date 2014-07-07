@@ -290,30 +290,4 @@ class MediaAdminController extends BaseController {
 
 		return $media_list;
 	}
-
-    /**
-     * @param $media_id
-     * @param $filename
-     */
-    public function getPreview($media_id, $filename)
-	{
-		try
-		{
-			$media = $this->mediaRepository->findById($media_id);
-
-			if ($media->type == 'image')
-			{
-				$file_path = $media->originalFilePath();
-				
-				header('Content-Type: ' . $media->mime);
-				header('Content-Length: ' . filesize($file_path));
-
-				readfile($file_path);
-			}
-		}
-		catch (MediaNotFound $exception)
-		{
-			App::abort('404');
-		}
-	}
 }
