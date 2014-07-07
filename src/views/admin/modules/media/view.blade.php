@@ -41,7 +41,7 @@
 					<p><i class="fa fa-level-up"></i> <a href="{{ Coanda::adminUrl('media') }}">Up to Media</a></p>
 
 					<div class="row">
-						<div class="@if ($media->present()->has_preview) col-md-8 @else col-md-4 @endif">
+						<div class="col-md-4">
 							<a href="{{ Coanda::adminUrl('media/download/' . $media->id) }}">
 								@if ($media->type == 'image')
 									<img src="{{ url($media->resizeUrl(500)) }}" class="img-thumbnail">
@@ -50,7 +50,7 @@
 								@endif
 							</a>
 						</div>
-						<div class="@if ($media->present()->has_preview) col-md-4 @else col-md-8 @endif">
+						<div class="col-md-8">
 
 							<p><a href="{{ Coanda::adminUrl('media/download/' . $media->id) }}"><i class="fa fa-download"></i> Download original file</a></p>
 
