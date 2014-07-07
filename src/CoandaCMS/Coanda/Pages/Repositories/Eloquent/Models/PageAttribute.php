@@ -2,6 +2,8 @@
 
 use Eloquent, Coanda;
 
+use CoandaCMS\Coanda\Core\Attributes\Exceptions\AttributeTypeNotFound;
+
 class PageAttribute extends Eloquent {
 
     /**
@@ -135,7 +137,14 @@ class PageAttribute extends Eloquent {
 	 */
 	public function type()
 	{
-		return Coanda::getAttributeType($this->type);
+		try
+		{
+			return Coanda::getAttributeType($this->type);	
+		}
+		catch (AttributeTypeNotFound $exception)
+		{
+			return false;
+		}
 	}
 
 	/**
@@ -151,7 +160,14 @@ class PageAttribute extends Eloquent {
 			'version_number' => $this->version->version
 		];
 
-		return $this->type()->data($this->attribute_data, $parameters);
+		$attribute_type = $this->type();
+
+		if ($attribute_type)
+		{
+			return $attribute_type->data($this->attribute_data, $parameters);	
+		}
+
+		return false;
 	}
 
 	public function getContentAttribute()
@@ -182,8 +198,14 @@ class PageAttribute extends Eloquent {
 			'data_key' => $data_key
 		];
 
-		// Let the type class validate/manipulate the data...
-		$this->attribute_data = $this->type()->store($data, $this->isRequired(), $this->name(), $parameters);
+		$attribute_type = $this->type();
+
+		if ($attribute_type)
+		{
+			// Let the type class validate/manipulate the data...
+			$this->attribute_data = $attribute_type->store($data, $this->isRequired(), $this->name(), $parameters);
+		}
+
 		$this->save();
 	}
 
@@ -201,12 +223,17 @@ class PageAttribute extends Eloquent {
 			'version_number' => $this->version->version
 		];
 
-		$action_result = $this->type()->handleAction($action, $data, $parameters);
+		$attribute_type = $this->type();
 
-		if ($action_result)
+		if ($attribute_type)
 		{
-			$this->attribute_data = $action_result;
-			$this->save();
+			$action_result = $attribute_type->handleAction($action, $data, $parameters);
+
+			if ($action_result)
+			{
+				$this->attribute_data = $action_result;
+				$this->save();
+			}
 		}
 	}
 
@@ -227,7 +254,14 @@ class PageAttribute extends Eloquent {
 			'indexing' => $indexing
 		];
 
-		return $this->type()->render($this->typeData(), $parameters);
+		$attribute_type = $this->type();
+
+		if ($attribute_type)
+		{
+			return $attribute_type->render($this->typeData(), $parameters);	
+		}
+
+		return false;
 	}
 
 	public function getDefinitionAttribute()
