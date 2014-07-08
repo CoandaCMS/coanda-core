@@ -10,6 +10,10 @@ return array(
 	*/
 	'admin_path' => 'admin',
 
+	'site_name' => 'Coanda CMS',
+
+	'site_admin_email' => 'admin@yoursite.com',
+
 	/*
 	|--------------------------------------------------------------------------
 	| Some default settings
