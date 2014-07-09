@@ -489,6 +489,16 @@ class EloquentPageRepository implements PageRepositoryInterface {
 
 		$page = $this->find($page->id);
 
+		// Add the slug data
+		if (isset($page_data['order']))
+		{
+			foreach ($page->locations as $location)
+			{
+				$location->order = $page_data['order'];
+				$location->save();
+			}
+		}
+
 		return $page;
 	}
 
