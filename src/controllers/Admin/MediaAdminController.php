@@ -137,7 +137,7 @@ class MediaAdminController extends BaseController {
 		try
 		{
 			$media = $this->mediaRepository->findById($media_id);
-			$original_file = $media->originalFile();
+			$original_file = $media->originalFilePath();
 
 			$fp = fopen($original_file, 'rb');
 
