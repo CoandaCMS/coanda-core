@@ -500,7 +500,7 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		$template = $page->pageType()->template($page->currentVersion(), $data);
 
 		// Make the view and pass all the render data to it...
-		$rendered_page = View::make($template, $data);
+		$rendered_page = View::make($template, $data)->render();
 
 		return $this->mergeWithLayout($page, $pagelocation, $rendered_page);
 	}
@@ -515,13 +515,12 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 			'layout' => $layout,
 			'content' => $rendered_content,
 			'meta' => $this->buildMeta($page),
-			// 'page_data' => $data,
 			'breadcrumb' => ($pagelocation ? $pagelocation->breadcrumb() : []),
 			'module' => 'pages',
-			'module_identifier' => $page->id . ':' . $page->current_version
+			'module_identifier' => $page->id
 		];
 
-		$content = View::make($layout->template(), $layout_data)->render();
+		$content = $layout->render($layout_data);
 
 		if ($page->pageType()->canStaticCache() && $pagelocation)
 		{
@@ -619,7 +618,8 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 
 		$breadcrumb[] = [
 			'url' => false,
-			'identifier' => '',
+			'identifier' => 'pages:location-' . $temp_location->id,
+			'layout_identifier' => 'pages:' . $page->id,
 			'name' => $version->present()->name
 		];
 

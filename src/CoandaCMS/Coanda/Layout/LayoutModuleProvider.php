@@ -131,6 +131,7 @@ class LayoutModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
      */
     public function bindings(\Illuminate\Foundation\Application $app)
 	{
+        $app->bind('CoandaCMS\Coanda\Layout\Repositories\LayoutRepositoryInterface', 'CoandaCMS\Coanda\Layout\Repositories\Eloquent\EloquentLayoutRepository');
 	}
 
     /**
@@ -150,4 +151,15 @@ class LayoutModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
         }
     }
 
+    public function getBlocks($layout_identifier, $region_identifier, $module_identifier, $cascade = true)
+    {
+        $layoutRepository = App::make('CoandaCMS\Coanda\Layout\Repositories\LayoutRepositoryInterface');
+
+        return $layoutRepository->getBlocks($layout_identifier, $region_identifier, $module_identifier, $cascade);
+    }
+
+    public function getDefaultBlocks($layout_identifier, $region_identifier)
+    {
+        return $this->getBlocks($layout_identifier, $region_identifier, 'default', false);
+    }
 }

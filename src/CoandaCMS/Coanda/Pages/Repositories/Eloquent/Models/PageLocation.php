@@ -294,7 +294,8 @@ class PageLocation extends Eloquent {
 			foreach ($parents as $parent)
 			{
 				$breadcrumb[] = [
-					'identifier' => 'location:' . $parent->id,
+					'identifier' => 'pages:location-' . $parent->id,
+					'layout_identifier' => 'pages:' . $parent->page->id,
 					'url' => $parent->slug,
 					'name' => $parent->present()->name
 				];
@@ -302,7 +303,7 @@ class PageLocation extends Eloquent {
 		}
 
 		$breadcrumb[] = [
-			'identifier' => 'location:' . $this->id,
+			'identifier' => 'pages:location-' . $this->id,
 			'url' => $link_self ? $this->slug : false,
 			'name' => $this->present()->name
 		];
