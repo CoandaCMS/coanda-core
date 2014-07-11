@@ -136,7 +136,7 @@
 						<tr>
 							<td class="tight">{{ $attribute->name }}</td>
 							<td>
-								@include($attribute->type()->view_template(), [ 'attribute_definition' => $attribute->definition, 'data' => $attribute->typeData(), 'content' => $attribute->type_data ])
+								@include($attribute->type()->view_template(), [ 'attribute_definition' => $attribute->definition, 'content' => $attribute->type_data ])
 							</td>
 						</tr>
 						@endforeach
