@@ -20,6 +20,8 @@ class LayoutModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
      */
     private $layouts = [];
 
+    private $block_types = [];
+
     /**
      * @var array
      */
@@ -31,6 +33,7 @@ class LayoutModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
     public function boot(\CoandaCMS\Coanda\Coanda $coanda)
 	{
 		$this->loadLayouts();
+        $this->loadBlockTypes();
 
         // Add the permissions
         $coanda->addModulePermissions('layout', 'Layouts', []); // No specific views for this module...
@@ -58,6 +61,21 @@ class LayoutModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 			}
 		}
 	}
+
+    private function loadBlockTypes()
+    {
+        $block_types = Config::get('coanda::coanda.layout_block_types');
+
+        foreach ($block_types as $block_type)
+        {
+            if (class_exists($block_type))
+            {
+                $type = new $block_type($this);
+
+                $this->block_types[$type->identifier()] = $type;
+            }
+        }
+    }
 
     /**
      * @return array
@@ -107,6 +125,24 @@ class LayoutModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
     public function defaultLayout()
     {
         return $this->layouts[Config::get('coanda::coanda.default_layout')];
+    }
+
+    /**
+     * @return array
+     */
+    public function blockTypes()
+    {
+        return $this->block_types;
+    }
+
+    public function blockType($identifier)
+    {
+        if (isset($this->block_types[$identifier]))
+        {
+            return $this->block_types[$identifier];
+        }
+
+        return false;
     }
 
     /**
