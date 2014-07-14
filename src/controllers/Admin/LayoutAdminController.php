@@ -54,6 +54,11 @@ class LayoutAdminController extends BaseController {
 
 	public function postAddBlock($block_type_identifier)
 	{
+		if (Input::has('cancel') && Input::get('cancel') == 'true')
+		{
+			return Redirect::to(Coanda::adminUrl('layout'));
+		}
+
 		$block_type = Coanda::layout()->blockType($block_type_identifier);
 
 		if (!$block_type)
@@ -63,13 +68,49 @@ class LayoutAdminController extends BaseController {
 
 		try
 		{
-			$block = $this->layoutRepository->addBlock($block_type, Input::all());	
+			$block = $this->layoutRepository->addBlock($block_type, Input::all());
 
-			dd($block);
+			return Redirect::to(Coanda::adminUrl('layout/block/' . $block->id));
 		}
 		catch (ValidationException $exception)
 		{
 			return Redirect::to(Coanda::adminUrl('layout/add-block/' . $block_type_identifier))->with('error', true)->with('invalid_fields', $exception->getInvalidFields())->withInput();
+		}
+	}
+
+	public function getEditBlock($block_id)
+	{
+		$block = $this->layoutRepository->getBlock($block_id);
+
+		if (!$block)
+		{
+			App::abort('404');
+		}
+
+		$old_attribute_input = Input::old('attributes', []);
+		$invalid_fields = Session::has('invalid_fields') ? Session::get('invalid_fields') : [];
+
+		return View::make('coanda::admin.modules.layout.editblock', [ 'block' => $block, 'old_attribute_input' => $old_attribute_input, 'invalid_fields' => $invalid_fields ]);
+	}
+
+	public function postEditBlock($block_id)
+	{
+		$block = $this->layoutRepository->getBlock($block_id);
+
+		if (!$block)
+		{
+			App::abort('404');
+		}
+
+		try
+		{
+			$this->layoutRepository->updateBlock($block, Input::all());
+
+			return Redirect::to(Coanda::adminUrl('layout/block/' . $block->id));
+		}
+		catch (ValidationException $exception)
+		{
+			return Redirect::to(Coanda::adminUrl('layout/edit-block/' . $block->id))->with('error', true)->with('invalid_fields', $exception->getInvalidFields())->withInput();
 		}
 	}
 
@@ -98,7 +139,13 @@ class LayoutAdminController extends BaseController {
 
 		$layout_region_identifier_parts = explode(':', Input::get('layout_region_identifier'));
 
-		$block->addRegionAssignment($layout_region_identifier_parts[0], $layout_region_identifier_parts[1], Input::get('module_identifier'));
+		$this->layoutRepository->addRegionAssignment(
+									$block_id,
+									$layout_region_identifier_parts[0],
+									$layout_region_identifier_parts[1],
+									Input::get('module_identifier'),
+									Input::has('cascade')
+								);
 
 		return Redirect::to(Coanda::adminUrl('layout/block/' . $block->id))->with('added', true);
 	}

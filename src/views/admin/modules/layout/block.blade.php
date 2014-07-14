@@ -27,7 +27,7 @@
 <div class="row">
 	<div class="page-options col-md-12">
 		<div class="btn-group">
-			<a href="{{ Coanda::adminUrl('layout/edit-block/ . $block->id') }}" class="btn btn-primary">Edit</a>
+			<a href="{{ Coanda::adminUrl('layout/edit-block/' . $block->id) }}" class="btn btn-primary">Edit</a>
 		</div>
 	</div>
 </div>
@@ -55,6 +55,7 @@
 								<th>Region</th>
 								<th>Module Identifier</th>
 								<th>Cascade</th>
+								<th></th>
 							</tr>
 							@foreach ($region_assigments as $region_assigment)
 								<tr>
@@ -62,6 +63,7 @@
 									<td>{{ $region_assigment->region_identifier }}</td>
 									<td>{{ $region_assigment->module_identifier }}</td>
 									<td>{{ $region_assigment->cascade }}</td>
+									<td><a href="{{ Coanda::adminUrl('layout/remove-assignment/' . $region_assigment->id) }}">remove</a></td>
 								</tr>
 							@endforeach
 						</table>
@@ -82,7 +84,7 @@
 						<tr>
 							<td class="tight">{{ $attribute->name }}</td>
 							<td>
-								@include($attribute->type->view_template(), [ 'attribute_definition' => $attribute->definition, 'content' => $attribute->data ])
+								@include($attribute->type->view_template(), [ 'attribute_definition' => $attribute->definition, 'content' => $attribute->content ])
 							</td>
 						</tr>
 						@endforeach
@@ -106,11 +108,9 @@
 							<label>Layout/Region</label>
 							<select name="layout_region_identifier" class="form-control">
 								@foreach (Coanda::layout()->layouts() as $layout)
-									
 									@foreach ($layout->regions() as $region_identifier => $region)
 										<option value="{{ $layout->identifier() }}:{{ $region_identifier }}">{{ $layout->name() }} / {{ $region['name'] }}</option>
 									@endforeach
-
 								@endforeach
 							</select>
 						</div>
@@ -118,6 +118,15 @@
 						<div class="form-group">
 							<label>Module identifier</label>
 							<input type="text" name="module_identifier" class="form-control" placeholder="Module identifier e.g. pages:2 or default">
+						</div>
+
+						<div class="form-group">
+							<div class="checkbox">
+								<label>
+									<input type="checkbox" name="cascade">
+									Cascade
+								</label>
+							</div>
 						</div>
 
 						<button type="submit" class="btn btn-primary">Add</button>

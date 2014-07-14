@@ -79,11 +79,7 @@ abstract class Layout {
                 {
                     if (isset($breadcrumb_item['layout_identifier']))
                     {
-                        echo '<pre>';
-                        var_export($breadcrumb_item['layout_identifier']);
-                        echo '</pre>';
-
-                        $blocks = Coanda::layout()->getBlocks($this->identifier(), $region_identifier, $breadcrumb_item['layout_identifier']);
+                        $blocks = Coanda::layout()->getBlocks($this->identifier(), $region_identifier, $breadcrumb_item['layout_identifier'], true);
 
                         if ($blocks->count() > 0)
                         {

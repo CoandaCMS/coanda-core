@@ -36,7 +36,7 @@ class LayoutModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
         $this->loadBlockTypes();
 
         // Add the permissions
-        $coanda->addModulePermissions('layout', 'Layouts', []); // No specific views for this module...
+        $coanda->addModulePermissions('layout', 'Layout', []); // No specific views for this module...
 	}
 
     /**
@@ -183,7 +183,7 @@ class LayoutModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
     {
         if ($coanda->canViewModule('layout'))
         {
-            $coanda->addMenuItem('layout', 'Layouts');    
+            $coanda->addMenuItem('layout', 'Layout');    
         }
     }
 
@@ -191,7 +191,7 @@ class LayoutModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
     {
         $layoutRepository = App::make('CoandaCMS\Coanda\Layout\Repositories\LayoutRepositoryInterface');
 
-        return $layoutRepository->getBlocks($layout_identifier, $region_identifier, $module_identifier, $cascade);
+        return $layoutRepository->getBlocksForLayoutRegion($layout_identifier, $region_identifier, $module_identifier, $cascade);
     }
 
     public function getDefaultBlocks($layout_identifier, $region_identifier)

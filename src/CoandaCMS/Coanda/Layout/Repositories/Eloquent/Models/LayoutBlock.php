@@ -5,7 +5,7 @@ use Eloquent, DB, Coanda;
 class LayoutBlock extends Eloquent {
 
 	protected $table = 'layoutblocks';
-	protected $region_link_table = 'layoutblockregions';
+	// protected $region_link_table = 'layoutblockregions';
 
 	protected $fillable = [
 		'name',
@@ -14,6 +14,11 @@ class LayoutBlock extends Eloquent {
 	];
 
 	private $cached_attributes;
+
+	public function regionAssignments()
+	{
+		return $this->hasMany('CoandaCMS\Coanda\Layout\Repositories\Eloquent\Models\LayoutBlockRegionAssignment', 'block_id');
+	}
 
 	private function blockType()
 	{
@@ -41,12 +46,13 @@ class LayoutBlock extends Eloquent {
 			{
 				$attribute_type = Coanda::getAttributeType($attribute_data['type_identifier']);
 
-
 				$this->cached_attributes[$identifier] = new \stdClass;
 				$this->cached_attributes[$identifier]->type = $attribute_type;
+				$this->cached_attributes[$identifier]->identifier = $identifier;
+				$this->cached_attributes[$identifier]->required = isset($definition[$identifier]['required']) ? $definition[$identifier]['required'] : false;
 				$this->cached_attributes[$identifier]->name = $definition[$identifier]['name'];
 				$this->cached_attributes[$identifier]->definition = $definition[$identifier];
-				$this->cached_attributes[$identifier]->data = $attribute_type->data($attribute_data['content']);
+				$this->cached_attributes[$identifier]->content = $attribute_type->data($attribute_data['content']);
 			}
 		}
 
@@ -58,39 +64,8 @@ class LayoutBlock extends Eloquent {
 		return $this->attributes();
 	}
 
-	public function forLayoutRegion($layout_identifier, $region_identifier, $module_identifier, $cascade = false)
-	{
-		// $block_ids = DB::table($this->region_link_table)
-		// 			->where('layout_identifier', '=', $layout_identifier)
-		// 			->where('region_identifier', '=', $region_identifier)
-		// 			->where('module_identifier', '=', $module_identifier)
-		// 			->where('cascade', '=', $cascade)
-		// 			->lists('block_id');
-
-		// if (count($block_ids) > 0)
-		// {
-		// 	echo '<pre>';
-		// 	var_export($block_ids);
-		// 	echo '</pre>';
-		// }
-
-		return new \Illuminate\Support\Collection;
-	}
-
 	public function regionAssignmentsPaginated($per_page)
 	{
-		return DB::table($this->region_link_table)->where('block_id', '=', $this->id)->paginate($per_page);
-	}
-
-	public function addRegionAssignment($layout_identifier, $region_identifier, $module_identifier)
-	{
-		$data = [
-			'block_id' => $this->id,
-			'layout_identifier' => $layout_identifier,
-			'region_identifier' => $region_identifier,
-			'module_identifier' => ($module_identifier == '') ? 'default' : $module_identifier
-		];
-		
-		DB::table($this->region_link_table)->insert($data);
+		return $this->regionAssignments()->paginate($per_page);
 	}
 }

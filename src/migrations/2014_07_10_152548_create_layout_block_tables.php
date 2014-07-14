@@ -25,13 +25,17 @@ class CreateLayoutBlockTables extends Migration {
 
 		});
 
-		Schema::create('layoutblockregions', function ($table) {
+		Schema::create('layoutblockregionassignments', function ($table) {
+
+			$table->increments('id');
 
 			$table->integer('block_id');
 			$table->string('layout_identifier');
 			$table->string('region_identifier');
 			$table->string('module_identifier');
 			$table->boolean('cascade');
+
+			$table->timestamps();
 
 		});
 	}
@@ -44,7 +48,7 @@ class CreateLayoutBlockTables extends Migration {
 	public function down()
 	{
 		Schema::drop('layoutblocks');
-		Schema::drop('layoutblockregions');
+		Schema::drop('layoutblockregionassignments');
 	}
 
 }
