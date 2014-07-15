@@ -31,8 +31,9 @@ class LayoutAdminController extends BaseController {
 		Coanda::checkAccess('layout', 'edit');
 
 		$blocks = $this->layoutRepository->getPaginatedBlocks(10);
+		$layouts = Coanda::layout()->layouts();
 
-		return View::make('coanda::admin.modules.layout.index', [ 'blocks' => $blocks ]);
+		return View::make('coanda::admin.modules.layout.index', [ 'blocks' => $blocks, 'layouts' => $layouts ]);
 	}
 
 	public function getAddBlock($block_type_identifier)
@@ -148,5 +149,76 @@ class LayoutAdminController extends BaseController {
 								);
 
 		return Redirect::to(Coanda::adminUrl('layout/block/' . $block->id))->with('added', true);
+	}
+
+	public function getRemoveAssignment($assignment_id)
+	{
+		$assignment_block_id = $this->layoutRepository->removeAssignmentBlock($assignment_id);
+
+		return Redirect::to(Coanda::adminUrl('layout/block/' . $assignment_block_id))->with('assignment_removed', true);
+	}
+
+	public function getView($layout_identifier)
+	{
+		$layout = Coanda::layout()->layoutByIdentifier($layout_identifier);
+
+		if (!$layout)
+		{
+			App::abort('404');
+		}
+
+		return View::make('coanda::admin.modules.layout.view', [ 'layout' => $layout ]);
+	}
+
+	public function getRegion($layout_identifier, $region_identifier)
+	{
+		$layout = Coanda::layout()->layoutByIdentifier($layout_identifier);
+
+		if (!$layout)
+		{
+			App::abort('404');
+		}
+
+		$region_name = isset($layout->regions()[$region_identifier]) ? $layout->regions()[$region_identifier]['name'] : false;
+
+		if (!$region_name)
+		{
+			App::abort('404');
+		}
+
+		$module_identifiers = $this->layoutRepository->getModuleIdentifiersForRegion($layout_identifier, $region_identifier);
+
+		return View::make('coanda::admin.modules.layout.region', [ 'layout' => $layout, 'region_identifier' => $region_identifier, 'region_name' => $region_name, 'module_identifiers' => $module_identifiers ]);
+	}
+
+	public function getModule($layout_identifier, $region_identifier, $module_identifier)
+	{
+		$layout = Coanda::layout()->layoutByIdentifier($layout_identifier);
+
+		if (!$layout)
+		{
+			App::abort('404');
+		}
+
+		$region_name = isset($layout->regions()[$region_identifier]) ? $layout->regions()[$region_identifier]['name'] : false;
+
+		if (!$region_name)
+		{
+			App::abort('404');
+		}
+
+		$assignments = $this->layoutRepository->getAssignmentsByModuleIdentifier($layout_identifier, $region_identifier, $module_identifier, 10);
+
+		return View::make('coanda::admin.modules.layout.module', [ 'layout' => $layout, 'region_identifier' => $region_identifier, 'region_name' => $region_name, 'module_identifier' => $module_identifier, 'assignments' => $assignments ]);
+	}
+
+	public function postModule($layout_identifier, $region_identifier, $module_identifier)
+	{
+		if (Input::has('update_order'))
+		{
+			$this->layoutRepository->updateAssignmentOrders($layout_identifier, $region_identifier, $module_identifier, Input::get('ordering'));
+		}
+
+		return Redirect::to(Coanda::adminUrl('layout/module/' . $layout_identifier . '/' . $region_identifier . '/' . $module_identifier))->with('ordering_updated', true);
 	}
 }

@@ -7,7 +7,7 @@
 <div class="row">
 	<div class="breadcrumb-nav">
 		<ul class="breadcrumb">
-			<li><a href="{{ Coanda::adminUrl('layout') }}">Layout blocks</a></li>
+			<li><a href="{{ Coanda::adminUrl('layout') }}">Layout</a></li>
 			<li>{{ $block->name }}</li>
 		</ul>
 	</div>
@@ -42,11 +42,18 @@
 			<div class="tab-content">
 				<div class="tab-pane active" id="assignments">
 
-					@if (Session::has('page_saved'))
+					@if (Session::has('added'))
 						<div class="alert alert-success">
-							Added
+							Assignment added
 						</div>
 					@endif
+
+					@if (Session::has('assignment_removed'))
+						<div class="alert alert-danger">
+							Assignment removed
+						</div>
+					@endif
+
 
 					@if ($region_assigments->count() > 0)
 						<table class="table table-striped">

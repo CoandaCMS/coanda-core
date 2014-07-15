@@ -7,7 +7,7 @@
 <div class="row">
 	<div class="breadcrumb-nav">
 		<ul class="breadcrumb">
-			<li><a href="{{ Coanda::adminUrl('layout') }}">Layouts</a></li>
+			<li><a href="{{ Coanda::adminUrl('layout') }}">Layout</a></li>
 			<li>Add new layout block</li>
 		</ul>
 	</div>
@@ -27,7 +27,6 @@
 <div class="row">
 	<div class="page-options col-md-12"></div>
 </div>
-
 
 {{ Form::open(['url' => Coanda::adminUrl('layout/add-block/' . $block_type->identifier()), 'files' => true]) }}
 <div class="edit-container">

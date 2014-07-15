@@ -7,7 +7,7 @@
 <div class="row">
 	<div class="breadcrumb-nav">
 		<ul class="breadcrumb">
-			<li><a href="{{ Coanda::adminUrl('layout') }}">Layouts</a></li>
+			<li><a href="{{ Coanda::adminUrl('layout') }}">Layout</a></li>
 			<li>Edit layout block</li>
 		</ul>
 	</div>

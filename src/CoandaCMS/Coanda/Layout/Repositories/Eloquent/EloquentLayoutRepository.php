@@ -1,5 +1,7 @@
 <?php namespace CoandaCMS\Coanda\Layout\Repositories\Eloquent;
 
+use DB;
+
 use CoandaCMS\Coanda\Layout\Repositories\LayoutRepositoryInterface;
 
 use CoandaCMS\Coanda\Layout\Repositories\Eloquent\Models\LayoutBlock as BlockModel;
@@ -26,6 +28,13 @@ class EloquentLayoutRepository implements LayoutRepositoryInterface {
 
     public function getBlocksForLayoutRegion($layout_identifier, $region_identifier, $module_identifier, $cascade = false)
     {
+        echo '<pre>';
+        var_export($layout_identifier);
+        var_export($region_identifier);
+        var_export($module_identifier);
+        var_export($cascade);
+        echo '</pre>';
+
         $blocks = new \Illuminate\Support\Collection;
         $block_ids = $this->region_assignment_model->forLayoutRegion($layout_identifier, $region_identifier, $module_identifier, $cascade);
 
@@ -142,6 +151,48 @@ class EloquentLayoutRepository implements LayoutRepositoryInterface {
                     'module_identifier' => $module_identifier,
                     'cascade' => $cascade
                 ]);
+        }
+    }
+
+    public function removeAssignmentBlock($assignment_id)
+    {
+        $assignment = $this->region_assignment_model->find($assignment_id);
+
+        if ($assignment)
+        {
+            $block_id = $assignment->block_id;
+
+            $assignment->delete();
+
+            return $block_id;
+        }
+    }
+
+    public function getModuleIdentifiersForRegion($layout_identifier, $region_identifier)
+    {
+        return $this->region_assignment_model
+                    ->select(DB::raw('count(*) as block_count, module_identifier'))
+                    ->where('layout_identifier', '=', $layout_identifier)
+                    ->where('region_identifier', '=', $region_identifier)
+                    ->groupBy('module_identifier')
+                    ->get();
+    }
+
+    public function getAssignmentsByModuleIdentifier($layout_identifier, $region_identifier, $module_identifier, $per_page)
+    {
+        return $this->region_assignment_model
+            ->where('layout_identifier', '=', $layout_identifier)
+            ->where('region_identifier', '=', $region_identifier)
+            ->where('module_identifier', '=', $module_identifier)
+            ->orderBy('order', 'asc')
+            ->paginate($per_page);
+    }
+
+    public function updateAssignmentOrders($layout_identifier, $region_identifier, $module_identifier, $new_ordering)
+    {
+        foreach ($new_ordering as $assignment_id => $new_order)
+        {
+            $this->region_assignment_model->whereId($assignment_id)->update(['order' => $new_order]);
         }
     }
 }

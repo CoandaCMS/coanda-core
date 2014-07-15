@@ -5,7 +5,6 @@ use Eloquent, DB, Coanda;
 class LayoutBlock extends Eloquent {
 
 	protected $table = 'layoutblocks';
-	// protected $region_link_table = 'layoutblockregions';
 
 	protected $fillable = [
 		'name',
