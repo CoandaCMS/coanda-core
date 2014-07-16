@@ -28,13 +28,6 @@ class EloquentLayoutRepository implements LayoutRepositoryInterface {
 
     public function getBlocksForLayoutRegion($layout_identifier, $region_identifier, $module_identifier, $cascade = false)
     {
-        echo '<pre>';
-        var_export($layout_identifier);
-        var_export($region_identifier);
-        var_export($module_identifier);
-        var_export($cascade);
-        echo '</pre>';
-
         $blocks = new \Illuminate\Support\Collection;
         $block_ids = $this->region_assignment_model->forLayoutRegion($layout_identifier, $region_identifier, $module_identifier, $cascade);
 
