@@ -500,7 +500,8 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		$template = $page->pageType()->template($page->currentVersion(), $data);
 
 		// Make the view and pass all the render data to it...
-		$rendered_page = View::make($template, $data)->render();
+		// $rendered_page = View::make($template, $data)->render();
+		$rendered_page = View::make($template, $data);
 
 		return $this->mergeWithLayout($page, $pagelocation, $rendered_page);
 	}
