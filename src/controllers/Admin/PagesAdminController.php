@@ -497,7 +497,7 @@ class PagesAdminController extends BaseController {
 
 			Coanda::checkAccess('pages', 'edit', ['page_id' => $page->id, 'page_type' => $page->type]);
 
-			$this->pageRepository->discardDraftVersion($version);
+			$this->pageRepository->discardDraftVersion($version, Coanda::currentUser()->id);
 
 			return Redirect::to(Coanda::adminUrl('pages/view/' . $page_id));	
 		}
