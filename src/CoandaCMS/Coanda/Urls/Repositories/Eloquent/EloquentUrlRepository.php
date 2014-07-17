@@ -209,6 +209,8 @@ class EloquentUrlRepository implements \CoandaCMS\Coanda\Urls\Repositories\UrlRe
      */
     public function canUse($slug, $for, $for_id = false)
 	{
+		$slug = trim($slug, '/');
+
 		if (!$this->slugifier->validate($slug))
 		{
 			throw new InvalidSlug('The slug is not valid');
