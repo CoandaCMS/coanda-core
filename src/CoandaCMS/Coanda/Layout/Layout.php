@@ -45,7 +45,14 @@ abstract class Layout {
 
         $data['blocks'] = $this->getBlocks($data);
 
+        $data = $this->preRender($data);
+
         return View::make($template, $data)->render();
+    }
+
+    public function preRender($data)
+    {
+        return $data;
     }
 
     private function getBlocks($data)
