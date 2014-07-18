@@ -1,0 +1,1 @@
+{{ $attributes['html']->content }}

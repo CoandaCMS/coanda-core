@@ -1,6 +1,7 @@
 <?php namespace CoandaCMS\Coanda\Layout;
 
 use Coanda;
+use View;
 
 abstract class BlockType {
 
@@ -24,17 +25,24 @@ abstract class BlockType {
     /**
      * @return string
      */
-    public function template($version, $data = [])
+    public function template()
     {
         $template_name = $this->identifier();
 
-        return 'layoutblocktype.' . $template_name;
+        return 'blocktypes.' . $template_name;
     }
 
     public function preRender($data)
     {
         // The default is just to return the data untouched...
         return $data;
+    }
+
+    public function render($data)
+    {
+        $data = $this->preRender($data);
+
+        return View::make($this->template(), $data);
     }
 
     public function attributes()

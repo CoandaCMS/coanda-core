@@ -24,6 +24,14 @@ class LayoutBlock extends Eloquent {
 		return Coanda::layout()->blockType($this->type);
 	}
 
+	public function render()
+	{
+		return $this->blockType()->render([
+				'block' => $this,
+				'attributes' => $this->attributes()
+			]);
+	}
+
 	public function getBlockTypeAttribute()
 	{
 		return $this->blockType();

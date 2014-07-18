@@ -14,6 +14,11 @@ class HTMLSnippet extends BlockType {
 		return 'HMTL Snippet';
 	}
 
+	public function template()
+	{
+		return 'coanda::blocktypes.htmlsnippet';
+	}
+
 	public function blueprint()
 	{
 		return [
