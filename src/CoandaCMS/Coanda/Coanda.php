@@ -321,7 +321,7 @@ class Coanda {
 			{
 				return Coanda::route($slug);
 
-			})->where('slug', '[\/_\-\_A-Za-z0-9]+');
+			})->where('slug', '[\.\/_\-\_A-Za-z0-9]+');
 
 			Route::match(['GET', 'POST'], '/', function ()
 			{
