@@ -90,4 +90,9 @@ abstract class PageType {
     {
         return [];
     }
+
+    public function defaultLayout()
+    {
+        return false;
+    }
 }

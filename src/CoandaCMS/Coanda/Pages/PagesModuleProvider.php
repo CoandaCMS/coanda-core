@@ -431,7 +431,19 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 	{
 		if ($version->layout_identifier)
 		{
-			$layout = Coanda::module('layout')->layoutByIdentifier($version->layout_identifier);
+			$layout = Coanda::layout()->layoutByIdentifier($version->layout_identifier);
+
+			if ($layout)
+			{
+				return $layout;
+			}
+		}
+
+		$page_type_layout = $version->page->pageType()->defaultLayout();
+
+		if ($page_type_layout)
+		{
+			$layout = Coanda::layout()->layoutByIdentifier($page_type_layout);
 
 			if ($layout)
 			{
