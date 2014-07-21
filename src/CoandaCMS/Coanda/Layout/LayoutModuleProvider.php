@@ -97,7 +97,7 @@ class LayoutModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 			return $this->layouts[$identifier];
 		}
 
-		throw new LayoutNotFound('Layout: ' . $identifier . ' not found.');
+        return false;
 	}
 
     /**
