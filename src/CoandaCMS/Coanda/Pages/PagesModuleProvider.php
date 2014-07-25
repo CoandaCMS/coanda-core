@@ -56,10 +56,10 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 
 			$cache_key = $this->generateCacheKey($url->type_id);
 
-			if (Cache::has($cache_key))
-			{
-				return Cache::get($cache_key);
-			}
+			// if (Cache::has($cache_key))
+			// {
+			// 	return Cache::get($cache_key);
+			// }
 
 			try
 			{
@@ -588,6 +588,7 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 			'page_id' => $page->id,
 			'version' => $page->current_version,
 			'location_id' => ($pagelocation ? $pagelocation->id : false),
+			'parent' => ($pagelocation ? $pagelocation->parent : false),
 			'page' => $page,
 			'attributes' => $this->renderAttributes($page, $pagelocation),
 			'meta' => $this->buildMeta($page),
