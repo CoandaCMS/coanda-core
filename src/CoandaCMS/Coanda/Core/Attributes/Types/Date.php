@@ -71,10 +71,24 @@ class Date extends AttributeType {
 	{
         if (is_numeric($data))
         {
-            // return Carbon::createFromTimeStamp($data)->format(Config::get('coanda::coanda.date_format'));
             return Carbon::createFromTimeStamp($data);
         }
 
         return '';
 	}
+
+    public function render($data, $parameters = [])
+    {
+        // If we are indexing, then we don't want to return the carbon instance
+        if ($parameters['indexing'])
+        {
+            if (is_object($data))
+            {
+                return $data->format(Config::get('coanda::coanda.date_format'));;    
+            }
+        }
+
+        return $data;
+    }    
+
 }
