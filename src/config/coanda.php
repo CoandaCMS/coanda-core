@@ -49,6 +49,8 @@ return array(
 	|
 	*/
 	'enabled_modules' => [
+		// 'CoandaCMS\CoandaWebForms\WebFormsModuleProvider',
+		// 'MySite\Modules\Example\ExampleModuleProvider',
 	],
 
 
@@ -59,12 +61,12 @@ return array(
 	|
 	*/
 	'page_types' => [
-		'MySite\PageTypes\Page',
-		'MySite\PageTypes\LandingPage',
+		// 'MySite\PageTypes\Page',
+		// 'CoandaCMS\CoandaWebForms\PageTypes\Form',
 	],
 
 	'home_page_types' => [
-		'MySite\PageTypes\HomePage'
+		// 'MySite\PageTypes\HomePage'
 	],
 
 	'publish_handlers' => [
@@ -78,11 +80,10 @@ return array(
 	|
 	*/
 	'layouts' => [
-		'MySite\Layouts\SingleColumn',
-		'MySite\Layouts\TwoColumn',
+		// 'MySite\Layouts\DefaultLayout',
 	],
 
-	'default_layout' => 'single-column',
+	'default_layout' => 'default',
 
 	'layout_block_types' => [
 		'CoandaCMS\Coanda\Layout\BlockTypes\HTMLSnippet',
@@ -107,6 +108,6 @@ return array(
 	|--------------------------------------------------------------------------
 	|
 	*/
-	'search_provider' => '',
+	'search_provider' => 'CoandaCMS\Coanda\Search\Basic\CoandaBasicSearchProvider',
 
 );
