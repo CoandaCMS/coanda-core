@@ -9,6 +9,7 @@ class PageQuery {
 	private $location_id;
 	private $attribute_filters;
 	private $limit;
+	private $order_query;
 
 	private $include_hidden = false;
 	private $include_invisible = false;
@@ -47,6 +48,16 @@ class PageQuery {
 		return $this;
 	}
 
+	public function order($operator, $value)
+	{
+		$this->order_query = [
+			'operator' => $operator,
+			'value' => $value
+		];
+
+		return $this;
+	}
+
 	public function filter($attribute_identifier, $filter, $query_type = '=')
 	{
 		$this->attribute_filters[] = [
@@ -72,7 +83,8 @@ class PageQuery {
 			'include_invisible' => $this->include_invisible,
 			'include_hidden' => $this->include_hidden,
 			'paginate' => $this->paginate,
-			'attribute_filters' => $this->attribute_filters
+			'attribute_filters' => $this->attribute_filters,
+			'order_query' => $this->order_query
 		];
 
 		return $this->pageRepository->subPages($this->location_id, $this->limit, $parameters);

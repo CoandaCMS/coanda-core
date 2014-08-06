@@ -207,7 +207,8 @@ class EloquentPageRepository implements PageRepositoryInterface {
 			'include_hidden' => false,
 			'include_drafts' => false,
 			'paginate' => true,
-			'attribute_filters' => []
+			'attribute_filters' => [],
+			'order_query' => false
 		];
 
 		$parameters = array_merge($default_parameters, $parameters);
@@ -247,6 +248,11 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		if (!$parameters['include_hidden'])
 		{
 			$query->notHidden();
+		}
+
+		if ($parameters['order_query'] && isset($parameters['order_query']['operator']) && isset($parameters['order_query']['value']))
+		{
+			$query->where('order', $parameters['order_query']['operator'], $parameters['order_query']['value']);
 		}
 
 		if ($parameters['paginate'])
