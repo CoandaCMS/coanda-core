@@ -4,7 +4,7 @@
 		<title>Preview #{{ $version->version }} of page #{{ $version->page_id }} | Coanda CMS</title>
 
 		<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
-		<link rel="stylesheet" href="{{ asset('packages/coanda/css/preview.css') }}">
+		<link rel="stylesheet" href="{{ asset('packages/coandacms/coanda-core/css/preview.css') }}">
 	</head>
 <body>
 
