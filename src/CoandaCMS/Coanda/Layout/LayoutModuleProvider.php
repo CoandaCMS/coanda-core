@@ -33,10 +33,9 @@ class LayoutModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
     public function boot(\CoandaCMS\Coanda\Coanda $coanda)
 	{
 		$this->loadLayouts();
-        $this->loadBlockTypes();
 
         // Add the permissions
-        $coanda->addModulePermissions('layout', 'Layout', []); // No specific views for this module...
+        // $coanda->addModulePermissions('layout', 'Layout', []); // No specific views for this module...
 	}
 
     /**
@@ -61,21 +60,6 @@ class LayoutModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 			}
 		}
 	}
-
-    private function loadBlockTypes()
-    {
-        $block_types = Config::get('coanda::coanda.layout_block_types');
-
-        foreach ($block_types as $block_type)
-        {
-            if (class_exists($block_type))
-            {
-                $type = new $block_type($this);
-
-                $this->block_types[$type->identifier()] = $type;
-            }
-        }
-    }
 
     /**
      * @return array
@@ -128,30 +112,12 @@ class LayoutModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
     }
 
     /**
-     * @return array
-     */
-    public function blockTypes()
-    {
-        return $this->block_types;
-    }
-
-    public function blockType($identifier)
-    {
-        if (isset($this->block_types[$identifier]))
-        {
-            return $this->block_types[$identifier];
-        }
-
-        return false;
-    }
-
-    /**
      *
      */
     public function adminRoutes()
 	{
 		// Load the layout controller
-		Route::controller('layout', 'CoandaCMS\Coanda\Controllers\Admin\LayoutAdminController');
+		// Route::controller('layout', 'CoandaCMS\Coanda\Controllers\Admin\LayoutAdminController');
 	}
 
     /**
@@ -181,21 +147,9 @@ class LayoutModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 
     public function buildAdminMenu($coanda)
     {
-        if ($coanda->canViewModule('layout'))
-        {
-            $coanda->addMenuItem('layout', 'Layout');    
-        }
-    }
-
-    public function getBlocks($layout_identifier, $region_identifier, $module_identifier, $cascade = true)
-    {
-        $layoutRepository = App::make('CoandaCMS\Coanda\Layout\Repositories\LayoutRepositoryInterface');
-
-        return $layoutRepository->getBlocksForLayoutRegion($layout_identifier, $region_identifier, $module_identifier, $cascade);
-    }
-
-    public function getDefaultBlocks($layout_identifier, $region_identifier)
-    {
-        return $this->getBlocks($layout_identifier, $region_identifier, 'default', false);
+        // if ($coanda->canViewModule('layout'))
+        // {
+        //     $coanda->addMenuItem('layout', 'Layout');    
+        // }
     }
 }

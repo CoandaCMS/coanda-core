@@ -85,10 +85,6 @@ return array(
 
 	'default_layout' => 'default',
 
-	'layout_block_types' => [
-		'CoandaCMS\Coanda\Layout\BlockTypes\HTMLSnippet',
-	],
-
 	/*
 	|--------------------------------------------------------------------------
 	| Media settings

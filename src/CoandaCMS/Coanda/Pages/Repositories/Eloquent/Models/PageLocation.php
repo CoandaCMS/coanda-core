@@ -295,7 +295,6 @@ class PageLocation extends Eloquent {
 			{
 				$breadcrumb[] = [
 					'identifier' => 'pages:location-' . $parent->id,
-					'layout_identifier' => 'pages:' . $parent->page->id,
 					'url' => $parent->slug,
 					'name' => $parent->present()->name,
 					'_location_id' => $parent->id,
