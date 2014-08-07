@@ -22,7 +22,7 @@ class CoandaServiceProvider extends ServiceProvider {
 	 */
 	public function boot()
 	{
-		$this->package('coandacms/coanda');
+		$this->package('coandacms/coanda-core', 'coanda');
 
 		$coanda = $this->app->make('coanda');
 
