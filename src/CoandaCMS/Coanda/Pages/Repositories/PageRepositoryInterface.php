@@ -24,6 +24,8 @@ interface PageRepositoryInterface {
      */
     public function locationById($id);
 
+    public function locationBySlug($slug);
+    
     /**
      * @param $id
      * @return mixed

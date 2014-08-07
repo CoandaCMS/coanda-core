@@ -700,6 +700,18 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		}
 	}
 
+	public function bySlug($slug)
+	{
+		try
+		{
+			return $this->getPageRepository()->locationBySlug($slug);
+		}
+		catch (PageNotFound $exception)
+		{
+			return false;
+		}
+	}
+
     /**
      * @param $remote_id
      */

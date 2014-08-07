@@ -13,6 +13,7 @@ use CoandaCMS\Coanda\Pages\Exceptions\SubPagesNotAllowed;
 
 use CoandaCMS\Coanda\Urls\Exceptions\InvalidSlug;
 use CoandaCMS\Coanda\Urls\Exceptions\UrlAlreadyExists;
+use CoandaCMS\Coanda\Urls\Exceptions\UrlNotFound;
 
 use CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageLocation as PageLocationModel;
 use CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\Page as PageModel;
@@ -126,6 +127,23 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		}
 
 		return $location;
+	}
+
+	public function locationBySlug($slug)
+	{
+		try
+		{
+			$url = $this->urlRepository->findBySlug($slug);
+
+			if ($url->type == 'pagelocation')
+			{
+				return $this->locationById($url->type_id);
+			}
+		}
+		catch (UrlNotFound $exception)
+		{
+			return false;
+		}
 	}
 
     /**
