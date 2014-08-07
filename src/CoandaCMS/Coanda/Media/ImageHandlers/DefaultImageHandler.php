@@ -39,7 +39,7 @@ class DefaultImageHandler {
 		$upscale = false;
 
         $imageFactory = $this->initaliseImageFactory($original, $output);
-        $imageFactory->resize($size, $size, $maintain_ratio, $upscale)->save($output);
+        $imageFactory->resize($size, null, $maintain_ratio, $upscale)->save($output);
 	}
 
 }
