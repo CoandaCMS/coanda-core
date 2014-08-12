@@ -15,7 +15,7 @@ class Page extends \CoandaCMS\Coanda\Core\Presenters\Presenter {
 	{
 		if ($this->model->name !== '')
 		{
-			return $this->model->name;
+			return htmlspecialchars($this->model->name);
 		}
 
 		return Lang::get('coanda::pages.page_name_not_set');

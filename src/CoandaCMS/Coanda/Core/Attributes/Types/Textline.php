@@ -59,4 +59,9 @@ class Textline extends AttributeType {
 	{
 		return $data;
 	}
+
+    public function render($data, $parameters = [])
+    {
+        return htmlspecialchars($data);
+    }
 }
