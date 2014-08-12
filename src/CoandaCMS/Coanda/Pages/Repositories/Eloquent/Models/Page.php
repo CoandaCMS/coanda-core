@@ -237,7 +237,7 @@ class Page extends Eloquent {
 
 	public function attributes()
 	{
-		return $this->currentVersion()->attributes()->get();
+		return $this->currentVersion()->attributes()->with('version')->get();
 	}
 
 	/**
