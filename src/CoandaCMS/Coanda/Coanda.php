@@ -536,6 +536,8 @@ class Coanda {
 		{
 			return $this->modules[$name];	
 		}
+
+		throw new \InvalidArgumentException('Method "' . $name . '" not found.');
 	}
 
     /**
