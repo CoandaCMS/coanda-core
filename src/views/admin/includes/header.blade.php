@@ -38,9 +38,7 @@
 				<li class="dropdown">
 					<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> {{ Coanda::currentUser()->first_name }} <span class="caret"></span></a>
 					<ul class="dropdown-menu" role="menu">
-						<li><a href="#">My Account</a></li>
-						<li><a href="#">My Drafts</a></li>
-						<li><a href="#">Change Password</a></li>
+						<li><a href="{{ Coanda::adminUrl('users/profile') }}">My Profile</a></li>
 						<li class="divider"></li>
 						<li><a href="#" data-toggle="modal" data-target=".bs-example-modal-sm"><i class="fa fa-power-off"></i> Log out</a></li>
 					</ul>

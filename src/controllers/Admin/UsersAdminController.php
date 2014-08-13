@@ -334,5 +334,42 @@ class UsersAdminController extends BaseController {
 		{
 			return Redirect::to(Coanda::adminUrl('users'));
 		}
-	}	
+	}
+
+	public function getProfile()
+	{
+		$user = Coanda::currentUser();
+
+		return View::make('coanda::admin.modules.users.profile', ['user' => $user ]);
+	}
+
+	public function getEditProfile()
+	{
+		$user = Coanda::currentUser();
+
+		$invalid_fields = Session::has('invalid_fields') ? Session::get('invalid_fields') : [];
+
+		return View::make('coanda::admin.modules.users.editprofile', ['user' => $user, 'invalid_fields' => $invalid_fields ]);
+	}
+
+	public function postEditProfile()
+	{
+		$user = Coanda::currentUser();
+
+		if (Input::has('cancel'))
+		{
+			return Redirect::to(Coanda::adminUrl('users/profile'));
+		}
+
+		try
+		{
+			$this->userRepository->updateExisting($user->id, Input::all());	
+
+			return Redirect::to(Coanda::adminUrl('users/profile'))->with('updated', true);
+		}
+		catch (ValidationException $exception)
+		{
+			return Redirect::to(Coanda::adminUrl('users/edit-profile'))->with('error', true)->with('invalid_fields', $exception->getInvalidFields())->withInput();
+		}
+	}
 }
