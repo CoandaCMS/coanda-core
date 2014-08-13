@@ -134,7 +134,7 @@
 					<table class="table table-striped">
 						@foreach ($page->attributes as $attribute)
 						<tr>
-							<td class="tight">{{ $attribute->name }}</td>
+							<td>{{ $attribute->name }}</td>
 							<td>
 								@include($attribute->type()->view_template(), [ 'attribute_definition' => $attribute->definition, 'content' => $attribute->type_data ])
 							</td>
@@ -184,7 +184,7 @@
 					<table class="table table-striped table-history">
 						@foreach ($contributors as $contributor)
 							<tr>
-								<td class="tight"><img src="{{ $contributor->avatar }}" class="img-circle" width="45"></td>
+								<td class="tight"><img src="{{ $contributor->avatar }}" class="img-circle" width="25"></td>
 								<td>{{ $contributor->present()->name }}</td>
 							</tr>
 						@endforeach
@@ -194,7 +194,7 @@
 					<table class="table table-striped table-history">
 						@foreach ($history as $history)
 							<tr>
-								<td class="tight"><img src="{{ $history->present()->avatar }}" class="img-circle" width="45"></td>
+								<td class="tight"><img src="{{ $history->present()->avatar }}" class="img-circle" width="25"></td>
 								<td>{{ $history->present()->username }}</td>
 								<td>{{ $history->present()->happening }}</td>
 								<td>{{ $history->present()->created_at }}</td>
