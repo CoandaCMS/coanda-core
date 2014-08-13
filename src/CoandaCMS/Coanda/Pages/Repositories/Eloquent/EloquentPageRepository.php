@@ -1019,7 +1019,14 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		// Tell the search engine about it!
 		foreach ($page->locations as $location)
 		{
-			$this->registerLocationWithSearchProvider($location);
+			if ($version->is_hidden)
+			{
+				$this->unRegisterLocationWithSearchProvider($location);
+			}
+			else
+			{
+				$this->registerLocationWithSearchProvider($location);	
+			}
 		}
 	}
 
