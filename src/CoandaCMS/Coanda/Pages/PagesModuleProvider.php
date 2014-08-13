@@ -736,4 +736,9 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 	{
 		return $this->getQueryBuilder();
 	}
+
+	public function adminSearch($query)
+	{
+		return $this->getPageRepository()->adminSearch($query);
+	}
 }

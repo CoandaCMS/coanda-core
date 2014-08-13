@@ -230,4 +230,6 @@ interface PageRepositoryInterface {
      * @return mixed
      */
     public function addVersionComment($version, $data);
+
+    public function adminSearch($query);
 }

@@ -1535,4 +1535,14 @@ class EloquentPageRepository implements PageRepositoryInterface {
 
 		return '';
 	}
+
+	public function adminSearch($query)
+	{
+		if ($query && $query !== '')
+		{
+			return $this->page_model->where('name', 'like', '%' . $query . '%')->orderBy('name', 'asc')->paginate(10);	
+		}
+		
+		return \Paginator::make([], 0, 10);
+	}
 }

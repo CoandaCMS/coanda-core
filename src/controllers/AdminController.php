@@ -109,4 +109,13 @@ class AdminController extends BaseController {
 		return Redirect::to(Coanda::adminUrl('/'));
 	}
 
+	public function getSearch()
+	{
+		$query = Input::has('q') ? Input::get('q') : false;
+
+		$results = Coanda::handleAdminSearch($query);
+
+		return View::make('coanda::admin.search', ['results' => $results, 'query' => $query]);
+	}
+
 }

@@ -62,7 +62,34 @@ h2
 
 .main-navigation .nav > li > a
 {
-	padding-left: 0;
+	border-right: 1px solid #333333;
+	padding-right: 10px;
+	padding-left: 10px;
+}
+
+.main-navigation .nav > li:first-child > a
+{
+	border-left: 1px solid #333333;
+}
+
+.main-navigation .nav > li > a:hover
+{
+	background: #404040;
+}
+
+.main-navigation .nav.navbar-right > li > a
+{
+	border-right: none;
+}
+
+.navbar-form.navbar-right:last-child
+{
+	margin-right: 0;
+}
+
+.navbar-collapse
+{
+	max-height: 1000px;
 }
 
 .btn,
@@ -415,4 +442,17 @@ td table.table
 .slug-box .form-group
 {
 	margin-bottom: 0;
+}
+
+.search-results .breadcrumb
+{
+	text-align: right;
+	padding: 0;
+	margin-bottom: 0;
+	color: #626262;
+}
+
+.search-results .breadcrumb a
+{
+	color: #626262;
 }

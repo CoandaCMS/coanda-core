@@ -525,6 +525,12 @@ class Coanda {
 		return $this->search_provider;
 	}
 
+	public function handleAdminSearch($query)
+	{
+		// Ideally this would allow other modules to add results and some how collate them, but for the moment lets just pass it to the pages module
+		return $this->modules['pages']->adminSearch($query);
+	}
+
     /**
      * @param $name
      * @param $arguments
