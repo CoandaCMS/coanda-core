@@ -175,8 +175,8 @@ class EloquentMediaRepository implements MediaRepositoryInterface {
         {
         	$dimensions = getimagesize($upload_path . '/' . $upload_filename);
 
-        	$new_media->width = $dimensions[0];
-        	$new_media->height = $dimensions[1];
+        	$new_media->width = (int) $dimensions[0];
+        	$new_media->height = (int) $dimensions[1];
         }
 
         if ($module_identifier != '')
@@ -228,8 +228,8 @@ class EloquentMediaRepository implements MediaRepositoryInterface {
 	        {
 	        	$dimensions = getimagesize($upload_path . '/' . $upload_filename);
 
-	        	$new_media->width = $dimensions[0];
-	        	$new_media->height = $dimensions[1];
+	        	$new_media->width = (int) $dimensions[0];
+	        	$new_media->height = (int) $dimensions[1];
 	        }
 
 	        $new_media->size = filesize($upload_path . '/' . $upload_filename);
