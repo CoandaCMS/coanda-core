@@ -56,10 +56,13 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 
 			$cache_key = $this->generateCacheKey($url->type_id);
 
-			// if (Cache::has($cache_key))
-			// {
-			// 	return Cache::get($cache_key);
-			// }
+			if (Config::get('coanda::coanda.page_cache_enabled'))
+			{
+				if (Cache::has($cache_key))
+				{
+					return Cache::get($cache_key);
+				}				
+			}
 
 			try
 			{
@@ -535,12 +538,16 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 
 		$content = $layout->render($layout_data);
 
-		if ($page->pageType()->canStaticCache() && $pagelocation)
+		if (Config::get('coanda::coanda.page_cache_enabled'))
 		{
-			$cache_key = $this->generateCacheKey($pagelocation->id);
+			if ($page->pageType()->canStaticCache() && $pagelocation)
+			{
+				$cache_key = $this->generateCacheKey($pagelocation->id);
 
-			// $content = str_replace('</body>', '<!-- cached: ' . date('r', time()) . ' --></body>', $content);
-			Cache::put($cache_key, $content, 10);
+				$cache_time = Config::get('coanda::coanda.page_cache_lifetime');
+
+				Cache::put($cache_key, $content, $cache_time);
+			}
 		}
 
 		return $content;

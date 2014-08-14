@@ -110,4 +110,13 @@ return array(
 	*/
 	'search_provider' => 'CoandaCMS\Coanda\Search\Basic\CoandaBasicSearchProvider',
 
+	/*
+	|--------------------------------------------------------------------------
+	| Cache settings
+	|--------------------------------------------------------------------------
+	|
+	*/
+	'page_cache_enabled' => false,
+	'page_cache_lifetime' => 10, // in minutes
+
 );
