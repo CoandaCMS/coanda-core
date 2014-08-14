@@ -83,6 +83,10 @@ return array(
 		// 'MySite\Layouts\DefaultLayout',
 	],
 
+	'layout_mapping' => [
+		// 'search:results' => 'default'
+	],
+
 	'default_layout' => 'default',
 
 	/*

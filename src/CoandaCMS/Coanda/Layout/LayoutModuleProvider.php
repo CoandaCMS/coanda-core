@@ -100,7 +100,16 @@ class LayoutModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 
     public function layoutFor($for_identifier)
     {
-        // Just returns the default for the moment.
+        $layout_mappings = Config::get('coanda::coanda.layout_mapping');
+
+        if (is_array($layout_mappings))
+        {
+            if (array_key_exists($for_identifier, $layout_mappings))
+            {
+                return $this->layouts[$layout_mappings[$for_identifier]];
+            }
+        }
+
         $default_layout = Config::get('coanda::coanda.default_layout');
 
         return $this->layouts[$default_layout];
