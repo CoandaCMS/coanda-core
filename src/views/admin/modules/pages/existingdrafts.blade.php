@@ -47,7 +47,7 @@
 			</table>
 
 			{{ Form::open(['url' => Coanda::adminUrl('pages/existing-drafts/' . $page->id)]) }}
-				{{ Form::button('Serioulsy dude, just create a new version for me', ['name' => 'new_version', 'value' => 'true', 'type' => 'submit', 'class' => 'btn btn-primary']) }}
+				{{ Form::button('Please create a new version for me', ['name' => 'new_version', 'value' => 'true', 'type' => 'submit', 'class' => 'btn btn-primary']) }}
 				<a class="btn btn-default" href="{{ Coanda::adminUrl('pages/view/' . $page->id) }}">Cancel</a>
 			{{ Form::close() }}
 		</div>
