@@ -715,7 +715,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
      */
     public function getVersionByPreviewKey($preview_key)
 	{
-		$version = $this->page_version_model->wherePreviewKey($preview_key)->whereStatus('draft')->first();
+		$version = $this->page_version_model->wherePreviewKey($preview_key)->first();
 
 		if (!$version)
 		{

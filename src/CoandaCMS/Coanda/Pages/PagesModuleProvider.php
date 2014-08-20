@@ -627,26 +627,32 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		}
 
 		$first_location = $version->slugs()->first();
-		$temp_location = $first_location->tempLocation();
 
-		// Add 'dummy' versions of these to simulate viewing a location
-		$location_id = $first_location->page_location_id;
+		$location = $first_location->location();
 
-		$breadcrumb = $temp_location->breadcrumb();
+		if (!$location)
+		{
+			// Create a dummy location to simulate viewing a location
+			$location = $first_location->tempLocation();	
+		}
+
+		$location_id = $location->id;
+
+		$breadcrumb = $location->breadcrumb();
 
 		// We need to take the last item off and replace it with the version name...
 		array_pop($breadcrumb);
 
 		$breadcrumb[] = [
 			'url' => false,
-			'identifier' => 'pages:location-' . $temp_location->id,
+			'identifier' => 'pages:location-' . $location->id,
 			'layout_identifier' => 'pages:' . $page->id,
 			'name' => $version->present()->name
 		];
 
 		$data = [
 			'page' => $version->page,
-			'location_id' => $temp_location->id,
+			'location_id' => $location_id,
 			'meta' => $meta,
 			'attributes' => $attributes
 		];
