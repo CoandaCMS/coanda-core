@@ -559,4 +559,9 @@ class Coanda {
 			return $this->$method;
 		}
 	}
+
+	public function siteName()
+	{
+		return Config::get('coanda::coanda.site_name');
+	}
 }

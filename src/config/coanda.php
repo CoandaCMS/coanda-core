@@ -14,6 +14,8 @@ return array(
 
 	'site_admin_email' => 'admin@yoursite.com',
 
+	'admin_colour' => '#FF6600',
+
 	/*
 	|--------------------------------------------------------------------------
 	| Some default settings

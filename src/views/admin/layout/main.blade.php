@@ -12,6 +12,10 @@
 		<link rel="stylesheet" href="{{ asset('packages/coandacms/coanda-core/dropzone/css/dropzone.css') }}">
 		<link rel="stylesheet" href="{{ asset('packages/coandacms/coanda-core/css/coanda.css') }}">
 
+		<style type="text/css">
+			@include('coanda::admin.css.colours')
+		</style>
+
 	</head>
 <body>
 

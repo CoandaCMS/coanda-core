@@ -8,7 +8,7 @@
     <div class="login col-md-6 col-md-offset-3">
 
         <div class="login-header">
-            <h4>Coanda CMS</h4>
+            <h4>{{ Coanda::siteName() }}</h4>
         </div>
 
 		@if ($errors->count() > 0)
