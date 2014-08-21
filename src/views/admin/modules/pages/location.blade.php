@@ -57,29 +57,41 @@
 </div>
 
 @if ($page->visible_from || $page->visible_to)
-<div class="row">
-	<div class="page-visibility col-md-12">
-		@if ($page->is_visible)
-			<span class="label label-success">Visible</span>
-		@else
-			<span class="label label-info">Invisible</span>
-		@endif
-		<i class="fa fa-calendar"></i> {{ $page->present()->visible_dates }}
+	<div class="row">
+		<div class="page-visibility col-md-12">
+			@if ($page->is_visible)
+				<span class="label label-success">Visible</span>
+			@else
+				<span class="label label-info">Invisible</span>
+			@endif
+			<i class="fa fa-calendar"></i> {{ $page->present()->visible_dates }}
+		</div>
 	</div>
-</div>
 @endif
 
 @if ($page->is_hidden || $page->is_hidden_navigation)
-<div class="row">
-	<div class="page-hidden col-md-12">
-		@if ($page->is_hidden)
-			<span class="label label-danger">Hidden</span>
-		@endif
-		@if ($page->is_hidden_navigation)
-			<span class="label label-warning">Hidden from Navigation</span>
-		@endif
+	<div class="row">
+		<div class="page-hidden col-md-12">
+			@if ($page->is_hidden)
+				<span class="label label-danger">Hidden</span>
+			@endif
+			@if ($page->is_hidden_navigation)
+				<span class="label label-warning">Hidden from Navigation</span>
+			@endif
+		</div>
 	</div>
-</div>
+@endif
+
+@if ($page->is_pending)
+	<div class="row">
+		<div class="page-visibility col-md-12">
+			<span class="label label-info">
+				Pending
+				<i class="fa fa-calendar"></i>
+				{{ $page->currentVersion()->present()->delayed_publish_date }}
+			</span>
+		</div>
+	</div>
 @endif
 
 <div class="row">

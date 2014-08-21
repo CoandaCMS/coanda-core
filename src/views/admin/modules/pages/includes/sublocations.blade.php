@@ -2,10 +2,12 @@
 	<tr>
 		<th></th>
 		<th>Name</th>
+		{{--
 		<th>Page Type</th>
 		<th>Sub pages</th>
 		<th>Status</th>
 		<th>Created</th>
+		--}}
 		@if (!$location || $location->sub_location_order == 'manual')
 			<th>Order</th>
 		@endif
@@ -13,7 +15,7 @@
 	</tr>
 
 	@foreach ($children as $child)
-		<tr class="status-{{ $child->page->status }} @if (!$child->page->is_visible) info @endif @if ($child->page->is_hidden) danger @endif @if ($child->page->is_hidden_navigation) warning @endif">
+		<tr class="status-{{ $child->page->status }} @if (!$child->page->is_visible) info @endif @if ($child->page->is_hidden) danger @endif @if ($child->page->is_hidden_navigation) warning @endif @if ($child->page->is_pending) info @endif">
 
 			@if (!$child->is_trashed)
 				<td class="tight"><input type="checkbox" name="remove_page_list[]" value="{{ $child->page->id }}" @if (!Coanda::canView('pages', 'remove')) disabled="disabled" @endif></td>
@@ -26,7 +28,26 @@
 					<i class="fa {{ $child->page->pageType()->icon() }}"></i>
 				@endif
 				<a href="{{ Coanda::adminUrl('pages/location/' . $child->id) }}">{{ $child->page->present()->name }}</a>
+
+				@if ($child->page->is_pending)
+					<span class="label label-info">
+						Pending
+						<i class="fa fa-calendar"></i>
+						{{ $child->page->currentVersion()->present()->delayed_publish_date }}
+					</span>
+				@endif
+
+				@if (!$child->page->is_visible)
+					<span class="label label-info show-tooltip" title="{{ $child->page->present()->visible_dates }}">Invisible</span>
+				@endif
+				
+				@if ($child->page->is_hidden)
+					<span class="label label-danger">Hidden</span>
+				@elseif ($child->page->is_hidden_navigation)
+					<span class="label label-warning">Hidden from Navigation</span>
+				@endif
 			</td>
+			{{--
 			<td>{{ $child->page->present()->type }}</td>
 			<td>
 				@if ($child->page->pageType()->allowsSubPages())
@@ -56,6 +77,7 @@
 				@endif
 			</td>
 			<td>{{ $child->page->present()->created_at }}</td>
+			--}}
 
 			@if (!$location || $location->sub_location_order == 'manual')
 				<td class="order-column">{{ Form::text('ordering[' . $child->id . ']', $child->order, ['class' => 'form-control input-sm']) }}</td>
