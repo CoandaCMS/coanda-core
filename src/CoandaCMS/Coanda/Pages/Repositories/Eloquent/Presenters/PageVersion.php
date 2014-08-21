@@ -93,7 +93,9 @@ class PageVersion extends \CoandaCMS\Coanda\Core\Presenters\Presenter {
 
             if (isset($data->date))
             {
-                return Carbon::createFromFormat('Y-m-d H:i:s', $data->date->date, $data->date->timezone);
+                $date = str_replace('.000000', '', $data->date->date);
+
+                return Carbon::createFromFormat('Y-m-d H:i:s', $date, $data->date->timezone);
             }
         }
     }
