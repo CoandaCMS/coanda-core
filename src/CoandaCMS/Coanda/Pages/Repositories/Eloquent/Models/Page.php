@@ -320,7 +320,7 @@ class Page extends Eloquent {
 		{
 			if (!property_exists($this->cachedAttributes, $attribute_definition_identfier))
 			{
-				$this->cachedAttributes->{$attribute_definition_identfier} = '';
+				$this->cachedAttributes->{$attribute_definition_identfier} = isset($attribute_definition['default']) ? $attribute_definition['default'] : '';
 			}
 		}			
 	}

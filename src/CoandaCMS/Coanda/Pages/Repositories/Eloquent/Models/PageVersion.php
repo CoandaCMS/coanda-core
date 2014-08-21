@@ -162,6 +162,19 @@ class PageVersion extends Eloquent {
 				$new_attribute->identifier = $attribute_identifier;
 				$new_attribute->order = $index;
 
+				// Add the default value...
+				if (isset($definition['default']))
+				{
+					try
+					{
+						$new_attribute->attribute_data = $page_attribute_type->store($definition['default'], false, '');
+					}
+					catch (AttributeValidationException $exception)
+					{
+						// Do nothing...
+					}
+				}
+
 				$this->attributes()->save($new_attribute);
 			}
 			else

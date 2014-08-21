@@ -1164,13 +1164,33 @@ class EloquentPageRepository implements PageRepositoryInterface {
 
 			// Copy the attribute data from the current version
 			$existing_attribute = $current_version->getAttributeByIdentifier($type_attribute_identifier);
+			$attribute_value = '';
 
+			if ($existing_attribute)
+			{
+				$attribute_value = $existing_attribute->attribute_data;
+			}
+			else
+			{
+				// Add the default value...
+				if (isset($type_attribute['default']))
+				{
+					try
+					{
+						$attribute_value = $page_attribute_type->store($type_attribute['default'], false, '');
+					}
+					catch (AttributeValidationException $exception)
+					{
+						// Do nothing...
+					}
+				}
+			}
 			$attribute_data = [
 				'page_version_id' => $version->id,
 				'identifier' => $type_attribute_identifier,
 				'type' => $page_attribute_type->identifier(),
 				'order' => $index,
-				'attribute_data' => $existing_attribute ? $existing_attribute->attribute_data : ''
+				'attribute_data' => $attribute_value
 			];
 
 			$attribute = $this->page_attribute_model->create($attribute_data);
