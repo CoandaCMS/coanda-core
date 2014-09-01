@@ -233,14 +233,19 @@
 							</div>
 						</div>
 
+						@set('locations_allowed', $version->page->pageType()->allowsMultipleLocations())
+
 						@if ($version->slugs()->count() > 0)
 							@foreach ($version->slugs as $slug)
 							<div class="well well-sm slug-box">
 								<div class="form-group @if (isset($invalid_fields['slug_' . $slug->id])) has-error @endif">
 
-									<p>Location: <em>{{ $slug->base_slug }}/</em></p>
+									<p>@if ($locations_allowed)Location: @endif<em>{{ $slug->base_slug }}/</em></p>
+
 									<div class="input-group">
-								    	<span class="input-group-addon"><input type="checkbox" name="remove_slug_list[]" value="{{ $slug->id }}"></span>
+										@if ($locations_allowed)
+								    		<span class="input-group-addon"><input type="checkbox" name="remove_slug_list[]" value="{{ $slug->id }}"></span>
+								    	@endif
 								    	<input type="text" class="form-control slugiwugy" id="slug_{{ $slug->id }}" name="slug_{{ $slug->id }}" value="{{ (Input::old('slug_' . $slug->id) && Input::old('slug_' . $slug->id) !== '') ? Input::old('slug_' . $slug->id) : $slug->slug }}">
 								    	<span class="input-group-addon refresh-slug"><i class="fa fa-refresh"></i></span>
 									</div>
@@ -262,10 +267,12 @@
 							</div>
 						@endif
 
-						<div class="form-group">
-							{{ Form::button('Add location', ['name' => 'add_location', 'value' => 'true', 'type' => 'submit', 'class' => 'btn btn-default btn-sm pull-right']) }}
-							{{ Form::button('Remove selected', ['name' => 'remove_locations', 'value' => 'true', 'type' => 'submit', 'class' => 'btn btn-default btn-sm']) }}
-						</div>
+						@if ($locations_allowed)
+							<div class="form-group">
+								{{ Form::button('Add location', ['name' => 'add_location', 'value' => 'true', 'type' => 'submit', 'class' => 'btn btn-default btn-sm pull-right']) }}
+								{{ Form::button('Remove selected', ['name' => 'remove_locations', 'value' => 'true', 'type' => 'submit', 'class' => 'btn btn-default btn-sm']) }}
+							</div>
+						@endif
 					@endif
 
 					@set('visible_dates_old', Input::old('visible_dates'))

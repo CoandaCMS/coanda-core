@@ -73,6 +73,14 @@ abstract class PageType {
     /**
      * @return mixed
      */
+    public function allowsMultipleLocations()
+    {
+        return true;
+    }
+
+    /**
+     * @return mixed
+     */
     public function showMeta()
     {
         return true;
