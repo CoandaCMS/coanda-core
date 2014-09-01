@@ -18,6 +18,13 @@ class Page extends \CoandaCMS\Coanda\Core\Presenters\Presenter {
 			return htmlspecialchars($this->model->name);
 		}
 
+		$generated_name = $this->model->pageType()->generateName($this->model->versions()->first());
+
+		if ($generated_name !== '')
+		{
+			return htmlspecialchars($generated_name);
+		}
+
 		return Lang::get('coanda::pages.page_name_not_set');
 	}
 
