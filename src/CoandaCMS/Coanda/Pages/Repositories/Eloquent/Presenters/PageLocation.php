@@ -23,4 +23,18 @@ class PageLocation extends \CoandaCMS\Coanda\Core\Presenters\Presenter {
 	{
 		return $this->order_names[$this->model->sub_location_order];
 	}
+
+	public function path()
+	{
+		$path_array = [];
+
+		foreach ($this->model->parents() as $parent)
+		{
+			$path_array[] = $parent->present()->name;
+		}
+
+		$path_array[] = $this->model->present()->name;
+
+		return implode(' / ', $path_array);
+	}
 }

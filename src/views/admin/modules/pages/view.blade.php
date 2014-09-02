@@ -90,7 +90,7 @@
 				@if ($page->is_draft)
 					<a href="{{ Coanda::adminUrl('pages/editversion/' . $page->id . '/1') }}" class="btn btn-primary">Continue editing</a>
 				@else
-					@if (Coanda::canView('pages', 'edit', ['page_id' => $page->id, 'page_type' => $page->type]))
+					@if (Coanda::canView('pages', 'edit'))
 						<a href="{{ Coanda::adminUrl('pages/edit/' . $page->id) }}" class="btn btn-primary">Edit</a>
 					@else
 						<span class="btn btn-primary" disabled="disabled">Edit</span>
@@ -103,7 +103,7 @@
 					</button>
 					<ul class="dropdown-menu">
 						<li>
-							@if (Coanda::canView('pages', 'remove', ['page_id' => $page->id, 'page_type' => $page->type]))
+							@if (Coanda::canView('pages', 'remove'))
 								<a href="{{ Coanda::adminUrl('pages/delete/' . $page->id) }}">Delete</a>
 							@else
 								<span class="disabled">Delete</span>

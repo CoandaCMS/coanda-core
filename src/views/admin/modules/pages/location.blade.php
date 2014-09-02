@@ -101,7 +101,7 @@
 			<div class="col-md-8">
 				<div class="btn-group">
 					@if ($page->is_trashed)
-						@if (Coanda::canView('pages', 'remove', ['page_id' => $page->id, 'page_type' => $page->type]))
+						@if ($pagelocation->can_remove)
 							<a href="{{ Coanda::adminUrl('pages/restore/' . $page->id) }}" class="btn btn-primary">Restore</a>
 						@else
 							<span class="btn btn-primary" disabled="disabled">Restore</span>
@@ -110,7 +110,7 @@
 						@if ($page->is_draft)
 							<a href="{{ Coanda::adminUrl('pages/editversion/' . $page->id . '/1') }}" class="btn btn-primary">Continue editing</a>
 						@else
-							@if (Coanda::canView('pages', 'edit', ['page_id' => $page->id, 'page_type' => $page->type]))
+							@if ($pagelocation->can_edit)
 								<a href="{{ Coanda::adminUrl('pages/edit/' . $page->id) }}" class="btn btn-primary">Edit</a>
 							@else
 								<span class="btn btn-primary" disabled="disabled">Edit</span>
@@ -123,7 +123,7 @@
 							</button>
 							<ul class="dropdown-menu">
 								<li>
-									@if (Coanda::canView('pages', 'remove', ['page_id' => $page->id, 'page_type' => $page->type]))
+									@if ($pagelocation->can_remove)
 										<a href="{{ Coanda::adminUrl('pages/delete/' . $page->id) }}">Delete</a>
 									@else
 										<span class="disabled">Delete</span>
@@ -133,7 +133,7 @@
 						</div>
 					@endif
 				</div>
-				@if (!$page->is_trashed && !$page->is_home && $page->pageType()->allowsSubPages())
+				@if (!$page->is_trashed && !$page->is_home && $page->pageType()->allowsSubPages() && $pagelocation->can_create)
 					<div class="btn-group">
 						<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
 							Add sub page <span class="caret"></span>
@@ -204,16 +204,18 @@
 												{{ Form::button('Update orders', ['name' => 'update_order', 'value' => 'true', 'type' => 'submit', 'class' => 'btn btn-default']) }}
 											@endif
 
-											<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-												Order: {{ $pagelocation->present()->sub_location_order }} <span class="caret"></span>
-											</button>
-											<ul class="dropdown-menu" role="menu">
-												<li><a href="{{ Coanda::adminUrl('pages/change-location-order/' . $pagelocation->id . '/manual') }}"><i class="fa fa-sort-numeric-asc"></i> Manual</a></li>
-												<li><a href="{{ Coanda::adminUrl('pages/change-location-order/' . $pagelocation->id . '/alpha:asc') }}"><i class="fa fa-sort-alpha-asc"></i> Alpabetical (A-Z)</a></li>
-												<li><a href="{{ Coanda::adminUrl('pages/change-location-order/' . $pagelocation->id . '/alpha:desc') }}"><i class="fa fa-sort-alpha-desc"></i> Alpabetical (Z-A)</a></li>
-												<li><a href="{{ Coanda::adminUrl('pages/change-location-order/' . $pagelocation->id . '/created:desc') }}"><i class="fa fa-sort-amount-asc"></i> Created date (Newest-Oldest)</a></li>
-												<li><a href="{{ Coanda::adminUrl('pages/change-location-order/' . $pagelocation->id . '/created:asc') }}"><i class="fa fa-sort-amount-desc"></i> Created date (Oldest-Newest)</a></li>
-											</ul>
+											@if ($pagelocation->can_edit)
+												<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+													Order: {{ $pagelocation->present()->sub_location_order }} <span class="caret"></span>
+												</button>
+												<ul class="dropdown-menu" role="menu">
+													<li><a href="{{ Coanda::adminUrl('pages/change-location-order/' . $pagelocation->id . '/manual') }}"><i class="fa fa-sort-numeric-asc"></i> Manual</a></li>
+													<li><a href="{{ Coanda::adminUrl('pages/change-location-order/' . $pagelocation->id . '/alpha:asc') }}"><i class="fa fa-sort-alpha-asc"></i> Alpabetical (A-Z)</a></li>
+													<li><a href="{{ Coanda::adminUrl('pages/change-location-order/' . $pagelocation->id . '/alpha:desc') }}"><i class="fa fa-sort-alpha-desc"></i> Alpabetical (Z-A)</a></li>
+													<li><a href="{{ Coanda::adminUrl('pages/change-location-order/' . $pagelocation->id . '/created:desc') }}"><i class="fa fa-sort-amount-asc"></i> Created date (Newest-Oldest)</a></li>
+													<li><a href="{{ Coanda::adminUrl('pages/change-location-order/' . $pagelocation->id . '/created:asc') }}"><i class="fa fa-sort-amount-desc"></i> Created date (Oldest-Newest)</a></li>
+												</ul>
+											@endif
 										</div>
 
 										@if (Coanda::canView('pages', 'remove'))

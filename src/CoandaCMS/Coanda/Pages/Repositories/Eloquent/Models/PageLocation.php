@@ -35,6 +35,13 @@ class PageLocation extends Eloquent {
      */
     private $subTreeCount;
 
+
+    private $canEdit;
+    private $canView;
+    private $canRemove;
+    private $canCreate;
+
+
     /**
      * @param array $options
      */
@@ -312,4 +319,64 @@ class PageLocation extends Eloquent {
 		return $breadcrumb;
 	}
 
+	private function getPerissionData()
+	{
+		return [
+			'page_id' => $this->id,
+			'page_location_id' => $this->id,
+			'page_type' => $this->page->type,
+		];
+	}
+
+	public function getCanRemoveAttribute()
+	{
+		if (!$this->canRemove)
+		{
+			$this->canRemove = Coanda::canView('pages', 'remove', $this->getPerissionData());
+		}
+
+		return $this->canRemove;
+	}
+
+	public function getCanEditAttribute()
+	{
+		if (!$this->canEdit)
+		{
+			$this->canEdit = Coanda::canView('pages', 'edit', $this->getPerissionData());
+		}
+
+		return $this->canEdit;
+	}
+
+	public function getCanViewAttribute()
+	{
+		if (!$this->canView)
+		{
+			$this->canView = Coanda::canView('pages', 'view', $this->getPerissionData());
+		}
+
+		return $this->canView;
+	}
+
+	public function getCanCreateAttribute()
+	{
+		if (!$this->canCreate)
+		{
+			$this->canCreate = Coanda::canView('pages', 'create', $this->getPerissionData());
+		}
+
+		return $this->canCreate;
+	}
+
+	public function toArray()
+	{
+		return [
+			'id' => $this->id,
+			'parent_page_id' => $this->parent_page_id,
+			'allows_sub_pages' => $this->page->pageType()->allowsSubPages(),
+			'name' => $this->name,
+			'path' => $this->path,
+			'path_string' => $this->present()->path
+		];
+	}
 }

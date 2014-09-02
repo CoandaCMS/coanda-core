@@ -17,7 +17,7 @@
 
 					@foreach ($module['views'] as $view_identifier => $view)
 
-						@if (count($view['options']) > 0)
+						@if (isset($view['options']) && count($view['options']) > 0)
 
 							<div class="row">
 
@@ -42,13 +42,28 @@
 
 						@else
 
-							<p>
-								@if (isset($existing_permissions[$module_key]) && in_array($view_identifier, $existing_permissions[$module_key]))
+							@if (isset($view['location_paths']) && $view['location_paths'] == true)
+								@if (isset($existing_permissions[$module_key]['allowed_paths']))
 									<i class="fa fa-check"></i> {{ $view['name'] }}
+									<ul>
+										@foreach ($existing_permissions[$module_key]['allowed_paths'] as $path)
+											@set('location', Coanda::pages()->locationByPath($path))
+											
+											<li>{{ $location ? $location->present()->path : '* Location not found *' }}</li>
+										@endforeach
+									</ul>
 								@else
 									<span class="disabled"><i class="fa fa-times"></i> {{ $view['name'] }}</span>
 								@endif
-							</p>
+							@else
+								<p>
+									@if (isset($existing_permissions[$module_key]) && in_array($view_identifier, $existing_permissions[$module_key]))
+										<i class="fa fa-check"></i> {{ $view['name'] }}
+									@else
+										<span class="disabled"><i class="fa fa-times"></i> {{ $view['name'] }}</span>
+									@endif
+								</p>
+							@endif
 
 						@endif
 

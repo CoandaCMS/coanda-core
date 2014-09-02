@@ -158,6 +158,43 @@ class EloquentUserRepository implements UserRepositoryInterface {
 		return UserGroupModel::get();
 	}
 
+	private function processPermissions($permissions)
+	{
+		if (array_key_exists('*', $permissions))
+		{
+			$permissions = ['*'];
+		}
+
+		$final_permissions = [];
+
+		foreach ($permissions as $module => $module_permissions)
+		{
+			if (array_key_exists('allowed_paths', $module_permissions))
+			{
+				$allowed_paths = [];
+
+				foreach ($module_permissions['allowed_paths'] as $allowed_path)
+				{
+					if ($allowed_path !== '')
+					{
+						$allowed_paths[] = $allowed_path;
+					}
+				}
+
+				$allowed_paths = array_unique($allowed_paths);
+
+				$module_permissions['allowed_paths'] = $allowed_paths;
+			}
+
+			$final_permissions[$module] = $module_permissions;
+		}
+
+		$permissions = $final_permissions;
+
+
+		return $permissions;
+	}
+
     /**
      * @param $data
      * @throws \CoandaCMS\Coanda\Exceptions\ValidationException
@@ -181,12 +218,7 @@ class EloquentUserRepository implements UserRepositoryInterface {
 			throw new ValidationException($invalid_fields);
 		}
 
-		$permissions = $data['permissions'];
-
-		if (array_key_exists('*', $permissions))
-		{
-			$permissions = ['*'];
-		}
+		$permissions = $this->processPermissions($data['permissions']);
 
 		$user_group = new UserGroupModel;
 		$user_group->name = $data['name'];
@@ -228,12 +260,7 @@ class EloquentUserRepository implements UserRepositoryInterface {
 			throw new ValidationException($invalid_fields);
 		}
 
-		$permissions = $data['permissions'];
-
-		if (array_key_exists('*', $permissions))
-		{
-			$permissions = ['*'];
-		}
+		$permissions = $this->processPermissions($data['permissions']);
 
 		$group->name = $data['name'];
 		$group->permissions = json_encode($permissions);

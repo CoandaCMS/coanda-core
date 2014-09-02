@@ -158,15 +158,12 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		$permissions = [
 			'create' => [
 				'name' => 'Create',
-				'options' => []
 			],
 			'edit' => [
 				'name' => 'Edit',
-				'options' => []
 			],
 			'remove' => [
 				'name' => 'Remove',
-				'options' => []
 			],
 			'publish_options' => [
 				'name' => 'Publish options',
@@ -175,7 +172,14 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 			'page_types' => [
 				'name' => 'Available page types',
 				'options' => $page_type_options
-			]
+			],
+			'home_page' => [
+				'name' => 'Home Page',
+			],
+			'locations' => [
+				'name' => 'Locations',
+				'location_paths' => true
+			],
 		];
 
 		$coanda->addModulePermissions('pages', 'Pages', $permissions);		
@@ -343,41 +347,52 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
      */
     public function checkAccess($permission, $parameters, $user_permissions = [])
 	{
-		// $user_permissions['paths'] = [
-		// 	'/0/30/',
-		// 	'/0/42/',
-		// ];
+		// Do we need to check the path permissions?
+		if (isset($user_permissions['allowed_paths']) && count($user_permissions['allowed_paths']) > 0)
+		{
+			// Lets assume it passes
+			$pass_path_check = true;
 
-		// $pass_path_check = true;
+			if (isset($parameters['page_location_id']))
+			{
+				$location = Coanda::pages()->getLocation($parameters['page_location_id']);
 
-		// if (isset($parameters['page_location_id']))
-		// {
-		// 	if (isset($user_permissions['paths']) && count($user_permissions['paths']) > 0)
-		// 	{
-		// 		$pass_path_check = false;
+				if ($location && isset($user_permissions['allowed_paths']) && count($user_permissions['allowed_paths']) > 0)
+				{
+					$pass_path_check = false;
 
-		// 		foreach ($user_permissions['paths'] as $allowed_path)
-		// 		{
-		// 			$path_parts = explode('/', $allowed_path);
+					$location_path = $location->path . ($location->path == '' ? '/' : '') . $location->id . '/';
 
-		// 			if (count($path_parts) > 0)
-		// 			{
-		// 				foreach ($path_parts as $path_part)
-		// 				{
-		// 					if ($path_part == $parameters['page_location_id'])
-		// 					{
-		// 						$pass_path_check = true;
-		// 					}
-		// 				}
-		// 			}
-		// 		}
-		// 	}
-		// }
+					foreach ($user_permissions['allowed_paths'] as $allowed_path)
+					{
+						if ($allowed_path == '')
+						{
+							continue;
+						}
+						
+						// echo $allowed_path . ' -> ' . $location_path;
 
-		// if (!$pass_path_check)
-		// {
-		// 	throw new PermissionDenied('Your are not allowed access to this location');
-		// }
+						if (preg_match('/^' . preg_replace('/\//', '\/', preg_quote($allowed_path)) . '/', $location_path))
+						{
+							$pass_path_check = true;
+						}
+
+						if ($permission == 'view')
+						{
+							if (preg_match('/^' . preg_replace('/\//', '\/', preg_quote($location_path)) . '/', $allowed_path))
+							{
+								$pass_path_check = true;
+							}
+						}
+					}
+				}
+			}
+
+			if (!$pass_path_check)
+			{
+				throw new PermissionDenied('Your are not allowed access to this location');
+			}
+		}
 
 		if (in_array('*', $user_permissions))
 		{
@@ -403,16 +418,18 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		}
 
 		// Page type check
-		if ($permission == 'create' || $permission == 'edit')
+		if ($permission == 'create' || $permission == 'edit' || $permission == 'remove')
 		{
 			if (isset($user_permissions['page_types']) && count($user_permissions['page_types']) > 0)
 			{
-				if (!in_array($parameters['page_type'], $user_permissions['page_types']))
+				if (isset($parameters['page_type']) && !in_array($parameters['page_type'], $user_permissions['page_types']))
 				{
 					throw new PermissionDenied('Access denied by pages module for page type: ' . $parameters['page_type']);
 				}
 			}
 		}
+
+		return;
 	}
 
     /**
@@ -753,5 +770,26 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 	public function adminSearch($query)
 	{
 		return $this->getPageRepository()->adminSearch($query);
+	}
+
+	public function locationByPath($path)
+	{
+		$path_parts = explode('/', trim($path, '/'));
+
+		if (count($path_parts) > 0)
+		{
+			$location_id = (int) array_pop($path_parts);
+
+			try
+			{
+				return $this->getPageRepository()->locationById($location_id);
+			}
+			catch (PageNotFound $exception)
+			{
+				return false;
+			}
+		}
+
+		return false;
 	}
 }

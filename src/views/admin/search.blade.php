@@ -37,24 +37,31 @@
 					@if ($results->count() > 0)
 						<table class="table table-striped search-results fifty-50">
 							@foreach ($results as $result)
+								@set('location', $result->firstLocation())
 								<tr>
-									<td><a href="{{ Coanda::adminUrl('pages/view/' . $result->id) }}">{{ $result->present()->name }}</a></td>
 									<td>
-										@set('location', $result->firstLocation())
-										
-										@if ($location)
-											@set('breadcrumb', $location->breadcrumb())
+										@if ($location->can_view)
+											<a href="{{ Coanda::adminUrl('pages/view/' . $result->id) }}">{{ $result->present()->name }}</a>
+										@else
+											{{ $result->present()->name }}
+										@endif
+									</td>
+									<td>
+										@if ($location->can_view)
+											@if ($location)
+												@set('breadcrumb', $location->breadcrumb())
 
-											@if ($breadcrumb)
-												<ol class="breadcrumb">
-													@foreach ($breadcrumb as $breadcrumb_item)
-														@if ($breadcrumb_item['url'])
-															<li><a href="{{ url($breadcrumb_item['url']) }}">{{ $breadcrumb_item['name'] }}</a></li>
-														@endif
-													@endforeach
-												</ol>
+												@if ($breadcrumb)
+													<ol class="breadcrumb">
+														@foreach ($breadcrumb as $breadcrumb_item)
+															@if ($breadcrumb_item['url'])
+																<li><a href="{{ url($breadcrumb_item['url']) }}">{{ $breadcrumb_item['name'] }}</a></li>
+															@endif
+														@endforeach
+													</ol>
+												@endif
+
 											@endif
-
 										@endif
 									</td>
 								</tr>

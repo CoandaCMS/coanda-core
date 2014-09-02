@@ -90,6 +90,22 @@ class PagesAdminController extends BaseController {
 				return Redirect::to(Coanda::adminUrl('pages/location/' . $page->locations()->first()->id));
 			}
 
+			$can_view = false;
+
+			// Can we view this page in any of its locations?
+			foreach ($page->locations as $location)
+			{
+				if ($location->can_view)
+				{
+					$can_view = true;
+				}
+			}
+
+			if (!$can_view)
+			{
+				App::abort('404');
+			}
+
 			$view_data = [
 				'page' => $page,
 				'history' => $this->pageRepository->recentHistory($id, 5),
@@ -120,17 +136,20 @@ class PagesAdminController extends BaseController {
 		{
 			$pagelocation = $this->pageRepository->locationById($id);
 
-			Coanda::checkAccess('pages', 'view', ['page_location_id' => $pagelocation->id, 'page_location_path' => $pagelocation->path, 'page_type' => $pagelocation->page->type]);
+			if ($pagelocation->can_view)
+			{
+				// Coanda::checkAccess('pages', 'view', ['page_location_id' => $pagelocation->id, 'page_location_path' => $pagelocation->path, 'page_type' => $pagelocation->page->type]);
 
-			$view_data = [
-							'pagelocation' => $pagelocation,
-							'page' => $pagelocation->page,
-							'children' => $this->pageRepository->subPages($id, 10, ['include_hidden' => true, 'include_drafts' => true, 'include_invisible' => true]),
-							'history' => $this->pageRepository->recentHistory($pagelocation->page->id, 5),
-							'contributors' => $this->pageRepository->contributors($pagelocation->page->id)
-						];
+				$view_data = [
+								'pagelocation' => $pagelocation,
+								'page' => $pagelocation->page,
+								'children' => $this->pageRepository->subPages($id, 10, ['include_hidden' => true, 'include_drafts' => true, 'include_invisible' => true]),
+								'history' => $this->pageRepository->recentHistory($pagelocation->page->id, 5),
+								'contributors' => $this->pageRepository->contributors($pagelocation->page->id)
+							];
 
-			return View::make('coanda::admin.modules.pages.location', $view_data);
+				return View::make('coanda::admin.modules.pages.location', $view_data);				
+			}
 		}
 		catch (PageNotFound $exception)
 		{
@@ -537,7 +556,7 @@ class PagesAdminController extends BaseController {
 
 			$location = false;
 
-			if ($parent_page_id !== 0)			
+			if ($parent_page_id !== 0)
 			{
 				$location = $this->pageRepository->locationById($parent_page_id);
 			}
@@ -666,7 +685,14 @@ class PagesAdminController extends BaseController {
 		try
 		{
 			$page = $this->pageRepository->find($page_id);
-			$parent_page_id = $page->firstLocation()->parent_page_id;
+
+			$firstLocation = $page->firstLocation();
+			$parent_page_id = 0;
+
+			if ($firstLocation)
+			{
+				$parent_page_id = $firstLocation->parent_page_id;				
+			}
 
 			Coanda::checkAccess('pages', 'remove', ['page_id' => $page->id, 'page_type' => $page->type]);
 
@@ -845,5 +871,22 @@ class PagesAdminController extends BaseController {
 		$pagelocation = $this->pageRepository->locationById($location_id);
 
 		$this->pageRepository->registerLocationWithSearchProvider($pagelocation);
+    }
+
+    public function getLocationListJson($location_id = false)
+    {
+		$location = false;
+
+		if ($location_id)
+		{
+			$location = $this->pageRepository->locationById($location_id);
+		}
+
+		$per_page = 10;
+
+		return [
+				'location' => $location ? $location->toArray() : false,
+				'sub_pages' => $this->pageRepository->subPages($location_id, $per_page, ['include_hidden' => true, 'include_drafts' => true, 'include_invisible' => true])->toArray()
+			];
     }
 }

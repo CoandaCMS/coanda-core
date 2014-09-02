@@ -37,6 +37,8 @@
 
 <script src="{{ asset('packages/coandacms/coanda-core/js/coanda.js') }}"></script>
 
+@yield('custom-js')
+
 @yield('footer')
 
 </body>
