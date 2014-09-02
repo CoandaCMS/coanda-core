@@ -40,14 +40,15 @@
 							<tr>
 								<th></th>
 								<th>Name</th>
-								<th>Type</th>
-								<th>Locations</th>
+								<th></th>
 								<th></th>
 							</tr>
 							@foreach ($pages as $page)
 								<tr class="status-{{ $page->status }}">
 									<td class="tight">
-										<input type="checkbox" name="permanent_remove_list[]" value="{{ $page->id }}">
+										@if ($page->can_edit)
+											<input type="checkbox" name="permanent_remove_list[]" value="{{ $page->id }}">
+										@endif
 									</td>
 									<td>
 										@if ($page->is_draft)
@@ -55,23 +56,33 @@
 										@else
 											<i class="fa {{ $page->pageType()->icon() }}"></i>
 										@endif
-										<a href="{{ Coanda::adminUrl('pages/view/' . $page->id) }}">{{ $page->present()->name }}</a>
-									</td>
-									<td>{{ $page->present()->type }}</td>
-									<td>
-										@if ($page->locations->count() > 0)
-											@foreach ($page->locations as $location)
-											<p>
-												<a href="{{ Coanda::adminUrl('pages') }}">Pages</a> / 
-												@foreach ($location->parents() as $parent)
-													<a href="{{ Coanda::adminUrl('pages/location/' . $parent->id) }}">{{ $parent->page->present()->name }}</a> /
-												@endforeach
-												{{ $location->page->present()->name }}
-											</p>
-											@endforeach
+
+										@if ($page->can_view)
+											<a href="{{ Coanda::adminUrl('pages/view/' . $page->id) }}">{{ $page->present()->name }}</a>
+										@else
+											{{ $page->present()->name }}
 										@endif
 									</td>
-									<td><a class="pull-right btn btn-xs btn-primary" href="{{ Coanda::adminUrl('pages/restore/' . $page->id) }}">Restore</a></td>
+									<td>
+										@if ($page->can_view)
+											@if ($page->locations->count() > 0)
+												@foreach ($page->locations as $location)
+												<p>
+													<a href="{{ Coanda::adminUrl('pages') }}">Pages</a> / 
+													@foreach ($location->parents() as $parent)
+														<a href="{{ Coanda::adminUrl('pages/location/' . $parent->id) }}">{{ $parent->page->present()->name }}</a> /
+													@endforeach
+													{{ $location->page->present()->name }}
+												</p>
+												@endforeach
+											@endif
+										@endif
+									</td>
+									<td>
+										@if ($page->can_view)
+											<a class="pull-right btn btn-xs btn-primary" href="{{ Coanda::adminUrl('pages/restore/' . $page->id) }}">Restore</a>
+										@endif
+									</td>
 								</tr>
 							@endforeach
 						</table>

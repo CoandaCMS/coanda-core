@@ -325,5 +325,29 @@ class Page extends Eloquent {
 		}			
 	}
 
+	public function getCanEditAttribute()
+	{
+		$location = $this->firstLocation();
+		
+		if ($location)
+		{
+			return $location->can_edit;
+		}
+
+		return false;
+	}
+
+	public function getCanViewAttribute()
+	{
+		$location = $this->firstLocation();
+		
+		if ($location)
+		{
+			return $location->can_view;
+		}
+
+		return false;
+	}
+
 
 }
