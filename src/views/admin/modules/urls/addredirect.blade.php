@@ -8,14 +8,14 @@
 	<div class="breadcrumb-nav">
 		<ul class="breadcrumb">
 			<li><a href="{{ Coanda::adminUrl('urls') }}">Urls</a></li>
-			<li>Add promo url</li>
+			<li>Add redirect url</li>
 		</ul>
 	</div>
 </div>
 
 <div class="row">
 	<div class="page-name col-md-12">
-		<h1 class="pull-left">Add Promo Url</h1>
+		<h1 class="pull-left">Add Redirect Url</h1>
 	</div>
 </div>
 
@@ -27,12 +27,12 @@
 	<div class="col-md-12">
 		<div class="page-tabs">
 			<ul class="nav nav-tabs">
-				<li class="active"><a href="#add" data-toggle="tab">Add new promo URL</a></li>
+				<li class="active"><a href="#add" data-toggle="tab">URL</a></li>
 			</ul>
 			<div class="tab-content">
 				<div class="tab-pane active" id="add">
 
-					{{ Form::open(['url' => Coanda::adminUrl('urls/add-promo')]) }}
+					{{ Form::open(['url' => Coanda::adminUrl('urls/add-redirect')]) }}
 
 						<div class="form-group @if (isset($invalid_fields['from'])) has-error @endif">
 							<label class="control-label" for="from_url">From</label>
@@ -52,7 +52,7 @@
 						    @endif
 						</div>
 
-						{{ Form::button('Add', ['name' => 'add_promo_url', 'value' => 'true', 'type' => 'submit', 'class' => 'btn btn-primary']) }}
+						{{ Form::button('Add', ['name' => 'add_redirect_url', 'value' => 'true', 'type' => 'submit', 'class' => 'btn btn-primary']) }}
 
 					{{ Form::close() }}
 

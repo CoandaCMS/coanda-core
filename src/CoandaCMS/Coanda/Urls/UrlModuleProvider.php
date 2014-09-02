@@ -39,16 +39,18 @@ class UrlModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		$coanda->addModulePermissions('urls', 'Urls', $permissions);
 
         // Add the router to handle promo urls
-        $coanda->addRouter('promourl', function ($url) use ($coanda) {
+        $coanda->addRouter('redirecturl', function ($url) use ($coanda) {
 
             $urlRepository = App::make('CoandaCMS\Coanda\Urls\Repositories\UrlRepositoryInterface');
-            $promo = $urlRepository->getPromoUrl($url->type_id);
+            $redirect_url = $urlRepository->getRedirectUrl($url->type_id);
 
-            if ($promo)
+            if ($redirect_url)
             {
-                $promo->addHit();
+                $redirect_url->addHit();
 
-                return \Redirect::to(url($promo->destination));
+                $status = ($redirect_url->redirect_type == 'perm') ? 301 : 302;
+
+                return \Redirect::to(url($redirect_url->destination), $status);
             }
 
             App::abort('404');

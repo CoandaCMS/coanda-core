@@ -25,17 +25,17 @@ class EloquentUrlRepository implements \CoandaCMS\Coanda\Urls\Repositories\UrlRe
     /**
      * @var Models\PromoUrl
      */
-    private $promourl_model;
+    private $redirecturl_model;
 
     /**
      * @param UrlModel $model
      * @param CoandaCMS\Coanda\Urls\Slugifier $slugifier
      */
-    public function __construct(\CoandaCMS\Coanda\Urls\Repositories\Eloquent\Models\Url $model, \CoandaCMS\Coanda\Urls\Repositories\Eloquent\Models\PromoUrl $promourl_model, \CoandaCMS\Coanda\Urls\Slugifier $slugifier)
+    public function __construct(\CoandaCMS\Coanda\Urls\Repositories\Eloquent\Models\Url $model, \CoandaCMS\Coanda\Urls\Repositories\Eloquent\Models\RedirectUrl $redirecturl_model, \CoandaCMS\Coanda\Urls\Slugifier $slugifier)
 	{
 		$this->model = $model;
 		$this->slugifier = $slugifier;
-		$this->promourl_model = $promourl_model;
+		$this->redirecturl_model = $redirecturl_model;
 	}
 
     /**
@@ -268,12 +268,12 @@ class EloquentUrlRepository implements \CoandaCMS\Coanda\Urls\Repositories\UrlRe
      * @return \Illuminate\Database\Eloquent\Model|static
      * @throws \CoandaCMS\Coanda\Exceptions\ValidationException
      */
-    public function addPromo($from, $to)
+    public function addRedirect($from, $to, $redirect_type = 'temp')
 	{
 		$from = trim($from, '/');
 
 		// Can we use this URL?
-		if ($this->canUse($from, 'promourl'))
+		if ($this->canUse($from, 'redirecturl'))
 		{
 			$to = trim($to, '/');
 
@@ -283,14 +283,15 @@ class EloquentUrlRepository implements \CoandaCMS\Coanda\Urls\Repositories\UrlRe
 			}
 
 			$url_data = [
-				'destination' => $to
+				'destination' => $to,
+				'redirect_type' => $redirect_type
 			];
 
-			$promo_url = $this->promourl_model->create($url_data);
+			$redirect_url = $this->redirecturl_model->create($url_data);
 
-			$this->register($from, 'promourl', $promo_url->id);
+			$this->register($from, 'redirecturl', $redirect_url->id);
 
-			return $promo_url;			
+			return $redirect_url;			
 		}
 	}
 
@@ -298,18 +299,31 @@ class EloquentUrlRepository implements \CoandaCMS\Coanda\Urls\Repositories\UrlRe
      * @param $id
      * @return \Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|static
      */
-    public function getPromoUrl($id)
+    public function getRedirectUrl($id)
 	{
-		return $this->promourl_model->find($id);
+		return $this->redirecturl_model->find($id);
 	}
 
     /**
      * @param $per_page
      * @return mixed
      */
-    public function getPromoUrls($per_page)
+    public function getRedirectUrls($per_page)
 	{
-		return $this->promourl_model->orderBy('created_at', 'desc')->paginate($per_page);
+		return $this->redirecturl_model->where('redirect_type', '=', 'temp')->orderBy('created_at', 'desc')->paginate($per_page);
 	}
 
+	public function removeRedirectUrl($id)
+	{
+		$model = $this->getRedirectUrl($id);
+
+		if ($model)
+		{
+			// Delete the URL..
+			$this->delete('redirecturl', $model->id);
+
+			// Now delete the model..
+			$model->delete();
+		}
+	}
 }

@@ -26,9 +26,9 @@ class UrlAdminController extends BaseController {
 	{
 		Coanda::checkAccess('urls', 'view');
 
-		$promo_urls = $this->urlRepository->getPromoUrls(10);
+		$urls = $this->urlRepository->getRedirectUrls(10);
 
-		return View::make('coanda::admin.modules.urls.index', [ 'promo_urls' => $promo_urls ]);
+		return View::make('coanda::admin.modules.urls.index', [ 'urls' => $urls ]);
 	}
 
     /**
@@ -43,7 +43,7 @@ class UrlAdminController extends BaseController {
 		return View::make('coanda::admin.modules.urls.all', [ 'urls' => $urls ]);
 	}
 
-	public function getAddPromo()
+	public function getAddRedirect()
 	{
 		$invalid_fields = Session::has('invalid_fields') ? Session::get('invalid_fields') : [];
 
@@ -57,28 +57,47 @@ class UrlAdminController extends BaseController {
 			$invalid_fields['from'] = 'The URL is already in use';
 		}
 
-		return View::make('coanda::admin.modules.urls.addpromo', ['invalid_fields' => $invalid_fields]);
+		return View::make('coanda::admin.modules.urls.addredirect', ['invalid_fields' => $invalid_fields]);
 	}
 
-	public function postAddPromo()
+	public function postAddRedirect()
 	{
 		try
 		{
-			$this->urlRepository->addPromo(Input::get('from_url'), Input::get('to_url'));
+			$this->urlRepository->addRedirect(Input::get('from_url'), Input::get('to_url'));
 
 			return Redirect::to(Coanda::adminUrl('urls'))->with('promo_add', true);
 		}
 		catch (InvalidSlug $exception)
 		{
-			return Redirect::to(Coanda::adminUrl('urls/add-promo'))->withInput()->with('invalid_from', true);
+			return Redirect::to(Coanda::adminUrl('urls/add-redirect'))->withInput()->with('invalid_from', true);
 		}
 		catch (UrlAlreadyExists $exception)
 		{
-			return Redirect::to(Coanda::adminUrl('urls/add-promo'))->withInput()->with('from_in_use', true);
+			return Redirect::to(Coanda::adminUrl('urls/add-redirect'))->withInput()->with('from_in_use', true);
 		}
 		catch (ValidationException $exception)
 		{
-			return Redirect::to(Coanda::adminUrl('urls/add-promo'))->withInput()->with('invalid_fields', $exception->getInvalidFields());
+			return Redirect::to(Coanda::adminUrl('urls/add-redirect'))->withInput()->with('invalid_fields', $exception->getInvalidFields());
 		}
+	}
+
+	public function getRemoveRedirect($url_id)
+	{
+		$url = $this->urlRepository->getRedirectUrl($url_id);
+
+		if (!$url)
+		{
+			App::abort('404');
+		}
+
+		return View::make('coanda::admin.modules.urls.removeredirect', ['url' => $url]);
+	}
+
+	public function postRemoveRedirect($url_id)
+	{
+		$this->urlRepository->removeRedirectUrl($url_id);
+
+		return Redirect::to(Coanda::adminUrl('urls'))->with('removed', true);
 	}
 }

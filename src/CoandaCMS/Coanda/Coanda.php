@@ -460,7 +460,7 @@ class Coanda {
 
 		if ($url)
 		{
-			return Redirect::to(url($url->slug));
+			return Redirect::to(url($url->slug), 301);
 		}
 	}
 

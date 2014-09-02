@@ -14,9 +14,9 @@
 
 <div class="row">
 	<div class="page-name col-md-12">
-		<h1 class="pull-left">Promo Urls</h1>
+		<h1 class="pull-left">Redirect Urls</h1>
 		<div class="page-status pull-right">
-			<span class="label label-default">Total {{ $promo_urls->getTotal() }}</span>
+			<span class="label label-default">Total {{ $urls->getTotal() }}</span>
 		</div>
 	</div>
 </div>
@@ -33,24 +33,32 @@
 			</ul>
 			<div class="tab-content">
 				<div class="tab-pane active" id="urls">
-					@if ($promo_urls->count() > 0)
+
+					@if (Session::has('removed'))
+						<div class="alert alert-danger">
+							Redirect removed
+						</div>					
+					@endif
+					
+					@if ($urls->count() > 0)
 						<table class="table table-striped">
-							@foreach ($promo_urls as $promo_url)
+							@foreach ($urls as $url)
 								<tr>
 									<td>
-										{{ $promo_url->from_url }}
+										{{ $url->from_url }}
 
-										<a href="{{ url($promo_url->from_url) }}" class="new-window"><i class="fa fa-external-link"></i></a>
+										<a href="{{ url($url->from_url) }}" class="new-window"><i class="fa fa-external-link"></i></a>
 									</td>
-									<td>{{ $promo_url->destination }}</td>
-									<td>{{ $promo_url->counter }} hit{{ $promo_url->counter != 1 ? 's' : ''}}</td>
+									<td>{{ $url->destination }}</td>
+									<td>{{ $url->counter }} hit{{ $url->counter != 1 ? 's' : ''}}</td>
+									<td><a href="{{ Coanda::adminUrl('urls/remove-redirect/' . $url->id) }}"><i class="fa fa-minus-circle"></i></a></td>
 								</tr>
 							@endforeach
 						</table>
 
-						{{ $promo_urls->links() }}
+						{{ $urls->links() }}
 					@else
-						<p>No promotional urls have been added.</p>
+						<p>No redirect urls have been added.</p>
 					@endif
 				</div>
 			</div>
@@ -59,12 +67,12 @@
 	<div class="col-md-4">
 		<div class="page-tabs">
 			<ul class="nav nav-tabs">
-				<li class="active"><a href="#add" data-toggle="tab">Add new promo URL</a></li>
+				<li class="active"><a href="#add" data-toggle="tab">Add new redirect URL</a></li>
 			</ul>
 			<div class="tab-content">
 				<div class="tab-pane active" id="add">
 
-					{{ Form::open(['url' => Coanda::adminUrl('urls/add-promo')]) }}
+					{{ Form::open(['url' => Coanda::adminUrl('urls/add-redirect')]) }}
 
 						<div class="form-group">
 							<label class="control-label" for="from_url">From</label>
