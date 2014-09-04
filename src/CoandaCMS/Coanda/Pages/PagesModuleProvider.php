@@ -759,7 +759,7 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 
 	private function getQueryBuilder()
 	{
-		return new \CoandaCMS\Coanda\Pages\PageQuery($this->getPageRepository());
+		return App::make('CoandaCMS\Coanda\Pages\PageQuery');
 	}
 
 	public function query()

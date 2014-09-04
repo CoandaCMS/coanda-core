@@ -1,10 +1,9 @@
 <?php namespace CoandaCMS\Coanda\Pages;
 
-use App;
-
 class PageQuery {
 
 	private $pageRepository;
+	private $request;
 
 	private $location_id;
 	private $attribute_filters;
@@ -15,9 +14,10 @@ class PageQuery {
 	private $include_invisible = false;
 	private $paginate = false;
 
-	public function __construct($pageRepository)
+	public function __construct(\CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface $pageRepository, \Illuminate\Http\Request $request)
 	{
 		$this->pageRepository = $pageRepository;
+		$this->request = $request;
 	}
 
 	public function in($location_id)
@@ -87,7 +87,7 @@ class PageQuery {
 			'order_query' => $this->order_query
 		];
 
-		return $this->pageRepository->subPages($this->location_id, $this->limit, $parameters);
+		return $this->pageRepository->subPages($this->location_id, (int) $this->request->get('page', 1), $this->limit, $parameters);
 	}
 
 }
