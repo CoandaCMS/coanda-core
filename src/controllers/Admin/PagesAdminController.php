@@ -25,11 +25,14 @@ class PagesAdminController extends BaseController {
      */
     private $pageRepository;
 
+    private $manager;
+
     /**
      * @param CoandaCMS\Coanda\Pages\Factory\PageFactoryInterface $pageRepository
      */
-    public function __construct(\CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface $pageRepository)
+    public function __construct(\CoandaCMS\Coanda\Pages\PageManager $manager, \CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface $pageRepository)
 	{
+		$this->manager = $manager;
 		$this->pageRepository = $pageRepository;
 
 		$this->beforeFilter('csrf', array('on' => 'post'));
@@ -43,11 +46,10 @@ class PagesAdminController extends BaseController {
 	{
 		Coanda::checkAccess('pages', 'view');
 
-		$home_page = $this->pageRepository->getHomePage();
-
-		$pages = $this->pageRepository->topLevel(10, ['include_drafts' => true, 'include_invisible' => true, 'include_hidden' => true]);
-
-		return View::make('coanda::admin.modules.pages.index', [ 'home_page' => $home_page, 'pages' => $pages ]);
+		return View::make('coanda::admin.modules.pages.index', [
+				'home_page' => $this->manager->getHomePage(),
+				'pages' => $this->manager->getAdminSubLocations(0, (int) Input::get('page', 1), 10)
+			]);
 	}
 
     /**
@@ -92,6 +94,12 @@ class PagesAdminController extends BaseController {
 
 			$can_view = false;
 
+			// Is it the home page?
+			if ($page->is_home && Coanda::canView('pages', 'home_page'))
+			{
+				$can_view = true;
+			}
+
 			// Can we view this page in any of its locations?
 			foreach ($page->locations as $location)
 			{
@@ -134,18 +142,18 @@ class PagesAdminController extends BaseController {
 
 		try
 		{
-			$pagelocation = $this->pageRepository->locationById($id);
+			$location = $this->manager->getLocation($id);
 
-			if ($pagelocation->can_view)
+			if ($location->can_view)
 			{
-				// Coanda::checkAccess('pages', 'view', ['page_location_id' => $pagelocation->id, 'page_location_path' => $pagelocation->path, 'page_type' => $pagelocation->page->type]);
+				$sub_locations = $this->manager->getAdminSubLocations($location->id, (int) Input::get('page', 1), 10);
 
 				$view_data = [
-								'pagelocation' => $pagelocation,
-								'page' => $pagelocation->page,
-								'children' => $this->pageRepository->subPages($id, 10, ['include_hidden' => true, 'include_drafts' => true, 'include_invisible' => true]),
-								'history' => $this->pageRepository->recentHistory($pagelocation->page->id, 5),
-								'contributors' => $this->pageRepository->contributors($pagelocation->page->id)
+								'pagelocation' => $location,
+								'page' => $location->page,
+								'children' => $sub_locations,
+								'history' => $this->pageRepository->recentHistory($location->page->id, 5),
+								'contributors' => $this->pageRepository->contributors($location->page->id)
 							];
 
 				return View::make('coanda::admin.modules.pages.location', $view_data);				

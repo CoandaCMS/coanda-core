@@ -218,8 +218,15 @@ class EloquentPageRepository implements PageRepositoryInterface {
      * @param int $per_page
      * @return mixed
      */
-    private function subLocations($parent_location_id, $per_page = 10, $parameters = [])
+    private function subLocations($parent_location_id, $current_page, $per_page = 10, $parameters = [])
 	{
+		// return $this->query->handle('subpages', [
+		// 		'parent_location_id' => $parent_location_id,
+		// 		'page' => $page,
+		// 		'per_page' => $per_page,
+		// 		'parameters' => $parameters
+		// 	]);
+
 		$default_parameters = [
 			'include_invisible' => false,
 			'include_hidden' => false,
@@ -280,11 +287,9 @@ class EloquentPageRepository implements PageRepositoryInterface {
 			// Add the ordering...
 			$query = $this->addOrdering($query, $parent_location_id);
 
-			$page = Input::has('page') ? Input::get('page') : 1;
-
-			if ($page > 0)
+			if ($current_page > 0)
 			{
-				$query->skip(($page - 1) * $per_page);
+				$query->skip(($current_page - 1) * $per_page);
 			}
 
 			$results = $query->take($per_page)->get($per_page);
@@ -348,22 +353,13 @@ class EloquentPageRepository implements PageRepositoryInterface {
 	}
 
     /**
-     * @param int $per_page
-     * @return mixed
-     */
-    public function topLevel($per_page = 10, $parameters = [])
-	{
-		return $this->subLocations(0, $per_page, $parameters);
-	}
-
-    /**
      * @param $location_id
      * @param $per_page
      * @return mixed
      */
-    public function subPages($location_id, $per_page, $parameters = [])
+    public function subPages($location_id, $page, $per_page, $parameters = [])
 	{
-		return $this->subLocations($location_id, $per_page, $parameters);
+		return $this->subLocations($location_id, $page, $per_page, $parameters);
 	}
 
     /**

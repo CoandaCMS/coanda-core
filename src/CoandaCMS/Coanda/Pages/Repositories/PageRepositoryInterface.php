@@ -46,12 +46,6 @@ interface PageRepositoryInterface {
     public function findByIds($ids);
 
     /**
-     * @param $per_page
-     * @return mixed
-     */
-    public function topLevel($per_page, $parameters);
-
-    /**
      * @param $page_id
      * @param $per_page
      * @return mixed
