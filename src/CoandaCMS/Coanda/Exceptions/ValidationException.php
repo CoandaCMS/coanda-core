@@ -7,7 +7,7 @@
 class ValidationException extends \Exception {
 
     /**
-     * @var array|string
+     * @var array
      */
     private $invalid_fields = [];
 
