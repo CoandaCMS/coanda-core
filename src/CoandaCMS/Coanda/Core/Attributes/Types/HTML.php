@@ -94,7 +94,7 @@ class HTML extends AttributeType {
             $allowed_tag_string .= '<' . $allowed_tag . '>';
         }
 
-		return strip_tags($data, $allowed_tag_string);
+		return is_string($data) ? strip_tags($data, $allowed_tag_string) : '';
 	}
 
     /**
