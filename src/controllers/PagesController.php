@@ -2,7 +2,7 @@
 
 use View, Redirect, App, Coanda, Input, Session;
 
-use CoandaCMS\Coanda\Exceptions\Pages\PageVersionNotFound;
+use CoandaCMS\Coanda\Pages\Exceptions\PageVersionNotFound;
 use CoandaCMS\Coanda\Exceptions\ValidationException;
 /**
  * Class PagesController
@@ -36,7 +36,7 @@ class PagesController extends BaseController {
 
 			return View::make('coanda::pages.preview', [ 'version' => $version, 'preview_key' => $preview_key, 'invalid_fields' => $invalid_fields ]);
 		}
-		catch(PageVersionNotFound $exception)
+		catch (PageVersionNotFound $exception)
 		{
 			return App::abort('404');
 		}
@@ -50,7 +50,7 @@ class PagesController extends BaseController {
 
 			return Coanda::module('pages')->renderVersion($version);
 		}
-		catch(PageVersionNotFound $exception)
+		catch (PageVersionNotFound $exception)
 		{
 			return App::abort('404');
 		}
@@ -66,11 +66,11 @@ class PagesController extends BaseController {
 
 			return Redirect::to('pages/preview/' . $preview_key)->with('comment_saved', true);
 		}
-		catch(PageVersionNotFound $exception)
+		catch (PageVersionNotFound $exception)
 		{
 			return App::abort('404');
 		}
-		catch(ValidationException $exception)
+		catch (ValidationException $exception)
 		{
 			return Redirect::to('pages/preview/' . $preview_key)->with('invalid_fields', $exception->getInvalidFields())->withInput();
 		}
