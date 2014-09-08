@@ -57,9 +57,9 @@ class EloquentHistoryRepository implements HistoryRepositoryInterface {
 		return $this->model->whereFor($for)->whereForId($for_id)->orderBy('created_at', 'desc')->take($limit)->get();
 	}
 
-	public function getPaginated($for, $for_id)
+	public function getPaginated($for, $for_id, $limit = 10)
 	{
-		return $this->model->whereFor($for)->whereForId($for_id)->orderBy('created_at', 'desc')->paginate(10);
+		return $this->model->whereFor($for)->whereForId($for_id)->orderBy('created_at', 'desc')->paginate($limit);
 	}
 
     /**
