@@ -63,7 +63,6 @@ class Page extends Eloquent {
 
 	/**
 	 * Get the versions for this page
-	 * @return \Illuminate\Database\Eloquent\Collection
 	 */
 	public function versions()
 	{

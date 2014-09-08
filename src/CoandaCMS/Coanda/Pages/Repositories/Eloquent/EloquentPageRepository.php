@@ -85,6 +85,16 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		$this->historyRepository = $historyRepository;
 	}
 
+	private function logHistory($what, $identifier, $data = '', $user_id = false)
+	{
+		if (!$user_id)
+		{
+			$user_id = Coanda::currentUser()->id;
+		}
+
+		$this->historyRepository->add('pages', $identifier, $user_id, $what, $data);
+	}
+
     /**
      * @param $id
      * @return mixed
@@ -432,7 +442,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		}
 
 		// Log the history
-		$this->historyRepository->add('pages', $page->id, $user_id, 'initial_version');
+		$this->logHistory('initial_version', $page->id, $user_id);
 
 		return $page;
 	}
@@ -1003,7 +1013,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		}
 
 		// Log the history
-		$historyRepository->add('pages', $page->id, $user_id, 'publish_version', ['version' => (int)$version->version]);
+		$this->logHistory('publish_version', $page->id, ['version' => (int)$version->version], $user_id);
 
 		// Tell the search engine about it!
 		foreach ($page->locations as $location)
@@ -1174,6 +1184,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 					}
 				}
 			}
+			
 			$attribute_data = [
 				'page_version_id' => $version->id,
 				'identifier' => $type_attribute_identifier,
@@ -1207,7 +1218,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		}
 
 		// Log the history
-		$this->historyRepository->add('pages', $page_id, $user_id, 'new_version', ['version' => $new_version_number]);
+		$this->logHistory('new_version', $page_id, ['version' => (int)$new_version_number], $user_id);
 
 		return $new_version_number;
 	}
@@ -1239,7 +1250,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 			// Finally, we can remove this page
 			$page->delete();
 
-			$this->historyRepository->add('pages', $page->id, Coanda::currentUser()->id, 'deleted');
+			$this->logHistory('deleted', $page->id);
 		}
 		else
 		{
@@ -1250,7 +1261,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 				$page->is_trashed = true;
 				$page->save();
 
-				$this->historyRepository->add('pages', $page->id, Coanda::currentUser()->id, 'trashed');
+				$this->logHistory('trashed', $page->id);
 			}
 		}
 	}
@@ -1380,7 +1391,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 			}
 		}
 
-		$this->historyRepository->add('pages', $page->id, Coanda::currentUser()->id, 'restored');
+		$this->logHistory('restored', $page->id);
 	}
 
     /**

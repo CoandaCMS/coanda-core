@@ -23,7 +23,7 @@ class EloquentUrlRepository implements \CoandaCMS\Coanda\Urls\Repositories\UrlRe
     private $slugifier;
 
     /**
-     * @var Models\PromoUrl
+     * @var CoandaCMS\Coanda\Urls\Repositories\Eloquent\Models\RedirectUrl
      */
     private $redirecturl_model;
 

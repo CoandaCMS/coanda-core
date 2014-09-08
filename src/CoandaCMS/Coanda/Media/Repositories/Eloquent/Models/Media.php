@@ -199,10 +199,12 @@ class Media extends Eloquent {
      */
     public function toArray()
 	{
+		$download_url = $this->downloadUrl();
+
 		return [
 			'id' => $this->id,
 			'original_filename' => $this->original_filename,
-			'original_file_url' => url($this->downloadUrl()),
+			'original_file_url' => $download_url ? url($this->downloadUrl()) : false,
 			'thumbnail_url' => $this->type == 'image' ? url($this->cropUrl(200)) : false,
 			'mime' => $this->mime
 		];

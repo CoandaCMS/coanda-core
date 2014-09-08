@@ -93,8 +93,11 @@ class PageManager {
 	{
 		$version = $this->getVersionForPage($page_id, $version_number);
 
+		$this->logHistory('discard_version', $version->page->id, ['version' => $version->version]);
+
 		$this->repository->discardDraftVersion($version, $this->current_user_id);
-		$this->logHistory($version->page->id, 'discard_version', ['version' => $version->version]);
+
+
 	}
 
 	public function saveDraftVersion($page_id, $version_number, $input)

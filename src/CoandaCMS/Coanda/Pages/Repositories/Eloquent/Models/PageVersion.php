@@ -1,6 +1,8 @@
 <?php namespace CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models;
 
-use Eloquent, Coanda;
+use Eloquent;
+use Coanda;
+use CoandaCMS\Coanda\Exceptions\AttributeValidationException;
 
 /**
  * Class PageVersion

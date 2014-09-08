@@ -7,7 +7,7 @@
 class MissingInput extends \Exception {
 
     /**
-     * @var array|string
+     * @var array
      */
     private $missing_fields = [];
 
