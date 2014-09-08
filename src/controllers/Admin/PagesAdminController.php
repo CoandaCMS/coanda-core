@@ -2,9 +2,10 @@
 
 use View, App, Coanda, Redirect, Input, Session;
 
-use CoandaCMS\Coanda\Exceptions\Pages\PageTypeNotFound;
-use CoandaCMS\Coanda\Exceptions\Pages\PageNotFound;
-use CoandaCMS\Coanda\Exceptions\Pages\PageVersionNotFound;
+use CoandaCMS\Coanda\Pages\Exceptions\PageNotFound;
+use CoandaCMS\Coanda\Pages\Exceptions\PageVersionNotFound;
+use CoandaCMS\Coanda\Pages\Exceptions\PageTypeNotFound;
+
 use CoandaCMS\Coanda\Exceptions\ValidationException;
 use CoandaCMS\Coanda\Exceptions\PermissionDenied;
 
