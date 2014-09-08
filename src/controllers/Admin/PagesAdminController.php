@@ -371,8 +371,6 @@ class PagesAdminController extends BaseController {
 			return Redirect::to(Coanda::adminUrl('pages/view/' . $page_id));
 		}
 
-		$page = $version->page;
-
 		if (Input::has('discard'))
 		{
 			$parent_page_id = $version->page->firstLocation()->parent_page_id;
