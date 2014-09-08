@@ -14,7 +14,7 @@ class MissingInput extends \Exception {
     /**
      * @param string $missing_fields
      */
-    public function __construct($missing_fields)
+    public function __construct(array $missing_fields = [])
 	{
 		$this->missing_fields = $missing_fields;
 	}
