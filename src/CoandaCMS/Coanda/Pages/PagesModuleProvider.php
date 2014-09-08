@@ -193,7 +193,7 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 	{
 		$page_types = $this->page_types;
 
-		if ($page)
+		if ($page !== false)
 		{
 			$allowed_page_types = $page->pageType()->allowedSubPageTypes();
 
