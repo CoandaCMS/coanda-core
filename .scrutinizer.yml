@@ -5,7 +5,7 @@ before_commands:
     - 'composer install --dev --prefer-source'
 checks:
     php:
-code_rating: true
+        code_rating: true
         duplication: true
         variable_existence: true
         useless_calls: true
