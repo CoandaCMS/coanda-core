@@ -31,7 +31,6 @@ checks:
         avoid_usage_of_logical_operators: true
         ensure_lower_case_builtin_functions: true
         foreach_traversable: true
-        function_in_camel_caps: true
         instanceof_class_exists: true
         lowercase_basic_constants: true
         lowercase_php_keywords: true
@@ -47,9 +46,7 @@ checks:
         no_unnecessary_function_call_in_for_loop: true
         non_commented_empty_catch_block: true
         php5_style_constructor: true
-        parameters_in_camelcaps: true
         prefer_while_loop_over_for_loop: true
-        properties_in_camelcaps: true
         require_scope_for_methods: true
         require_scope_for_properties: true
         spacing_around_conditional_operators: true
