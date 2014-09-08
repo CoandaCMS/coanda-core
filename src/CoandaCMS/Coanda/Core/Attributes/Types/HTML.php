@@ -103,7 +103,6 @@ class HTML extends AttributeType {
      */
     public function data($data, $parameters = [])
 	{
-		// TODO - tidy up the HTML ready for displaying...
 		return $data;
 	}
 }
