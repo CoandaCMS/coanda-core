@@ -151,24 +151,6 @@ interface PageRepositoryInterface {
 
     /**
      * @param $page_id
-     * @return mixed
-     */
-    public function recentHistory($page_id);
-
-    /**
-     * @param $page_id
-     * @return mixed
-     */
-    public function history($page_id);
-
-    /**
-     * @param $page_id
-     * @return mixed
-     */
-    public function contributors($page_id);
-
-    /**
-     * @param $page_id
      * @param bool $permanent
      * @return mixed
      */
@@ -194,10 +176,11 @@ interface PageRepositoryInterface {
     public function restore($page_id, $restore_sub_pages);
 
     /**
-     * @param $new_orders
+     * @param $location_id
+     * @param $new_order
      * @return mixed
      */
-    public function updateOrdering($new_orders);
+    public function updateLocationOrder($location_id, $new_order);
 
     /**
      * @param $offset

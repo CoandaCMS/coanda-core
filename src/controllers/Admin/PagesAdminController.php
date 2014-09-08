@@ -38,13 +38,46 @@ class PagesAdminController extends BaseController {
 		$this->beforeFilter('csrf', array('on' => 'post'));
 	}
 
+	private function __checkPermissions($view, $data = [])
+	{
+		Coanda::checkAccess('pages', $view, $data);
+	}
+
+	private function __checkPagePermission($page)
+	{
+		// Is it the home page?
+		if ($page->is_home && Coanda::canView('pages', 'home_page'))
+		{
+			return true;
+		}
+
+		// Can we view this page in any of its locations?
+		foreach ($page->locations as $location)
+		{
+			if ($location->can_view)
+			{
+				return true;
+			}
+		}
+
+		App::abort('404');
+	}
+
+	private function __checkLocationPermission($location)
+	{
+		if (!$location->can_view)
+		{
+			App::abort('403');
+		}
+	}
+
     /**
      * @return mixed
      * @throws \CoandaCMS\Coanda\Exceptions\PermissionDenied
      */
     public function getIndex()
 	{
-		Coanda::checkAccess('pages', 'view');
+		$this->__checkPermissions('view');
 
 		return View::make('coanda::admin.modules.pages.index', [
 				'home_page' => $this->manager->getHomePage(),
@@ -57,23 +90,19 @@ class PagesAdminController extends BaseController {
      */
     public function postIndex()
 	{
-		// Did we hit the delete button?
-		if (Input::has('delete_selected') && Input::get('delete_selected') == 'true')
+		if (Input::has('delete_selected') && Input::get('delete_selected') == 'true' && count(Input::get('remove_page_list', [])) > 0)
 		{
-			if (!Input::has('remove_page_list') || count(Input::get('remove_page_list')) == 0)
-			{
-				return Redirect::to(Coanda::adminUrl('pages'));
-			}
-
 			return Redirect::to(Coanda::adminUrl('pages/confirm-delete'))->with('remove_page_list', Input::get('remove_page_list'));
 		}
 
-		if (Input::has('update_order') && Input::get('update_order') == 'true')
+		if (Input::get('update_order', false) == 'true')
 		{
-			$this->pageRepository->updateOrdering(Input::get('ordering'));
+			$this->manager->updateLocationOrders(Input::get('ordering'));
 
 			return Redirect::to(Coanda::adminUrl('pages'))->with('ordering_updated', true);
 		}
+
+		return Redirect::to(Coanda::adminUrl('pages'));
 	}
 
     /**
@@ -84,7 +113,7 @@ class PagesAdminController extends BaseController {
 	{
 		try
 		{
-			$page = $this->pageRepository->find($id);
+			$page = $this->manager->getPage($id);
 
 			// If the page is only in one place, lets redirect and view it there
 			if ($page->locations->count() == 1)
@@ -92,35 +121,13 @@ class PagesAdminController extends BaseController {
 				return Redirect::to(Coanda::adminUrl('pages/location/' . $page->locations()->first()->id));
 			}
 
-			$can_view = false;
+			$this->__checkPagePermission($page);
 
-			// Is it the home page?
-			if ($page->is_home && Coanda::canView('pages', 'home_page'))
-			{
-				$can_view = true;
-			}
-
-			// Can we view this page in any of its locations?
-			foreach ($page->locations as $location)
-			{
-				if ($location->can_view)
-				{
-					$can_view = true;
-				}
-			}
-
-			if (!$can_view)
-			{
-				App::abort('404');
-			}
-
-			$view_data = [
+			return View::make('coanda::admin.modules.pages.view', [
 				'page' => $page,
-				'history' => $this->pageRepository->recentHistory($id, 5),
-				'contributors' => $this->pageRepository->contributors($id)				
-			];
-
-			return View::make('coanda::admin.modules.pages.view', $view_data);
+				'history' => $this->manager->pageHistory($id, 5),
+				'contributors' => $this->manager->pageContributors($id)				
+			]);
 		}
 		catch (PageNotFound $exception)
 		{
@@ -144,20 +151,15 @@ class PagesAdminController extends BaseController {
 		{
 			$location = $this->manager->getLocation($id);
 
-			if ($location->can_view)
-			{
-				$sub_locations = $this->manager->getAdminSubLocations($location->id, (int) Input::get('page', 1), 10);
+			$this->__checkLocationPermission($location);
 
-				$view_data = [
-								'pagelocation' => $location,
-								'page' => $location->page,
-								'children' => $sub_locations,
-								'history' => $this->pageRepository->recentHistory($location->page->id, 5),
-								'contributors' => $this->pageRepository->contributors($location->page->id)
-							];
-
-				return View::make('coanda::admin.modules.pages.location', $view_data);				
-			}
+			return View::make('coanda::admin.modules.pages.location', [
+					'pagelocation' => $location,
+					'page' => $location->page,
+					'children' => $this->manager->getAdminSubLocations($location->id, (int) Input::get('page', 1), 10),
+					'history' => $this->manager->pageHistory($location->page->id, 5),
+					'contributors' => $this->manager->pageContributors($location->page->id)
+			]);
 		}
 		catch (PageNotFound $exception)
 		{
@@ -171,28 +173,19 @@ class PagesAdminController extends BaseController {
      */
     public function postLocation($id)
 	{
-		if ($id == 0)
+		if (Input::has('delete_selected') && Input::get('delete_selected') == 'true' && count(Input::get('remove_page_list', [])) > 0)
 		{
-			return Redirect::to(Coanda::adminUrl('pages'));
-		}
-
-		// Did we hit the delete button?
-		if (Input::has('delete_selected') && Input::get('delete_selected') == 'true')
-		{
-			if (!Input::has('remove_page_list') || count(Input::get('remove_page_list')) == 0)
-			{
-				return Redirect::to(Coanda::adminUrl('pages/location/' . $id));
-			}
-
 			return Redirect::to(Coanda::adminUrl('pages/confirm-delete'))->with('remove_page_list', Input::get('remove_page_list'))->with('previous_location_id', $id);
 		}
 
-		if (Input::has('update_order') && Input::get('update_order') == 'true')
+		if (Input::get('update_order', false) == 'true')
 		{
-			$this->pageRepository->updateOrdering(Input::get('ordering'));
+			$this->manager->updateLocationOrders(Input::get('ordering', []));
 
 			return Redirect::to(Coanda::adminUrl('pages/location/' . $id))->with('ordering_updated', true);
 		}
+
+		return Redirect::to(Coanda::adminUrl('pages/location/' . $id));
 	}
 
     /**
@@ -200,21 +193,17 @@ class PagesAdminController extends BaseController {
      */
     public function getConfirmDelete()
 	{
-		$previous_location_id = Session::get('previous_location_id', 0);
+		$redirect_location_id = Session::get('previous_location_id', 0);
 
 		if (!Session::has('remove_page_list') || count(Session::get('remove_page_list')) == 0)
 		{
-			if (!$previous_location_id)
-			{
-				return Redirect::to(Coanda::adminUrl('pages'));
-			}
-
-			return Redirect::to(Coanda::adminUrl('pages/location/' . $previous_location_id));
+			return Redirect::to(Coanda::adminUrl('pages/location/' . $redirect_location_id));
 		}
 
-		$pages = $this->pageRepository->findByIds(Session::get('remove_page_list'));
-
-		return View::make('coanda::admin.modules.pages.confirmdelete', ['pages' => $pages, 'previous_location_id' => $previous_location_id]);
+		return View::make('coanda::admin.modules.pages.confirmdelete', [
+				'pages' => $this->manager->getPages(Session::get('remove_page_list')),
+				'previous_location_id' => $redirect_location_id
+			]);
 
 	}
 
@@ -223,28 +212,14 @@ class PagesAdminController extends BaseController {
      */
     public function postConfirmDelete()
 	{
-		$previous_location_id = Input::get('previous_location_id');
-
-		if (!$previous_location_id)
-		{
-			$previous_location_id = 0;
-		}
-
 		if (!Input::has('confirmed_remove_list') || count(Input::get('confirmed_remove_list')) == 0)
 		{
-			return Redirect::to(Coanda::adminUrl('pages/location/' . $previous_location_id));
+			return Redirect::to(Coanda::adminUrl('pages/location/' . Input::get('previous_location_id', 0)));
 		}
 
-		$permanent = false;
+		$this->manager->deletePages(Input::get('confirmed_remove_list'), (Input::get('permanent_delete', false) == 'true'));
 
-		if (Input::has('permanent_delete') && Input::get('permanent_delete') == 'true')
-		{
-			$permanent = true;
-		}
-
-		$this->pageRepository->deletePages(Input::get('confirmed_remove_list'), $permanent);
-
-		return Redirect::to(Coanda::adminUrl('pages/location/' . $previous_location_id));
+		return Redirect::to(Coanda::adminUrl('pages/location/' . Input::get('previous_location_id', 0)));
 	}
 
     /**
@@ -254,14 +229,12 @@ class PagesAdminController extends BaseController {
      */
     public function getCreate($page_type, $parent_page_id = false)
 	{
-		Coanda::checkAccess('pages', 'create', ['page_type' => $page_type, 'parent_page_id' => $parent_page_id]);
+		$this->__checkPermissions('create', ['page_type' => $page_type, 'parent_page_id' => $parent_page_id]);
 
 		try
 		{
-			$type = Coanda::module('pages')->getPageType($page_type);
-			$page = $this->pageRepository->create($type, Coanda::currentUser()->id, $parent_page_id);
+			$page = $this->manager->createNewPage($page_type, $parent_page_id);
 
-			// Redirect to edit (version 1 - which should be the only version, given this is the create method!)
 			return Redirect::to(Coanda::adminUrl('pages/editversion/' . $page->id . '/1'));
 		}
 		catch (PageTypeNotFound $exception)
@@ -304,15 +277,18 @@ class PagesAdminController extends BaseController {
      * @param $page_id
      * @return mixed
      */
-    public function getEdit($page_id, $version_number = false)
+    public function getEdit($page_id, $base_version_number = false)
 	{
 		try
 		{
-			$page = $this->pageRepository->find($page_id);
+			$page = $this->manager->getPage($page_id);
 
-			Coanda::checkAccess('pages', 'edit', ['page_id' => $page->id, 'page_type' => $page->type]);
+			if (!$page->can_edit)
+			{
+				return App::abort('403');
+			}
 
-			$existing_drafts = $this->pageRepository->draftsForUser($page_id, Coanda::currentUser()->id);	
+			$existing_drafts = $this->manager->draftsForUser($page_id);
 
 			if ($existing_drafts->count() > 0)
 			{
@@ -320,7 +296,7 @@ class PagesAdminController extends BaseController {
 			}
 			else
 			{
-				$new_version = $this->pageRepository->createNewVersion($page_id, Coanda::currentUser()->id, $version_number);
+				$new_version = $this->manager->createNewVersionForPage($page->id, $base_version_number);
 
 				return Redirect::to(Coanda::adminUrl('pages/editversion/' . $page->id . '/' . $new_version));
 			}
@@ -340,23 +316,25 @@ class PagesAdminController extends BaseController {
 	{
 		try
 		{
-			$version = $this->pageRepository->getDraftVersion($page_id, $version_number);
+			$version = $this->manager->getVersionForPage($page_id, $version_number);
 
-			$page = $version->page;
-
-			Coanda::checkAccess('pages', 'edit', ['page_id' => $page->id, 'page_type' => $page->type]);
-
-			$invalid_fields = Session::has('invalid_fields') ? Session::get('invalid_fields') : [];
-
-			$old_attribute_input = Input::old('attributes', []);
+			if (!$version->page->can_edit)
+			{
+				App::abort('403');
+			}
 
 			$publish_handlers = Coanda::module('pages')->publishHandlers();
-			$publish_handler_invalid_fields = Session::has('publish_handler_invalid_fields') ? Session::get('publish_handler_invalid_fields') : [];
 			$default_publish_handler = array_keys($publish_handlers)[0];
 
-			$layouts = Coanda::module('layout')->layoutsByPageType($page->type);
-
-			return View::make('coanda::admin.modules.pages.edit', ['version' => $version, 'invalid_fields' => $invalid_fields, 'publish_handler_invalid_fields' => $publish_handler_invalid_fields, 'publish_handlers' => $publish_handlers, 'default_publish_handler' => $default_publish_handler, 'layouts' => $layouts, 'old_attribute_input' => $old_attribute_input ]);
+			return View::make('coanda::admin.modules.pages.edit', [
+				'version' => $version,
+				'invalid_fields' => Session::get('invalid_fields', []),
+				'publish_handler_invalid_fields' => Session::get('publish_handler_invalid_fields', []),
+				'publish_handlers' => $publish_handlers,
+				'default_publish_handler' => $default_publish_handler,
+				'layouts' => Coanda::module('layout')->layoutsByPageType($version->page->type),
+				'old_attribute_input' => Input::old('attributes', [])
+			]);
 		}
 		catch (PageNotFound $exception)
 		{
@@ -377,136 +355,134 @@ class PagesAdminController extends BaseController {
 	{
 		try
 		{
-			$version = $this->pageRepository->getDraftVersion($page_id, $version_number);
-			$page = $version->page;
+			$version = $this->manager->getVersionForPage($page_id, $version_number);
 
-			Coanda::checkAccess('pages', 'edit', ['page_id' => $page->id, 'page_type' => $page->type]);
-
-			if (Input::has('discard'))
+			if (!$version->page->can_edit)
 			{
-				$parent_page_id = $version->page->firstLocation()->parent_page_id;
-				
-				$this->pageRepository->discardDraftVersion($version, Coanda::currentUser()->id);
-
-				// If this was the first version, then we need to redirect back to the parent
-				if ($version_number == 1)
-				{
-					if ($parent_page_id)
-					{
-						return Redirect::to(Coanda::adminUrl('pages/location/' . $parent_page_id));	
-					}
-
-					return Redirect::to(Coanda::adminUrl('pages'));
-				}
-				else
-				{
-					return Redirect::to(Coanda::adminUrl('pages/view/' . $page_id));
-				}
+				App::abort('403');
 			}
+		}
+		catch (PageNotFound $exception)
+		{
+			return Redirect::to(Coanda::adminUrl('pages'));
+		}
+		catch (PageVersionNotFound $exception)
+		{
+			return Redirect::to(Coanda::adminUrl('pages/view/' . $page_id));
+		}
 
-			$this->pageRepository->saveDraftVersion($version, Input::all());
+		$page = $version->page;
 
-			// Everything went OK, so now we can determine what to do based on the button
-			if (Input::has('choose_layout') && Input::get('choose_layout') == 'true')
+		if (Input::has('discard'))
+		{
+			$parent_page_id = $version->page->firstLocation()->parent_page_id;
+
+			$this->manager->removeDraftVersion($page_id, $version_number);
+			
+			// If this was the first version, then we need to redirect back to the parent
+			if ($version_number == 1)
 			{
-				return Redirect::to(Coanda::adminUrl('pages/editversion/' . $page_id . '/' . $version_number))->with('layout_chosen', true)->withInput();
+				return Redirect::to(Coanda::adminUrl('pages/location/' . $parent_page_id));	
 			}
-
-			if (Input::has('choose_template') && Input::get('choose_template') == 'true')
-			{
-				return Redirect::to(Coanda::adminUrl('pages/editversion/' . $page_id . '/' . $version_number))->with('template_chosen', true)->withInput();
-			}
-
-			if (Input::has('add_location'))
-			{
-				return Redirect::to(Coanda::adminUrl('pages/browse-add-location/' . $page_id . '/' . $version_number));
-			}
-
-			if (Input::has('remove_locations'))
-			{
-				$slug_ids = Input::has('remove_slug_list') ? Input::get('remove_slug_list') : [];
-				
-				foreach ($slug_ids as $slug_id)
-				{
-					$this->pageRepository->removeVersionSlug($version->id, $slug_id);
-				}
-
-				return Redirect::to(Coanda::adminUrl('pages/editversion/' . $page_id . '/' . $version_number))->withInput();
-			}
-
-			if (Input::has('attribute_action'))
-			{
-				$this->pageRepository->handleAttributeAction($version, Input::get('attribute_action'), Input::all());
-
-				return Redirect::to(Coanda::adminUrl('pages/editversion/' . $page_id . '/' . $version_number))->withInput();
-			}
-
-			if (Input::has('save') && Input::get('save') == 'true')
-			{
-				return Redirect::to(Coanda::adminUrl('pages/editversion/' . $page_id . '/' . $version_number))->with('page_saved', true)->withInput();
-			}
-
-			if (Input::has('save_exit') && Input::get('save_exit') == 'true')
+			else
 			{
 				return Redirect::to(Coanda::adminUrl('pages/view/' . $page_id));
 			}
+		}
 
-			if (Input::has('publish') && Input::get('publish') == 'true')
-			{
-				if (!Input::has('publish_handler') || Input::get('publish_handler') == '')
-				{
-					return Redirect::to(Coanda::adminUrl('pages/editversion/' . $page_id . '/' . $version_number))->with('error', true)->with('missing_publish_handler', true)->withInput();
-				}
-				else
-				{
-					try
-					{
-						$redirect = $this->pageRepository->executePublishHandler($version, Input::get('publish_handler'), Input::all());
+		$invalid_fields = [];
 
-						if ($redirect)
-						{
-							return Redirect::to($redirect);
-						}
-
-						return Redirect::to(Coanda::adminUrl('pages/view/' . $page_id));					
-					}
-					catch (PublishHandlerException $exception)
-					{
-						return Redirect::to(Coanda::adminUrl('pages/editversion/' . $page_id . '/' . $version_number))->with('error', true)->with('invalid_publish_handler', true)->with('publish_handler_invalid_fields', $exception->getInvalidFields())->withInput();
-					}
-				}
-			}
+		try
+		{
+			$this->manager->saveDraftVersion($page_id, $version_number, Input::all());
 		}
 		catch (ValidationException $exception)
 		{
-			if (Input::has('attribute_action'))
-			{
-				$this->pageRepository->handleAttributeAction($version, Input::get('attribute_action'), Input::all());
+			$invalid_fields = $exception->getInvalidFields();
+		}
 
-				return Redirect::to(Coanda::adminUrl('pages/editversion/' . $page_id . '/' . $version_number))->withInput();
+		if (Input::has('add_location'))
+		{
+			return Redirect::to(Coanda::adminUrl('pages/browse-add-location/' . $page_id . '/' . $version_number));
+		}
+
+		$redirect = Redirect::to(Coanda::adminUrl('pages/editversion/' . $page_id . '/' . $version_number))->withInput();
+
+		if (Input::get('choose_layout', false) == 'true')
+		{
+			return $redirect->with('layout_chosen', true);
+		}
+
+		if (Input::get('choose_template', false) == 'true')
+		{
+			return $redirect->with('template_chosen', true);
+		}
+
+		if (Input::has('remove_locations'))
+		{
+			foreach (Input::get('remove_slug_list', []) as $slug_id)
+			{
+				$this->manager->removeSlugFromVersion($version->id, $slug_id);
 			}
 
-			if (Input::has('add_location'))
+			return $redirect;
+		}
+
+		if (count($invalid_fields) > 0)
+		{
+			return $redirect
+					->with('error', true)
+					->with('invalid_fields', $invalid_fields);
+		}
+
+		// if (Input::has('attribute_action'))
+		// {
+		// 	$this->pageRepository->handleAttributeAction($version, Input::get('attribute_action'), Input::all());
+
+		// 	return Redirect::to(Coanda::adminUrl('pages/editversion/' . $page_id . '/' . $version_number))->withInput();
+		// }
+
+		if (Input::get('save', false) == 'true')
+		{
+			return $redirect->with('page_saved', true);
+		}
+
+		if (Input::get('save_exit', false) == 'true')
+		{
+			return Redirect::to(Coanda::adminUrl('pages/view/' . $page_id));
+		}
+
+		if (Input::get('publish', false) == 'true')
+		{
+			$publish_handler = Input::get('publish_handler', false);
+
+			if (!$publish_handler || $publish_handler == '')
 			{
-				return Redirect::to(Coanda::adminUrl('pages/browse-add-location/' . $page_id . '/' . $version_number));
+				return $redirect
+							->with('error', true)
+							->with('missing_publish_handler', true);
 			}
-
-			if (Input::has('remove_locations'))
+			else
 			{
-				$slug_ids = Input::has('remove_slug_list') ? Input::get('remove_slug_list') : [];
-
-				foreach ($slug_ids as $slug_id)
+				try
 				{
-					$this->pageRepository->removeVersionSlug($version->id, $slug_id);
+					$publish_handler_redirect = $this->pageRepository->executePublishHandler($version, $publish_handler, Input::all());
+
+					if ($publish_handler_redirect)
+					{
+						return Redirect::to($publish_handler_redirect);
+					}
+
+					return Redirect::to(Coanda::adminUrl('pages/view/' . $page_id));					
+				}
+				catch (PublishHandlerException $exception)
+				{
+					return $redirect
+							->with('error', true)
+							->with('invalid_publish_handler', true)
+							->with('publish_handler_invalid_fields', $exception->getInvalidFields());
 				}
 			}
-
-			if (Input::has('save_exit') && Input::get('save_exit') == 'true')
-			{
-				return Redirect::to(Coanda::adminUrl('pages/view/' . $page_id));
-			}
-
-			return Redirect::to(Coanda::adminUrl('pages/editversion/' . $page_id . '/' . $version_number))->with('error', true)->with('invalid_fields', $exception->getInvalidFields())->withInput();
 		}
 	}
 
@@ -837,18 +813,19 @@ class PagesAdminController extends BaseController {
      * @param $page_id
      * @return mixed
      */
-    public function getHistory($page_id)
+    public function getHistory($id)
     {
         try
         {
-            $page = $this->pageRepository->find($page_id);
- 
-			Coanda::checkAccess('pages', 'view', ['page_id' => $page->id, 'page_type' => $page->type]);
+            $page = $this->manager->getPage($id);
 
-            $history = $this->pageRepository->history($page->id);
-            $contributors = $this->pageRepository->contributors($page->id);
+			$this->__checkPermissions('view', ['page_id' => $page->id, 'page_type' => $page->type]);
 
-            return View::make('coanda::admin.modules.pages.history', [ 'page' => $page, 'histories' => $history, 'contributors' => $contributors]);
+            return View::make('coanda::admin.modules.pages.history', [
+            						'page' => $page,
+            						'histories' => $this->manager->pageHistory($page->id),
+            						'contributors' => $this->manager->pageContributors($page->id)
+            					]);
         }
         catch (PageNotFound $exception)
         {

@@ -327,14 +327,14 @@ class Page extends Eloquent {
 
 	public function getCanEditAttribute()
 	{
-		$location = $this->firstLocation();
-		
-		if ($location)
+		$can_edit = false;
+
+		foreach ($this->locations as $location)
 		{
-			return $location->can_edit;
+			$can_edit = $location->can_edit;
 		}
 
-		return false;
+		return $can_edit;
 	}
 
 	public function getCanViewAttribute()

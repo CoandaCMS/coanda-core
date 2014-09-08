@@ -912,18 +912,11 @@ class EloquentPageRepository implements PageRepositoryInterface {
     public function discardDraftVersion($version, $user_id)
 	{
 		$page = $version->page;
-
-		// Log the history
-		$this->historyRepository->add('pages', $page->id, $user_id, 'discard_version', ['version' => $version->version]);
-
 		$version->delete();
 
 		// If now have no versions, then remove the page too
 		if ($page->versions->count() == 0)
 		{
-			// Log the history
-			$this->historyRepository->add('pages', $page->id, $user_id, 'page_deleted');
-
 			$page->delete();
 		}
 	}
@@ -1219,33 +1212,6 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		return $new_version_number;
 	}
 
-    /**
-     * @param $page_id
-     * @param int $limit
-     * @return mixed
-     */
-    public function recentHistory($page_id, $limit = 10)
-	{
-		return $this->historyRepository->get('pages', $page_id, $limit);
-	}
-
-    /**
-     * @param $page_id
-     * @return mixed
-     */
-    public function history($page_id)
-	{
-		return $this->historyRepository->getPaginated('pages', $page_id);
-	}
-
-    /**
-     * @param $page_id
-     * @return mixed
-     */
-    public function contributors($page_id)
-	{
-		return $this->historyRepository->users('pages', $page_id);
-	}
 
     /**
      * @param $page_id
@@ -1420,13 +1386,9 @@ class EloquentPageRepository implements PageRepositoryInterface {
     /**
      * @param $new_orders
      */
-    public function updateOrdering($new_orders)
+    public function updateLocationOrder($location_id, $new_order)
 	{
-		foreach ($new_orders as $location_id => $new_order)
-		{
-			$this->page_location_model->whereId($location_id)->update(['order' => $new_order]);
-			$this->historyRepository->add('pages', $location_id, Coanda::currentUser()->id, 'order_changed', ['new_order' => $new_order]);
-		}
+		$this->page_location_model->whereId($location_id)->update(['order' => $new_order]);
 	}
 
     /**
