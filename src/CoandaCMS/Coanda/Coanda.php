@@ -7,8 +7,6 @@ use CoandaCMS\Coanda\Exceptions\PermissionDenied;
 use CoandaCMS\Coanda\Exceptions\ModuleNotFound;
 use CoandaCMS\Coanda\Urls\Exceptions\UrlNotFound;
 
-
-
 /**
  * Class Coanda
  * @package CoandaCMS\Coanda
@@ -175,12 +173,7 @@ class Coanda {
 		}
 
 		// Do we have some permissions for this module? If not, then they can not pass!
-		if (isset($user_permissions[$module]))
-		{
-			return true;
-		}
-
-		return false;
+		return isset($user_permissions[$module]);
 	}
 
     /**
@@ -411,7 +404,6 @@ class Coanda {
      */
     public function routeHome()
 	{
-		// TODO - let other modules have a go at rendering the home page if the pages module doesn't!
 		return $this->module('pages')->renderHome();
 	}
 
