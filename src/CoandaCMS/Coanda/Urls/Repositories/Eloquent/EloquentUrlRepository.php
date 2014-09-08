@@ -23,13 +23,14 @@ class EloquentUrlRepository implements \CoandaCMS\Coanda\Urls\Repositories\UrlRe
     private $slugifier;
 
     /**
-     * @var CoandaCMS\Coanda\Urls\Repositories\Eloquent\Models\RedirectUrl
+     * @var \CoandaCMS\Coanda\Urls\Repositories\Eloquent\Models\RedirectUrl
      */
     private $redirecturl_model;
 
     /**
      * @param UrlModel $model
-     * @param CoandaCMS\Coanda\Urls\Slugifier $slugifier
+     * @param \CoandaCMS\Coanda\Urls\Repositories\Eloquent\Models\RedirectUrl $redirecturl_model
+     * @param \CoandaCMS\Coanda\Urls\Slugifier $slugifier
      */
     public function __construct(\CoandaCMS\Coanda\Urls\Repositories\Eloquent\Models\Url $model, \CoandaCMS\Coanda\Urls\Repositories\Eloquent\Models\RedirectUrl $redirecturl_model, \CoandaCMS\Coanda\Urls\Slugifier $slugifier)
 	{
