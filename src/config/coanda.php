@@ -62,13 +62,12 @@ return array(
 	|--------------------------------------------------------------------------
 	|
 	*/
+    // e.g 'MySite\PageTypes\Page'
 	'page_types' => [
-		// 'MySite\PageTypes\Page',
-		// 'CoandaCMS\CoandaWebForms\PageTypes\Form',
 	],
 
+    // e.g. 'MySite\PageTypes\HomePage'
 	'home_page_types' => [
-		// 'MySite\PageTypes\HomePage'
 	],
 
 	'publish_handlers' => [
@@ -78,15 +77,15 @@ return array(
 	/*
 	|--------------------------------------------------------------------------
 	| Design & Layout settings
+	| e.g 'MySite\Layouts\DefaultLayout'
 	|--------------------------------------------------------------------------
 	|
 	*/
 	'layouts' => [
-		// 'MySite\Layouts\DefaultLayout',
 	],
 
+    // e.g. 'search:results' => 'default'
 	'layout_mapping' => [
-		// 'search:results' => 'default'
 	],
 
 	'default_layout' => 'default',

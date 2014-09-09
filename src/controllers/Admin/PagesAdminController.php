@@ -1,18 +1,15 @@
 <?php namespace CoandaCMS\Coanda\Controllers\Admin;
 
 use View, App, Coanda, Redirect, Input, Session;
-
+use CoandaCMS\Coanda\Pages\PageManager;
+use CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface;
 use CoandaCMS\Coanda\Pages\Exceptions\PageNotFound;
 use CoandaCMS\Coanda\Pages\Exceptions\PageVersionNotFound;
 use CoandaCMS\Coanda\Pages\Exceptions\PageTypeNotFound;
-
 use CoandaCMS\Coanda\Exceptions\ValidationException;
-use CoandaCMS\Coanda\Exceptions\PermissionDenied;
-
 use CoandaCMS\Coanda\Pages\Exceptions\PublishHandlerException;
 use CoandaCMS\Coanda\Pages\Exceptions\HomePageAlreadyExists;
 use CoandaCMS\Coanda\Pages\Exceptions\SubPagesNotAllowed;
-
 use CoandaCMS\Coanda\Controllers\BaseController;
 
 /**
@@ -22,16 +19,20 @@ use CoandaCMS\Coanda\Controllers\BaseController;
 class PagesAdminController extends BaseController {
 
     /**
-     * @var \CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface
+     * @var PageRepositoryInterface
      */
     private $pageRepository;
 
+    /**
+     * @var \CoandaCMS\Coanda\Pages\PageManager
+     */
     private $manager;
 
     /**
-     * @param CoandaCMS\Coanda\Pages\Factory\PageFactoryInterface $pageRepository
+     * @param PageManager $manager
+     * @param PageRepositoryInterface $pageRepository
      */
-    public function __construct(\CoandaCMS\Coanda\Pages\PageManager $manager, \CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface $pageRepository)
+    public function __construct(PageManager $manager, PageRepositoryInterface $pageRepository)
 	{
 		$this->manager = $manager;
 		$this->pageRepository = $pageRepository;
@@ -39,12 +40,20 @@ class PagesAdminController extends BaseController {
 		$this->beforeFilter('csrf', array('on' => 'post'));
 	}
 
-	private function __checkPermissions($view, $data = [])
+    /**
+     * @param $view
+     * @param array $data
+     */
+    private function __checkPermissions($view, $data = [])
 	{
 		Coanda::checkAccess('pages', $view, $data);
 	}
 
-	private function __checkPagePermission($page)
+    /**
+     * @param $page
+     * @return bool
+     */
+    private function __checkPagePermission($page)
 	{
 		// Is it the home page?
 		if ($page->is_home && Coanda::canView('pages', 'home_page'))
@@ -64,7 +73,10 @@ class PagesAdminController extends BaseController {
 		App::abort('404');
 	}
 
-	private function __checkLocationPermission($location)
+    /**
+     * @param $location
+     */
+    private function __checkLocationPermission($location)
 	{
 		if (!$location->can_view)
 		{
@@ -276,6 +288,7 @@ class PagesAdminController extends BaseController {
 
     /**
      * @param $page_id
+     * @param bool $base_version_number
      * @return mixed
      */
     public function getEdit($page_id, $base_version_number = false)
@@ -433,13 +446,6 @@ class PagesAdminController extends BaseController {
 					->with('error', true)
 					->with('invalid_fields', $invalid_fields);
 		}
-
-		// if (Input::has('attribute_action'))
-		// {
-		// 	$this->pageRepository->handleAttributeAction($version, Input::get('attribute_action'), Input::all());
-
-		// 	return Redirect::to(Coanda::adminUrl('pages/editversion/' . $page_id . '/' . $version_number))->withInput();
-		// }
 
 		if (Input::get('save', false) == 'true')
 		{
@@ -809,7 +815,8 @@ class PagesAdminController extends BaseController {
 	}
 
     /**
-     * @param $page_id
+     * @param $id
+     * @internal param $page_id
      * @return mixed
      */
     public function getHistory($id)
@@ -832,6 +839,11 @@ class PagesAdminController extends BaseController {
         }
     }
 
+    /**
+     * @param $location_id
+     * @param $new_sub_page_order
+     * @return mixed
+     */
     public function getChangeLocationOrder($location_id, $new_sub_page_order)
     {
  		try
@@ -850,6 +862,9 @@ class PagesAdminController extends BaseController {
 		}
     }
 
+    /**
+     * @param $location_id
+     */
     public function getIndexLocationTest($location_id)
     {
 		$pagelocation = $this->pageRepository->locationById($location_id);
@@ -857,6 +872,10 @@ class PagesAdminController extends BaseController {
 		$this->pageRepository->registerLocationWithSearchProvider($pagelocation);
     }
 
+    /**
+     * @param bool $location_id
+     * @return array
+     */
     public function getLocationListJson($location_id = false)
     {
 		$location = false;

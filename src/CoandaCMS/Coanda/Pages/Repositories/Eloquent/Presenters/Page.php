@@ -1,12 +1,14 @@
 <?php namespace CoandaCMS\Coanda\Pages\Repositories\Eloquent\Presenters;
 
+use Carbon\Carbon;
+use CoandaCMS\Coanda\Core\Presenters\Presenter;
 use Lang;
 
 /**
  * Class Page
  * @package CoandaCMS\Coanda\Pages\Presenters
  */
-class Page extends \CoandaCMS\Coanda\Core\Presenters\Presenter {
+class Page extends Presenter {
 
     /**
      * @return mixed
@@ -65,7 +67,7 @@ class Page extends \CoandaCMS\Coanda\Core\Presenters\Presenter {
 		$from = $this->model->visible_from;
 		$to = $this->model->visible_to;
 
-		$now = \Carbon\Carbon::now(date_default_timezone_get());
+		$now = Carbon::now(date_default_timezone_get());
 
 		$visibility_text = 'Visible';
 
@@ -82,8 +84,6 @@ class Page extends \CoandaCMS\Coanda\Core\Presenters\Presenter {
 			$visibility_text .= ' until ' . $to->format('d/m/Y H:i');
 		}
 
-		// $visibility_text .= ' (System time: ' . $now->format('d/m/Y H:i') . ')';
-
 		return $visibility_text;
 	}
 
@@ -95,7 +95,7 @@ class Page extends \CoandaCMS\Coanda\Core\Presenters\Presenter {
 		$from = $this->model->visible_from;
 		$to = $this->model->visible_to;
 
-		$now = \Carbon\Carbon::now(date_default_timezone_get());
+		$now = Carbon::now(date_default_timezone_get());
 
 		$visibility_text = '';
 		
