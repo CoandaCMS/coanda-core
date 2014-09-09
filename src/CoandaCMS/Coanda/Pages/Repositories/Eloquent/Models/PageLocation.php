@@ -3,7 +3,6 @@
 use CoandaCMS\Coanda\Core\Presenters\PresentableTrait;
 use CoandaCMS\Coanda\Urls\Exceptions\UrlNotFound;
 use Eloquent, Coanda, App, DB;
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 
 /**
@@ -38,7 +37,6 @@ class PageLocation extends Eloquent {
      */
     private $subTreeCount;
 
-
     /**
      * @var
      */
@@ -62,19 +60,26 @@ class PageLocation extends Eloquent {
      */
     public function save(array $options = [])
 	{
-		// If we have a parent page, but no path, then we need to sort out the path
-		if ($this->parent_page_id != 0 && $this->path == '')
+		if ($this->path == '')
 		{
-			$parent = $this->find($this->parent_page_id);
-
-			if ($parent)
-			{
-				$this->path = ($parent->path == '' ? '/' : $parent->path) . $parent->id . '/';
-			}
+            $this->setPath();
 		}
 
 		parent::save($options);
 	}
+
+    /**
+     *
+     */
+    private function setPath()
+    {
+        $parent = $this->find($this->parent_page_id);
+
+        if ($parent)
+        {
+            $this->path = ($parent->path == '' ? '/' : $parent->path) . $parent->id . '/';
+        }
+    }
 
     /**
      * @return mixed
@@ -153,21 +158,29 @@ class PageLocation extends Eloquent {
 	{
 		if (!$this->parents)
 		{
-			$this->parents = new Collection;
-
-			foreach ($this->pathArray() as $parent_id)
-			{
-				$parent = $this->find($parent_id);
-
-				if ($parent)
-				{
-					$this->parents->add($parent);
-				}
-			}
+            $this->generateParents();
 		}
 
 		return $this->parents;
 	}
+
+    /**
+     *
+     */
+    private function generateParents()
+    {
+        $this->parents = new Collection;
+
+        foreach ($this->pathArray() as $parent_id)
+        {
+            $parent = $this->find($parent_id);
+
+            if ($parent)
+            {
+                $this->parents->add($parent);
+            }
+        }
+    }
 
     /**
      * @return Collection
@@ -196,7 +209,7 @@ class PageLocation extends Eloquent {
 		{
 			return $urlRepository->findFor('pagelocation', $this->id)->slug;
 		}
-		catch(UrlNotFound $exception)
+		catch (UrlNotFound $exception)
 		{
 			return '';
 		}
@@ -334,18 +347,10 @@ class PageLocation extends Eloquent {
 
 		$breadcrumb = [];
 
-		if (count($parents) > 0)
-		{
-			foreach ($parents as $parent)
-			{
-				$breadcrumb[] = [
-					'identifier' => 'pages:location-' . $parent->id,
-					'url' => $parent->slug,
-					'name' => $parent->present()->name,
-					'_location_id' => $parent->id,
-				];
-			}
-		}
+        foreach ($parents as $parent)
+        {
+            $breadcrumb[] = $this->breadcrumbElement($parent);
+        }
 
 		$breadcrumb[] = [
 			'identifier' => 'pages:location-' . $this->id,
@@ -358,9 +363,23 @@ class PageLocation extends Eloquent {
 	}
 
     /**
+     * @param $location
      * @return array
      */
-    private function getPerissionData()
+    private function breadcrumbElement($location)
+    {
+        return [
+            'identifier' => 'pages:location-' . $location->id,
+            'url' => $location->slug,
+            'name' => $location->present()->name,
+            '_location_id' => $location->id,
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    private function getPermissionData()
 	{
 		return [
 			'page_id' => $this->id,
@@ -376,7 +395,7 @@ class PageLocation extends Eloquent {
 	{
 		if (!$this->canRemove)
 		{
-			$this->canRemove = Coanda::canView('pages', 'remove', $this->getPerissionData());
+			$this->canRemove = Coanda::canView('pages', 'remove', $this->getPermissionData());
 		}
 
 		return $this->canRemove;
@@ -389,7 +408,7 @@ class PageLocation extends Eloquent {
 	{
 		if (!$this->canEdit)
 		{
-			$this->canEdit = Coanda::canView('pages', 'edit', $this->getPerissionData());
+			$this->canEdit = Coanda::canView('pages', 'edit', $this->getPermissionData());
 		}
 
 		return $this->canEdit;
@@ -402,7 +421,7 @@ class PageLocation extends Eloquent {
 	{
 		if (!$this->canView)
 		{
-			$this->canView = Coanda::canView('pages', 'view', $this->getPerissionData());
+			$this->canView = Coanda::canView('pages', 'view', $this->getPermissionData());
 		}
 
 		return $this->canView;
@@ -415,7 +434,7 @@ class PageLocation extends Eloquent {
 	{
 		if (!$this->canCreate)
 		{
-			$this->canCreate = Coanda::canView('pages', 'create', $this->getPerissionData());
+			$this->canCreate = Coanda::canView('pages', 'create', $this->getPermissionData());
 		}
 
 		return $this->canCreate;
