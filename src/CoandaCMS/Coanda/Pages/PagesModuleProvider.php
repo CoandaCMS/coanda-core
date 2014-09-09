@@ -33,6 +33,9 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
      */
     private $publish_handlers = [];
 
+    /**
+     * @var
+     */
     private $meta;
 
     /**
@@ -251,7 +254,10 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		return [];
 	}
 
-	public function getPageRepository()
+    /**
+     * @return mixed
+     */
+    public function getPageRepository()
 	{
 		return App::make('CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface');
 	}
@@ -267,8 +273,8 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 
     /**
      * @param $type
+     * @throws Exceptions\PageTypeNotFound
      * @return mixed
-     * @throws \CoandaCMS\Coanda\Exceptions\PageTypeNotFound
      */
     public function getPageType($type)
 	{
@@ -282,8 +288,8 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 
     /**
      * @param $type
+     * @throws Exceptions\PageTypeNotFound
      * @return mixed
-     * @throws \CoandaCMS\Coanda\Exceptions\PageTypeNotFound
      */
     public function getHomePageType($type)
 	{
@@ -343,6 +349,7 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
      * @param $permission
      * @param $parameters
      * @param array $user_permissions
+     * @return mixed|void
      * @throws \CoandaCMS\Coanda\Exceptions\PermissionDenied
      */
     public function checkAccess($permission, $parameters, $user_permissions = [])
@@ -369,8 +376,6 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 						{
 							continue;
 						}
-						
-						// echo $allowed_path . ' -> ' . $location_path;
 
 						if (preg_match('/^' . preg_replace('/\//', '\/', preg_quote($allowed_path)) . '/', $location_path))
 						{
@@ -434,6 +439,7 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 
     /**
      * @param $coanda
+     * @return mixed|void
      */
     public function buildAdminMenu($coanda)
 	{
@@ -444,7 +450,8 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 	}
 
     /**
-     * @param $page
+     * @param $version
+     * @internal param $page
      * @return mixed
      */
     private function getLayout($version)
@@ -480,18 +487,11 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
      */
     public function renderHome()
 	{
-		// if (Cache::has('home_page'))
-		// {
-		// 	return Cache::get('home_page');
-		// }
-
 		$home_page = $this->getPageRepository()->getHomePage();
 
 		if ($home_page)
 		{
 			$content = $this->renderPage($home_page);
-
-			// Cache::put('home_page', $content, 2);
 
 			return $content;
 		}
@@ -499,7 +499,12 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		throw new \Exception('Home page not created yet!');
 	}
 
-	private function renderAttributes($page, $pagelocation)
+    /**
+     * @param $page
+     * @param $pagelocation
+     * @return mixed
+     */
+    private function renderAttributes($page, $pagelocation)
     {
     	return $page->renderAttributes($pagelocation);
 	}
@@ -538,7 +543,13 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		return $this->mergeWithLayout($page, $pagelocation, $rendered_page);
 	}
 
-	private function mergeWithLayout($page, $pagelocation, $rendered_content)
+    /**
+     * @param $page
+     * @param $pagelocation
+     * @param $rendered_content
+     * @return mixed
+     */
+    private function mergeWithLayout($page, $pagelocation, $rendered_content)
 	{
 		// Get the layout template...
 		$layout = $this->getLayout($page->currentVersion());
@@ -570,7 +581,11 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		return $content;
 	}
 
-	private function generateCacheKey($location_id)
+    /**
+     * @param $location_id
+     * @return string
+     */
+    private function generateCacheKey($location_id)
 	{
 		$cache_key = 'location-' . $location_id;
 
@@ -606,7 +621,12 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		return $this->meta;
 	}
 
-	private function buildPageData($page, $pagelocation)
+    /**
+     * @param $page
+     * @param $pagelocation
+     * @return array
+     */
+    private function buildPageData($page, $pagelocation)
 	{
 		return [
 			'page_id' => $page->id,
@@ -683,13 +703,10 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		// Give the layout the rendered page and the data, and it can work some magic to give us back a complete page...
 		$layout_data = [
 			'layout' => $layout,
-			
 			'content' => $rendered_version,
 			'meta' => $meta,
-			
 			'page_data' => $data,
 			'breadcrumb' => $breadcrumb,
-			
 			'module' => 'pages',
 			'module_identifier' => $page->id . ':' . $version->version
 		];
@@ -717,6 +734,7 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 
     /**
      * @param $location_id
+     * @return bool
      */
     public function getLocation($location_id)
 	{
@@ -730,7 +748,11 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		}
 	}
 
-	public function bySlug($slug)
+    /**
+     * @param $slug
+     * @return bool
+     */
+    public function bySlug($slug)
 	{
 		try
 		{
@@ -744,6 +766,7 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 
     /**
      * @param $remote_id
+     * @return bool
      */
     public function getLocationByRemoteId($remote_id)
 	{
@@ -757,22 +780,36 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		}
 	}
 
-	private function getQueryBuilder()
+    /**
+     * @return mixed
+     */
+    private function getQueryBuilder()
 	{
 		return App::make('CoandaCMS\Coanda\Pages\PageQuery');
 	}
 
-	public function query()
+    /**
+     * @return mixed
+     */
+    public function query()
 	{
 		return $this->getQueryBuilder();
 	}
 
-	public function adminSearch($query)
+    /**
+     * @param $query
+     * @return mixed
+     */
+    public function adminSearch($query)
 	{
 		return $this->getPageRepository()->adminSearch($query);
 	}
 
-	public function locationByPath($path)
+    /**
+     * @param $path
+     * @return bool
+     */
+    public function locationByPath($path)
 	{
 		$path_parts = explode('/', trim($path, '/'));
 
