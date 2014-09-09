@@ -2,15 +2,14 @@
 
 use Coanda, Auth, Validator;
 
+use CoandaCMS\Coanda\Exceptions\NotLoggedIn;
 use CoandaCMS\Coanda\Exceptions\ValidationException;
 use CoandaCMS\Coanda\Users\Exceptions\GroupNotFound;
 use CoandaCMS\Coanda\Users\Exceptions\UserNotFound;
 use CoandaCMS\Coanda\Users\Exceptions\AuthenticationFailed;
 use CoandaCMS\Coanda\Exceptions\MissingInput;
-
 use CoandaCMS\Coanda\Users\Repositories\Eloquent\Models\User as UserModel;
 use CoandaCMS\Coanda\Users\Repositories\Eloquent\Models\UserGroup as UserGroupModel;
-
 use CoandaCMS\Coanda\Users\Repositories\UserRepositoryInterface;
 
 /**
