@@ -550,7 +550,7 @@ class PagesAdminController extends BaseController {
 				$location = $this->pageRepository->locationById($parent_page_id);
 			}
 			
-			$pages = $this->pageRepository->subPages($parent_page_id, Input::get('page', 1), $per_page, ['include_hidden' => true, 'include_drafts' => true, 'include_invisible' => true], []);
+			$pages = $this->pageRepository->subPages($parent_page_id, Input::get('page', 1), $per_page, ['include_hidden' => true, 'include_drafts' => true, 'include_invisible' => true]);
 
 			return View::make('coanda::admin.modules.pages.browseaddlocation', [ 'pages' => $pages, 'page_id' => $page_id, 'version_number' => $version_number, 'existing_locations' => $existing_locations, 'location' => $location ]);
 		}
