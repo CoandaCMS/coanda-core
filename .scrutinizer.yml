@@ -38,7 +38,7 @@ checks:
         no_commented_out_code: true
         no_duplicate_arguments: true
         no_else_if_statements: true
-        no_space_between_concatenation_operator: true
+        no_space_between_concatenation_operator: false
         no_space_inside_cast_operator: true
         no_trailing_whitespace: true
         no_underscore_prefix_in_properties: true
