@@ -1,7 +1,6 @@
 <?php namespace CoandaCMS\Coanda\Pages\PublishHandlers;
 
 use Coanda;
-use CoandaCMS\Coanda\Pages\Exceptions\PublishHandlerException;
 
 /**
  * Class Immediate
@@ -26,6 +25,7 @@ class Immediate implements PublishHandlerInterface {
     /**
      * @param $version
      * @param $data
+     * @return mixed|void
      */
     public function validate($version, $data)
 	{
@@ -38,6 +38,7 @@ class Immediate implements PublishHandlerInterface {
      * @param $pageRepository
      * @param $urlRepository
      * @param $historyRepository
+     * @return mixed|void
      */
     public function execute($version, $data, $pageRepository, $urlRepository, $historyRepository)
 	{

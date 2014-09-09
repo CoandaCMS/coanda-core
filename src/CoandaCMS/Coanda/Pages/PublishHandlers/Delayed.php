@@ -27,6 +27,7 @@ class Delayed implements PublishHandlerInterface {
     /**
      * @param $version
      * @param $data
+     * @return mixed|void
      * @throws \CoandaCMS\Coanda\Pages\Exceptions\PublishHandlerException
      */
     public function validate($version, $data)
