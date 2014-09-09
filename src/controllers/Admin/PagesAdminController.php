@@ -889,7 +889,7 @@ class PagesAdminController extends BaseController {
 
 		return [
 				'location' => $location ? $location->toArray() : false,
-				'sub_pages' => $this->pageRepository->subPages($location_id, $per_page, ['include_hidden' => true, 'include_drafts' => true, 'include_invisible' => true], [])->toArray()
+				'sub_pages' => $this->pageRepository->subPages($location_id, Input::get('page', 1), $per_page, ['include_hidden' => true, 'include_drafts' => true, 'include_invisible' => true])->toArray()
 			];
     }
 }
