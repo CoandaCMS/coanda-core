@@ -2,17 +2,36 @@
 
 class SubPageQuery {
 
-	private $repository;
-	private $parent_location_id = 0;
-	private $per_page = 10;
-	private $current_page = 1;
+    /**
+     * @var \CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface
+     */
+    private $repository;
+    /**
+     * @var int
+     */
+    private $parent_location_id = 0;
+    /**
+     * @var int
+     */
+    private $per_page = 10;
+    /**
+     * @var int
+     */
+    private $current_page = 1;
 
-	public function __construct(\CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface $repository)
+    /**
+     * @param \CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface $repository
+     */
+    public function __construct(\CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface $repository)
 	{
 		$this->repository = $repository;
 	}
 
-	public function execute($query_parameters)
+    /**
+     * @param $query_parameters
+     * @return mixed
+     */
+    public function execute($query_parameters)
 	{
 		$this->parent_location_id = $query_parameters['parent_location_id'];
 		$this->per_page = isset($query_parameters['per_page']) ? $query_parameters['per_page'] : 10;
@@ -24,7 +43,12 @@ class SubPageQuery {
 		return $this->getResults($query, $query_parameters);
 	}
 
-	private function getResults($query, $parameters)
+    /**
+     * @param $query
+     * @param $parameters
+     * @return mixed
+     */
+    private function getResults($query, $parameters)
 	{
 		$paginate = isset($parameters['parameters']['paginate']) ? $parameters['parameters']['paginate'] : true;
 
@@ -38,7 +62,11 @@ class SubPageQuery {
 		return $query->take($this->per_page)->get();
 	}
 
-	private function getPaginatedResults($query)
+    /**
+     * @param $query
+     * @return mixed
+     */
+    private function getPaginatedResults($query)
 	{
 		$count = $query->count('pagelocations.id');
 
@@ -55,7 +83,10 @@ class SubPageQuery {
 		return \Paginator::make($items, $count, $this->per_page);
 	}
 
-	private function baseQuery()
+    /**
+     * @return mixed
+     */
+    private function baseQuery()
 	{
 		$page_location_model = $this->repository->getPageLocationModel();
 
@@ -76,7 +107,12 @@ class SubPageQuery {
 		return $query;
 	}
 
-	private function handleParameters($query, $parameters)
+    /**
+     * @param $query
+     * @param $parameters
+     * @return mixed
+     */
+    private function handleParameters($query, $parameters)
 	{
 		$default_parameters = [
 			'include_invisible' => false,
@@ -91,18 +127,30 @@ class SubPageQuery {
 
 		foreach (array_keys($parameters) as $parameter)
 		{
-			$method = camel_case('parameter_' . $parameter);
-
-			if (method_exists($this, $method))
-			{
-				$query = $this->$method($query, $parameters[$parameter]);
-			}
+            $query = $this->handleParameter($query, $parameter, $parameters[$parameter]);
 		}
 
 		return $query;
 	}
 
-	private function parameterIncludeInvisible($query, $value)
+    private function handleParameter($query, $parameter, $value)
+    {
+        $method = camel_case('parameter_' . $parameter);
+
+        if (method_exists($this, $method))
+        {
+            $query = $this->$method($query, $value);
+        }
+
+        return $query;
+    }
+
+    /**
+     * @param $query
+     * @param $value
+     * @return mixed
+     */
+    private function parameterIncludeInvisible($query, $value)
 	{
 		if (!$value)
 		{
@@ -112,7 +160,12 @@ class SubPageQuery {
 		return $query;
 	}
 
-	private function parameterAttributeFilters($query, $filters)
+    /**
+     * @param $query
+     * @param $filters
+     * @return mixed
+     */
+    private function parameterAttributeFilters($query, $filters)
 	{
 		if ($filters && count($filters) > 0)
 		{
@@ -124,7 +177,12 @@ class SubPageQuery {
 		return $query;
 	}
 
-	private function parameterIncludeHidden($query, $value)
+    /**
+     * @param $query
+     * @param $value
+     * @return mixed
+     */
+    private function parameterIncludeHidden($query, $value)
 	{
 		if (!$value)
 		{
@@ -134,7 +192,12 @@ class SubPageQuery {
 		return $query;
 	}
 
-	private function parameterIncludeDrafts($query, $value)
+    /**
+     * @param $query
+     * @param $value
+     * @return mixed
+     */
+    private function parameterIncludeDrafts($query, $value)
 	{
 		if (!$value)
 		{
@@ -144,7 +207,12 @@ class SubPageQuery {
 		return $query;
 	}
 
-	private function parameterOrderQuery($query, $value)
+    /**
+     * @param $query
+     * @param $value
+     * @return mixed
+     */
+    private function parameterOrderQuery($query, $value)
 	{
 		if ($value && isset($value['operator']) && isset($value['value']))
 		{
@@ -154,7 +222,11 @@ class SubPageQuery {
 		return $query;
 	}
 
-	private function addOrdering($query)
+    /**
+     * @param $query
+     * @return mixed
+     */
+    private function addOrdering($query)
 	{
 		$order = 'manual';
 
@@ -173,7 +245,12 @@ class SubPageQuery {
 		return $query;
 	}
 
-	private function handleOrder($order, $query)
+    /**
+     * @param $order
+     * @param $query
+     * @return mixed
+     */
+    private function handleOrder($order, $query)
 	{
 		$method = camel_case('order_' . str_replace(':', '_', $order));
 
@@ -185,7 +262,11 @@ class SubPageQuery {
 		return $query;
 	}
 
-	private function orderManual($query)
+    /**
+     * @param $query
+     * @return mixed
+     */
+    private function orderManual($query)
 	{
 		$query->orderBy('pagelocations.order', 'asc');
 		$query->orderBy('pagelocations.id', 'asc');
@@ -193,28 +274,44 @@ class SubPageQuery {
 		return $query;
 	}
 
-	private function orderAlphaAsc($query)
+    /**
+     * @param $query
+     * @return mixed
+     */
+    private function orderAlphaAsc($query)
 	{
 		$query->orderByPageName('asc');
 
 		return $query;
 	}
 
-	private function orderAlphaDesc($query)
+    /**
+     * @param $query
+     * @return mixed
+     */
+    private function orderAlphaDesc($query)
 	{
 		$query->orderByPageName('desc');
 
 		return $query;
 	}
 
-	private function orderCreatedAsc($query)
+    /**
+     * @param $query
+     * @return mixed
+     */
+    private function orderCreatedAsc($query)
 	{
 		$query->orderByPageCreated('asc');
 
 		return $query;
 	}
 
-	private function orderCreatedDesc($query)
+    /**
+     * @param $query
+     * @return mixed
+     */
+    private function orderCreatedDesc($query)
 	{
 		$query->orderByPageCreated('desc');
 
