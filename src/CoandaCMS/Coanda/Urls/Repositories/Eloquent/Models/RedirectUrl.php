@@ -1,10 +1,11 @@
 <?php namespace CoandaCMS\Coanda\Urls\Repositories\Eloquent\Models;
+use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class RedirectUrl
  * @package CoandaCMS\Coanda\Urls\Repositories\Eloquent\Models
  */
-class RedirectUrl extends \Illuminate\Database\Eloquent\Model {
+class RedirectUrl extends Model {
 
     /**
      * @var string
@@ -15,6 +16,10 @@ class RedirectUrl extends \Illuminate\Database\Eloquent\Model {
      * @var array
      */
     protected $fillable = ['destination', 'redirect_type'];
+    /**
+     * @var
+     */
+    private $counter;
 
     /**
      *

@@ -1,5 +1,7 @@
 <?php namespace CoandaCMS\Coanda\Media;
 
+use CoandaCMS\Coanda\CoandaModuleProvider;
+use Illuminate\Foundation\Application;
 use Route, App, Config, Coanda, Redirect;
 
 use CoandaCMS\Coanda\Exceptions\PermissionDenied;
@@ -10,7 +12,7 @@ use CoandaCMS\Coanda\Media\Exceptions\OriginalFileCacheException;
  * Class MediaModuleProvider
  * @package CoandaCMS\Coanda\Media
  */
-class MediaModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
+class MediaModuleProvider implements CoandaModuleProvider {
 
     /**
      * @var string
@@ -19,6 +21,7 @@ class MediaModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 
     /**
      * @param \CoandaCMS\Coanda\Coanda $coanda
+     * @return mixed|void
      */
     public function boot(\CoandaCMS\Coanda\Coanda $coanda)
 	{
@@ -46,7 +49,6 @@ class MediaModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
      */
     public function adminRoutes()
 	{
-		// Load the media controller
 		Route::controller('media', 'CoandaCMS\Coanda\Controllers\Admin\MediaAdminController');
 	}
 
@@ -90,7 +92,6 @@ class MediaModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 
             $media = Coanda::media()->getById($media_id);
 
-            // We can only do this for images...
             if ($media)
             {
                 try
@@ -114,10 +115,10 @@ class MediaModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 	}
 
     /**
-     * @param \Illuminate\Foundation\Application $app
+     * @param Application $app
      * @return mixed
      */
-    public function bindings(\Illuminate\Foundation\Application $app)
+    public function bindings(Application $app)
 	{
 		$app->bind('CoandaCMS\Coanda\Media\Repositories\MediaRepositoryInterface', 'CoandaCMS\Coanda\Media\Repositories\Eloquent\EloquentMediaRepository');
 	}
@@ -153,6 +154,7 @@ class MediaModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 
     /**
      * @param $coanda
+     * @return mixed|void
      */
     public function buildAdminMenu($coanda)
     {
@@ -164,6 +166,8 @@ class MediaModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 
     /**
      * @param $file
+     * @param string $module_identifier
+     * @param bool $admin_only
      * @return mixed
      */
     public function handleUpload($file, $module_identifier = '', $admin_only = false)
@@ -173,6 +177,12 @@ class MediaModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
         return $mediaRepository->handleUpload($file, $module_identifier, $admin_only);
     }
 
+    /**
+     * @param $url
+     * @param string $module_identifier
+     * @param bool $default_extension
+     * @return mixed
+     */
     public function fromURL($url, $module_identifier = '', $default_extension = false)
     {
         $mediaRepository = App::make('CoandaCMS\Coanda\Media\Repositories\MediaRepositoryInterface');
@@ -189,6 +199,10 @@ class MediaModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
         return $this->getById($id);
     }
 
+    /**
+     * @param $id
+     * @return mixed
+     */
     public function getById($id)
     {
         $mediaRepository = App::make('CoandaCMS\Coanda\Media\Repositories\MediaRepositoryInterface');

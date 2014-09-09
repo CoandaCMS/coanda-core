@@ -7,7 +7,6 @@ use CoandaCMS\Coanda\Pages\Exceptions\PageVersionNotFound;
 use CoandaCMS\Coanda\Exceptions\AttributeValidationException;
 use CoandaCMS\Coanda\Exceptions\ValidationException;
 
-use CoandaCMS\Coanda\Pages\Exceptions\PublishHandlerException;
 use CoandaCMS\Coanda\Pages\Exceptions\HomePageAlreadyExists;
 use CoandaCMS\Coanda\Pages\Exceptions\SubPagesNotAllowed;
 
@@ -69,8 +68,9 @@ class EloquentPageRepository implements PageRepositoryInterface {
      * @param PageVersionModel $page_version_model
      * @param PageAttributeModel $page_attribute_model
      * @param PageVersionSlugModel $page_version_slug_model
-     * @param CoandaCMS\Coanda\Urls\Repositories\UrlRepositoryInterface $urlRepository
-     * @param CoandaCMS\Coanda\History\Repositories\HistoryRepositoryInterface $historyRepository
+     * @param Models\PageVersionComment $page_version_comment_model
+     * @param \CoandaCMS\Coanda\Urls\Repositories\UrlRepositoryInterface $urlRepository
+     * @param \CoandaCMS\Coanda\History\Repositories\HistoryRepositoryInterface $historyRepository
      */
     public function __construct(PageLocationModel $page_location_model, PageModel $page_model, PageVersionModel $page_version_model, PageAttributeModel $page_attribute_model, PageVersionSlugModel $page_version_slug_model, PageVersionCommentModel $page_version_comment_model, \CoandaCMS\Coanda\Urls\Repositories\UrlRepositoryInterface $urlRepository, \CoandaCMS\Coanda\History\Repositories\HistoryRepositoryInterface $historyRepository)
 	{
@@ -85,7 +85,13 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		$this->historyRepository = $historyRepository;
 	}
 
-	private function logHistory($what, $identifier, $data = '', $user_id = false)
+    /**
+     * @param $what
+     * @param $identifier
+     * @param string $data
+     * @param bool $user_id
+     */
+    private function logHistory($what, $identifier, $data = '', $user_id = false)
 	{
 		if (!$user_id)
 		{
@@ -95,6 +101,9 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		$this->historyRepository->add('pages', $identifier, $user_id, $what, $data);
 	}
 
+    /**
+     * @return PageLocationModel
+     */
     public function getPageLocationModel()
     {
     	return $this->page_location_model;
@@ -144,7 +153,11 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		return $location;
 	}
 
-	public function locationBySlug($slug)
+    /**
+     * @param $slug
+     * @return bool|mixed
+     */
+    public function locationBySlug($slug)
 	{
 		try
 		{
@@ -162,9 +175,10 @@ class EloquentPageRepository implements PageRepositoryInterface {
 	}
 
     /**
-     * @param $id
-     * @return mixed
+     * @param $remote_id
      * @throws \CoandaCMS\Coanda\Pages\Exceptions\PageNotFound
+     * @internal param $id
+     * @return mixed
      */
 	public function getByRemoteId($remote_id)
 	{
@@ -178,7 +192,12 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		return $page;
 	}
 
-	public function getLocationByRemoteId($remote_id)
+    /**
+     * @param $remote_id
+     * @return mixed
+     * @throws \CoandaCMS\Coanda\Pages\Exceptions\PageNotFound
+     */
+    public function getLocationByRemoteId($remote_id)
 	{
 		$page = $this->page_model->whereRemoteId($remote_id)->first();
 
@@ -230,7 +249,9 @@ class EloquentPageRepository implements PageRepositoryInterface {
 
     /**
      * @param $parent_location_id
+     * @param $current_page
      * @param int $per_page
+     * @param array $parameters
      * @return mixed
      */
     private function subLocations($parent_location_id, $current_page, $per_page = 10, $parameters = [])
@@ -247,7 +268,9 @@ class EloquentPageRepository implements PageRepositoryInterface {
 
     /**
      * @param $location_id
+     * @param $page
      * @param $per_page
+     * @param array $parameters
      * @return mixed
      */
     public function subPages($location_id, $page, $per_page, $parameters = [])
@@ -356,7 +379,14 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		}
 	}
 
-	public function createAndPublish($type, $user_id, $parent_location_id, $page_data)
+    /**
+     * @param $type
+     * @param $user_id
+     * @param $parent_location_id
+     * @param $page_data
+     * @return mixed
+     */
+    public function createAndPublish($type, $user_id, $parent_location_id, $page_data)
 	{
 		if (is_string($type))
 		{
@@ -415,7 +445,11 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		return $page;
 	}
 
-	private function syncVersionLocations($version, $locations)
+    /**
+     * @param $version
+     * @param $locations
+     */
+    private function syncVersionLocations($version, $locations)
 	{
 		$existing_locations = [];
 
@@ -439,7 +473,14 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		}
 	}
 
-	public function updateAndPublish($page, $user_id, $parent_page_id, $page_data)
+    /**
+     * @param $page
+     * @param $user_id
+     * @param $parent_page_id
+     * @param $page_data
+     * @return mixed
+     */
+    public function updateAndPublish($page, $user_id, $parent_page_id, $page_data)
 	{
 		$version_number = $this->createNewVersion($page->id, $user_id);
 		$version = $page->getVersion($version_number);
@@ -473,7 +514,11 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		return $page;
 	}
 
-	public function hideAndPublish($page, $user_id)
+    /**
+     * @param $page
+     * @param $user_id
+     */
+    public function hideAndPublish($page, $user_id)
 	{
 		$version_number = $this->createNewVersion($page->id, $user_id);
 		$version = $page->getVersion($version_number);
@@ -502,7 +547,13 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		throw new HomePageAlreadyExists('You already have a home page defined');
 	}
 
-	public function createAndPublishHome($type, $user_id, $page_data)
+    /**
+     * @param $type
+     * @param $user_id
+     * @param $page_data
+     * @return mixed
+     */
+    public function createAndPublishHome($type, $user_id, $page_data)
 	{
 		$page = $this->createHome($type, $user_id);
 		$version = $page->currentVersion();
@@ -516,6 +567,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
     /**
      * @param $version_id
      * @param $page_location_id
+     * @return mixed|void
      */
     public function addNewVersionSlug($version_id, $page_location_id)
 	{
@@ -538,6 +590,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
     /**
      * @param $version_id
      * @param $slug_id
+     * @return mixed|void
      */
     public function removeVersionSlug($version_id, $slug_id)
 	{
@@ -617,6 +670,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
     /**
      * @param $version
      * @param $data
+     * @return mixed|void
      * @throws \CoandaCMS\Coanda\Exceptions\ValidationException
      */
     public function saveDraftVersion($version, $data)
@@ -801,6 +855,8 @@ class EloquentPageRepository implements PageRepositoryInterface {
 
     /**
      * @param $version
+     * @param $user_id
+     * @return mixed|void
      */
     public function discardDraftVersion($version, $user_id)
 	{
@@ -837,6 +893,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
      * @param $user_id
      * @param $urlRepository
      * @param $historyRepository
+     * @return mixed|void
      */
     public function publishVersion($version, $user_id, $urlRepository, $historyRepository)
 	{
@@ -981,6 +1038,8 @@ class EloquentPageRepository implements PageRepositoryInterface {
     /**
      * @param $page_id
      * @param $user_id
+     * @param bool $base_version_number
+     * @throws \CoandaCMS\Coanda\Pages\Exceptions\PageVersionNotFound
      * @return mixed
      */
     public function createNewVersion($page_id, $user_id, $base_version_number = false)
@@ -1110,6 +1169,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
     /**
      * @param $page_id
      * @param bool $permanent
+     * @return mixed|void
      * @throws \CoandaCMS\Coanda\Pages\Exceptions\PageNotFound
      */
     public function deletePage($page_id, $permanent = false)
@@ -1163,6 +1223,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
     /**
      * @param $page_ids
      * @param bool $permanent
+     * @return mixed|void
      */
     public function deletePages($page_ids, $permanent = false)
 	{
@@ -1232,6 +1293,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
     /**
      * @param $page_id
      * @param array $restore_sub_pages
+     * @return mixed|void
      * @throws \CoandaCMS\Coanda\Pages\Exceptions\PageNotFound
      */
     public function restore($page_id, $restore_sub_pages = [])
@@ -1278,7 +1340,10 @@ class EloquentPageRepository implements PageRepositoryInterface {
 	}
 
     /**
-     * @param $new_orders
+     * @param $location_id
+     * @param $new_order
+     * @return mixed|void
+     * @internal param $new_orders
      */
     public function updateLocationOrder($location_id, $new_order)
 	{
@@ -1306,6 +1371,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
     /**
      * @param $location_id
      * @param $new_sub_page_order
+     * @return mixed|void
      */
     public function updateLocationSubPageOrder($location_id, $new_sub_page_order)
 	{
@@ -1365,12 +1431,16 @@ class EloquentPageRepository implements PageRepositoryInterface {
 
 		$comment = $this->page_version_comment_model->create($comment_data);
 
-		// Send email to the version 'owner' - e.g. New coment on your draft,
-
 		return $comment;
 	}
 
-	private function generateSlug($version, $version_base_slug, $location_id)
+    /**
+     * @param $version
+     * @param $version_base_slug
+     * @param $location_id
+     * @return mixed|string
+     */
+    private function generateSlug($version, $version_base_slug, $location_id)
 	{
 		foreach ($version->attributes as $attribute)
 		{
@@ -1415,7 +1485,11 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		return '';
 	}
 
-	public function adminSearch($query)
+    /**
+     * @param $query
+     * @return mixed
+     */
+    public function adminSearch($query)
 	{
 		if ($query && $query !== '')
 		{

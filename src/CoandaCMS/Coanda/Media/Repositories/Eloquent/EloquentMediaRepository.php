@@ -3,6 +3,7 @@
 use Coanda, Config;
 
 use CoandaCMS\Coanda\Exceptions\ValidationException;
+use CoandaCMS\Coanda\History\Repositories\HistoryRepositoryInterface;
 use CoandaCMS\Coanda\Media\Exceptions\MediaNotFound;
 use CoandaCMS\Coanda\Media\Exceptions\MissingMedia;
 use CoandaCMS\Coanda\Media\Exceptions\TagNotFound;
@@ -13,6 +14,7 @@ use CoandaCMS\Coanda\Media\Repositories\Eloquent\Models\MediaTag as MediaTagMode
 use CoandaCMS\Coanda\Media\Repositories\MediaRepositoryInterface;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 
 /**
  * Class EloquentMediaRepository
@@ -30,16 +32,16 @@ class EloquentMediaRepository implements MediaRepositoryInterface {
     private $tag_model;
 
     /**
-     * @var \CoandaCMS\Coanda\History\Repositories\HistoryRepositoryInterface
+     * @var HistoryRepositoryInterface
      */
     private $historyRepository;
 
     /**
      * @param MediaModel $model
      * @param MediaTagModel $tag_model
-     * @param CoandaCMS\Coanda\History\Repositories\HistoryRepositoryInterface $historyRepository
+     * @param HistoryRepositoryInterface $historyRepository
      */
-    public function __construct(MediaModel $model, MediaTagModel $tag_model, \CoandaCMS\Coanda\History\Repositories\HistoryRepositoryInterface $historyRepository)
+    public function __construct(MediaModel $model, MediaTagModel $tag_model, HistoryRepositoryInterface $historyRepository)
 	{
 		$this->model = $model;
 		$this->tag_model = $tag_model;
@@ -65,11 +67,11 @@ class EloquentMediaRepository implements MediaRepositoryInterface {
 
     /**
      * @param $ids
-     * @return \Illuminate\Database\Eloquent\Collection
+     * @return Collection
      */
     public function findByIds($ids)
 	{
-		$media_list = new \Illuminate\Database\Eloquent\Collection;
+		$media_list = new Collection;
 
 		if (!is_array($ids))
 		{
@@ -126,6 +128,7 @@ class EloquentMediaRepository implements MediaRepositoryInterface {
 
     /**
      * @param $media_id
+     * @return mixed|void
      */
     public function removeById($media_id)
 	{
@@ -134,7 +137,14 @@ class EloquentMediaRepository implements MediaRepositoryInterface {
 		$media->delete();
 	}
 
-	private function createNewMediaItem($original_filename, $mime, $extension, $size)
+    /**
+     * @param $original_filename
+     * @param $mime
+     * @param $extension
+     * @param $size
+     * @return mixed
+     */
+    private function createNewMediaItem($original_filename, $mime, $extension, $size)
 	{
 		$new_media = new $this->model;
 
@@ -146,18 +156,28 @@ class EloquentMediaRepository implements MediaRepositoryInterface {
 		return $new_media;
 	}
 
-	private function generateUploadFileName($original, $extension)
+    /**
+     * @param $original
+     * @param $extension
+     * @return string
+     */
+    private function generateUploadFileName($original, $extension)
 	{
 		return time() . '-' . md5($original) . '.' . $extension;
 	}
 
-	private function uploadPath()
+    /**
+     * @return string
+     */
+    private function uploadPath()
 	{
 		return base_path() . '/' . Config::get('coanda::coanda.uploads_directory');
 	}
 
     /**
      * @param $file
+     * @param string $module_identifier
+     * @param bool $admin_only
      * @return mixed
      */
     public function handleUpload($file, $module_identifier = '', $admin_only = false)
@@ -190,7 +210,13 @@ class EloquentMediaRepository implements MediaRepositoryInterface {
         return $new_media;
 	}
 
-	public function fromURL($url, $module_identifier = '', $default_extension = false)
+    /**
+     * @param $url
+     * @param string $module_identifier
+     * @param bool $default_extension
+     * @return bool|mixed
+     */
+    public function fromURL($url, $module_identifier = '', $default_extension = false)
 	{
 		$path_info = pathinfo($url);
 		$file_name = $path_info['basename'];
@@ -254,6 +280,7 @@ class EloquentMediaRepository implements MediaRepositoryInterface {
     /**
      * @param $media_id
      * @param $tag_name
+     * @return mixed|void
      */
     public function tagMedia($media_id, $tag_name)
 	{
@@ -290,6 +317,7 @@ class EloquentMediaRepository implements MediaRepositoryInterface {
     /**
      * @param $media_id
      * @param $tag_id
+     * @return mixed|void
      */
     public function removeTag($media_id, $tag_id)
 	{
@@ -355,7 +383,11 @@ class EloquentMediaRepository implements MediaRepositoryInterface {
 		return ini_get('upload_max_filesize');
 	}
 
-	private function getMimeType($extension)
+    /**
+     * @param $extension
+     * @return bool
+     */
+    private function getMimeType($extension)
 	{
 	    $mimeTypes = array(
 

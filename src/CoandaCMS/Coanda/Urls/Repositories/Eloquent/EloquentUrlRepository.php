@@ -1,7 +1,10 @@
 <?php namespace CoandaCMS\Coanda\Urls\Repositories\Eloquent;
 
 use DB;
-
+use CoandaCMS\Coanda\Urls\Repositories\Eloquent\Models\RedirectUrl;
+use CoandaCMS\Coanda\Urls\Repositories\Eloquent\Models\Url;
+use CoandaCMS\Coanda\Urls\Repositories\UrlRepositoryInterface;
+use CoandaCMS\Coanda\Urls\Slugifier;
 use CoandaCMS\Coanda\Urls\Exceptions\UrlAlreadyExists;
 use CoandaCMS\Coanda\Urls\Exceptions\InvalidSlug;
 use CoandaCMS\Coanda\Urls\Exceptions\UrlNotFound;
@@ -11,28 +14,28 @@ use CoandaCMS\Coanda\Exceptions\ValidationException;
  * Class EloquentUrlRepository
  * @package CoandaCMS\Coanda\Urls\Repositories\Eloquent
  */
-class EloquentUrlRepository implements \CoandaCMS\Coanda\Urls\Repositories\UrlRepositoryInterface {
+class EloquentUrlRepository implements UrlRepositoryInterface {
 
     /**
-     * @var \CoandaCMS\Coanda\Urls\Repositories\Eloquent\Models\Url
+     * @var Url
      */
     private $model;
     /**
-     * @var \CoandaCMS\Coanda\Urls\Slugifier
+     * @var Slugifier
      */
     private $slugifier;
 
     /**
-     * @var \CoandaCMS\Coanda\Urls\Repositories\Eloquent\Models\RedirectUrl
+     * @var RedirectUrl
      */
     private $redirecturl_model;
 
     /**
-     * @param UrlModel $model
-     * @param \CoandaCMS\Coanda\Urls\Repositories\Eloquent\Models\RedirectUrl $redirecturl_model
-     * @param \CoandaCMS\Coanda\Urls\Slugifier $slugifier
+     * @param Url $model
+     * @param RedirectUrl $redirecturl_model
+     * @param Slugifier $slugifier
      */
-    public function __construct(\CoandaCMS\Coanda\Urls\Repositories\Eloquent\Models\Url $model, \CoandaCMS\Coanda\Urls\Repositories\Eloquent\Models\RedirectUrl $redirecturl_model, \CoandaCMS\Coanda\Urls\Slugifier $slugifier)
+    public function __construct(Url $model, RedirectUrl $redirecturl_model, Slugifier $slugifier)
 	{
 		$this->model = $model;
 		$this->slugifier = $slugifier;
@@ -57,11 +60,11 @@ class EloquentUrlRepository implements \CoandaCMS\Coanda\Urls\Repositories\UrlRe
 		throw new UrlNotFound('Url not found (findFor)');
 	}
 
-	/**
-	 * Tries to find the Eloquent URL model by the id
-	 * @param  integer $id
-	 * @return Array
-	 */
+    /**
+     * @param  integer $id
+     * @throws \CoandaCMS\Coanda\Urls\Exceptions\UrlNotFound
+     * @return Array
+     */
 	public function findById($id)
 	{
 		$url = $this->model->find($id);
@@ -74,11 +77,12 @@ class EloquentUrlRepository implements \CoandaCMS\Coanda\Urls\Repositories\UrlRe
 		return $url;
 	}
 
-	/**
-	 * Tries to find the Eloquent URL model by the slug
-	 * @param  integer $id
-	 * @return Array
-	 */
+    /**
+     * @param $slug
+     * @throws \CoandaCMS\Coanda\Urls\Exceptions\UrlNotFound
+     * @internal param int $id
+     * @return Array
+     */
 	public function findBySlug($slug)
 	{
 		// Can we match this slug directly?
@@ -189,6 +193,7 @@ class EloquentUrlRepository implements \CoandaCMS\Coanda\Urls\Repositories\UrlRe
     /**
      * @param $for
      * @param $for_id
+     * @return mixed|void
      */
     public function delete($for, $for_id)
 	{
@@ -266,8 +271,9 @@ class EloquentUrlRepository implements \CoandaCMS\Coanda\Urls\Repositories\UrlRe
     /**
      * @param $from
      * @param $to
-     * @return \Illuminate\Database\Eloquent\Model|static
+     * @param string $redirect_type
      * @throws \CoandaCMS\Coanda\Exceptions\ValidationException
+     * @return \Illuminate\Database\Eloquent\Model|static
      */
     public function addRedirect($from, $to, $redirect_type = 'temp')
 	{
@@ -314,7 +320,10 @@ class EloquentUrlRepository implements \CoandaCMS\Coanda\Urls\Repositories\UrlRe
 		return $this->redirecturl_model->where('redirect_type', '=', 'temp')->orderBy('created_at', 'desc')->paginate($per_page);
 	}
 
-	public function removeRedirectUrl($id)
+    /**
+     * @param $id
+     */
+    public function removeRedirectUrl($id)
 	{
 		$model = $this->getRedirectUrl($id);
 
