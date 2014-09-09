@@ -25,6 +25,7 @@ use CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageAttribute as PageAtt
 use CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface;
 
 use Carbon\Carbon;
+use CoandaCMS\Coanda\Urls\Slugifier;
 
 class EloquentPageRepository implements PageRepositoryInterface {
 
@@ -269,14 +270,14 @@ class EloquentPageRepository implements PageRepositoryInterface {
 
     /**
      * @param $location_id
-     * @param $page
+     * @param $current_page
      * @param $per_page
      * @param array $parameters
      * @return mixed
      */
-    public function subPages($location_id, $page, $per_page, $parameters = [])
+    public function subPages($location_id, $current_page, $per_page, $parameters = [])
 	{
-		return $this->subLocations($location_id, $page, $per_page, $parameters);
+		return $this->subLocations($location_id, $current_page, $per_page, $parameters);
 	}
 
     /**
@@ -1347,7 +1348,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 
 				if ($content && $content !== '')
 				{
-					$slug = \CoandaCMS\Coanda\Urls\Slugifier::convert($content);
+					$slug = Slugifier::convert($content);
 
 					try
 					{
@@ -1404,18 +1405,21 @@ class EloquentPageRepository implements PageRepositoryInterface {
      */
     private function saveAttributes($version, $data, $failed)
     {
-        foreach ($version->attributes as $attribute) {
-            try {
+        foreach ($version->attributes as $attribute)
+        {
+            try
+            {
                 $attribute_data = isset($data['attributes'][$attribute->identifier]) ? $data['attributes'][$attribute->identifier] : null;
 
                 $attribute->store($attribute_data, 'attribute_' . $attribute->identifier);
-                return array($data, $failed);
-            } catch (AttributeValidationException $exception) {
+            }
+            catch (AttributeValidationException $exception)
+            {
                 $failed['attributes'][$attribute->identifier] = $exception->getMessage();
             }
-            return array($data, $failed);
         }
-        return array($data, $failed);
+
+        return [$data, $failed];
     }
 
     /**
@@ -1426,36 +1430,42 @@ class EloquentPageRepository implements PageRepositoryInterface {
      */
     private function saveVersionSlugs($version, $data, $failed)
     {
-        if ($version->slugs()->count() > 0) {
+        if ($version->slugs()->count() > 0)
+        {
             // Check each of the locations to see if the slug is OK
-            foreach ($version->slugs as $version_slug) {
-                try {
+            foreach ($version->slugs as $version_slug)
+            {
+                try
+                {
                     $location_id = $version_slug->location ? $version_slug->location->id : 0;
                     $slug = isset($data['slug_' . $version_slug->id]) ? $data['slug_' . $version_slug->id] : false;
 
-                    if (!$slug || $slug == '') {
+                    if (!$slug || $slug == '')
+                    {
                         $slug = $this->generateSlug($version, $version_slug->base_slug, $location_id);
-                        return array($data, $failed);
                     }
 
                     $this->urlRepository->canUse($version_slug->base_slug . '/' . $slug, 'pagelocation', $location_id);
-                    return array($data, $failed);
 
                     $version_slug->slug = $slug;
                     $version_slug->save();
-                    return array($data, $failed);
-                } catch (InvalidSlug $exception) {
+                }
+                catch (InvalidSlug $exception)
+                {
                     $failed['slug_' . $version_slug->id] = 'The slug is not valid';
-                } catch (UrlAlreadyExists $exception) {
+                }
+                catch (UrlAlreadyExists $exception)
+                {
                     $failed['slug_' . $version_slug->id] = 'The slug is already in use';
                 }
-                return array($data, $failed);
             }
-            return array($data, $failed);
-        } else {
-            $failed['slugs'] = 'Please choose at least one location';
-            return array($data, $failed);
         }
+        else
+        {
+            $failed['slugs'] = 'Please choose at least one location';
+        }
+
+        return [$data, $failed];
     }
 
     /**
@@ -1468,7 +1478,8 @@ class EloquentPageRepository implements PageRepositoryInterface {
     {
         $format = isset($data['date_format']) ? $data['date_format'] : Config::get('coanda::coanda.datetime_format');
 
-        if ($format) {
+        if ($format)
+        {
             $dates = [
                 'from' => false,
                 'to' => false
@@ -1476,45 +1487,53 @@ class EloquentPageRepository implements PageRepositoryInterface {
 
             $date_error = false;
 
-            foreach (array_keys($dates) as $date) {
-                if (isset($data['visible_dates'][$date]) && $data['visible_dates'][$date] !== '') {
-                    try {
+            foreach (array_keys($dates) as $date)
+            {
+                if (isset($data['visible_dates'][$date]) && $data['visible_dates'][$date] !== '')
+                {
+                    try
+                    {
                         $dates[$date] = Carbon::createFromFormat($format, $data['visible_dates'][$date], date_default_timezone_get());
-                        return array($data, $failed);
-                    } catch (\InvalidArgumentException $exception) {
-                        $failed[$date] = 'The specified date is invalid';
                     }
-                    return array($data, $failed);
+                    catch (\InvalidArgumentException $exception)
+                    {
+                        $failed['visible_dates_' . $date] = 'The specified date is invalid';
+                    }
                 }
             }
 
-            if (!$date_error && $dates['from'] && $dates['to']) {
+            if (!$date_error && $dates['from'] && $dates['to'])
+            {
                 // Check that the from date is before the to date
-                if (!$dates['from']->lt($dates['to'])) {
+                if (!$dates['from']->lt($dates['to']))
+                {
                     $failed['visible_dates_to'] = 'The date must be after the visible from date';
                 }
             }
 
-            if ($dates['from']) {
+            if ($dates['from'])
+            {
                 $version->visible_from = $dates['from'];
             }
 
-            if ($dates['to']) {
+            if ($dates['to'])
+            {
                 $version->visible_to = $dates['to'];
             }
 
             // If we have a blank date, null it
-            if (isset($data['visible_dates']['from']) && $data['visible_dates']['from'] == '') {
+            if (isset($data['visible_dates']['from']) && $data['visible_dates']['from'] == '')
+            {
                 $version->visible_from = null;
             }
 
             // If we have a blank date, null it
-            if (isset($data['visible_dates']['to']) && $data['visible_dates']['to'] == '') {
+            if (isset($data['visible_dates']['to']) && $data['visible_dates']['to'] == '')
+            {
                 $version->visible_to = null;
-                return array($data, $failed);
             }
-            return array($data, $failed);
         }
-        return array($data, $failed);
+
+        return [$data, $failed];
     }
 }
