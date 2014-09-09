@@ -304,7 +304,7 @@ class EloquentUrlRepository implements UrlRepositoryInterface {
 
     /**
      * @param $id
-     * @return \Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|static
+     * @return RedirectUrl
      */
     public function getRedirectUrl($id)
 	{
@@ -325,15 +325,15 @@ class EloquentUrlRepository implements UrlRepositoryInterface {
      */
     public function removeRedirectUrl($id)
 	{
-		$model = $this->getRedirectUrl($id);
+		$redirect_url = $this->getRedirectUrl($id);
 
-		if ($model)
+		if ($redirect_url)
 		{
 			// Delete the URL..
-			$this->delete('redirecturl', $model->id);
+			$this->delete('redirecturl', $redirect_url->id);
 
 			// Now delete the model..
-			$model->delete();
+            $redirect_url->delete();
 		}
 	}
 }
