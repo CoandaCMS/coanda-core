@@ -1,7 +1,10 @@
 <?php namespace CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models;
 
+use CoandaCMS\Coanda\Core\Presenters\PresentableTrait;
+use CoandaCMS\Coanda\Urls\Exceptions\UrlNotFound;
 use Eloquent, Coanda, App, DB;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 
 /**
  * Class PageLocation
@@ -9,7 +12,7 @@ use Carbon\Carbon;
  */
 class PageLocation extends Eloquent {
 
-	use \CoandaCMS\Coanda\Core\Presenters\PresentableTrait;
+	use PresentableTrait;
 
     /**
      * @var string
@@ -36,9 +39,21 @@ class PageLocation extends Eloquent {
     private $subTreeCount;
 
 
+    /**
+     * @var
+     */
     private $canEdit;
+    /**
+     * @var
+     */
     private $canView;
+    /**
+     * @var
+     */
     private $canRemove;
+    /**
+     * @var
+     */
     private $canCreate;
 
 
@@ -101,8 +116,6 @@ class PageLocation extends Eloquent {
 		if (!$this->subTreeCount)
 		{
 			$path = $this->path == '' ? '/' : $this->path;
-
-			// $this->subTreeCount = PageLocation::where('path', 'like', $path . $this->id . '/%')->count();
 			$this->subTreeCount = $this->where('path', 'like', $path . $this->id . '/%')->count();
 		}
 
@@ -134,13 +147,13 @@ class PageLocation extends Eloquent {
 	}
 
     /**
-     * @return \Illuminate\Database\Eloquent\Collection
+     * @return Collection
      */
     public function parents()
 	{
 		if (!$this->parents)
 		{
-			$this->parents = new \Illuminate\Database\Eloquent\Collection;
+			$this->parents = new Collection;
 
 			foreach ($this->pathArray() as $parent_id)
 			{
@@ -156,12 +169,18 @@ class PageLocation extends Eloquent {
 		return $this->parents;
 	}
 
-	public function getParentsAttribute()
+    /**
+     * @return Collection
+     */
+    public function getParentsAttribute()
 	{
 		return $this->parents();
 	}
 
-	public function getNameAttribute()
+    /**
+     * @return mixed
+     */
+    public function getNameAttribute()
 	{
 		return $this->page->present()->name;
 	}
@@ -177,7 +196,7 @@ class PageLocation extends Eloquent {
 		{
 			return $urlRepository->findFor('pagelocation', $this->id)->slug;
 		}
-		catch(\CoandaCMS\Coanda\Urls\Exceptions\UrlNotFound $exception)
+		catch(UrlNotFound $exception)
 		{
 			return '';
 		}
@@ -221,7 +240,11 @@ class PageLocation extends Eloquent {
 		return $query;
 	}
 
-	public function scopeVisible($query)
+    /**
+     * @param $query
+     * @return mixed
+     */
+    public function scopeVisible($query)
 	{
 		$query->where( function ($query) {
 
@@ -244,7 +267,11 @@ class PageLocation extends Eloquent {
 		return $query;
 	}
 
-	public function scopeNotHidden($query)
+    /**
+     * @param $query
+     * @return mixed
+     */
+    public function scopeNotHidden($query)
 	{
 		$query->where( function ($query) {
 
@@ -256,7 +283,12 @@ class PageLocation extends Eloquent {
 		return $query;
 	}
 
-	public function scopeAttributeFilter($query, $filters)
+    /**
+     * @param $query
+     * @param $filters
+     * @return mixed
+     */
+    public function scopeAttributeFilter($query, $filters)
 	{
 		$query->where( function ($query) use ($filters) {
 
@@ -284,12 +316,19 @@ class PageLocation extends Eloquent {
 		return $query;
 	}
 
-	public function getAttributesAttribute()
+    /**
+     * @return mixed
+     */
+    public function getAttributesAttribute()
 	{
 		return $this->page->renderAttributes($this);
 	}
 
-	public function breadcrumb($link_self = false)
+    /**
+     * @param bool $link_self
+     * @return array
+     */
+    public function breadcrumb($link_self = false)
 	{
 		$parents = $this->parents();
 
@@ -318,7 +357,10 @@ class PageLocation extends Eloquent {
 		return $breadcrumb;
 	}
 
-	private function getPerissionData()
+    /**
+     * @return array
+     */
+    private function getPerissionData()
 	{
 		return [
 			'page_id' => $this->id,
@@ -327,7 +369,10 @@ class PageLocation extends Eloquent {
 		];
 	}
 
-	public function getCanRemoveAttribute()
+    /**
+     * @return mixed
+     */
+    public function getCanRemoveAttribute()
 	{
 		if (!$this->canRemove)
 		{
@@ -337,7 +382,10 @@ class PageLocation extends Eloquent {
 		return $this->canRemove;
 	}
 
-	public function getCanEditAttribute()
+    /**
+     * @return mixed
+     */
+    public function getCanEditAttribute()
 	{
 		if (!$this->canEdit)
 		{
@@ -347,7 +395,10 @@ class PageLocation extends Eloquent {
 		return $this->canEdit;
 	}
 
-	public function getCanViewAttribute()
+    /**
+     * @return mixed
+     */
+    public function getCanViewAttribute()
 	{
 		if (!$this->canView)
 		{
@@ -357,7 +408,10 @@ class PageLocation extends Eloquent {
 		return $this->canView;
 	}
 
-	public function getCanCreateAttribute()
+    /**
+     * @return mixed
+     */
+    public function getCanCreateAttribute()
 	{
 		if (!$this->canCreate)
 		{
@@ -367,7 +421,10 @@ class PageLocation extends Eloquent {
 		return $this->canCreate;
 	}
 
-	public function toArray()
+    /**
+     * @return array
+     */
+    public function toArray()
 	{
 		return [
 			'id' => $this->id,
