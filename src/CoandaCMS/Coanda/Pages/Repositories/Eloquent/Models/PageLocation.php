@@ -281,7 +281,6 @@ class PageLocation extends Eloquent {
 
 		});
 
-
 		return $query;
 	}
 
