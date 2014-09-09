@@ -19,10 +19,17 @@ interface HistoryRepositoryInterface {
     /**
      * @param $for
      * @param $for_id
+     * @param $limit
      * @return mixed
      */
     public function get($for, $for_id, $limit);
 
-    public function getPaginated($for, $for_id);
+    /**
+     * @param $for
+     * @param $for_id
+     * @param $limit
+     * @return mixed
+     */
+    public function getPaginated($for, $for_id, $limit);
 
 }

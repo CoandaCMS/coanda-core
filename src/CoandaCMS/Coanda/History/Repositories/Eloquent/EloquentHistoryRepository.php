@@ -25,13 +25,15 @@ class EloquentHistoryRepository implements HistoryRepositoryInterface {
 		$this->model = $model;
 	}
 
-	/**
-	 * Adds a new history recrod
-	 * @param string $for
-	 * @param integer $for_id
-	 * @param integer $user_id
-	 * @param mixed $data
-	 */
+    /**
+     * Adds a new history recrod
+     * @param string $for
+     * @param integer $for_id
+     * @param integer $user_id
+     * @param $action
+     * @param mixed $data
+     * @return mixed
+     */
 	public function add($for, $for_id, $user_id, $action, $data = '')
 	{
 		$history = new $this->model;
@@ -46,18 +48,25 @@ class EloquentHistoryRepository implements HistoryRepositoryInterface {
 		return $history;
 	}
 
-	/**
-	 * Returns all the history for a specified for and for_id
-	 * @param  string $for
-	 * @param  integer $for_id
-	 * @return
-	 */
+    /**
+     * Returns all the history for a specified for and for_id
+     * @param  string $for
+     * @param  integer $for_id
+     * @param bool $limit
+     * @return mixed
+     */
 	public function get($for, $for_id, $limit = false)
 	{
 		return $this->model->whereFor($for)->whereForId($for_id)->orderBy('created_at', 'desc')->take($limit)->get();
 	}
 
-	public function getPaginated($for, $for_id, $limit = 10)
+    /**
+     * @param $for
+     * @param $for_id
+     * @param int $limit
+     * @return mixed
+     */
+    public function getPaginated($for, $for_id, $limit = 10)
 	{
 		return $this->model->whereFor($for)->whereForId($for_id)->orderBy('created_at', 'desc')->paginate($limit);
 	}

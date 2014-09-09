@@ -10,6 +10,7 @@ use CoandaCMS\Coanda\Exceptions\ValidationException;
 use CoandaCMS\Coanda\Pages\Exceptions\HomePageAlreadyExists;
 use CoandaCMS\Coanda\Pages\Exceptions\SubPagesNotAllowed;
 
+use CoandaCMS\Coanda\Pages\Repositories\Eloquent\Queries\QueryHandler;
 use CoandaCMS\Coanda\Urls\Exceptions\InvalidSlug;
 use CoandaCMS\Coanda\Urls\Exceptions\UrlAlreadyExists;
 use CoandaCMS\Coanda\Urls\Exceptions\UrlNotFound;
@@ -256,7 +257,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
      */
     private function subLocations($parent_location_id, $current_page, $per_page = 10, $parameters = [])
 	{
-		$query = new \CoandaCMS\Coanda\Pages\Repositories\Eloquent\Queries\QueryHandler($this);
+		$query = new QueryHandler($this);
 
 		return $query->subLocations([
 				'parent_location_id' => $parent_location_id,

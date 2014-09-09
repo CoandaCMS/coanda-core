@@ -24,10 +24,15 @@ interface PageRepositoryInterface {
      */
     public function locationById($id);
 
-    public function locationBySlug($slug);
-    
     /**
-     * @param $id
+     * @param $slug
+     * @return mixed
+     */
+    public function locationBySlug($slug);
+
+    /**
+     * @param $remote_id
+     * @internal param $id
      * @return mixed
      */
     public function getByRemoteId($remote_id);
@@ -47,10 +52,12 @@ interface PageRepositoryInterface {
 
     /**
      * @param $page_id
+     * @param $page
      * @param $per_page
+     * @param $parameters
      * @return mixed
      */
-    public function subPages($page_id, $per_page, $parameters);
+    public function subPages($page_id, $page, $per_page, $parameters);
 
     /**
      * @param $type
@@ -60,8 +67,22 @@ interface PageRepositoryInterface {
      */
     public function create($type, $user_id, $parent_page_id);
 
+    /**
+     * @param $type
+     * @param $user_id
+     * @param $parent_page_id
+     * @param $data
+     * @return mixed
+     */
     public function createAndPublish($type, $user_id, $parent_page_id, $data);
 
+    /**
+     * @param $page_id
+     * @param $user_id
+     * @param $parent_page_id
+     * @param $data
+     * @return mixed
+     */
     public function updateAndPublish($page_id, $user_id, $parent_page_id, $data);
 
     /**
@@ -71,6 +92,12 @@ interface PageRepositoryInterface {
      */
     public function createHome($type, $user_id);
 
+    /**
+     * @param $type
+     * @param $user_id
+     * @param $data
+     * @return mixed
+     */
     public function createAndPublishHome($type, $user_id, $data);
 
     /**
@@ -114,6 +141,7 @@ interface PageRepositoryInterface {
 
     /**
      * @param $version
+     * @param $user_id
      * @return mixed
      */
     public function discardDraftVersion($version, $user_id);
@@ -208,5 +236,9 @@ interface PageRepositoryInterface {
      */
     public function addVersionComment($version, $data);
 
+    /**
+     * @param $query
+     * @return mixed
+     */
     public function adminSearch($query);
 }
