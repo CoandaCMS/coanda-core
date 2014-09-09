@@ -426,7 +426,7 @@ class Coanda {
 				{
 					return $this->$route_method($url);
 				}
-				else if(array_key_exists($url->type, $this->routers))
+				elseif(array_key_exists($url->type, $this->routers))
 				{
 					return $this->routers[$url->type]($url);
 				}
