@@ -97,7 +97,14 @@ class EloquentPageRepository implements PageRepositoryInterface {
 	{
 		if (!$user_id)
 		{
-			$user_id = Coanda::currentUser()->id;
+            try
+            {
+                $user_id = Coanda::currentUser()->id;
+            }
+            catch (\CoandaCMS\Coanda\Exceptions\NotLoggedIn $exception)
+            {
+                $user_id = 0;
+            }
 		}
 
 		$this->historyRepository->add('pages', $identifier, $user_id, $what, $data);
@@ -350,7 +357,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		}
 
 		// Log the history
-		$this->logHistory('initial_version', $page->id, $user_id);
+		$this->logHistory('initial_version', $page->id, '', $user_id);
 
 		return $page;
 	}
