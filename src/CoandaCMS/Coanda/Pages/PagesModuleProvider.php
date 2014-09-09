@@ -1,5 +1,6 @@
 <?php namespace CoandaCMS\Coanda\Pages;
 
+use CoandaCMS\Coanda\Pages\Renderer\PageCacher;
 use CoandaCMS\Coanda\Pages\Renderer\PageRenderer;
 use Route, App, Config, Coanda, View, Cache;
 
@@ -33,11 +34,6 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
      * @var array
      */
     private $publish_handlers = [];
-
-    /**
-     * @var
-     */
-    private $meta;
 
     /**
      * @param \CoandaCMS\Coanda\Coanda $coanda
@@ -465,10 +461,10 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
      */
     private function renderPage($page, $pagelocation = false)
 	{
-        $renderer = new PageRenderer($page, $pagelocation);
-        return $renderer->render();
+        $cacher = new PageCacher($page, $pagelocation);
+        $renderer = new PageRenderer($page, $pagelocation, $cacher);
 
-		return $this->mergeWithLayout($page, $pagelocation, $rendered_page);
+        return $renderer->render();
 	}
 
     /**

@@ -100,7 +100,7 @@ abstract class PageType {
      */
     public function canStaticCache()
     {
-        return false;
+        return true;
     }
 
     /**

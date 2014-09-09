@@ -11,16 +11,25 @@ class PageRenderer {
     private $data;
     private $template;
     private $layout;
+    private $cacher;
 
-    public function __construct($page, $location)
+    public function __construct($page, $location, $cacher)
     {
         $this->page = $page;
         $this->location = $location;
+        $this->cacher = $cacher;
     }
 
     public function render()
     {
         $this->checkPageStatus();
+
+        $cache = $this->cacher->get();
+
+        if ($cache)
+        {
+            return $cache;
+        }
 
         $this->buildMeta();
         $this->buildPageData();
@@ -34,7 +43,11 @@ class PageRenderer {
 
         $this->getTemplate();
 
-        return $this->mergeWithLayout($this->renderPage());
+        $content = $this->mergeWithLayout($this->renderPage());
+
+        $this->cacher->put($content);
+
+        return $content;
     }
 
     private function renderPage()
@@ -144,35 +157,4 @@ class PageRenderer {
             'description' => $this->page->meta_description
         ];
     }
-
-    private function checkForCache()
-    {
-        $cache_key = $this->generateCacheKey($url->type_id);
-
-        if (Config::get('coanda::coanda.page_cache_enabled'))
-        {
-            if (Cache::has($cache_key))
-            {
-                return Cache::get($cache_key);
-            }
-        }
-    }
-
-    private function generateCacheKey($location_id)
-    {
-        $cache_key = 'location-' . $location_id;
-
-        $all_input = \Input::all();
-
-        // If we are viewing ?page=1 - then this is cached the same as without it...
-        if (isset($all_input['page']) && $all_input['page'] == 1)
-        {
-            unset($all_input['page']);
-        }
-
-        $cache_key .= '-' . md5(var_export($all_input, true));
-
-        return $cache_key;
-    }
-
-} 
+}
