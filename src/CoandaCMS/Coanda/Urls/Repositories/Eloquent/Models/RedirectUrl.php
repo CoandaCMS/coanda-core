@@ -1,11 +1,12 @@
 <?php namespace CoandaCMS\Coanda\Urls\Repositories\Eloquent\Models;
-use Illuminate\Database\Eloquent\Model;
+
+use Eloquent;
 
 /**
  * Class RedirectUrl
  * @package CoandaCMS\Coanda\Urls\Repositories\Eloquent\Models
  */
-class RedirectUrl extends Model {
+class RedirectUrl extends Eloquent {
 
     /**
      * @var string
