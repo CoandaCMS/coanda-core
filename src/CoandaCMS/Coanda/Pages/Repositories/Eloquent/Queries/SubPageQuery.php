@@ -1,9 +1,11 @@
 <?php namespace CoandaCMS\Coanda\Pages\Repositories\Eloquent\Queries;
 
+use CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface;
+
 class SubPageQuery {
 
     /**
-     * @var \CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface
+     * @var PageRepositoryInterface
      */
     private $repository;
     /**
@@ -20,9 +22,9 @@ class SubPageQuery {
     private $current_page = 1;
 
     /**
-     * @param \CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface $repository
+     * @param PageRepositoryInterface $repository
      */
-    public function __construct(\CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface $repository)
+    public function __construct(PageRepositoryInterface $repository)
 	{
 		$this->repository = $repository;
 	}
@@ -71,7 +73,11 @@ class SubPageQuery {
 		$count = $query->count('pagelocations.id');
 
 		$query = $this->addOrdering($query);
-		$query->skip(($this->current_page > 0 ? (($this->current_page - 1) * $this->per_page) : 0));
+
+        if ($this->current_page > 0)
+        {
+            $query->skip(($this->current_page - 1) * $this->per_page);
+        }
 
 		$items = [];
 
