@@ -3,6 +3,9 @@
 class SubPageQuery {
 
 	private $repository;
+	private $parent_location_id = 0;
+	private $per_page = 10;
+	private $current_page = 1;
 
 	public function __construct(\CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface $repository)
 	{
@@ -11,27 +14,54 @@ class SubPageQuery {
 
 	public function execute($query_parameters)
 	{
-		$parent_location_id = $query_parameters['parent_location_id'];
-		$current_page = $query_parameters['current_page'];
-		$per_page = $query_parameters['per_page'];
-		$parameters = $query_parameters['parameters'];
+		$this->parent_location_id = $query_parameters['parent_location_id'];
+		$this->per_page = isset($query_parameters['per_page']) ? $query_parameters['per_page'] : 10;
+		$this->current_page = isset($query_parameters['current_page']) ? $query_parameters['current_page'] : 1;
 
-		$default_parameters = [
-			'include_invisible' => false,
-			'include_hidden' => false,
-			'include_drafts' => false,
-			'paginate' => true,
-			'attribute_filters' => [],
-			'order_query' => false
-		];
+		$query = $this->baseQuery();
+		$query = $this->handleParameters($query, $query_parameters['parameters']);
 
-		$parameters = array_merge($default_parameters, $parameters);
+		return $this->getResults($query, $query_parameters);
+	}
 
+	private function getResults($query, $parameters)
+	{
+		$paginate = isset($parameters['parameters']['paginate']) ? $parameters['parameters']['paginate'] : true;
+
+		if ($paginate)
+		{
+			return $this->getPaginatedResults($query);
+		}
+
+		$query = $this->addOrdering($query);
+
+		return $query->take($this->per_page)->get();
+	}
+
+	private function getPaginatedResults($query)
+	{
+		$count = $query->count('pagelocations.id');
+
+		$query = $this->addOrdering($query);
+		$query->skip(($this->current_page > 0 ? (($this->current_page - 1) * $this->per_page) : 0));
+
+		$items = [];
+
+		foreach ($query->take($this->per_page)->get() as $result)
+		{
+			$items[] = $result;
+		}
+
+		return \Paginator::make($items, $count, $this->per_page);
+	}
+
+	private function baseQuery()
+	{
 		$page_location_model = $this->repository->getPageLocationModel();
 
 		$query = $page_location_model
 					->with('page')
-					->where('parent_page_id', $parent_location_id)
+					->where('parent_page_id', $this->parent_location_id)
 					->whereHas('page', function ($query) {
 
 						$query->where('is_trashed', '=', '0'); 
@@ -43,70 +73,94 @@ class SubPageQuery {
 		$query->join('pageversions', 'pagelocations.page_id', '=', 'pageversions.page_id');
 		$query->where('pageversions.version', '=', \DB::raw('pages.current_version'));
 
-		if ($parameters['attribute_filters'] && count($parameters['attribute_filters']) > 0)
-		{
-			$query->join('pageattributes', 'pageattributes.page_version_id', '=', 'pageversions.id');
+		return $query;
+	}
 
-			$query->attributeFilter($parameters['attribute_filters']);
+	private function handleParameters($query, $parameters)
+	{
+		$default_parameters = [
+			'include_invisible' => false,
+			'include_hidden' => false,
+			'include_drafts' => false,
+			'order_query' => false,
+			'attribute_filters' => [],
+			'paginate' => true,
+		];
+
+		$parameters = array_merge($default_parameters, $parameters);
+
+		foreach (array_keys($parameters) as $parameter)
+		{
+			$method = camel_case('parameter_' . $parameter);
+
+			if (method_exists($this, $method))
+			{
+				$query = $this->$method($query, $parameters[$parameter]);
+			}
 		}
 
-		if (!$parameters['include_drafts'])
-		{
-			$query->where('pageversions.status', '=', 'published');	
-		}
+		return $query;
+	}
 
-		if (!$parameters['include_invisible'])
+	private function parameterIncludeInvisible($query, $value)
+	{
+		if (!$value)
 		{
 			$query->visible();
 		}
 
-		if (!$parameters['include_hidden'])
+		return $query;
+	}
+
+	private function parameterAttributeFilters($query, $filters)
+	{
+		if ($filters && count($filters) > 0)
+		{
+			$query->join('pageattributes', 'pageattributes.page_version_id', '=', 'pageversions.id');
+
+			$query->attributeFilter($filters);
+		}
+
+		return $query;
+	}
+
+	private function parameterIncludeHidden($query, $value)
+	{
+		if (!$value)
 		{
 			$query->notHidden();
 		}
 
-		if ($parameters['order_query'] && isset($parameters['order_query']['operator']) && isset($parameters['order_query']['value']))
-		{
-			$query->where('order', $parameters['order_query']['operator'], $parameters['order_query']['value']);
-		}
-
-		if ($parameters['paginate'])
-		{
-			$count = $query->count('pagelocations.id');
-
-			// Add the ordering...
-			$query = $this->addOrdering($query, $parent_location_id);
-
-			if ($current_page > 0)
-			{
-				$query->skip(($current_page - 1) * $per_page);
-			}
-
-			$results = $query->take($per_page)->get($per_page);
-
-			$items = [];
-
-			foreach ($results as $result)
-			{
-				$items[] = $result;
-			}
-
-			return \Paginator::make($items, $count, $per_page);
-		}
-
-		$query = $this->addOrdering($query, $parent_location_id);
-
-		return $query->take($per_page)->get($per_page);
-		
+		return $query;
 	}
 
-	private function addOrdering($query, $parent_location_id)
+	private function parameterIncludeDrafts($query, $value)
+	{
+		if (!$value)
+		{
+			$query->where('pageversions.status', '=', 'published');	
+		}
+
+		return $query;
+	}
+
+	private function parameterOrderQuery($query, $value)
+	{
+		if ($value && isset($value['operator']) && isset($value['value']))
+		{
+			$query->where('order', $value['operator'], $value['value']);
+		}
+
+		return $query;
+	}
+
+	private function addOrdering($query)
 	{
 		$order = 'manual';
 
-		if ($parent_location_id != 0)
+		if ($this->parent_location_id != 0)
 		{
-			$parent = $this->repository->locationById($parent_location_id);
+			$parent = $this->repository->locationById($this->parent_location_id);
 
 			if ($parent)
 			{
@@ -114,33 +168,56 @@ class SubPageQuery {
 			}
 		}
 
-		if ($order == 'manual')
-		{
-			$query->orderBy('pagelocations.order', 'asc');
-			$query->orderBy('pagelocations.id', 'asc');
-		}
+		$query = $this->handleOrder($order, $query);
 
-		if ($order == 'alpha:asc')
-		{
-			$query->orderByPageName('asc');
-		}
+		return $query;
+	}
 
-		if ($order == 'alpha:desc')
-		{
-			$query->orderByPageName('desc');
-		}
+	private function handleOrder($order, $query)
+	{
+		$method = camel_case('order_' . str_replace(':', '_', $order));
 
-		if ($order == 'created:asc')
+		if (method_exists($this, $method))
 		{
-			$query->orderByPageCreated('asc');
-		}
-
-		if ($order == 'created:desc')
-		{
-			$query->orderByPageCreated('desc');
+			return $this->$method($query);
 		}
 
 		return $query;
 	}
 
+	private function orderManual($query)
+	{
+		$query->orderBy('pagelocations.order', 'asc');
+		$query->orderBy('pagelocations.id', 'asc');
+
+		return $query;
+	}
+
+	private function orderAlphaAsc($query)
+	{
+		$query->orderByPageName('asc');
+
+		return $query;
+	}
+
+	private function orderAlphaDesc($query)
+	{
+		$query->orderByPageName('desc');
+
+		return $query;
+	}
+
+	private function orderCreatedAsc($query)
+	{
+		$query->orderByPageCreated('asc');
+
+		return $query;
+	}
+
+	private function orderCreatedDesc($query)
+	{
+		$query->orderByPageCreated('desc');
+
+		return $query;
+	}
 }
