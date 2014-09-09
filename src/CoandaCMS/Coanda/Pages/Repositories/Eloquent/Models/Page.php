@@ -26,6 +26,9 @@ class Page extends Eloquent {
      */
     private $currentVersion;
 
+    /**
+     * @var
+     */
     private $cachedAttributes;
 
 	/**
@@ -56,7 +59,10 @@ class Page extends Eloquent {
 		return $this->hasMany('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageLocation');
 	}
 
-	public function firstLocation()
+    /**
+     * @return mixed
+     */
+    public function firstLocation()
 	{
 		return $this->locations()->first();
 	}
@@ -99,11 +105,10 @@ class Page extends Eloquent {
 		return $this->pageType;
 	}
 
-	/**
-	 * Gets the name of the type
-	 * @return srting
-	 */
-	public function typeName()
+    /**
+     * @return mixed
+     */
+    public function typeName()
 	{
 		return $this->pageType()->name;
 	}
@@ -117,7 +122,10 @@ class Page extends Eloquent {
 		return $this->typeName();
 	}
 
-	private function getPageTypeDefinition()
+    /**
+     * @return mixed
+     */
+    private function getPageTypeDefinition()
 	{
 		$pageType = $this->pageType();
 		
@@ -234,7 +242,10 @@ class Page extends Eloquent {
 		return $this->attributes();
 	}
 
-	public function attributes()
+    /**
+     * @return mixed
+     */
+    public function attributes()
 	{
 		return $this->currentVersion()->attributes()->with('version')->get();
 	}
@@ -257,12 +268,18 @@ class Page extends Eloquent {
 		return $this->currentVersion()->status == 'pending';
 	}
 
-	public function getIsHiddenAttribute()
+    /**
+     * @return mixed
+     */
+    public function getIsHiddenAttribute()
 	{
 		return $this->currentVersion()->is_hidden;
 	}
 
-	public function getIsHiddenNavigationAttribute()
+    /**
+     * @return mixed
+     */
+    public function getIsHiddenNavigationAttribute()
 	{
 		return $this->currentVersion()->is_hidden_navigation;
 	}
@@ -275,18 +292,28 @@ class Page extends Eloquent {
 		return $this->pageType()->showMeta();
 	}
 
-	public function setRemoteId($remote_id)
+    /**
+     * @param $remote_id
+     */
+    public function setRemoteId($remote_id)
 	{
 		$this->remote_id = $remote_id;
 		$this->save();
 	}
 
-	public function availableTemplates()
+    /**
+     * @return mixed
+     */
+    public function availableTemplates()
 	{
 		return $this->pageType()->availableTemplates();
 	}
 
-	public function renderAttributes($location)
+    /**
+     * @param $location
+     * @return \stdClass
+     */
+    public function renderAttributes($location)
 	{
 		if (!$this->cachedAttributes)
 		{
@@ -300,7 +327,12 @@ class Page extends Eloquent {
         return $this->cachedAttributes;
 	}
 
-	private function renderCurrentAttributes($attributes, $location)
+    /**
+     * @param $attributes
+     * @param $location
+     * @return mixed
+     */
+    private function renderCurrentAttributes($attributes, $location)
 	{
 		foreach ($this->attributes() as $attribute)
 		{
@@ -310,7 +342,10 @@ class Page extends Eloquent {
 		return $attributes;
 	}
 
-	private function addMissingAttributes($attributes)
+    /**
+     *
+     */
+    private function addMissingAttributes()
 	{		
 		// Add any attributes which are on the definition, but not in the object..
 		$attribute_definition_list = $this->getPageTypeDefinition();
@@ -324,7 +359,10 @@ class Page extends Eloquent {
 		}			
 	}
 
-	public function getCanEditAttribute()
+    /**
+     * @return bool
+     */
+    public function getCanEditAttribute()
 	{
 		$can_edit = false;
 
@@ -336,7 +374,10 @@ class Page extends Eloquent {
 		return $can_edit;
 	}
 
-	public function getCanViewAttribute()
+    /**
+     * @return bool
+     */
+    public function getCanViewAttribute()
 	{
 		$location = $this->firstLocation();
 		
@@ -348,5 +389,20 @@ class Page extends Eloquent {
 		return false;
 	}
 
+    /**
+     * @return mixed
+     */
+    public function getMetaPageTitleAttribute()
+    {
+        return $this->currentVersion()->meta_page_title;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getMetaDescriptionAttribute()
+    {
+        return $this->currentVersion()->meta_description;
+    }
 
 }

@@ -211,6 +211,9 @@ class PageVersion extends Eloquent {
         return $this->layout();
     }
 
+    /**
+     * @return mixed
+     */
     public function availableTemplates()
     {
     	return $this->page->availableTemplates();

@@ -26,7 +26,7 @@ class LayoutModuleProvider implements CoandaModuleProvider {
     private $layouts_by_page_type = [];
 
     /**
-     * @param \CoandaCMS\Coanda\Coanda|\CoandaCMS\Coanda\Layout\CoandaCMS\Coanda\Coanda $coanda
+     * @param \CoandaCMS\Coanda\Coanda $coanda
      * @return mixed|void
      */
     public function boot(\CoandaCMS\Coanda\Coanda $coanda)
@@ -72,7 +72,7 @@ class LayoutModuleProvider implements CoandaModuleProvider {
      */
     public function layoutByIdentifier($identifier)
 	{
-		if (array_key_exists($identifier, $this->layouts))
+		if (array_key_exists((string) $identifier, $this->layouts))
 		{
 			return $this->layouts[$identifier];
 		}

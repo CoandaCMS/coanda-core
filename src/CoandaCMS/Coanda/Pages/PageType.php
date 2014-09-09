@@ -29,6 +29,8 @@ abstract class PageType {
 
 
     /**
+     * @param $version
+     * @param array $data
      * @return string
      */
     public function template($version, $data = [])
@@ -43,12 +45,19 @@ abstract class PageType {
         return 'pagetypes.' . $template_name;
     }
 
+    /**
+     * @param $data
+     * @return mixed
+     */
     public function preRender($data)
     {
         // The default is just to return the data untouched...
         return $data;
     }
 
+    /**
+     * @return array
+     */
     public function availableTemplates()
     {
         return [];
@@ -94,11 +103,17 @@ abstract class PageType {
         return false;
     }
 
+    /**
+     * @return array
+     */
     public function allowedSubPageTypes()
     {
         return [];
     }
 
+    /**
+     * @return bool
+     */
     public function defaultLayout()
     {
         return false;

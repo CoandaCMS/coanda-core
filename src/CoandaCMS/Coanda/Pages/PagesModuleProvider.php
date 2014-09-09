@@ -1,5 +1,6 @@
 <?php namespace CoandaCMS\Coanda\Pages;
 
+use CoandaCMS\Coanda\Pages\Renderer\PageRenderer;
 use Route, App, Config, Coanda, View, Cache;
 
 use CoandaCMS\Coanda\Pages\Exceptions\PageNotFound;
@@ -39,7 +40,7 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
     private $meta;
 
     /**
-     * @param CoandaCMS\Coanda\Coanda $coanda
+     * @param \CoandaCMS\Coanda\Coanda $coanda
      */
     public function boot(\CoandaCMS\Coanda\Coanda $coanda)
 	{
@@ -56,16 +57,6 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 	{
 		// Add the router to handle slug views
 		$coanda->addRouter('pagelocation', function ($url) use ($coanda) {
-
-			$cache_key = $this->generateCacheKey($url->type_id);
-
-			if (Config::get('coanda::coanda.page_cache_enabled'))
-			{
-				if (Cache::has($cache_key))
-				{
-					return Cache::get($cache_key);
-				}				
-			}
 
 			try
 			{
@@ -450,38 +441,6 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 	}
 
     /**
-     * @param $version
-     * @internal param $page
-     * @return mixed
-     */
-    private function getLayout($version)
-	{
-		if ($version->layout_identifier)
-		{
-			$layout = Coanda::layout()->layoutByIdentifier($version->layout_identifier);
-
-			if ($layout)
-			{
-				return $layout;
-			}
-		}
-
-		$page_type_layout = $version->page->pageType()->defaultLayout();
-
-		if ($page_type_layout)
-		{
-			$layout = Coanda::layout()->layoutByIdentifier($page_type_layout);
-
-			if ($layout)
-			{
-				return $layout;
-			}
-		}
-
-		return Coanda::module('layout')->defaultLayout();
-	}
-
-    /**
      * @return mixed
      * @throws \Exception
      */
@@ -501,219 +460,15 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 
     /**
      * @param $page
-     * @param $pagelocation
-     * @return mixed
-     */
-    private function renderAttributes($page, $pagelocation)
-    {
-    	return $page->renderAttributes($pagelocation);
-	}
-
-    /**
-     * @param $page
      * @param bool $pagelocation
      * @return mixed
      */
     private function renderPage($page, $pagelocation = false)
 	{
-		if ($page->is_trashed || !$page->is_visible || $page->is_hidden)
-		{
-			App::abort('404');
-		}
-
-		$data = $this->buildPageData($page, $pagelocation);
-
-		// Does the page type want to do anything before we carry on with the rendering?
-		// e.g. Redirect, set some additional data variables
-		$data = $page->pageType()->preRender($data);
-
-		// Lets check if we got a redirect request back...
-		if (is_object($data) && get_class($data) == 'Illuminate\Http\RedirectResponse')
-		{
-			return $data;
-		}
-
-		// The page type works out the template to be used. The default is pretty simple, but more complex things could be done if required.
-		$template = $page->pageType()->template($page->currentVersion(), $data);
-
-		// Make the view and pass all the render data to it...
-		// $rendered_page = View::make($template, $data)->render();
-		$rendered_page = View::make($template, $data);
+        $renderer = new PageRenderer($page, $pagelocation);
+        return $renderer->render();
 
 		return $this->mergeWithLayout($page, $pagelocation, $rendered_page);
-	}
-
-    /**
-     * @param $page
-     * @param $pagelocation
-     * @param $rendered_content
-     * @return mixed
-     */
-    private function mergeWithLayout($page, $pagelocation, $rendered_content)
-	{
-		// Get the layout template...
-		$layout = $this->getLayout($page->currentVersion());
-
-		// Give the layout the rendered page and the data, and it can work some magic to give us back a complete page...
-		$layout_data = [
-			'layout' => $layout,
-			'content' => $rendered_content,
-			'meta' => $this->buildMeta($page),
-			'breadcrumb' => ($pagelocation ? $pagelocation->breadcrumb() : []),
-			'module' => 'pages',
-			'module_identifier' => $page->id
-		];
-
-		$content = $layout->render($layout_data);
-
-		if (Config::get('coanda::coanda.page_cache_enabled'))
-		{
-			if ($page->pageType()->canStaticCache() && $pagelocation)
-			{
-				$cache_key = $this->generateCacheKey($pagelocation->id);
-
-				$cache_time = Config::get('coanda::coanda.page_cache_lifetime');
-
-				Cache::put($cache_key, $content, $cache_time);
-			}
-		}
-
-		return $content;
-	}
-
-    /**
-     * @param $location_id
-     * @return string
-     */
-    private function generateCacheKey($location_id)
-	{
-		$cache_key = 'location-' . $location_id;
-
-		$all_input = \Input::all();
-
-		// If we are viewing ?page=1 - then this is cached the same as without it...
-		if (isset($all_input['page']) && $all_input['page'] == 1)
-		{
-			unset($all_input['page']);
-		}
-
-		$cache_key .= '-' . md5(var_export($all_input, true));
-
-		return $cache_key;
-	}
-
-    /**
-     * @param $page
-     * @return array
-     */
-    private function buildMeta($page)
-	{
-		if (!$this->meta)
-		{
-			$meta_title = $page->currentVersion()->meta_page_title;
-
-			$this->meta = [
-				'title' => $meta_title !== '' ? $meta_title : $page->present()->name,
-				'description' => $page->currentVersion()->meta_description
-			];
-		}
-
-		return $this->meta;
-	}
-
-    /**
-     * @param $page
-     * @param $pagelocation
-     * @return array
-     */
-    private function buildPageData($page, $pagelocation)
-	{
-		return [
-			'page_id' => $page->id,
-			'version' => $page->current_version,
-			'location_id' => ($pagelocation ? $pagelocation->id : false),
-			'parent' => ($pagelocation ? $pagelocation->parent : false),
-			'page' => $page,
-			'attributes' => $this->renderAttributes($page, $pagelocation),
-			'meta' => $this->buildMeta($page),
-			'slug' => ($pagelocation ? $pagelocation->slug : ''),
-		];
-	}
-
-    /**
-     * @param $version
-     * @return mixed
-     */
-    public function renderVersion($version)
-	{
-		$page = $version->page;
-		$pagelocation = false;
-
-		$meta_title = $version->meta_page_title;
-
-		$meta = [
-			'title' => $meta_title !== '' ? $meta_title : $version->present()->name,
-			'description' => $version->meta_description
-		];
-
-		$attributes = new \stdClass;
-
-		foreach ($version->attributes as $attribute)
-		{
-			$attributes->{$attribute->identifier} = $attribute->render($page, $pagelocation);
-		}
-
-		$first_location = $version->slugs()->first();
-
-		$location = $first_location->location();
-
-		if (!$location)
-		{
-			// Create a dummy location to simulate viewing a location
-			$location = $first_location->tempLocation();	
-		}
-
-		$location_id = $location->id;
-
-		$breadcrumb = $location->breadcrumb();
-
-		// We need to take the last item off and replace it with the version name...
-		array_pop($breadcrumb);
-
-		$breadcrumb[] = [
-			'url' => false,
-			'identifier' => 'pages:location-' . $location->id,
-			'layout_identifier' => 'pages:' . $page->id,
-			'name' => $version->present()->name
-		];
-
-		$data = [
-			'page' => $version->page,
-			'location_id' => $location_id,
-			'meta' => $meta,
-			'attributes' => $attributes
-		];
-
-		// Make the view and pass all the render data to it...
-		$rendered_version = View::make($page->pageType()->template($version, $data), $data);
-
-		// Get the layout template...
-		$layout = $this->getLayout($version);
-
-		// Give the layout the rendered page and the data, and it can work some magic to give us back a complete page...
-		$layout_data = [
-			'layout' => $layout,
-			'content' => $rendered_version,
-			'meta' => $meta,
-			'page_data' => $data,
-			'breadcrumb' => $breadcrumb,
-			'module' => 'pages',
-			'module_identifier' => $page->id . ':' . $version->version
-		];
-
-		$content = View::make($layout->template(), $layout_data)->render();
-
-		return $content;
 	}
 
     /**
