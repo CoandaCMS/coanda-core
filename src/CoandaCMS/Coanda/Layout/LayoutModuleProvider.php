@@ -1,14 +1,14 @@
 <?php namespace CoandaCMS\Coanda\Layout;
 
 use Route, App, Config, Coanda, View;
-
-use CoandaCMS\Coanda\Layout\Exceptions\LayoutNotFound;
+use CoandaCMS\Coanda\CoandaModuleProvider;
+use Illuminate\Foundation\Application;
 
 /**
  * Class LayoutModuleProvider
  * @package CoandaCMS\Coanda\Layout
  */
-class LayoutModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
+class LayoutModuleProvider implements CoandaModuleProvider {
 
     /**
      * @var string
@@ -20,22 +20,18 @@ class LayoutModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
      */
     private $layouts = [];
 
-    private $block_types = [];
-
     /**
      * @var array
      */
     private $layouts_by_page_type = [];
 
     /**
-     * @param CoandaCMS\Coanda\Coanda $coanda
+     * @param \CoandaCMS\Coanda\Coanda|\CoandaCMS\Coanda\Layout\CoandaCMS\Coanda\Coanda $coanda
+     * @return mixed|void
      */
     public function boot(\CoandaCMS\Coanda\Coanda $coanda)
 	{
 		$this->loadLayouts();
-
-        // Add the permissions
-        // $coanda->addModulePermissions('layout', 'Layout', []); // No specific views for this module...
 	}
 
     /**
@@ -98,6 +94,10 @@ class LayoutModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		return [];
 	}
 
+    /**
+     * @param $for_identifier
+     * @return mixed
+     */
     public function layoutFor($for_identifier)
     {
         $layout_mappings = Config::get('coanda::coanda.layout_mapping');
@@ -115,6 +115,9 @@ class LayoutModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
         return $this->layouts[$default_layout];
     }
 
+    /**
+     * @return mixed
+     */
     public function defaultLayout()
     {
         return $this->layouts[Config::get('coanda::coanda.default_layout')];
@@ -125,8 +128,6 @@ class LayoutModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
      */
     public function adminRoutes()
 	{
-		// Load the layout controller
-		// Route::controller('layout', 'CoandaCMS\Coanda\Controllers\Admin\LayoutAdminController');
 	}
 
     /**
@@ -137,10 +138,10 @@ class LayoutModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 	}
 
     /**
-     * @param \Illuminate\Foundation\Application $app
+     * @param Application $app
      * @return mixed
      */
-    public function bindings(\Illuminate\Foundation\Application $app)
+    public function bindings(Application $app)
 	{
         $app->bind('CoandaCMS\Coanda\Layout\Repositories\LayoutRepositoryInterface', 'CoandaCMS\Coanda\Layout\Repositories\Eloquent\EloquentLayoutRepository');
 	}
@@ -149,16 +150,17 @@ class LayoutModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
      * @param $permission
      * @param $parameters
      * @param array $user_permissions
+     * @return mixed|void
      */
     public function checkAccess($permission, $parameters, $user_permissions = [])
 	{
 	}
 
+    /**
+     * @param $coanda
+     * @return mixed|void
+     */
     public function buildAdminMenu($coanda)
     {
-        // if ($coanda->canViewModule('layout'))
-        // {
-        //     $coanda->addMenuItem('layout', 'Layout');    
-        // }
     }
 }
