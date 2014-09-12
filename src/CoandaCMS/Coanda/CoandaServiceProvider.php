@@ -59,6 +59,12 @@ class CoandaServiceProvider extends ServiceProvider {
 
 		});
 
+        // Add an exception handler for PageNotFound - this will always be a 404
+        $this->app->error(function(\CoandaCMS\Coanda\Pages\Exceptions\PageNotFound $exception, $code, $fromConsole)
+        {
+            $this->app->abort('404');
+        });
+
 		$this->app['coanda.setup'] = $this->app->share(function($app)
 		{
 		    return new \CoandaCMS\Coanda\Artisan\SetupCommand($app);
