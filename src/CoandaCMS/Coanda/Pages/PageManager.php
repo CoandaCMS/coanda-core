@@ -33,9 +33,20 @@ class PageManager {
 		$this->repository = $pageRepository;
 		$this->history = $historyRepository;
 		$this->users = $userRepository;
+    }
 
-		$this->current_user_id = $this->users->currentUser()->id;
-	}
+    /**
+     * @return mixed
+     */
+    private function getCurrentUserId()
+    {
+        if (!$this->current_user_id)
+        {
+            $this->current_user_id = $this->users->currentUser()->id;
+        }
+
+        return $this->current_user_id;
+    }
 
     /**
      * @param $method
@@ -66,7 +77,7 @@ class PageManager {
      */
     private function logHistory($what_happened, $identifier, $data)
 	{
-		$this->history->add('pages', $identifier, $this->current_user_id, $what_happened, $data);
+		$this->history->add('pages', $identifier, $this->getCurrentUserId(), $what_happened, $data);
 	}
 
     /**
@@ -140,7 +151,7 @@ class PageManager {
 	{
 		$type = $this->callModuleMethod('getPageType', [$page_type]);
 
-		return $this->repository->create($type, $this->current_user_id, $parent_location_id);
+		return $this->repository->create($type, $this->getCurrentUserId(), $parent_location_id);
 	}
 
     /**
@@ -150,7 +161,7 @@ class PageManager {
      */
     public function createNewVersionForPage($page_id, $base_version_number)
 	{
-		return $this->repository->createNewVersion($page_id, $this->current_user_id, $base_version_number);
+		return $this->repository->createNewVersion($page_id, $this->getCurrentUserId(), $base_version_number);
 	}
 
     /**
@@ -173,7 +184,7 @@ class PageManager {
 
 		$this->logHistory('discard_version', $version->page->id, ['version' => $version->version]);
 
-		$this->repository->discardDraftVersion($version, $this->current_user_id);
+		$this->repository->discardDraftVersion($version, $this->getCurrentUserId());
 	}
 
     /**
@@ -244,7 +255,7 @@ class PageManager {
 	{
 		if (!$user_id)
 		{
-			$user_id = $this->current_user_id;
+			$user_id = $this->getCurrentUserId();
 		}
 
 		return $this->repository->draftsForUser($page_id, $user_id);

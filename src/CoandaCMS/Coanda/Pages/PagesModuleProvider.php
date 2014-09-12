@@ -1,7 +1,6 @@
 <?php namespace CoandaCMS\Coanda\Pages;
 
-use CoandaCMS\Coanda\Pages\Renderer\PageCacher;
-use CoandaCMS\Coanda\Pages\Renderer\PageRenderer;
+use CoandaCMS\Coanda\CoandaModuleProvider;
 use Route, App, Config, Coanda, View, Cache;
 
 use CoandaCMS\Coanda\Pages\Exceptions\PageNotFound;
@@ -13,7 +12,7 @@ use CoandaCMS\Coanda\Exceptions\PermissionDenied;
  * Class PagesModuleProvider
  * @package CoandaCMS\Coanda\Pages
  */
-class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
+class PagesModuleProvider implements CoandaModuleProvider {
 
     /**
      * @var string
@@ -37,6 +36,7 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 
     /**
      * @param \CoandaCMS\Coanda\Coanda $coanda
+     * @return mixed|void
      */
     public function boot(\CoandaCMS\Coanda\Coanda $coanda)
 	{
@@ -54,16 +54,8 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 		// Add the router to handle slug views
 		$coanda->addRouter('pagelocation', function ($url) use ($coanda) {
 
-			try
-			{
-				$location = $this->getPageRepository()->locationById($url->type_id);	
-
-				return $this->renderPage($location->page, $location);
-			}
-			catch(PageNotFound $exception)
-			{
-				App::abort('404');
-			}
+            $renderer = App::make('CoandaCMS\Coanda\Pages\Renderer\PageRenderer');
+            return $renderer->renderLocation($url->type_id);
 
 		});
 	}
@@ -442,29 +434,8 @@ class PagesModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
      */
     public function renderHome()
 	{
-		$home_page = $this->getPageRepository()->getHomePage();
-
-		if ($home_page)
-		{
-			$content = $this->renderPage($home_page);
-
-			return $content;
-		}
-
-		throw new \Exception('Home page not created yet!');
-	}
-
-    /**
-     * @param $page
-     * @param bool $pagelocation
-     * @return mixed
-     */
-    private function renderPage($page, $pagelocation = false)
-	{
-        $cacher = new PageCacher($page, $pagelocation);
-        $renderer = new PageRenderer($page, $pagelocation, $cacher);
-
-        return $renderer->render();
+        $renderer = App::make('CoandaCMS\Coanda\Pages\Renderer\PageRenderer');
+        return $renderer->renderHomePage();
 	}
 
     /**
