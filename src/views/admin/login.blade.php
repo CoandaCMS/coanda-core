@@ -19,7 +19,7 @@
 
         {{ Form::open(array('url' => Coanda::adminUrl('login'), 'role' => 'form', 'class' => 'form-login' )) }}
                 
-			<div class="form-group no-margin @if ($errors->first('username')) has-error@endif">
+			<div class="form-group no-margin @if ($errors->first('username')) has-error @endif">
 				{{ Form::label('email', 'Email', array('class' => 'hidden')) }}
 				{{ Form::text('email', Session::get('email'), array('class' => 'form-control input-lg', 'placeholder' => 'Email', 'autofocus')) }}
 
@@ -28,7 +28,7 @@
                 @endif
 			</div>
 
-            <div class="form-group @if ($errors->first('password')) has-error@endif">
+            <div class="form-group @if ($errors->first('password')) has-error @endif">
                 {{ Form::label('password', 'Password', array('class' => 'hidden')) }}
                 {{ Form::password('password', array('class' => 'form-control input-lg', 'placeholder' => 'Password')) }}
 
