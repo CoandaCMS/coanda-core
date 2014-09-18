@@ -8,7 +8,7 @@ class PageAttributeCacher
     private $enabled = false;
 
     /**
-     * @var Cache
+     * @var \Illuminate\Cache\Repository
      */
     private $cache;
 
@@ -37,8 +37,6 @@ class PageAttributeCacher
      */
     public function get($page_id, $version, $location_id = false)
     {
-        return false;
-
         $key = $this->generateCacheKey($page_id, $version, $location_id);
 
         if ($this->cache->has($key))
