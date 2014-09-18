@@ -54,6 +54,10 @@ class PageRenderer {
         $this->view = $view;
     }
 
+    /**
+     * @return mixed
+     * @throws \Exception
+     */
     public function renderHomePage()
     {
         $home_page = $this->manager->getHomePage();
@@ -69,6 +73,10 @@ class PageRenderer {
 
     }
 
+    /**
+     * @param $location_id
+     * @return mixed
+     */
     public function renderLocation($location_id)
     {
         // Does the cache have this location?
@@ -115,9 +123,17 @@ class PageRenderer {
      */
     private function renderPage()
     {
+        if (!$this->view->exists($this->template))
+        {
+            $this->getFallBackTemplate();
+        }
+
         return $this->view->make($this->template, $this->data);
     }
 
+    /**
+     * @return mixed
+     */
     private function canStaticCache()
     {
         return $this->page->pageType()->canStaticCache();
@@ -129,6 +145,14 @@ class PageRenderer {
     private function getTemplate()
     {
         $this->template = $this->page->pageType()->template($this->page->currentVersion(), $this->data);
+    }
+
+    /**
+     *
+     */
+    private function getFallBackTemplate()
+    {
+        $this->template = 'pagetypes.' . $this->page->pageType()->identifier();
     }
 
     /**
