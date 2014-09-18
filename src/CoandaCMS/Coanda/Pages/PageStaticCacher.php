@@ -39,7 +39,6 @@ class PageStaticCacher {
      */
     public function hasLocationCache($location_id)
     {
-        return false;
         return $this->has($this->generateLocationCacheKey($location_id));
     }
 
