@@ -29,7 +29,7 @@ class Page extends Eloquent {
     /**
      * @var
      */
-    private $cachedAttributes;
+    private $renderedAttributes;
 
 	/**
 	 * The database table used by the model.
@@ -37,6 +37,17 @@ class Page extends Eloquent {
 	 * @var string
 	 */
 	protected $table = 'pages';
+
+    /**
+     * @var
+     */
+    private $attribute_cacher;
+
+    function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+        $this->attribute_cacher = App::make('CoandaCMS\Coanda\Pages\PageAttributeCacher');
+    }
 
     /**
      *
@@ -315,17 +326,30 @@ class Page extends Eloquent {
      */
     public function renderAttributes($location)
 	{
-		if (!$this->cachedAttributes)
+        $this->getCachedAttributes($location);
+
+		if (!$this->renderedAttributes)
 		{
-			$this->cachedAttributes = new \stdClass;
+			$this->renderedAttributes = new \stdClass;
 
-			$this->renderCurrentAttributes($this->cachedAttributes, $location);
+			$this->renderCurrentAttributes($this->renderedAttributes, $location);
+			$this->addMissingAttributes($this->renderedAttributes);
 
-			$this->addMissingAttributes($this->cachedAttributes);
+            $this->putCachedAttributes($location);
 		}
-        
-        return $this->cachedAttributes;
+
+        return $this->renderedAttributes;
 	}
+
+    private function getCachedAttributes($location)
+    {
+        $this->renderedAttributes = $this->attribute_cacher->get($this->id, $this->current_version, $location ? $location->id : false);
+    }
+
+    private function putCachedAttributes($location)
+    {
+        $this->attribute_cacher->put($this->renderedAttributes, $this->id, $this->current_version, $location ? $location->id : false);
+    }
 
     /**
      * @param $attributes
@@ -352,9 +376,9 @@ class Page extends Eloquent {
 
 		foreach ($attribute_definition_list as $attribute_definition_identfier => $attribute_definition)
 		{
-			if (!property_exists($this->cachedAttributes, $attribute_definition_identfier))
+			if (!property_exists($this->renderedAttributes, $attribute_definition_identfier))
 			{
-				$this->cachedAttributes->{$attribute_definition_identfier} = isset($attribute_definition['default']) ? $attribute_definition['default'] : '';
+				$this->renderedAttributes->{$attribute_definition_identfier} = isset($attribute_definition['default']) ? $attribute_definition['default'] : '';
 			}
 		}			
 	}
