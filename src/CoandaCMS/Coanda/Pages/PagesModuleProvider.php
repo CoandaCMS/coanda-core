@@ -262,7 +262,7 @@ class PagesModuleProvider implements CoandaModuleProvider {
 			return $this->page_types[$type];
 		}
 
-		throw new PageTypeNotFound;
+		throw new \CoandaCMS\Coanda\Pages\Exceptions\PageTypeNotFound;
 	}
 
     /**
