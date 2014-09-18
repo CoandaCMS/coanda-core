@@ -19,6 +19,11 @@ class PageStaticCacher {
      */
     private $config;
 
+    /**
+     * @param \Illuminate\Cache\Repository $cache
+     * @param \Illuminate\Http\Request $request
+     * @param \Illuminate\Config\Repository $config
+     */
     public function __construct(\Illuminate\Cache\Repository $cache, \Illuminate\Http\Request $request, \Illuminate\Config\Repository $config)
     {
         $this->cache = $cache;
@@ -28,21 +33,38 @@ class PageStaticCacher {
         $this->checkIfEnabled();
     }
 
+    /**
+     * @param $location_id
+     * @return bool
+     */
     public function hasLocationCache($location_id)
     {
+        return false;
         return $this->has($this->generateLocationCacheKey($location_id));
     }
 
+    /**
+     * @param $location_id
+     * @return mixed
+     */
     public function getLocationCache($location_id)
     {
         return $this->get($this->generateLocationCacheKey($location_id));
     }
 
+    /**
+     * @param $location_id
+     * @param $content
+     */
     public function putLocationCache($location_id, $content)
     {
         $this->put($this->generateLocationCacheKey($location_id), $content);
     }
 
+    /**
+     * @param $key
+     * @return bool
+     */
     public function has($key)
     {
         return $this->cache->has($key);
