@@ -45,7 +45,7 @@ class PageStaticCacher {
 
     public function has($key)
     {
-        return $this->cache->get($key);
+        return $this->cache->has($key);
     }
 
     /**
