@@ -101,19 +101,26 @@ class Page extends Eloquent {
 	 */
 	public function pageType()
 	{
-		if (!$this->pageType)
-		{
-			if ($this->is_home)
-			{
-				$this->pageType = Coanda::module('pages')->getHomePageType($this->type);
-			}
-			else
-			{
-				$this->pageType = Coanda::module('pages')->getPageType($this->type);
-			}
-		}
+        try
+        {
+            if (!$this->pageType)
+            {
+                if ($this->is_home)
+                {
+                    $this->pageType = Coanda::module('pages')->getHomePageType($this->type);
+                }
+                else
+                {
+                    $this->pageType = Coanda::module('pages')->getPageType($this->type);
+                }
+            }
+        }
+        catch (\CoandaCMS\Coanda\Pages\Exceptions\PageTypeNotFound $exception)
+        {
+            $this->pageType = new \CoandaCMS\Coanda\Pages\PageTypes\MissingPageType;
+        }
 
-		return $this->pageType;
+        return $this->pageType;
 	}
 
     /**

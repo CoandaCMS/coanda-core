@@ -266,6 +266,8 @@ class PageAttribute extends Eloquent {
 
 	public function getDefinitionAttribute()
 	{
-		return $this->pageType()->attributes()[$this->identifier];
+        $definition = $this->pageType()->attributes();
+
+        return isset($definition[$this->identifier]) ? $definition[$this->identifier] : false;
 	}
 }
