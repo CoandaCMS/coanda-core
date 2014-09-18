@@ -5,10 +5,7 @@
 @section('content')
 
 <div class="container">
-	<h1>Welcome to Coanda CMS</h1>
-
-	<p>Dude, what shall we show here?</p>
-
+	<h1>Welcome back, {{ Coanda::currentUser()->first_name }}</h1>
 </div>
 
 @stop
