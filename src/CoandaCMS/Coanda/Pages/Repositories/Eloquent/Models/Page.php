@@ -43,7 +43,7 @@ class Page extends Eloquent {
      */
     private $attribute_cacher;
 
-    function __construct(array $attributes = [])
+    public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
         $this->attribute_cacher = App::make('CoandaCMS\Coanda\Pages\PageAttributeCacher');
