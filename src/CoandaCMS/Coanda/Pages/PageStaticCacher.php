@@ -66,7 +66,7 @@ class PageStaticCacher {
      */
     public function has($key)
     {
-        return $this->cache->has($key);
+        return $this->enabled ? $this->cache->has($key) : false;
     }
 
     /**
@@ -74,7 +74,7 @@ class PageStaticCacher {
      */
     public function get($key)
     {
-        return $this->cache->get($key);
+        return $this->enabled ? $this->cache->get($key) : false;
     }
 
     /**
