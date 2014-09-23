@@ -37,11 +37,14 @@ class PageAttributeCacher
      */
     public function get($page_id, $version, $location_id = false)
     {
-        $key = $this->generateCacheKey($page_id, $version, $location_id);
-
-        if ($this->cache->has($key))
+        if ($this->enabled)
         {
-            return $this->cache->get($key);
+            $key = $this->generateCacheKey($page_id, $version, $location_id);
+
+            if ($this->cache->has($key))
+            {
+                return $this->cache->get($key);
+            }
         }
 
         return false;
@@ -55,8 +58,11 @@ class PageAttributeCacher
      */
     public function put($attributes, $page_id, $version, $location_id = false)
     {
-        $key = $this->generateCacheKey($page_id, $version, $location_id);
-        $this->cache->put($key, $attributes, 5);
+        if ($this->enabled)
+        {
+            $key = $this->generateCacheKey($page_id, $version, $location_id);
+            $this->cache->put($key, $attributes, 5);
+        }
     }
 
     /**
