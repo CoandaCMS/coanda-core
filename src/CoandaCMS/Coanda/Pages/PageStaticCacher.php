@@ -83,7 +83,10 @@ class PageStaticCacher {
      */
     public function put($key, $content)
     {
-        return $this->cache->put($key, $content, $this->getCacheLifetime());
+        if ($this->enabled)
+        {
+            return $this->cache->put($key, $content, $this->getCacheLifetime());
+        }
     }
 
     /**
