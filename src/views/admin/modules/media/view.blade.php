@@ -46,7 +46,7 @@
 								@if ($media->type == 'image')
 									<img src="{{ url($media->resizeUrl(500)) }}" class="img-thumbnail">
 								@else
-									<img src="{{ asset('packages/coanda/images/file.png') }}" width="200" height="200" class="img-thumbnail">
+									<img src="{{ asset('packages/coandacms/coanda-core/images/file.png') }}" width="200" height="200" class="img-thumbnail">
 								@endif
 							</a>
 						</div>

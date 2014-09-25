@@ -55,7 +55,7 @@
 											@if ($media->type == 'image')
 												<img src="{{ url($media->cropUrl(100)) }}" width="100" height="100">
 											@else
-												<img src="{{ asset('packages/coanda/images/file.png') }}" width="100" height="100">
+												<img src="{{ asset('packages/coandacms/coanda-core/images/file.png') }}" width="100" height="100">
 											@endif
 										</a>
 										<div class="caption"><a href="{{ Coanda::adminUrl('media/view/' . $media->id) }}">{{ $media->present()->name }}</a></div>
