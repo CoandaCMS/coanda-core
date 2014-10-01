@@ -35,7 +35,7 @@
 				<div class="tab-pane active" id="trashedpages">
 
 					<div class="alert alert-danger">
-						<i class="fa fa-exclamation-triangle"></i> Are you sure you want to permantley delete the following pages? Please note that any sub pages will also be removed.
+						<i class="fa fa-exclamation-triangle"></i> Are you sure you want to permanently delete the following pages? Please note that any sub pages will also be removed.
 					</div>
 
 					@if ($pages->count() > 0)
