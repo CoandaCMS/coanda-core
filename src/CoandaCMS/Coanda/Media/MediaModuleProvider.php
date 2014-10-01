@@ -1,11 +1,11 @@
 <?php namespace CoandaCMS\Coanda\Media;
 
 use CoandaCMS\Coanda\CoandaModuleProvider;
+use CoandaCMS\Coanda\Media\Exceptions\ImageGenerationException;
 use Illuminate\Foundation\Application;
 use Route, App, Config, Coanda, Redirect;
 
 use CoandaCMS\Coanda\Exceptions\PermissionDenied;
-use CoandaCMS\Coanda\Media\Exceptions\ImageGenerationException;
 use CoandaCMS\Coanda\Media\Exceptions\OriginalFileCacheException;
 
 /**
@@ -62,26 +62,22 @@ class MediaModuleProvider implements CoandaModuleProvider {
         // Add the image caching route
         Route::get($image_cache_directory . '/{media_id}/{filename}', function ($media_id, $filename) use ($image_cache_directory) {
 
-            $media = Coanda::media()->getById($media_id);
-
-            // We can only do this for images...
-            if ($media && $media->type == 'image')
+            try
             {
-                try
-                {
-                    $media->generateImage($filename);
+                $mediaManager = App::make('CoandaCMS\Coanda\Media\MediaManager');
+                $media_url = $mediaManager->generateResizedImage($media_id, $filename);
 
-                    $redirect_url = $image_cache_directory . '/' . $media->id . '/' . $filename;
-
-                    return Redirect::to(url($redirect_url));
-                }
-                catch (ImageGenerationException $exception)
+                if ($media_url)
                 {
-                    App::abort('404');
+                    return Redirect::to(url($media_url));
                 }
+
+                App::abort('404');
             }
-
-            App::abort('404');
+            catch (ImageGenerationException $exception)
+            {
+                App::abort('404');
+            }
 
         });
 
@@ -205,8 +201,8 @@ class MediaModuleProvider implements CoandaModuleProvider {
      */
     public function getById($id)
     {
-        $mediaRepository = App::make('CoandaCMS\Coanda\Media\Repositories\MediaRepositoryInterface');
+        $mediaManager = App::make('CoandaCMS\Coanda\Media\MediaManager');
 
-        return $mediaRepository->findById($id);
+        return $mediaManager->getMediaById($id);
     }
 }
