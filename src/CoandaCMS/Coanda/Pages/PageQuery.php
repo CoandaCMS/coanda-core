@@ -1,6 +1,5 @@
 <?php namespace CoandaCMS\Coanda\Pages;
 
-use Cache;
 use CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface;
 use Illuminate\Http\Request;
 
@@ -44,7 +43,6 @@ class PageQuery {
      * @var bool
      */
     private $paginate = false;
-	// private $cache_time = 0;
 
     /**
      * @param Repositories\PageRepositoryInterface $pageRepository
@@ -138,17 +136,6 @@ class PageQuery {
 	{
 		$this->paginate = true;
 		$this->limit = $limit;
-
-		return $this;
-	}
-
-    /**
-     * @param $minutes
-     * @return $this
-     */
-    public function cache($minutes)
-	{
-		$this->cache_time = $minutes;
 
 		return $this;
 	}
