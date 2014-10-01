@@ -131,11 +131,10 @@ class PageAttribute extends Eloquent {
 		return $this->name();
 	}
 
-	/**
-	 * Get the type for this type
-	 * @return
-	 */
-	public function type()
+    /**
+     * @return mixed
+     */
+    public function type()
 	{
 		try
 		{
@@ -149,7 +148,7 @@ class PageAttribute extends Eloquent {
 
 	/**
 	 * Get the data from the type
-	 * @return array
+	 * @return mixed
 	 */
 	public function typeData()
 	{

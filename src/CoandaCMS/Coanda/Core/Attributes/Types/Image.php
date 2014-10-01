@@ -35,7 +35,7 @@ class Image extends AttributeType {
      * @param $data
      * @param $is_required
      * @param $name
-     * @return string
+     * @return mixed
      * @throws \CoandaCMS\Coanda\Exceptions\AttributeValidationException
      */
     public function store($data, $is_required, $name, $parameters = [])
