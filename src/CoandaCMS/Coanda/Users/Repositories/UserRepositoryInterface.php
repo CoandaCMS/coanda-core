@@ -1,36 +1,28 @@
 <?php namespace CoandaCMS\Coanda\Users\Repositories;
 
-/**
- * Interface UserRepositoryInterface
- * @package CoandaCMS\Coanda\Users\Repositories
- */
 interface UserRepositoryInterface {
 
-	/**
-	 * Check to see if we have a logged in user
-	 * @return boolean
-	 */
-	public function isLoggedIn();
+    /**
+     * @return mixed
+     */
+    public function isLoggedIn();
 
-	/**
-	 * Returns the current user
-	 * @return ??
-	 */
-	public function currentUser();
+    /**
+     * @return mixed
+     */
+    public function currentUser();
 
-	/**
-	 * Attempts to login a user
-	 * @param  string $username
-	 * @param  string $password 
-	 * @return mixed
-	 */
-	public function login($username, $password);
+    /**
+     * @param $username
+     * @param $password
+     * @return mixed
+     */
+    public function login($username, $password);
 
-	/**
-	 * Logs out the current user
-	 * @return [type] [description]
-	 */
-	public function logout();
+    /**
+     * @return mixed
+     */
+    public function logout();
 
     /**
      * @param $id
@@ -54,17 +46,17 @@ interface UserRepositoryInterface {
 
     /**
      * @param $user_id
-     * @param $grouo_id
+     * @param $group_id
      * @return mixed
      */
-    public function addUserToGroup($user_id, $grouo_id);
+    public function addUserToGroup($user_id, $group_id);
 
     /**
      * @param $user_id
-     * @param $grouo_id
+     * @param $group_id
      * @return mixed
      */
-    public function removeUserFromGroup($user_id, $grouo_id);
+    public function removeUserFromGroup($user_id, $group_id);
 
     /**
      * @param $group_id
