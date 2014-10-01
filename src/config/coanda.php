@@ -98,13 +98,10 @@ return array(
 	*/
     // This should return the full path to the directory and should be writable.
 	'uploads_directory' => base_path() . '/uploads',
-
 	'image_cache_directory' => 'i',
-
     'available_image_sizes' => [ 100, 250, 500, 1000 ],
-
+    'image_quality' => 90,
 	'file_cache_directory' => 'f',
-
 
 	/*
 	|--------------------------------------------------------------------------

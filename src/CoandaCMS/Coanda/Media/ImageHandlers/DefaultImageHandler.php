@@ -6,6 +6,12 @@ use Intervention\Image\Image as ImageFactory;
 
 class DefaultImageHandler {
 
+    /**
+     * @param $original
+     * @param $output
+     * @return ImageFactory
+     * @throws ImageGenerationException
+     */
     private function initaliseImageFactory($original, $output)
     {
         if (file_exists($original))
@@ -25,21 +31,41 @@ class DefaultImageHandler {
         throw new ImageGenerationException;
     }
 
-	public function crop($original, $output, $size)
+    /**
+     * @param $original
+     * @param $output
+     * @param $size
+     * @return mixed
+     * @throws ImageGenerationException
+     */
+    public function crop($original, $output, $size)
 	{
         $imageFactory = $this->initaliseImageFactory($original, $output);
-        $imageFactory->grab($size, $size)->save($output);
+        $imageFactory->grab($size, $size)->save($output, $this->quality());
 
         return $output;
 	}
 
-	public function resize($original, $output, $size)
+    /**
+     * @param $original
+     * @param $output
+     * @param $size
+     * @throws ImageGenerationException
+     */
+    public function resize($original, $output, $size)
 	{
 		$maintain_ratio = true;
 		$upscale = false;
 
         $imageFactory = $this->initaliseImageFactory($original, $output);
-        $imageFactory->resize($size, null, $maintain_ratio, $upscale)->save($output);
+        $imageFactory->resize($size, null, $maintain_ratio, $upscale)->save($output, $this->quality());
 	}
 
+    /**
+     * @return mixed
+     */
+    private function quality()
+    {
+        return \Config::get('coanda::coanda.image_quality');
+    }
 }
