@@ -100,6 +100,8 @@ return array(
 
 	'image_cache_directory' => 'i',
 
+    'available_image_sizes' => [ 100, 250, 500, 1000 ],
+
 	'file_cache_directory' => 'f',
 
 

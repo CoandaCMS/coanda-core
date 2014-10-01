@@ -28,9 +28,15 @@ class Media extends Eloquent {
 	 */
 	protected $table = 'media';
 
-	private $image_handler;
+    /**
+     * @var ImageHandler
+     */
+    private $image_handler;
 
-	public function __construct()
+    /**
+     *
+     */
+    public function __construct()
 	{
 		$this->image_handler = new ImageHandler;
 	}
@@ -86,7 +92,12 @@ class Media extends Eloquent {
 		return $this->type();
 	}
 
-	public function generateImage($filename)
+    /**
+     * @param $filename
+     * @return string
+     * @throws ImageGenerationException
+     */
+    public function generateImage($filename)
 	{
 		if ($this->admin_only)
 		{
@@ -98,35 +109,54 @@ class Media extends Eloquent {
 			if (preg_match('/^([c|r])(.*)\.(.*)$/', $filename, $matches))
 			{
 				$original = $this->originalFilePath();
-				$output = $this->cacheDirectory() . '/' . $filename;
-				$size = $matches[2];
+				$size = $this->getNearestAllowedSize($matches[2]);
+                $output = $this->cacheDirectory() . '/' . $matches[1] . $size . '.' . $matches[3];
 
 				if ($matches[1] == 'c')
 				{
-					return $this->image_handler->crop($original, $output, $size);
+					$this->image_handler->crop($original, $output, $size);
 				}
 
 				if ($matches[1] == 'r')
 				{
-					return $this->image_handler->resize($original, $output, $size);
+					$this->image_handler->resize($original, $output, $size);
 				}
-			}
+
+                return $this->generateImageCacheUrl($matches[1], $size);
+
+            }
 		}
 
 		throw new ImageGenerationException;
 	}
 
-	public function cropUrl($size)
+    /**
+     * @param $size
+     * @return string
+     * @throws ImageGenerationException
+     */
+    public function cropUrl($size)
 	{
 		return $this->generateImageCacheUrl('c', $size);
 	}
 
-	public function resizeUrl($size)
+    /**
+     * @param $size
+     * @return string
+     * @throws ImageGenerationException
+     */
+    public function resizeUrl($size)
 	{
 		return $this->generateImageCacheUrl('r', $size);
 	}
 
-	private function generateImageCacheUrl($type, $size)
+    /**
+     * @param $type
+     * @param $size
+     * @return string
+     * @throws ImageGenerationException
+     */
+    private function generateImageCacheUrl($type, $size)
 	{
 		if ($this->admin_only)
 		{
@@ -136,7 +166,10 @@ class Media extends Eloquent {
 		return Config::get('coanda::coanda.image_cache_directory') . '/' . $this->id . '/' . $type . $size . '.' . $this->extension;		
 	}
 
-	public function downloadUrl()
+    /**
+     * @return bool|string
+     */
+    public function downloadUrl()
 	{
 		if ($this->admin_only)
 		{
@@ -146,7 +179,11 @@ class Media extends Eloquent {
 		return Config::get('coanda::coanda.file_cache_directory') . '/' . $this->id . '/' . $this->id . '.' . $this->extension;
 	}
 
-	public function generateOriginalFileCache($filename)
+    /**
+     * @param $filename
+     * @throws OriginalFileCacheException
+     */
+    public function generateOriginalFileCache($filename)
 	{
 		if ($this->admin_only)
 		{
@@ -178,12 +215,41 @@ class Media extends Eloquent {
 		return base_path() . '/' . Config::get('coanda::coanda.uploads_directory') . '/' . $this->filename;
 	}
 
+    /**
+     * @return string
+     */
     private function cacheDirectory()
     {
     	if ($this->type == 'image')
     	{
-    		return public_path() . '/' .Config::get('coanda::coanda.image_cache_directory') . '/' . $this->id;
+    		return public_path() . '/' . Config::get('coanda::coanda.image_cache_directory') . '/' . $this->id;
     	}
+    }
+
+    /**
+     * @param $size
+     * @return mixed
+     */
+    private function getNearestAllowedSize($size)
+    {
+        return $this->getClosestSize(Config::get('coanda::coanda.available_image_sizes'), $size);
+    }
+
+    /**
+     * @param $sizes
+     * @param $required_size
+     * @return mixed
+     */
+    private function getClosestSize($sizes, $required_size)
+    {
+        $closest = array_shift($sizes);
+
+        foreach ($sizes as $size)
+        {
+            $closest = ($required_size - $closest > $size - $required_size) ? $size : $closest;
+        }
+
+        return $closest;
     }
 
     /**
