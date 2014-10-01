@@ -166,28 +166,7 @@ class PageQuery {
 			'order_query' => $this->order_query
 		];
 
-		// $cache_key = json_encode([
-		// 	$this->location_id,
-		// 	(int) $this->request->get('page', 1),
-		// 	$this->limit,
-		// 	$parameters
-		// ]);
-
-		// $cache_key = md5($cache_key);
-
-		// if (Cache::has($cache_key))
-		// {
-		// 	return Cache::get($cache_key);
-		// }
-
-		$results = $this->pageRepository->subPages($this->location_id, (int) $this->request->get('page', 1), $this->limit, $parameters);
-
-		// if ($this->cache_time > 0)
-		// {
-		// 	Cache::put($cache_key, $results, 5);
-		// }
-
-		return $results;
+		return $this->pageRepository->subPages($this->location_id, (int) $this->request->get('page', 1), $this->limit, $parameters);
 	}
 
 }
