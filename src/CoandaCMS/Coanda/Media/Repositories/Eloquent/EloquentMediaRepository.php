@@ -171,7 +171,7 @@ class EloquentMediaRepository implements MediaRepositoryInterface {
      */
     private function uploadPath()
 	{
-		return base_path() . '/' . Config::get('coanda::coanda.uploads_directory');
+		return Config::get('coanda::coanda.uploads_directory');
 	}
 
     /**

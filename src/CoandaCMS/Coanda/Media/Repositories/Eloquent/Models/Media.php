@@ -212,7 +212,7 @@ class Media extends Eloquent {
      */
     public function originalFilePath()
 	{
-		return base_path() . '/' . Config::get('coanda::coanda.uploads_directory') . '/' . $this->filename;
+		return Config::get('coanda::coanda.uploads_directory') . '/' . $this->filename;
 	}
 
     /**

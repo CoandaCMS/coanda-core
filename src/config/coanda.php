@@ -96,7 +96,8 @@ return array(
 	|--------------------------------------------------------------------------
 	|
 	*/
-	'uploads_directory' => 'uploads',
+    // This should return the full path to the directory and should be writable.
+	'uploads_directory' => base_path() . '/uploads',
 
 	'image_cache_directory' => 'i',
 
