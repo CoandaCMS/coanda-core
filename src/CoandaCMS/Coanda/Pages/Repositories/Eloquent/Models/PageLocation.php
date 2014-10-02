@@ -309,13 +309,18 @@ class PageLocation extends Eloquent {
 			{
 				$query->where( function ($query) use ($filter) {
 
+                    $value = $filter['value'];
+
+                    if (!is_numeric($value))
+                    {
+                        $value = DB::connection()->getPdo()->quote($value);
+                    }
+
 					$nested_query = "select count(*)
 							from pageattributes
 							where page_version_id=pageversions.id
 							and identifier='" . $filter['attribute'] . "'
-							and attribute_data " . 
-							$filter['type'] . ' ' .
-							(is_numeric($filter['value']) ? $filter['value'] : ("'" . $filter['value'] . "'"));
+							and attribute_data " . $filter['type'] . ' ' . $value;
 
 					$nested_query = preg_replace('/\n/', '', $nested_query);
 
