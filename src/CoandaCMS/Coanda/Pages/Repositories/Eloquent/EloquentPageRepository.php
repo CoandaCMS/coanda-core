@@ -676,6 +676,41 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		return $version;
 	}
 
+
+    /**
+     * @param $page_id
+     * @param $limit
+     * @param $offset
+     * @throws PageNotFound
+     */
+    public function getVersionsForPage($page_id, $limit, $offset)
+    {
+        $page = $this->page_model->find($page_id);
+
+        if ($page)
+        {
+            return $page->versions()->take($limit)->skip($offset)->get();
+        }
+
+        throw new PageNotFound('Page #' . $page_id . ' not found.');
+    }
+
+    /**
+     * @param $page_id
+     * @throws PageNotFound
+     */
+    public function getVersionCountForPage($page_id)
+    {
+        $page = $this->page_model->find($page_id);
+
+        if ($page)
+        {
+            return $page->versions()->count();
+        }
+
+        throw new PageNotFound('Page #' . $page_id . ' not found.');
+    }
+
     /**
      * @param $version
      * @param $data

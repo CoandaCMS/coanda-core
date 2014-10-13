@@ -83,7 +83,7 @@ class Page extends Eloquent {
 	 */
 	public function versions()
 	{
-		return $this->hasMany('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageVersion');
+		return $this->hasMany('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageVersion')->orderBy('version', 'desc');
 	}
 
     /**

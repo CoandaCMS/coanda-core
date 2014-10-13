@@ -10,6 +10,12 @@ class PageManager {
      * @var Repositories\PageRepositoryInterface
      */
     private $repository;
+
+    /**
+     * @var \Illuminate\Pagination\Factory
+     */
+    private $paginator;
+
     /**
      * @var \CoandaCMS\Coanda\History\Repositories\HistoryRepositoryInterface
      */
@@ -28,9 +34,10 @@ class PageManager {
      * @param HistoryRepositoryInterface $historyRepository
      * @param UserRepositoryInterface $userRepository
      */
-    public function __construct(PageRepositoryInterface $pageRepository, HistoryRepositoryInterface $historyRepository, UserRepositoryInterface $userRepository)
+    public function __construct(PageRepositoryInterface $pageRepository, \Illuminate\Pagination\Factory $paginator, HistoryRepositoryInterface $historyRepository, UserRepositoryInterface $userRepository)
 	{
 		$this->repository = $pageRepository;
+        $this->paginator = $paginator;
 		$this->history = $historyRepository;
 		$this->users = $userRepository;
     }
@@ -261,4 +268,39 @@ class PageManager {
 		return $this->repository->draftsForUser($page_id, $user_id);
 	}
 
+    /**
+     * @param $page_id
+     * @param $per_page
+     * @param $current_page
+     * @param string $page_variable
+     * @return \Illuminate\Pagination\Paginator
+     */
+    public function getVersionsForPagePaginated($page_id, $per_page, $current_page, $page_variable = 'versions_page')
+    {
+        $offset = ($current_page - 1) * $per_page;
+        $versions = $this->repository->getVersionsForPage($page_id, $per_page, $offset);
+
+        $version_array = [];
+
+        foreach ($versions as $version)
+        {
+            $version_array[] = $version;
+        }
+
+        $version_count = $this->repository->getVersionCountForPage($page_id);
+
+        $this->paginator->setPageName($page_variable);
+        $results = $this->paginator->make($version_array, $version_count, $per_page);
+
+        return $results;
+    }
+
+    /**
+     * @param $page_id
+     * @return mixed
+     */
+    public function getVersionCountForPage($page_id)
+    {
+        return $this->repository->getVersionCountForPage($page_id);
+    }
 }

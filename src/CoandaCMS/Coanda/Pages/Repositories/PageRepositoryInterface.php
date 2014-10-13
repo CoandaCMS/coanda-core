@@ -118,6 +118,21 @@ interface PageRepositoryInterface {
      */
     public function getVersionByPreviewKey($preview_key);
 
+
+    /**
+     * @param $page_id
+     * @param $limit
+     * @param $offset
+     * @return mixed
+     */
+    public function getVersionsForPage($page_id, $limit, $offset);
+
+    /**
+     * @param $page_id
+     * @return mixed
+     */
+    public function getVersionCountForPage($page_id);
+
     /**
      * @param $version
      * @param $data
