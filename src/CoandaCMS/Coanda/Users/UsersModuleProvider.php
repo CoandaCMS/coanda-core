@@ -106,4 +106,21 @@ class UsersModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
         }
     }
 
+    public function getUserNameFromId($id)
+    {
+        $repository = App::make('CoandaCMS\Coanda\Users\Repositories\UserRepositoryInterface');
+
+        $user = $repository->find($id);
+
+        if ($user)
+        {
+            return $user->first_name;
+        }
+
+        return '';
+
+
+
+    }
+
 }
