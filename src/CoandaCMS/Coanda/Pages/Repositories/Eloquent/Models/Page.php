@@ -395,6 +395,11 @@ class Page extends Eloquent {
      */
     public function getCanEditAttribute()
 	{
+        if ($this->is_home)
+        {
+            return Coanda::canView('pages', 'home_page', [ 'page_id' => $this->id ]);
+        }
+
 		$can_edit = false;
 
 		foreach ($this->locations as $location)
