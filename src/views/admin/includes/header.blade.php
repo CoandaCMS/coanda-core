@@ -45,9 +45,11 @@
 				</li>
 			</ul>
 
-			<form class="navbar-form navbar-right" method="get" action="{{ Coanda::adminUrl('search') }}">
-				<input type="text" class="form-control" placeholder="Search..." name="q">
-			</form>	
+            @if (Coanda::canViewModule('pages'))
+                <form class="navbar-form navbar-right" method="get" action="{{ Coanda::adminUrl('search') }}">
+                    <input type="text" class="form-control" placeholder="Search..." name="q">
+                </form>
+            @endif
 
 			<div class="clearfix"></div>		
 		</div>
