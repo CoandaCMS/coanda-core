@@ -459,4 +459,12 @@ class PageLocation extends Eloquent {
 			'path_string' => $this->present()->path
 		];
 	}
+
+    /**
+     * @return mixed
+     */
+    public function getAllowsSubPagesAttribute()
+    {
+        return $this->page->pageType()->allowsSubPages();
+    }
 }
