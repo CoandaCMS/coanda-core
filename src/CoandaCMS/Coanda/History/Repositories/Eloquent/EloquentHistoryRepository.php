@@ -1,10 +1,8 @@
 <?php namespace CoandaCMS\Coanda\History\Repositories\Eloquent;
 
-use Coanda;
-
 use CoandaCMS\Coanda\History\Repositories\HistoryRepositoryInterface;
-
 use CoandaCMS\Coanda\History\Repositories\Eloquent\Models\History as HistoryModel;
+use CoandaCMS\Coanda\Users\UserManager;
 
 /**
  * Class EloquentHistoryRepository
@@ -17,16 +15,20 @@ class EloquentHistoryRepository implements HistoryRepositoryInterface {
      */
     private $model;
 
+    private $user_manager;
+
     /**
      * @param HistoryModel $model
+     * @param UserManager $user_manager
      */
-    public function __construct(HistoryModel $model)
+    public function __construct(HistoryModel $model, UserManager $user_manager)
 	{
 		$this->model = $model;
+        $this->user_manager = $user_manager;
 	}
 
     /**
-     * Adds a new history recrod
+     * Adds a new history record
      * @param string $for
      * @param integer $for_id
      * @param integer $user_id
@@ -78,9 +80,7 @@ class EloquentHistoryRepository implements HistoryRepositoryInterface {
      */
     public function users($for, $for_id)
 	{
-		$userRepository = \App::make('CoandaCMS\Coanda\Users\Repositories\UserRepositoryInterface');
-
-		return $userRepository->getByIds($this->model->whereFor($for)->whereForId($for_id)->groupBy('user_id')->lists('user_id'));
+		return $this->user_manager->getByIds($this->model->whereFor($for)->whereForId($for_id)->groupBy('user_id')->lists('user_id'));
 	}
 
 }

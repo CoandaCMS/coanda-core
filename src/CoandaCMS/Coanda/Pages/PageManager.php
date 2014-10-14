@@ -3,6 +3,8 @@
 use CoandaCMS\Coanda\History\Repositories\HistoryRepositoryInterface;
 use CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface;
 use CoandaCMS\Coanda\Users\Repositories\UserRepositoryInterface;
+use CoandaCMS\Coanda\Users\UserManager;
+use Illuminate\Pagination\Factory;
 
 class PageManager {
 
@@ -12,7 +14,7 @@ class PageManager {
     private $repository;
 
     /**
-     * @var \Illuminate\Pagination\Factory
+     * @var Factory
      */
     private $paginator;
 
@@ -31,15 +33,17 @@ class PageManager {
 
     /**
      * @param PageRepositoryInterface $pageRepository
+     * @param Factory $paginator
      * @param HistoryRepositoryInterface $historyRepository
-     * @param UserRepositoryInterface $userRepository
+     * @param UserManager $userManager
+     * @internal param UserRepositoryInterface $userRepository
      */
-    public function __construct(PageRepositoryInterface $pageRepository, \Illuminate\Pagination\Factory $paginator, HistoryRepositoryInterface $historyRepository, UserRepositoryInterface $userRepository)
+    public function __construct(PageRepositoryInterface $pageRepository, Factory $paginator, HistoryRepositoryInterface $historyRepository, UserManager $userManager)
 	{
 		$this->repository = $pageRepository;
         $this->paginator = $paginator;
 		$this->history = $historyRepository;
-		$this->users = $userRepository;
+		$this->users = $userManager;
     }
 
     /**

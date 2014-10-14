@@ -3,28 +3,6 @@
 interface UserRepositoryInterface {
 
     /**
-     * @return mixed
-     */
-    public function isLoggedIn();
-
-    /**
-     * @return mixed
-     */
-    public function currentUser();
-
-    /**
-     * @param $username
-     * @param $password
-     * @return mixed
-     */
-    public function login($username, $password);
-
-    /**
-     * @return mixed
-     */
-    public function logout();
-
-    /**
      * @param $id
      * @return mixed
      */
@@ -35,28 +13,28 @@ interface UserRepositoryInterface {
      * @param $group_id
      * @return mixed
      */
-    public function createNew($data, $group_id);
+    public function createNewUser($data, $group_id);
 
     /**
-     * @param $user_id
+     * @param $user
      * @param $data
      * @return mixed
      */
-    public function updateExisting($user_id, $data);
+    public function updateExistingUser($user, $data);
 
     /**
-     * @param $user_id
-     * @param $group_id
+     * @param $user
+     * @param $group
      * @return mixed
      */
-    public function addUserToGroup($user_id, $group_id);
+    public function addUserToGroup($user, $group);
 
     /**
-     * @param $user_id
-     * @param $group_id
+     * @param $user
+     * @param $group
      * @return mixed
      */
-    public function removeUserFromGroup($user_id, $group_id);
+    public function removeUserFromGroup($user, $group);
 
     /**
      * @param $group_id
@@ -81,11 +59,5 @@ interface UserRepositoryInterface {
      * @return mixed
      */
     public function updateGroup($group_id, $data);
-
-    /**
-     * @param $ids
-     * @return mixed
-     */
-    public function getByIds($ids);
     
 }

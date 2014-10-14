@@ -1,30 +1,25 @@
 <?php namespace CoandaCMS\Coanda\Controllers\Admin;
 
 use View, App, Coanda, Redirect, Input, Session;
-
+use CoandaCMS\Coanda\Users\UserManager;
 use CoandaCMS\Coanda\Exceptions\ValidationException;
 use CoandaCMS\Coanda\Users\Exceptions\GroupNotFound;
 use CoandaCMS\Coanda\Users\Exceptions\UserNotFound;
-
 use CoandaCMS\Coanda\Controllers\BaseController;
 
-/**
- * Class UsersAdminController
- * @package CoandaCMS\Coanda\Controllers\Admin
- */
 class UsersAdminController extends BaseController {
 
     /**
-     * @var \CoandaCMS\Coanda\Users\Repositories\UserRepositoryInterface
+     * @var UserManager
      */
-    private $userRepository;
+    private $manager;
 
     /**
-     * @param CoandaCMS\Coanda\Users\Repositories\UserRepositoryInterface $userRepository
+     * @param UserManager $manger
      */
-    public function __construct(\CoandaCMS\Coanda\Users\Repositories\UserRepositoryInterface $userRepository)
+    public function __construct(UserManager $manger)
 	{
-		$this->userRepository = $userRepository;
+        $this->manager = $manger;
 
 		$this->beforeFilter('csrf', array('on' => 'post'));
 	}
@@ -36,9 +31,7 @@ class UsersAdminController extends BaseController {
 	{
 		Coanda::checkAccess('users', 'view');
 
-		$groups = $this->userRepository->groups();
-
-		return View::make('coanda::admin.modules.users.index', [ 'groups' => $groups ]);
+		return View::make('coanda::admin.modules.users.index', [ 'groups' => $this->manager->getAllGroups() ]);
 	}
 
     /**
@@ -49,9 +42,7 @@ class UsersAdminController extends BaseController {
 		Coanda::checkAccess('users', 'create');
 
 		$permissions = Coanda::availablePermissions();
-
 		$existing_permissions = Input::old('permissions');
-
 		$invalid_fields = Session::has('invalid_fields') ? Session::get('invalid_fields') : [];
 
 		return View::make('coanda::admin.modules.users.creategroup', ['permissions' => $permissions, 'existing_permissions' => $existing_permissions, 'invalid_fields' => $invalid_fields ]);
@@ -71,7 +62,7 @@ class UsersAdminController extends BaseController {
 
 		try
 		{
-			$this->userRepository->createGroup(Input::all());
+			$this->manager->createGroup(Input::all());
 
 			return Redirect::to(Coanda::adminUrl('users'));
 		}
@@ -91,12 +82,10 @@ class UsersAdminController extends BaseController {
 
 		try
 		{
-			$group = $this->userRepository->groupById($group_id);
+			$group = $this->manager->getGroupById($group_id);
 
 			$permissions = Coanda::availablePermissions();
-
 			$existing_permissions = Input::old('permissions', $group->access_list);
-
 			$invalid_fields = Session::has('invalid_fields') ? Session::get('invalid_fields') : [];
 
 			return View::make('coanda::admin.modules.users.editgroup', ['group' => $group, 'existing_permissions' => $existing_permissions, 'permissions' => $permissions, 'invalid_fields' => $invalid_fields ]);
@@ -115,14 +104,14 @@ class UsersAdminController extends BaseController {
 	{
 		Coanda::checkAccess('users', 'edit');
 
-		try
-		{
-			if (Input::has('cancel'))
-			{
-				return Redirect::to(Coanda::adminUrl('users'));
-			}
+        if (Input::has('cancel'))
+        {
+            return Redirect::to(Coanda::adminUrl('users'));
+        }
 
-			$this->userRepository->updateGroup($group_id, Input::all());
+        try
+		{
+			$this->manager->updateGroup($group_id, Input::all());
 
 			return Redirect::to(Coanda::adminUrl('users'));			
 		}
@@ -148,9 +137,7 @@ class UsersAdminController extends BaseController {
 		{
 			Session::put('last_group_view', $group_id);
 
-			$group = $this->userRepository->groupById($group_id);
-
-			return View::make('coanda::admin.modules.users.group', ['group' => $group ]);
+			return View::make('coanda::admin.modules.users.group', ['group' => $this->manager->getGroupById($group_id) ]);
 		}
 		catch (GroupNotFound $exception)
 		{
@@ -168,10 +155,9 @@ class UsersAdminController extends BaseController {
 
 		try
 		{
-			$group = $this->userRepository->groupById($group_id);
 			$invalid_fields = Session::has('invalid_fields') ? Session::get('invalid_fields') : [];
 
-			return View::make('coanda::admin.modules.users.createuser', ['group' => $group, 'invalid_fields' => $invalid_fields ]);
+			return View::make('coanda::admin.modules.users.createuser', ['group' => $this->manager->getGroupById($group_id), 'invalid_fields' => $invalid_fields ]);
 		}
 		catch (GroupNotFound $exception)
 		{
@@ -194,7 +180,7 @@ class UsersAdminController extends BaseController {
 
 		try
 		{
-			$this->userRepository->createNew(Input::all(), $group_id);
+			$this->manager->createNewUser(Input::all(), $group_id);
 
 			return Redirect::to(Coanda::adminUrl('users/group/' . $group_id));
 		}
@@ -218,11 +204,9 @@ class UsersAdminController extends BaseController {
 
 		try
 		{
-			$user = $this->userRepository->find($user_id);
-
 			$invalid_fields = Session::has('invalid_fields') ? Session::get('invalid_fields') : [];
 
-			return View::make('coanda::admin.modules.users.edituser', ['user' => $user, 'invalid_fields' => $invalid_fields ]);
+			return View::make('coanda::admin.modules.users.edituser', ['user' => $this->manager->getUserById($user_id), 'invalid_fields' => $invalid_fields ]);
 		}
 		catch (UserNotFound $exception)
 		{
@@ -247,9 +231,7 @@ class UsersAdminController extends BaseController {
 
 		try
 		{
-			$this->userRepository->find($user_id);
-
-			$this->userRepository->updateExisting($user_id, Input::all());
+			$this->manager->updateExistingUser($user_id, Input::all());
 
 			return Redirect::to(Coanda::adminUrl('users/group/' . $last_group_id));
 		}
@@ -276,9 +258,7 @@ class UsersAdminController extends BaseController {
 
 		try
 		{
-			$user = $this->userRepository->find($user_id);
-
-			return View::make('coanda::admin.modules.users.user', ['user' => $user, 'selected_tab' => $selected_tab ]);
+			return View::make('coanda::admin.modules.users.user', ['user' => $this->manager->getUserById($user_id), 'selected_tab' => $selected_tab ]);
 		}
 		catch (UserNotFound $exception)
 		{
@@ -297,7 +277,7 @@ class UsersAdminController extends BaseController {
 
 		try
 		{
-			$this->userRepository->addUserToGroup($user_id, $group_id);
+			$this->manager->addUserToGroup($user_id, $group_id);
 
 			return Redirect::to(Coanda::adminUrl('users/user/' . $user_id . '/groups'));
 		}
@@ -322,7 +302,7 @@ class UsersAdminController extends BaseController {
 
 		try
 		{
-			$this->userRepository->removeUserFromGroup($user_id, $group_id);
+            $this->manager->removeUserFromGroup($user_id, $group_id);
 
 			return Redirect::to(Coanda::adminUrl('users/user/' . $user_id . '/groups'));
 		}
@@ -336,34 +316,39 @@ class UsersAdminController extends BaseController {
 		}
 	}
 
-	public function getProfile()
+    /**
+     * @return mixed
+     */
+    public function getProfile()
 	{
-		$user = Coanda::currentUser();
-
-		return View::make('coanda::admin.modules.users.profile', ['user' => $user ]);
+		return View::make('coanda::admin.modules.users.profile', ['user' => $this->manager->currentUser() ]);
 	}
 
-	public function getEditProfile()
+    /**
+     * @return mixed
+     */
+    public function getEditProfile()
 	{
-		$user = Coanda::currentUser();
-
 		$invalid_fields = Session::has('invalid_fields') ? Session::get('invalid_fields') : [];
 
-		return View::make('coanda::admin.modules.users.editprofile', ['user' => $user, 'invalid_fields' => $invalid_fields ]);
+		return View::make('coanda::admin.modules.users.editprofile', ['user' => $this->manager->currentUser(), 'invalid_fields' => $invalid_fields ]);
 	}
 
-	public function postEditProfile()
+    /**
+     * @return mixed
+     */
+    public function postEditProfile()
 	{
-		$user = Coanda::currentUser();
-
 		if (Input::has('cancel'))
 		{
 			return Redirect::to(Coanda::adminUrl('users/profile'));
 		}
 
+        $user = $this->manager->currentUser();
+
 		try
 		{
-			$this->userRepository->updateExisting($user->id, Input::all());	
+			$this->manager->updateExistingUser($user->id, Input::all());
 
 			return Redirect::to(Coanda::adminUrl('users/profile'))->with('updated', true);
 		}

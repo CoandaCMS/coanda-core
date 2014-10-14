@@ -1,5 +1,6 @@
 <?php namespace CoandaCMS\Coanda\Controllers;
 
+use CoandaCMS\Coanda\Users\UserManager;
 use Input, View, Redirect, Lang, Session;
 
 use Coanda;
@@ -14,15 +15,12 @@ use CoandaCMS\Coanda\Users\Exceptions\AuthenticationFailed;
  */
 class AdminController extends BaseController {
 
-    /**
-     * @var \CoandaCMS\Coanda\Users\Repositories\UserRepositoryInterface
-     */
     private $user;
 
     /**
-     * @param CoandaCMS\Coanda\Users\Repositories\UserRepositoryInterface $user
+     * @param UserManager $user
      */
-    public function __construct(\CoandaCMS\Coanda\Users\Repositories\UserRepositoryInterface $user)
+    public function __construct(UserManager $user)
 	{
 		$this->user = $user;
 
@@ -78,7 +76,7 @@ class AdminController extends BaseController {
 
 			return Redirect::to(Coanda::adminUrl('/'));
 		}
-		catch(MissingInput $exception)
+		catch (MissingInput $exception)
 		{
 			$errors = new \Illuminate\Support\MessageBag;
 
@@ -89,7 +87,7 @@ class AdminController extends BaseController {
 
 			return Redirect::to(Coanda::adminUrl('login'))->withInput()->withErrors($errors);
 		}
-		catch(AuthenticationFailed $exception)
+		catch (AuthenticationFailed $exception)
 		{
 			$errors = new \Illuminate\Support\MessageBag;
 
@@ -109,7 +107,10 @@ class AdminController extends BaseController {
 		return Redirect::to(Coanda::adminUrl('/'));
 	}
 
-	public function getSearch()
+    /**
+     * @return mixed
+     */
+    public function getSearch()
 	{
 		$query = Input::has('q') ? Input::get('q') : false;
 

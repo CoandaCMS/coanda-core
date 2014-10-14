@@ -69,7 +69,7 @@ class Coanda {
     public function boot($app)
 	{
 		$this->urlRepository = $app->make('CoandaCMS\Coanda\Urls\Repositories\UrlRepositoryInterface');
-		$this->user = $app->make('CoandaCMS\Coanda\Users\Repositories\UserRepositoryInterface');
+		$this->user = $app->make('CoandaCMS\Coanda\Users\UserManager');
 		
 		$this->loadAttributes();
 		$this->loadSearchProvider();
