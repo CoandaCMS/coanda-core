@@ -169,15 +169,12 @@ class PagesAdminController extends BaseController {
             $page = $location->page;
 
             $per_page = 10;
-            $current_page = Input::get('versions_page');
-
-            $versions = $this->manager->getVersionsForPagePaginated($page->id, $per_page, $current_page);
 
 			return View::make('coanda::admin.modules.pages.location', [
 					'pagelocation' => $location,
 					'page' => $page,
-                    'versions' => $versions,
-					'children' => $this->manager->getAdminSubLocations($location->id, (int) Input::get('page', 1), 10),
+                    'versions' => $this->manager->getVersionsForPagePaginated($page->id, $per_page, (int) Input::get('versions_page', 1)),
+					'children' => $this->manager->getAdminSubLocations($location->id, (int) Input::get('page', 1), $per_page),
 					'history' => $this->manager->pageHistory($location->page->id, 5),
 					'contributors' => $this->manager->pageContributors($location->page->id)
 			]);
