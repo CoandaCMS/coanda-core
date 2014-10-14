@@ -11,10 +11,14 @@ class ValidationException extends \Exception {
      */
     private $invalid_fields = [];
 
+    /**
+     * @var bool|mixed
+     */
     private $invalid_identifier;
 
     /**
-     * @param string $invalid_fields
+     * @param mixed $invalid_fields
+     * @param mixed $invalid_identifier
      */
     public function __construct($invalid_fields, $invalid_identifier = false)
 	{
