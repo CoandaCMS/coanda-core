@@ -289,8 +289,10 @@ class PageManager {
 
         $version_count = $this->repository->getVersionCountForPage($page_id);
 
-        $this->paginator->setPageName($page_variable);
-        $results = $this->paginator->make($version_array, $version_count, $per_page);
+        $paginator = clone $this->paginator;
+
+        $paginator->setPageName($page_variable);
+        $results = $paginator->make($version_array, $version_count, $per_page);
 
         return $results;
     }
