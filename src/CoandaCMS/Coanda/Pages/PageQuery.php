@@ -45,6 +45,11 @@ class PageQuery {
     private $paginate = false;
 
     /**
+     * @var int
+     */
+    private $page;
+
+    /**
      * @param Repositories\PageRepositoryInterface $pageRepository
      * @param Request $request
      */
@@ -52,6 +57,8 @@ class PageQuery {
 	{
 		$this->pageRepository = $pageRepository;
 		$this->request = $request;
+
+        $this->page = (int) $this->request->get('page', 1);
 	}
 
     /**
@@ -130,12 +137,18 @@ class PageQuery {
 
     /**
      * @param $limit
+     * @param bool $page
      * @return $this
      */
-    public function paginate($limit)
+    public function paginate($limit, $page = false)
 	{
 		$this->paginate = true;
 		$this->limit = $limit;
+
+        if ($page)
+        {
+            $this->page = $page;
+        }
 
 		return $this;
 	}
@@ -153,7 +166,7 @@ class PageQuery {
 			'order_query' => $this->order_query
 		];
 
-		return $this->pageRepository->subPages($this->location_id, (int) $this->request->get('page', 1), $this->limit, $parameters);
+		return $this->pageRepository->subPages($this->location_id, $this->page, $this->limit, $parameters);
 	}
 
 }
