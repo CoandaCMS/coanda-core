@@ -150,22 +150,7 @@ class UserManager {
      */
     public function createGroup($data)
     {
-        $invalid_fields = [];
-
-        if (!isset($data['name']) || $data['name'] == '')
-        {
-            $invalid_fields['name'] = 'Please enter a name';
-        }
-
-        if (!isset($data['permissions']))
-        {
-            $invalid_fields['permissions'] = 'Please specify the permissions for this group';
-        }
-
-        if (count($invalid_fields) > 0)
-        {
-            throw new ValidationException($invalid_fields);
-        }
+        $this->validateUserGroupData($data);
 
         return $this->repository->createGroup($data);
     }
@@ -185,6 +170,13 @@ class UserManager {
             throw new GroupNotFound;
         }
 
+        $this->validateUserGroupData($data);
+
+        $this->repository->updateGroup($group, $data);
+    }
+
+    private function validateUserGroupData($data)
+    {
         $invalid_fields = [];
 
         if (!isset($data['name']) || $data['name'] == '')
@@ -201,9 +193,8 @@ class UserManager {
         {
             throw new ValidationException($invalid_fields);
         }
-
-        $this->repository->updateGroup($group, $data);
     }
+
 
     /**
      * @param $user_id
