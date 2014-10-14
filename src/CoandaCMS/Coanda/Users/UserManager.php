@@ -175,6 +175,10 @@ class UserManager {
         $this->repository->updateGroup($group, $data);
     }
 
+    /**
+     * @param $data
+     * @throws ValidationException
+     */
     private function validateUserGroupData($data)
     {
         $invalid_fields = [];
