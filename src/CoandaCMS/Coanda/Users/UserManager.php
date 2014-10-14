@@ -229,6 +229,7 @@ class UserManager {
     /**
      * @param $data
      * @param $group_id
+     * @return mixed
      * @throws GroupNotFound
      * @throws ValidationException
      */
@@ -243,7 +244,7 @@ class UserManager {
 
         $this->validateUserData($data);
 
-        $this->repository->createNewUser($data, $group);
+        return $this->repository->createNewUser($data, $group);
     }
 
     /**
