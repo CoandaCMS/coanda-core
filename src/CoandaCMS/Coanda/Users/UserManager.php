@@ -220,26 +220,7 @@ class UserManager {
             throw new GroupNotFound;
         }
 
-        $invalid_fields = [];
-
-        $validation_rules = [
-            'first_name' => 'required',
-            'last_name' => 'required',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|confirmed'
-        ];
-
-        $validator = $this->validator->make($data, $validation_rules);
-
-        if ($validator->fails())
-        {
-            foreach ($validator->messages()->getMessages() as $field => $messages)
-            {
-                $invalid_fields[$field] = implode(', ', $messages);
-            }
-
-            throw new ValidationException($invalid_fields);
-        }
+        $this->validateUserData($data);
 
         $this->repository->createNewUser($data, $group);
     }
@@ -259,14 +240,29 @@ class UserManager {
             throw new UserNotFound;
         }
 
+        $this->validateUserData($data, $user->id);
+
+        $this->repository->updateExistingUser($user, $data);
+    }
+
+    private function validateUserData($data, $existing_user_id = false)
+    {
         $invalid_fields = [];
 
         $validation_rules = [
             'first_name' => 'required',
             'last_name' => 'required',
-            'email' => 'required|email|unique:users,email,' . $user->id,
             'password' => 'confirmed',
         ];
+
+        if ($existing_user_id)
+        {
+            $validation_rules['email'] = 'required|email|unique:users,email,' . $existing_user_id;
+        }
+        else
+        {
+            $validation_rules['email'] = 'required|email|unique:users';
+        }
 
         $validator = $this->validator->make($data, $validation_rules);
 
@@ -279,8 +275,6 @@ class UserManager {
 
             throw new ValidationException($invalid_fields);
         }
-
-        $this->repository->updateExistingUser($user, $data);
     }
 
     /**
@@ -291,19 +285,7 @@ class UserManager {
      */
     public function addUserToGroup($user_id, $group_id)
     {
-        $user = $this->getUserById($user_id);
-
-        if (!$user)
-        {
-            throw new UserNotFound;
-        }
-
-        $group = $this->getGroupById($group_id);
-
-        if (!$group)
-        {
-            throw new GroupNotFound;
-        }
+        list($user, $group) = $this->getUserAndGroup($user_id, $group_id);
 
         $this->repository->addUserToGroup($user, $group);
     }
@@ -316,19 +298,7 @@ class UserManager {
      */
     public function removeUserFromGroup($user_id, $group_id)
     {
-        $user = $this->getUserById($user_id);
-
-        if (!$user)
-        {
-            throw new UserNotFound;
-        }
-
-        $group = $this->getGroupById($group_id);
-
-        if (!$group)
-        {
-            throw new GroupNotFound;
-        }
+        list($user, $group) = $this->getUserAndGroup($user_id, $group_id);
 
         $this->repository->removeUserFromGroup($user, $group);
     }
@@ -357,5 +327,31 @@ class UserManager {
         }
 
         return $users;
+    }
+
+    /**
+     * @param $user_id
+     * @param $group_id
+     * @return array
+     * @throws GroupNotFound
+     * @throws UserNotFound
+     */
+    private function getUserAndGroup($user_id, $group_id)
+    {
+        $user = $this->getUserById($user_id);
+
+        if (!$user)
+        {
+            throw new UserNotFound;
+        }
+
+        $group = $this->getGroupById($group_id);
+
+        if (!$group)
+        {
+            throw new GroupNotFound;
+        }
+
+        return [$user, $group];
     }
 }
