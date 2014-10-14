@@ -3,6 +3,7 @@
 use CoandaCMS\Coanda\Exceptions\MissingInput;
 use CoandaCMS\Coanda\Exceptions\NotLoggedIn;
 use CoandaCMS\Coanda\Users\Exceptions\AuthenticationFailed;
+use CoandaCMS\Coanda\Users\Exceptions\UserNotFound;
 use CoandaCMS\Coanda\Users\Repositories\UserRepositoryInterface;
 use Illuminate\Auth\AuthManager;
 use CoandaCMS\Coanda\Exceptions\ValidationException;
@@ -210,6 +211,22 @@ class UserManager {
     }
 
     /**
+     * @param $email
+     * @return mixed
+     */
+    public function getUserByEmail($email)
+    {
+        try
+        {
+            return $this->repository->findByEmail($email);
+        }
+        catch (UserNotFound $exception)
+        {
+            return false;
+        }
+    }
+
+    /**
      * @param $data
      * @param $group_id
      * @throws GroupNotFound
@@ -249,6 +266,11 @@ class UserManager {
         $this->repository->updateExistingUser($user, $data);
     }
 
+    /**
+     * @param $data
+     * @param bool $existing_user_id
+     * @throws ValidationException
+     */
     private function validateUserData($data, $existing_user_id = false)
     {
         $invalid_fields = [];

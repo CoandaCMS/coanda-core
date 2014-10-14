@@ -9,6 +9,12 @@ interface UserRepositoryInterface {
     public function find($id);
 
     /**
+     * @param $email
+     * @return mixed
+     */
+    public function findByEmail($email);
+
+    /**
      * @param $data
      * @param $group_id
      * @return mixed

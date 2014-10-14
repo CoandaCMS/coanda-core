@@ -54,6 +54,23 @@ class EloquentUserRepository implements UserRepositoryInterface {
 	}
 
     /**
+     * @param $email
+     * @return mixed
+     * @throws UserNotFound
+     */
+    public function findByEmail($email)
+    {
+        $user = $this->user_model->where('email', '=', $email)->first();
+
+        if (!$user)
+        {
+            throw new UserNotFound('User with email: ' . $email . ' not found');
+        }
+
+        return $user;
+    }
+
+    /**
      * @param $group_id
      * @return mixed
      * @throws GroupNotFound
