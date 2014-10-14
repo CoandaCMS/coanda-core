@@ -2,7 +2,6 @@
 
 use CoandaCMS\Coanda\History\Repositories\HistoryRepositoryInterface;
 use CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface;
-use CoandaCMS\Coanda\Users\Repositories\UserRepositoryInterface;
 use CoandaCMS\Coanda\Users\UserManager;
 use Illuminate\Pagination\Factory;
 
@@ -22,8 +21,9 @@ class PageManager {
      * @var \CoandaCMS\Coanda\History\Repositories\HistoryRepositoryInterface
      */
     private $history;
+
     /**
-     * @var \CoandaCMS\Coanda\Users\Repositories\UserRepositoryInterface
+     * @var UserManager
      */
     private $users;
     /**
