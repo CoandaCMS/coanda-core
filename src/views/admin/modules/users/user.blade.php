@@ -34,7 +34,7 @@
 		<div class="page-tabs">
 			<ul class="nav nav-tabs">
 				<li {{ $selected_tab == '' || $selected_tab == 'details' ? 'class="active"' : '' }}><a href="#details" data-toggle="tab">Details</a></li>
-				<li {{ $selected_tab == 'groups' ? 'class="active"' : '' }}><a href="#groups" data-toggle="tab">Groups</a></li>
+				<li {{ $selected_tab == 'groups' ? 'class="active"' : '' }}><a href="#groups" data-toggle="tab">Groups ({{ $user->groups->count() }})</a></li>
 			</ul>
 			<div class="tab-content">
 				<div class="tab-pane {{ $selected_tab == '' || $selected_tab == 'details' ? 'active' : '' }}" id="details">
