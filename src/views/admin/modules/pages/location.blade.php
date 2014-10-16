@@ -282,11 +282,11 @@
 									@if (!$page->is_trashed)
 										<a class="new-window" href="{{ url($version->present()->preview_url) }}"><i class="fa fa-share-square-o"></i></a>
 										
-										@if ($version->status == 'draft')
+										@if ($version->status == 'draft' && $pagelocation->can_edit)
 											<a href="{{ Coanda::adminUrl('pages/editversion/' . $page->id . '/' . $version->version) }}"><i class="fa fa-pencil-square-o"></i></a>
 										@endif
 
-										@if ($version->status == 'archived' || $version->status == 'published')
+										@if (($version->status == 'archived' || $version->status == 'published') && $pagelocation->can_edit)
 											<a href="{{ Coanda::adminUrl('pages/edit/' . $page->id . '/' . $version->version) }}"><i class="fa fa-files-o"></i></a>
 										@endif
 									@endif
