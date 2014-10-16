@@ -2,6 +2,7 @@
 
 use CoandaCMS\Coanda\Media\Exceptions\ImageGenerationException;
 
+use Intervention\Image\Exception\InvalidImageTypeException;
 use Intervention\Image\Image as ImageFactory;
 
 class DefaultImageHandler {
@@ -40,10 +41,17 @@ class DefaultImageHandler {
      */
     public function crop($original, $output, $size)
 	{
-        $imageFactory = $this->initaliseImageFactory($original, $output);
-        $imageFactory->grab($size, $size)->save($output, $this->quality());
+        try
+        {
+            $imageFactory = $this->initaliseImageFactory($original, $output);
+            $imageFactory->grab($size, $size)->save($output, $this->quality());
 
-        return $output;
+            return $output;
+        }
+        catch (InvalidImageTypeException $exception)
+        {
+            throw new ImageGenerationException;
+        }
 	}
 
     /**
@@ -54,11 +62,18 @@ class DefaultImageHandler {
      */
     public function resize($original, $output, $size)
 	{
-		$maintain_ratio = true;
-		$upscale = false;
+        try
+        {
+            $maintain_ratio = true;
+            $upscale = false;
 
-        $imageFactory = $this->initaliseImageFactory($original, $output);
-        $imageFactory->resize($size, null, $maintain_ratio, $upscale)->save($output, $this->quality());
+            $imageFactory = $this->initaliseImageFactory($original, $output);
+            $imageFactory->resize($size, null, $maintain_ratio, $upscale)->save($output, $this->quality());
+        }
+        catch (InvalidImageTypeException $exception)
+        {
+            throw new ImageGenerationException;
+        }
 	}
 
     /**
