@@ -551,4 +551,22 @@ class PagesModuleProvider implements CoandaModuleProvider {
 
 		return false;
 	}
+
+
+    /**
+     * @param $slug
+     * @return bool
+     */
+    public function locationBySlug($slug)
+    {
+        try
+        {
+            return $this->getPageRepository()->locationBySlug($slug);
+        }
+        catch (PageNotFound $exception)
+        {
+            return false;
+        }
+    }
+
 }
