@@ -19,6 +19,8 @@ class MediaModuleProvider implements CoandaModuleProvider {
      */
     public $name = 'media';
 
+    private $media_manager;
+
     /**
      * @param \CoandaCMS\Coanda\Coanda $coanda
      * @return mixed|void
@@ -201,8 +203,11 @@ class MediaModuleProvider implements CoandaModuleProvider {
      */
     public function getById($id)
     {
-        $mediaManager = App::make('CoandaCMS\Coanda\Media\MediaManager');
+        if (!$this->media_manager)
+        {
+            $this->media_manager = App::make('CoandaCMS\Coanda\Media\MediaManager');
+        }
 
-        return $mediaManager->getMediaById($id);
+        return $this->media_manager->getMediaById($id);
     }
 }
