@@ -204,7 +204,7 @@ class PagesModuleProvider implements CoandaModuleProvider {
 		{
 			if (in_array('*', $user_permissions['pages']))
 			{
-				return $this->page_types;
+				return $page_types;
 			}
 
 			if (in_array('create', $user_permissions['pages']))
@@ -402,13 +402,13 @@ class PagesModuleProvider implements CoandaModuleProvider {
 		}
 
 		// Page type check
-		if ($permission == 'create' || $permission == 'edit' || $permission == 'remove')
+		if ($permission == 'edit' || $permission == 'remove')
 		{
 			if (isset($user_permissions['page_types']) && count($user_permissions['page_types']) > 0)
 			{
 				if (isset($parameters['page_type']) && !in_array($parameters['page_type'], $user_permissions['page_types']))
 				{
-					throw new PermissionDenied('Access denied by pages module for page type: ' . $parameters['page_type']);
+                    throw new PermissionDenied('Access denied by pages module for page type: ' . $parameters['page_type']);
 				}
 			}
 		}
