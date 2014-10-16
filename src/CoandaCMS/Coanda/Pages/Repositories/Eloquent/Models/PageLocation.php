@@ -467,4 +467,12 @@ class PageLocation extends Eloquent {
     {
         return $this->page->pageType()->allowsSubPages();
     }
+
+    /**
+     * @return string
+     */
+    public function getFullPathAttribute()
+    {
+        return ($this->path == '' ? '/' : '') . $this->path . $this->id . '/';
+    }
 }
