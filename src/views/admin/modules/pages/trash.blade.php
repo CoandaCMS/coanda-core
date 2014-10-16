@@ -26,6 +26,8 @@
 </div>
 
 {{ Form::open(['url' => Coanda::adminUrl('pages/trash')]) }}
+
+@set('show_delete_button', false)
 <div class="row">
 	<div class="col-md-12">
 		<div class="page-tabs">
@@ -48,6 +50,7 @@
 									<td class="tight">
 										@if ($page->can_edit)
 											<input type="checkbox" name="permanent_remove_list[]" value="{{ $page->id }}">
+											@set('show_delete_button', true)
 										@endif
 									</td>
 									<td>
@@ -87,7 +90,9 @@
 							@endforeach
 						</table>
 
-						{{ Form::button('Delete permanently', ['name' => 'permanent_remove', 'value' => 'true', 'type' => 'submit', 'class' => 'btn btn-danger']) }}
+                        @if ($show_delete_button)
+						    {{ Form::button('Delete permanently', ['name' => 'permanent_remove', 'value' => 'true', 'type' => 'submit', 'class' => 'btn btn-danger']) }}
+						@endif
 					@else
 						<p>There are no trashed pages.</p>
 					@endif
