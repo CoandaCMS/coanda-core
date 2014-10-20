@@ -26,7 +26,7 @@ class SetupCommand extends Command {
     /**
      * @var
      */
-    private $userRepository;
+    private $user_manager;
 
     /**
      * @param $app
