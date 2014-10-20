@@ -44,14 +44,22 @@ class PageRenderer {
     private $view;
 
     /**
+     * @var \Illuminate\Foundation\Application
+     */
+    private $app;
+
+    /**
      * @param PageStaticCacher $cacher
      * @param PageManager $manager
+     * @param \Illuminate\View\Factory $view
+     * @param \Illuminate\Foundation\Application $app
      */
-    public function __construct(PageStaticCacher $cacher, PageManager $manager, \Illuminate\View\Factory $view)
+    public function __construct(PageStaticCacher $cacher, PageManager $manager, \Illuminate\View\Factory $view, \Illuminate\Foundation\Application $app)
     {
         $this->cacher = $cacher;
         $this->manager = $manager;
         $this->view = $view;
+        $this->app = $app;
     }
 
     /**
@@ -232,7 +240,7 @@ class PageRenderer {
     {
         if ($this->page->is_trashed || !$this->page->is_visible || $this->page->is_hidden)
         {
-            App::abort('404');
+            $this->app->abort('404');
         }
     }
 
