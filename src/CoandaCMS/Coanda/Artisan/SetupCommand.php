@@ -33,7 +33,7 @@ class SetupCommand extends Command {
      */
     public function __construct($app)
     {
-        $this->userRepository = $app->make('CoandaCMS\Coanda\Users\Repositories\UserRepositoryInterface');
+        $this->user_manager = $app->make('CoandaCMS\Coanda\Users\UserManager');
 
         parent::__construct();
     }
@@ -55,7 +55,7 @@ class SetupCommand extends Command {
         }
 
         // create the main admin group....
-        $group = $this->userRepository->createGroup(['name' => $admin_group_name, 'permissions' => ['everything' => ['*']]]);
+        $group = $this->user_manager->createGroup(['name' => $admin_group_name, 'permissions' => ['everything' => ['*']]]);
 
         $this->info('Now, lets setup the first user account for you');
 
@@ -97,7 +97,7 @@ class SetupCommand extends Command {
 
         try
         {
-            $this->userRepository->createNew($user_data, $group->id);
+            $this->user_manager->createNewUser($user_data, $group->id);
 
             $this->info('All done, you can now log in with the details specified.');
         }
