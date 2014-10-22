@@ -868,16 +868,6 @@ class PagesAdminController extends BaseController {
     }
 
     /**
-     * @param $location_id
-     */
-    public function getIndexLocationTest($location_id)
-    {
-		$pagelocation = $this->pageRepository->locationById($location_id);
-
-		$this->pageRepository->registerLocationWithSearchProvider($pagelocation);
-    }
-
-    /**
      * @param bool $location_id
      * @return array
      */
