@@ -39,17 +39,6 @@ class Page extends Eloquent {
 	protected $table = 'pages';
 
     /**
-     * @var
-     */
-    private $attribute_cacher;
-
-    public function __construct(array $attributes = [])
-    {
-        parent::__construct($attributes);
-        $this->attribute_cacher = App::make('CoandaCMS\Coanda\Pages\PageAttributeCacher');
-    }
-
-    /**
      *
      */
     public function delete()
@@ -333,30 +322,16 @@ class Page extends Eloquent {
      */
     public function renderAttributes($location)
 	{
-        $this->getCachedAttributes($location);
-
 		if (!$this->renderedAttributes)
 		{
 			$this->renderedAttributes = new \stdClass;
 
 			$this->renderCurrentAttributes($this->renderedAttributes, $location);
 			$this->addMissingAttributes($this->renderedAttributes);
-
-            $this->putCachedAttributes($location);
 		}
 
         return $this->renderedAttributes;
 	}
-
-    private function getCachedAttributes($location)
-    {
-        $this->renderedAttributes = $this->attribute_cacher->get($this->id, $this->current_version, $location ? $location->id : false);
-    }
-
-    private function putCachedAttributes($location)
-    {
-        $this->attribute_cacher->put($this->renderedAttributes, $this->id, $this->current_version, $location ? $location->id : false);
-    }
 
     /**
      * @param $attributes
