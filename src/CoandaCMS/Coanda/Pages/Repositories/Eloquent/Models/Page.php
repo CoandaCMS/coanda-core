@@ -627,6 +627,20 @@ class Page extends BaseEloquentModel {
         return $breadcrumb;
     }
 
+    public function getBreadcrumbTextAttribute()
+    {
+        $text = '';
+
+        foreach ($this->parents() as $parent)
+        {
+            $text .= $parent->name . ' / ';
+        }
+
+        $text .= $this->name;
+
+        return $text;
+    }
+
     /**
      * @return array
      */
@@ -637,8 +651,8 @@ class Page extends BaseEloquentModel {
             'parent_page_id' => $this->parent_page_id,
             'allows_sub_pages' => $this->pageType()->allowsSubPages(),
             'name' => $this->name,
+            'breadcrumb_text' => $this->breadcrumb_text,
             'path' => $this->path,
-//            'path_string' => $this->present()->path
         ];
     }
 
@@ -648,7 +662,7 @@ class Page extends BaseEloquentModel {
     private function getPermissionData()
     {
         return [
-            'id' => $this->id,
+            'page_id' => $this->id,
             'page_type' => $this->type,
         ];
     }

@@ -30,16 +30,18 @@
 
 <div class="row">
 	<div class="page-options col-md-12">
-		<div class="btn-group">
-			<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
-				Add new <span class="caret"></span>
-			</button>
-			<ul class="dropdown-menu" role="menu">
-				@foreach (Coanda::module('pages')->availablePageTypes() as $page_type)
-					<li><a href="{{ Coanda::adminUrl('pages/create/' . $page_type->identifier()) }}">{{ $page_type->name() }}</a></li>
-				@endforeach
-			</ul>
-		</div>
+		@if (Coanda::canView('pages', 'create'))
+			<div class="btn-group">
+				<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+					Add new <span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu" role="menu">
+					@foreach (Coanda::module('pages')->availablePageTypes() as $page_type)
+						<li><a href="{{ Coanda::adminUrl('pages/create/' . $page_type->identifier()) }}">{{ $page_type->name() }}</a></li>
+					@endforeach
+				</ul>
+			</div>
+		@endif
 
 		@if (!$home_page && Coanda::canView('pages', 'home_page')))
 			<div class="btn-group">

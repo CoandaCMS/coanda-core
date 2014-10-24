@@ -47,11 +47,11 @@
 								<div class="form-group existing-locations">
 									@if (isset($existing_permissions[$module_key]['allowed_paths']))
 										@foreach ($existing_permissions[$module_key]['allowed_paths'] as $path)
-											@set('location', Coanda::pages()->locationByPath($path))
+											@set('page', Coanda::pages()->byPath($path))
 
 											<div class="input-group">
 												<input type="hidden" name="permissions[{{ $module_key }}][allowed_paths][]" value="{{ $path }}">
-												<input class="form-control" disabled="disabled" type="text" value="{{ $location ? $location->present()->path : '* Location not found *' }}">
+												<input class="form-control" disabled="disabled" type="text" value="{{ $page ? $page->breadcrumb_text : '* Location not found *' }}">
 												<span class="input-group-addon remove-location"><i class="fa fa-minus-circle"></i></span>
 											</div>
 										@endforeach
@@ -96,7 +96,7 @@
 @section('custom-js')
 <script type="text/javascript">
 
-var location_list_url = '{{ Coanda::adminUrl('pages/location-list-json/') }}';
+var location_list_url = '{{ Coanda::adminUrl('pages/page-list-json/') }}';
 
 $('button[name=add_location]').on('click', function () {
 
@@ -205,7 +205,7 @@ function get_location_list(location_id, page)
 
 				$('<i />')
 					.addClass('glyphicon glyphicon-plus-sign pull-right')
-					.data('name', value.path_string)
+					.data('name', value.breadcrumb_text)
 					.data('path', path)
 					.on('click', function () {
 					

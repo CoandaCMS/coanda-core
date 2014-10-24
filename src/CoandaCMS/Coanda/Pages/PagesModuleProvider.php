@@ -348,15 +348,15 @@ class PagesModuleProvider implements CoandaModuleProvider {
 			// Lets assume it passes
 			$pass_path_check = true;
 
-			if (isset($parameters['page_location_id']))
+			if (isset($parameters['page_id']))
 			{
-				$location = Coanda::pages()->getLocation($parameters['page_location_id']);
+				$page = Coanda::pages()->getPage($parameters['page_id']);
 
-				if ($location && isset($user_permissions['allowed_paths']) && count($user_permissions['allowed_paths']) > 0)
+				if ($page && isset($user_permissions['allowed_paths']) && count($user_permissions['allowed_paths']) > 0)
 				{
 					$pass_path_check = false;
 
-					$location_path = $location->path . ($location->path == '' ? '/' : '') . $location->id . '/';
+					$location_path = $page->path . ($page->path == '' ? '/' : '') . $page->id . '/';
 
 					foreach ($user_permissions['allowed_paths'] as $allowed_path)
 					{
@@ -520,19 +520,17 @@ class PagesModuleProvider implements CoandaModuleProvider {
      * @param $path
      * @return bool
      */
-    public function locationByPath($path)
+    public function byPath($path)
 	{
-        dd('locationByPath');
-
 		$path_parts = explode('/', trim($path, '/'));
 
 		if (count($path_parts) > 0)
 		{
-			$location_id = (int) array_pop($path_parts);
+			$page_id = (int) array_pop($path_parts);
 
 			try
 			{
-				return $this->getPageRepository()->locationById($location_id);
+				return $this->getPageManager()->getPage($page_id);
 			}
 			catch (PageNotFound $exception)
 			{

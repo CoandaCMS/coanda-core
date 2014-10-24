@@ -47,9 +47,9 @@
 									<i class="fa fa-check"></i> {{ $view['name'] }}
 									<ul>
 										@foreach ($existing_permissions[$module_key]['allowed_paths'] as $path)
-											@set('location', Coanda::pages()->locationByPath($path))
+											@set('page', Coanda::pages()->byPath($path))
 											
-											<li>{{ $location ? $location->present()->path : '* Location not found *' }}</li>
+											<li>{{ $page ? $page->breadcrumb_text : '* Location not found *' }}</li>
 										@endforeach
 									</ul>
 								@else

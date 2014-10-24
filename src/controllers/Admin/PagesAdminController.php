@@ -701,24 +701,21 @@ class PagesAdminController extends BaseController {
 		}
     }
 
-    /**
-     * @param bool $location_id
-     * @return array
-     */
-//    public function getLocationListJson($location_id = false)
-//    {
-//		$location = false;
-//
-//		if ($location_id)
-//		{
-//			$location = $this->pageRepository->locationById($location_id);
-//		}
-//
-//		$per_page = 10;
-//
-//		return [
-//				'location' => $location ? $location->toArray() : false,
-//				'sub_pages' => $this->pageRepository->subPages($location_id, Input::get('page', 1), $per_page, ['include_hidden' => true, 'include_drafts' => true, 'include_invisible' => true])->toArray()
-//			];
-//    }
+    public function getPageListJson($page_id = false)
+    {
+		$page = false;
+
+		if ($page_id)
+		{
+			$page = $this->manager->getPage($page_id);
+		}
+
+		$per_page = 10;
+		$sub_pages = $this->manager->getAdminSubPages($page_id, Input::get('page', 1), $per_page);
+
+		return [
+				'page' => $page ? $page->toArray() : false,
+				'sub_pages' => $sub_pages->toArray()
+			];
+    }
 }

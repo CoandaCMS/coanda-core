@@ -109,7 +109,7 @@
                         @if ($page->is_draft)
                             <a href="{{ Coanda::adminUrl('pages/editversion/' . $page->id . '/1') }}" class="btn btn-primary">Continue editing</a>
                         @else
-                            @if (Coanda::canView('pages', 'edit'))
+                            @if ($page->can_edit)
                                 <a href="{{ Coanda::adminUrl('pages/edit/' . $page->id) }}" class="btn btn-primary">Edit</a>
                             @else
                                 <span class="btn btn-primary" disabled="disabled">Edit</span>
@@ -251,7 +251,7 @@
 						@foreach ($versions as $version)
 							<tr @if ($version->status == 'pending') class="info" @endif>
 								<td class="tight">
-									@if ($version->status == 'draft' && !$page->is_trashed)
+									@if ($version->status == 'draft' && !$page->is_trashed && $page->can_edit)
 										<a href="{{ Coanda::adminUrl('pages/removeversion/' . $page->id . '/' . $version->version) }}"><i class="fa fa-minus-circle"></i></a>
 									@else
 										<i class="fa fa-minus-circle fa-disabled"></i>
