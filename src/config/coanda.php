@@ -119,6 +119,4 @@ return array(
 	*/
 	'page_cache_enabled' => false,
 	'page_cache_lifetime' => 10, // in minutes
-
-    'attribute_cache_enabled' => true,
 );

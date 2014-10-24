@@ -86,10 +86,10 @@ class PageRenderer {
     public function renderPage($page_id)
     {
         // Does the cache have this location?
-//        if ($this->cacher->hasLocationCache($page_id))
-//        {
-//            return $this->cacher->getLocationCache($location_id);
-//        }
+        if ($this->cacher->hasPageCache($page_id))
+        {
+            return $this->cacher->getPageCache($page_id);
+        }
 
         $this->page = $this->manager->getPage($page_id);
 
@@ -97,7 +97,7 @@ class PageRenderer {
 
         if ($this->canStaticCache())
         {
-//            $this->cacher->putLocationCache($this->location->id, $content);
+            $this->cacher->putPageCache($this->page->id, $content);
         }
 
         return $content;

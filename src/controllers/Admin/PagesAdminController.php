@@ -135,12 +135,12 @@ class PagesAdminController extends BaseController {
 
 		if (Input::get('update_order', false) == 'true')
 		{
-			$this->manager->updateLocationOrders(Input::get('ordering', []));
+			$this->manager->updatePageOrders(Input::get('ordering', []));
 
-			return Redirect::to(Coanda::adminUrl('pages/location/' . $id))->with('ordering_updated', true);
+			return Redirect::to(Coanda::adminUrl('pages/view/' . $id))->with('ordering_updated', true);
 		}
 
-		return Redirect::to(Coanda::adminUrl('pages/location/' . $id));
+		return Redirect::to(Coanda::adminUrl('pages/view/' . $id));
 	}
 
     /**
