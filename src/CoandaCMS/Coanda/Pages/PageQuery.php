@@ -17,7 +17,7 @@ class PageQuery {
     /**
      * @var
      */
-    private $location_id;
+    private $page_id;
     /**
      * @var
      */
@@ -62,12 +62,12 @@ class PageQuery {
 	}
 
     /**
-     * @param $location_id
+     * @param $page_id
      * @return $this
      */
-    public function in($location_id)
+    public function in($page_id)
 	{
-		$this->location_id = $location_id;
+		$this->page_id = $page_id;
 
 		return $this;
 	}
@@ -166,7 +166,7 @@ class PageQuery {
 			'order_query' => $this->order_query
 		];
 
-		return $this->pageRepository->subPages($this->location_id, $this->page, $this->limit, $parameters);
+		return $this->pageRepository->subPages($this->page_id, $this->page, $this->limit, $parameters);
 	}
 
 }

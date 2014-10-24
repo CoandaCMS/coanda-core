@@ -356,7 +356,7 @@ class PagesModuleProvider implements CoandaModuleProvider {
 				{
 					$pass_path_check = false;
 
-					$location_path = $page->path . ($page->path == '' ? '/' : '') . $page->id . '/';
+					$page_path = $page->path . ($page->path == '' ? '/' : '') . $page->id . '/';
 
 					foreach ($user_permissions['allowed_paths'] as $allowed_path)
 					{
@@ -365,14 +365,14 @@ class PagesModuleProvider implements CoandaModuleProvider {
 							continue;
 						}
 
-						if (preg_match('/^' . preg_replace('/\//', '\/', preg_quote($allowed_path)) . '/', $location_path))
+						if (preg_match('/^' . preg_replace('/\//', '\/', preg_quote($allowed_path)) . '/', $page_path))
 						{
 							$pass_path_check = true;
 						}
 
 						if ($permission == 'view')
 						{
-							if (preg_match('/^' . preg_replace('/\//', '\/', preg_quote($location_path)) . '/', $allowed_path))
+							if (preg_match('/^' . preg_replace('/\//', '\/', preg_quote($page_path)) . '/', $allowed_path))
 							{
 								$pass_path_check = true;
 							}

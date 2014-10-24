@@ -39,8 +39,6 @@ class Reindex extends Command {
      */
     public function fire()
     {
-        dd('reindex pages');
-
         $go = $this->ask('Are you sure you want to reindex all pages? Y/N (default: N)');
 
         if ($go !== 'Y')
@@ -53,29 +51,26 @@ class Reindex extends Command {
 
         while (true)
         {
-            $locations = $this->pageRepository->locations($limit, $offset);
+            $pages = $this->pageRepository->get($limit, $offset);
 
-            if ($locations->count() == 0)
+            if ($pages->count() == 0)
             {
                 $this->info('All done.');
 
                 return;
             }
 
-            foreach ($locations as $location)
+            foreach ($pages as $page)
             {
-                if ($location->page)
-                {                
-                    if ($location->page->is_trashed)
-                    {
-                        $this->info('Remove from index location: #' . $location->id);    
-                        $this->pageRepository->unRegisterLocationWithSearchProvider($location);
-                    }
-                    else
-                    {
-                        $this->info('Indexing location: #' . $location->id);
-                        $this->pageRepository->registerLocationWithSearchProvider($location);
-                    }
+                if ($page->is_trashed || $page->status !== 'published')
+                {
+                    $this->info('Remove from index page: #' . $page->id);
+                    $this->pageRepository->unRegisterPageWithSearchProvider($page);
+                }
+                else
+                {
+                    $this->info('Indexing page: #' . $page->id);
+                    $this->pageRepository->registerPageWithSearchProvider($page);
                 }
             }
 

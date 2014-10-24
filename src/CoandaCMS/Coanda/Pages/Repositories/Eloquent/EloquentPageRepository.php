@@ -52,10 +52,6 @@ class EloquentPageRepository implements PageRepositoryInterface {
      * @var \CoandaCMS\Coanda\Urls\Repositories\UrlRepositoryInterface
      */
     private $urls;
-    /**
-     * @var \CoandaCMS\Coanda\History\Repositories\HistoryRepositoryInterface
-     */
-    private $historyRepository;
 
     /**
      * @param PageModel $page_model
@@ -114,6 +110,16 @@ class EloquentPageRepository implements PageRepositoryInterface {
 	{
 		return $this->findById($id);
 	}
+
+    /**
+     * @param $limit
+     * @param $offset
+     * @return mixed
+     */
+    public function get($limit, $offset)
+    {
+        return $this->page_model->take($limit)->skip($offset)->get();
+    }
 
     /**
      * @param $id
@@ -517,20 +523,27 @@ class EloquentPageRepository implements PageRepositoryInterface {
     {
 		if (!$version->page->is_home)
 		{
-			$version->slug = $data['slug'];
+            if ($data['slug'] == '')
+            {
+                $version->slug = $this->generateSlug($version);
+            }
+            else
+            {
+                $version->slug = $data['slug'];
 
-			try
-			{
-				if (!$this->urls->canUse($version->full_slug, 'page', $version->page->id))
-				{
-					$failed['slug'] = 'Slug is already in use.';
-				}
+                try
+                {
+                    if (!$this->urls->canUse($version->full_slug, 'page', $version->page->id))
+                    {
+                        $failed['slug'] = 'Slug is already in use.';
+                    }
 
-			}
-			catch (InvalidSlug $exception)
-			{
-				$failed['slug'] = 'Slug is not valid';
-			}
+                }
+                catch (InvalidSlug $exception)
+                {
+                    $failed['slug'] = 'Slug is not valid';
+                }
+            }
 		}
 
         return [$data, $failed];
@@ -1084,12 +1097,13 @@ class EloquentPageRepository implements PageRepositoryInterface {
 
     /**
      * @param $version
-     * @param $version_base_slug
-     * @param $location_id
      * @return mixed|string
      */
-    private function generateSlug($version, $version_base_slug, $location_id)
+    private function generateSlug($version)
 	{
+        $base_slug = $version->page->parent_slug;
+        $page_id = $version->page->id;
+
 		foreach ($version->attributes as $attribute)
 		{
 			if ($attribute->generates_slug)
@@ -1098,34 +1112,22 @@ class EloquentPageRepository implements PageRepositoryInterface {
 
 				if ($content && $content !== '')
 				{
-					$slug = Slugifier::convert($content);
+					$new_slug = Slugifier::convert($content);
 
-					try
-					{
-						$this->urlRepository->canUse($version_base_slug . '/' . $slug, 'pagelocation', $location_id);		
+                    $tries = 50;
 
-						return $slug;
-					}
-					catch (UrlAlreadyExists $exception)
-					{					
-						$tries = 50;
+                    for ($i = 0; $i < $tries; $i ++)
+                    {
+                        if ($i > 0)
+                        {
+                            $new_slug = $new_slug . '-' . $i;
+                        }
 
-						for ($i = 1; $i < $tries; $i ++)
-						{
-							$new_slug = $slug . '-' . $i;
-
-							try
-							{
-								$this->urlRepository->canUse($version_base_slug . '/' . $new_slug, 'pagelocation', $location_id);	
-
-								return $new_slug;
-							}
-							catch (UrlAlreadyExists $exception)
-							{
-								// Keep trying!
-							}
-						}
-					}
+                        if ($this->urls->canUse($base_slug . '/' . $new_slug, 'page', $page_id))
+                        {
+                            return $new_slug;
+                        }
+                    }
 				}
 			}
 		}
