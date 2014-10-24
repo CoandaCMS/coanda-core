@@ -586,7 +586,7 @@ class PagesAdminController extends BaseController {
 			return Redirect::to(Coanda::adminUrl('pages/trash'));
 		}
 
-		$pages = $this->pageRepository->findByIds(Session::get('confirm_permanent_remove_list'));
+		$pages = $this->manager->getPages(Session::get('confirm_permanent_remove_list'));
 
 		return View::make('coanda::admin.modules.pages.confirmdeletefromtrash', ['pages' => $pages ]);
 	}
@@ -603,7 +603,7 @@ class PagesAdminController extends BaseController {
 			return Redirect::to(Coanda::adminUrl('pages/trash'));
 		}
 
-		$this->pageRepository->deletePages(Input::get('confirmed_remove_list'), true);
+		$this->manager->deletePages(Input::get('confirmed_remove_list'), true);
 
 		return Redirect::to(Coanda::adminUrl('pages/trash'));
 	}

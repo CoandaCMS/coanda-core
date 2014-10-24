@@ -147,11 +147,29 @@ class PageManager {
 		return $this->repository->find($id);
 	}
 
+    /**
+     * @param $ids
+     * @return mixed
+     */
+    public function getPages($ids)
+    {
+        return $this->repository->findByIds($ids);
+    }
+
+    /**
+     * @param $remote_id
+     * @return mixed
+     */
     public function getPageByRemoteId($remote_id)
     {
         return $this->repository->getByRemoteId($remote_id);
     }
 
+    /**
+     * @param $page_type
+     * @return mixed
+     * @throws HomePageAlreadyExists
+     */
     public function createHomePage($page_type)
     {
         $home = $this->getHomePage();
@@ -235,19 +253,17 @@ class PageManager {
 	}
 
     /**
-     * @param $ids
      * @return mixed
      */
-    public function getPages($ids)
-	{
-		return $this->repository->findByIds($ids);
-	}
-
     public function getTrashedPages()
     {
         return $this->repository->trashed();
     }
 
+    /**
+     * @param $page_id
+     * @param bool $restore_sub_pages
+     */
     public function restorePage($page_id, $restore_sub_pages = false)
     {
         $this->repository->restore($page_id, $restore_sub_pages);

@@ -74,7 +74,10 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		$this->urls = $urlRepository;
 	}
 
-    public function getPageModel()
+	/**
+	 * @return PageModel
+     */
+	public function getPageModel()
     {
         return $this->page_model;
     }
@@ -441,7 +444,14 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		return $version;
 	}
 
-    public function getVersionsForPage($page_id, $limit, $offset)
+	/**
+	 * @param $page_id
+	 * @param $limit
+	 * @param $offset
+	 * @return mixed
+	 * @throws PageNotFound
+     */
+	public function getVersionsForPage($page_id, $limit, $offset)
     {
         $page = $this->page_model->find($page_id);
 
@@ -453,7 +463,12 @@ class EloquentPageRepository implements PageRepositoryInterface {
         throw new PageNotFound('Page #' . $page_id . ' not found.');
     }
 
-    public function getVersionCountForPage($page_id)
+	/**
+	 * @param $page_id
+	 * @return mixed
+	 * @throws PageNotFound
+     */
+	public function getVersionCountForPage($page_id)
     {
         $page = $this->page_model->find($page_id);
 
@@ -492,7 +507,13 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		}
 	}
 
-    private function saveSlug($version, $data, $failed)
+	/**
+	 * @param $version
+	 * @param $data
+	 * @param $failed
+	 * @return array
+     */
+	private function saveSlug($version, $data, $failed)
     {
 		if (!$version->page->is_home)
 		{
@@ -516,7 +537,12 @@ class EloquentPageRepository implements PageRepositoryInterface {
     }
 
 
-    private function saveMeta($version, $data)
+	/**
+	 * @param $version
+	 * @param $data
+	 * @return mixed
+     */
+	private function saveMeta($version, $data)
     {
         // Get the meta
         if ($version->page->show_meta)
@@ -528,7 +554,12 @@ class EloquentPageRepository implements PageRepositoryInterface {
         return $version;
     }
 
-    private function saveTemplate($version, $data)
+	/**
+	 * @param $version
+	 * @param $data
+	 * @return mixed
+     */
+	private function saveTemplate($version, $data)
     {
 		if (isset($data['template_identifier']))
 		{
@@ -538,7 +569,12 @@ class EloquentPageRepository implements PageRepositoryInterface {
         return $version;
     }
 
-    private function saveLayout($version, $data)
+	/**
+	 * @param $version
+	 * @param $data
+	 * @return mixed
+     */
+	private function saveLayout($version, $data)
     {
         if (isset($data['layout_identifier']))
         {
@@ -548,7 +584,11 @@ class EloquentPageRepository implements PageRepositoryInterface {
         return $version;
     }
 
-    private function saveVisibility($version, $data)
+	/**
+	 * @param $version
+	 * @param $data
+     */
+	private function saveVisibility($version, $data)
     {
         $version->is_hidden = (isset($data['is_hidden']) && ($data['is_hidden'] == 'yes' || $data['is_hidden'] === true)) ? true : false;
         $version->is_hidden_navigation = (isset($data['is_hidden_navigation']) && ($data['is_hidden_navigation'] == 'yes' || $data['is_hidden_navigation'] === true)) ? true : false;
@@ -910,7 +950,12 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		return $this->page_model->whereIsTrashed(true)->get();
 	}
 
-    public function restore($page_id, $restore_sub_pages = true)
+	/**
+	 * @param $page_id
+	 * @param bool $restore_sub_pages
+	 * @throws PageNotFound
+     */
+	public function restore($page_id, $restore_sub_pages = true)
 	{
 		$page = $this->page_model->find($page_id);
 

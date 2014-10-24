@@ -50,24 +50,16 @@
 									@else
 										<i class="fa {{ $page->pageType()->icon() }}"></i>
 									@endif
-									{{ $page->present()->name }}
+									{{ $page->name }}
 								</td>
-								<td>{{ $page->present()->type }}</td>
 								<td>
-									@if ($page->locations->count() > 0)
-										@foreach ($page->locations as $location)
-											<p>
-												/
-												@foreach ($location->parents() as $parent)
-													{{ $parent->page->present()->name }} /
-												@endforeach
+									@foreach ($page->parents() as $parent)
+										{{ $parent->name }} /
+									@endforeach
 
-												{{ $page->present()->name }}
+									{{ $page->name }}
 
-												<span class="pull-right">{{ $location->subTreeCount() }} sub pages will also be removed.</span>
-											</p>
-										@endforeach
-									@endif
+									<span class="pull-right">{{ $page->subTreeCount() }} sub pages will also be removed.</span>
 								<td>
 							</tr>
 						@endforeach
