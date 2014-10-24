@@ -57,8 +57,6 @@
 										{{ $parent->name }} /
 									@endforeach
 
-									{{ $page->name }}
-
 									<span class="pull-right">{{ $page->subTreeCount() }} sub pages will also be removed.</span>
 								</td>
 							</tr>
