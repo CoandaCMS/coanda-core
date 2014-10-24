@@ -1,10 +1,8 @@
 <?php namespace CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models;
 
-use Eloquent;
-use Coanda;
-use App;
+use CoandaCMS\Coanda\Core\BaseEloquentModel;
 
-class PageVersionComment extends Eloquent {
+class PageVersionComment extends BaseEloquentModel {
 
     /**
      * @var string

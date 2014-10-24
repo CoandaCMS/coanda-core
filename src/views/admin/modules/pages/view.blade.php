@@ -272,7 +272,7 @@
 											<span class="label label-default">
 										@endif
 
-										{{ $version->status }}</span>
+										{{ $version->status_text }}</span>
 
 									@endif
 								</td>

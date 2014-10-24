@@ -1,10 +1,10 @@
 <?php namespace CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models;
 
-use Eloquent;
 use Coanda;
 use CoandaCMS\Coanda\Core\Attributes\Exceptions\AttributeTypeNotFound;
+use CoandaCMS\Coanda\Core\BaseEloquentModel;
 
-class PageAttribute extends Eloquent {
+class PageAttribute extends BaseEloquentModel {
 
     /**
      * @var bool
@@ -230,18 +230,16 @@ class PageAttribute extends Eloquent {
 
     /**
      * @param bool $page
-     * @param bool $pagelocation
      * @param bool $indexing
      * @return mixed
      */
-    public function render($page = false, $pagelocation = false, $indexing = false)
+    public function render($page = false, $indexing = false)
 	{
 		$parameters = [
 			'attribute_id' => $this->id,
 			'page_id' => $this->page()->id,
 			'version_number' => $this->version->version,
 			'page' => $page,
-			'pagelocation' => $pagelocation,
 			'indexing' => $indexing
 		];
 

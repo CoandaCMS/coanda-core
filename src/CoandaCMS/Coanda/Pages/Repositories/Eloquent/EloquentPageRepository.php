@@ -703,7 +703,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 
 		foreach ($page->attributes as $attribute)
 		{
-			$search_data[$attribute->identifier] = $attribute->render($page);
+			$search_data[$attribute->identifier] = $attribute->render($page, true);
 		}
 
 		Coanda::search()->register('pages', $page->id, $page->slug, $search_data);
@@ -1004,7 +1004,8 @@ class EloquentPageRepository implements PageRepositoryInterface {
 	/**
 	 * @param $page_id
 	 * @param $new_sub_page_order
-     */
+	 * @return mixed|void
+	 */
 	public function updateSubPageOrder($page_id, $new_sub_page_order)
 	{
 		$this->page_model->whereId($page_id)->update(['sub_page_order' => $new_sub_page_order]);

@@ -1,5 +1,6 @@
 <?php namespace CoandaCMS\Coanda\Controllers;
 
+use CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface;
 use View, Redirect, App, Coanda, Input, Session;
 
 use CoandaCMS\Coanda\Pages\Exceptions\PageVersionNotFound;
@@ -11,14 +12,14 @@ use CoandaCMS\Coanda\Exceptions\ValidationException;
 class PagesController extends BaseController {
 
     /**
-     * @var \CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface
+     * @var PageRepositoryInterface
      */
     private $pageRepository;
 
     /**
-     * @param \CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface $pageRepository
+     * @param PageRepositoryInterface $pageRepository
      */
-    public function __construct(\CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface $pageRepository)
+    public function __construct(PageRepositoryInterface $pageRepository)
 	{
 		$this->pageRepository = $pageRepository;
 	}
@@ -42,19 +43,18 @@ class PagesController extends BaseController {
 		}
 	}
 
-	public function getRenderPreview($preview_key, $location = false)
+	public function getRenderPreview($preview_key)
 	{
 		try
 		{
 			$version = $this->pageRepository->getVersionByPreviewKey($preview_key);
 
             $page = $version->page;
-            $pagelocation = false;
 
             $meta_title = $version->meta_page_title;
 
             $meta = [
-                'title' => $meta_title !== '' ? $meta_title : $version->present()->name,
+                'title' => $meta_title !== '' ? $meta_title : $version->name,
                 'description' => $version->meta_description
             ];
 
@@ -62,36 +62,22 @@ class PagesController extends BaseController {
 
             foreach ($version->attributes as $attribute)
             {
-                $attributes->{$attribute->identifier} = $attribute->render($page, $pagelocation);
+                $attributes->{$attribute->identifier} = $attribute->render($page);
             }
 
-            $first_location = $version->slugs()->first();
-
-            $location = $first_location->location();
-
-            if (!$location)
-            {
-                // Create a dummy location to simulate viewing a location
-                $location = $first_location->tempLocation();
-            }
-
-            $location_id = $location->id;
-
-            $breadcrumb = $location->breadcrumb();
+            $breadcrumb = $page->breadcrumb();
 
             // We need to take the last item off and replace it with the version name...
             array_pop($breadcrumb);
 
             $breadcrumb[] = [
                 'url' => false,
-                'identifier' => 'pages:location-' . $location->id,
-                'layout_identifier' => 'pages:' . $page->id,
-                'name' => $version->present()->name
+                'identifier' => 'pages:page-' . $page->id,
+                'name' => $version->name
             ];
 
             $data = [
                 'page' => $version->page,
-                'location_id' => $location_id,
                 'meta' => $meta,
                 'attributes' => $attributes
             ];

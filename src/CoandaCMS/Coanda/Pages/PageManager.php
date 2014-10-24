@@ -230,7 +230,7 @@ class PageManager {
      * @param $version_number
      * @return mixed
      */
-    public function getVersionForPage($page_id, $version_number)
+    public function getDraftVersionForPage($page_id, $version_number)
 	{
 		return $this->repository->getDraftVersion($page_id, $version_number);
 	}
@@ -241,7 +241,7 @@ class PageManager {
      */
     public function removeDraftVersion($page_id, $version_number)
 	{
-		$version = $this->getVersionForPage($page_id, $version_number);
+		$version = $this->getDraftVersionForPage($page_id, $version_number);
 
 		$this->logHistory('discard_version', $version->page->id, ['version' => $version->version]);
 
@@ -255,7 +255,7 @@ class PageManager {
      */
     public function saveDraftVersion($page_id, $version_number, $input)
 	{
-		$version = $this->getVersionForPage($page_id, $version_number);
+		$version = $this->getDraftVersionForPage($page_id, $version_number);
 
 		$this->repository->saveDraftVersion($version, $input);
 	}

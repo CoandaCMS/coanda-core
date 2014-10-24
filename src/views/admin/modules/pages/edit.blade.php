@@ -296,7 +296,7 @@
 						@foreach ($version->comments as $comment)
 							<div class="well well-sm version-comment">
 								<p class="lead">"{{ nl2br($comment->comment) }}"</p>
-								<div class="pull-right">{{ $comment->present()->created_at }} from <strong>{{ $comment->name }}</strong></div>
+								<div class="pull-right">{{ $comment->format('created_at') }} from <strong>{{ $comment->name }}</strong></div>
 								<div class="clearfix"></div>
 							</div>
 						@endforeach

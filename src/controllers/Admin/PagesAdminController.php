@@ -273,7 +273,7 @@ class PagesAdminController extends BaseController {
 	{
 		try
 		{
-			$version = $this->manager->getVersionForPage($page_id, $version_number);
+			$version = $this->manager->getDraftVersionForPage($page_id, $version_number);
 
 			if (!$version->page->can_edit)
 			{
@@ -312,7 +312,7 @@ class PagesAdminController extends BaseController {
 	{
 		try
 		{
-			$version = $this->manager->getVersionForPage($page_id, $version_number);
+			$version = $this->manager->getDraftVersionForPage($page_id, $version_number);
 
 			if (!$version->page->can_edit)
 			{
@@ -399,7 +399,7 @@ class PagesAdminController extends BaseController {
 			{
 				try
 				{
-					$publish_handler_redirect = $this->manager->executePublishHandler($this->manager->getVersionForPage($page_id, $version_number), $publish_handler, Input::all());
+					$publish_handler_redirect = $this->manager->executePublishHandler($this->manager->getDraftVersionForPage($page_id, $version_number), $publish_handler, Input::all());
 
 					if ($publish_handler_redirect)
 					{
@@ -428,12 +428,12 @@ class PagesAdminController extends BaseController {
 	{
 		try
 		{
-			$version = $this->pageRepository->getDraftVersion($page_id, $version_number);
+			$version = $this->manager->getDraftVersionForPage($page_id, $version_number);
 			$page = $version->page;
 
 			Coanda::checkAccess('pages', 'edit', ['page_id' => $page->id, 'page_type' => $page->type]);
 
-			$this->pageRepository->discardDraftVersion($version, Coanda::currentUser()->id);
+			$this->manager->removeDraftVersion($page_id, $version_number);
 
 			return Redirect::to(Coanda::adminUrl('pages/view/' . $page_id));	
 		}

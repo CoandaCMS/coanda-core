@@ -1,6 +1,7 @@
 <?php namespace CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models;
 
 use Coanda;
+use Lang;
 use CoandaCMS\Coanda\Core\BaseEloquentModel;
 use CoandaCMS\Coanda\Exceptions\AttributeValidationException;
 use CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageAttribute as PageAttributeModel;
@@ -202,4 +203,13 @@ class PageVersion extends BaseEloquentModel {
     {
         return 'pages/preview/' . $this->preview_key;
     }
+
+	/**
+	 * @return string
+	 */
+	public function getStatusTextAttribute()
+	{
+		return Lang::get('coanda::pages.status_' . $this->status);
+	}
+
 }

@@ -12,7 +12,7 @@
 	<div id="overlay-inner">
 
 		<div class="pull-left">
-			<div class="preview-text">You are previewing version #{{ $version->version }} of page "{{ $version->page->present()->name }}"</div>
+			<div class="preview-text">You are previewing version #{{ $version->version }} of page "{{ $version->name }}"</div>
 		</div>
 
 
