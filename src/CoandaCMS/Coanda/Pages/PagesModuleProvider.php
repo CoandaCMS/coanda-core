@@ -241,7 +241,16 @@ class PagesModuleProvider implements CoandaModuleProvider {
 		return App::make('CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface');
 	}
 
-    /**
+
+	/**
+	 * @return mixed
+	 */
+	public function getPageManager()
+	{
+		return App::make('CoandaCMS\Coanda\Pages\PageManager');
+	}
+
+	/**
      * @param bool $page
      * @return array
      */
@@ -463,6 +472,18 @@ class PagesModuleProvider implements CoandaModuleProvider {
 		try
 		{
 			return $this->getPageRepository()->findBySlug($slug);
+		}
+		catch (PageNotFound $exception)
+		{
+			return false;
+		}
+	}
+
+	public function byRemoteId($remote_id)
+	{
+		try
+		{
+			return $this->getPageManager()->getPageByRemoteId($remote_id);
 		}
 		catch (PageNotFound $exception)
 		{

@@ -8,14 +8,14 @@
 	<div class="breadcrumb-nav">
 		<ul class="breadcrumb">
 			<li><a href="{{ Coanda::adminUrl('pages') }}">Pages</a></li>
-			<li>Restore {{ $page->present()->name }}</li>
+			<li>Restore {{ $page->name }}</li>
 		</ul>
 	</div>
 </div>
 
 <div class="row">
 	<div class="page-name col-md-12">
-		<h1 class="pull-left">Restore "{{ $page->present()->name }}" <small>{{ $page->present()->type }}</small></h1>
+		<h1 class="pull-left">Restore "{{ $page->name }}" <small>{{ $page->type_name }}</small></h1>
 	</div>
 </div>
 
@@ -30,28 +30,22 @@
 		<i class="fa fa-exclamation-triangle"></i> Are you sure you want to restore this page?
 	</div>
 
-	@if ($page->locations->count() > 0)
+	<table class="table table-striped">
+		<tr>
+			<td>
+				@foreach ($page->parents() as $parent)
+					{{ $parent->name }} @if ($page->is_trashed) * @endif /
+				@endforeach
+				{{ $page->name }}
+			</td>
+			<td>
+				<input type="checkbox" id="restore_sub_pages" name="restore_sub_pages[]" value="yes" checked="checked">
+				Also restore sub pages
+			</td>
+		</tr>
+	</table>
 
-		<table class="table table-striped">
-			@foreach ($page->locations as $location)
-				<tr>
-					<td>
-						<strong>Location:</strong>
-						@foreach ($location->parents() as $parent)
-							{{ $parent->page->present()->name }} @if ($parent->page->is_trashed) * @endif /
-						@endforeach
-						{{ $location->page->present()->name }}
-					</td>
-					<td>
-						<input type="checkbox" id="restore_sub_pages_location_{{ $location->id }}" name="restore_sub_pages[]" value="{{ $location->id }}" checked="checked">
-						Also restore sub pages
-					</td>
-				</tr>
-			@endforeach
-		</table>
-
-		<p><i class="fa fa-exclamation-circle"></i> Parent pages marked with a * will also be restored.</p>
-	@endif
+	<p><i class="fa fa-exclamation-circle"></i> Parent pages marked with a * will also be restored.</p>
 
 	<div class="row">
 		<div class="col-md-12">

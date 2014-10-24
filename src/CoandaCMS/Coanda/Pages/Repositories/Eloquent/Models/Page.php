@@ -68,7 +68,7 @@ class Page extends BaseEloquentModel {
      */
     public function delete()
 	{
-		foreach ($this->versions() as $version)
+		foreach ($this->versions as $version)
 		{
 			$version->delete();
 		}
@@ -167,13 +167,15 @@ class Page extends BaseEloquentModel {
         return $this->pageType;
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getTypeNameAttribute()
-	{
+    public function getTypeNameAttribute()
+    {
         return $this->pageType()->name;
-	}
+    }
+
+    public function getTypeIconAttribute()
+    {
+        return $this->pageType()->icon;
+    }
 
     /**
      * @return mixed
@@ -756,14 +758,6 @@ class Page extends BaseEloquentModel {
     public function visibility()
     {
         return $this->is_visible ? 'Visible' : 'Hidden';
-    }
-
-    /**
-     * @return string
-     */
-    public function type()
-    {
-        return $this->pageType()->name();
     }
 
 }

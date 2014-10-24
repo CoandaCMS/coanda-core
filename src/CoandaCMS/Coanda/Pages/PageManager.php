@@ -1,6 +1,7 @@
 <?php namespace CoandaCMS\Coanda\Pages;
 
 use CoandaCMS\Coanda\History\Repositories\HistoryRepositoryInterface;
+use CoandaCMS\Coanda\Pages\Exceptions\HomePageAlreadyExists;
 use CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface;
 use CoandaCMS\Coanda\Users\UserManager;
 use Illuminate\Pagination\Factory;
@@ -146,6 +147,25 @@ class PageManager {
 		return $this->repository->find($id);
 	}
 
+    public function getPageByRemoteId($remote_id)
+    {
+        return $this->repository->getByRemoteId($remote_id);
+    }
+
+    public function createHomePage($page_type)
+    {
+        $home = $this->getHomePage();
+
+        if ($home)
+        {
+            throw new HomePageAlreadyExists('Home Page has already been created.');
+        }
+
+        $type = $this->callModuleMethod('getHomePageType', [$page_type]);
+
+        return $this->repository->createHome($type, $this->getCurrentUserId());
+    }
+
     /**
      * @param $page_type
      * @param $parent_page_id
@@ -222,6 +242,26 @@ class PageManager {
 	{
 		return $this->repository->findByIds($ids);
 	}
+
+    public function getTrashedPages()
+    {
+        return $this->repository->trashed();
+    }
+
+    public function restorePage($page_id, $restore_sub_pages = false)
+    {
+        $this->repository->restore($page_id, $restore_sub_pages);
+    }
+
+    /**
+     * @param $id
+     * @param bool $permanent
+     * @return mixed
+     */
+    public function deletePage($id, $permanent = false)
+    {
+        return $this->repository->deletePage($id, $permanent);
+    }
 
     /**
      * @param $ids
@@ -305,6 +345,12 @@ class PageManager {
         return $this->repository->getVersionCountForPage($page_id);
     }
 
+    /**
+     * @param $version
+     * @param $publish_handler
+     * @param $data
+     * @return mixed
+     */
     public function executePublishHandler($version, $publish_handler, $data)
     {
         $publish_handler = $this->callModuleMethod('getPublishHandler', [$publish_handler]);

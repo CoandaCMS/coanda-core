@@ -22,9 +22,9 @@
 					<i class="fa fa-circle-o"></i>
 				@else
 					@if ($child->can_view)
-						<i class="fa {{ $child->pageType()->icon() }}"></i>
+						<i class="fa {{ $child->type_icon }}"></i>
 					@else
-						<i class="fa {{ $child->pageType()->icon() }} disabled"></i>
+						<i class="fa {{ $child->type_icon }} disabled"></i>
 					@endif
 				@endif
 

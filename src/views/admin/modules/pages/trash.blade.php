@@ -21,7 +21,6 @@
 
 <div class="row">
 	<div class="page-options col-md-12">
-		{{-- <a href="{{ Coanda::adminUrl('pages/empty-trash') }}" class="btn btn-primary">Empty trash</a> --}}
 	</div>
 </div>
 
@@ -61,24 +60,18 @@
 										@endif
 
 										@if ($page->can_view)
-											<a href="{{ Coanda::adminUrl('pages/view/' . $page->id) }}">{{ $page->present()->name }}</a>
+											<a href="{{ Coanda::adminUrl('pages/view/' . $page->id) }}">{{ $page->name }}</a>
 										@else
-											{{ $page->present()->name }}
+											{{ $page->name }}
 										@endif
 									</td>
 									<td>
 										@if ($page->can_view)
-											@if ($page->locations->count() > 0)
-												@foreach ($page->locations as $location)
-												<p>
-													<a href="{{ Coanda::adminUrl('pages') }}">Pages</a> / 
-													@foreach ($location->parents() as $parent)
-														<a href="{{ Coanda::adminUrl('pages/location/' . $parent->id) }}">{{ $parent->page->present()->name }}</a> /
-													@endforeach
-													{{ $location->page->present()->name }}
-												</p>
-												@endforeach
-											@endif
+											<a href="{{ Coanda::adminUrl('pages') }}">Pages</a> /
+											@foreach ($page->parents() as $parent)
+												<a href="{{ Coanda::adminUrl('pages/view/' . $parent->id) }}">{{ $parent->name }}</a> /
+											@endforeach
+											{{ $page->name }}
 										@endif
 									</td>
 									<td>

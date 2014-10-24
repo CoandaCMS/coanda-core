@@ -262,7 +262,19 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		return $page;
 	}
 
-    /**
+	/**
+	 * @param $type
+	 * @param $user_id
+	 * @return mixed
+	 * @throws \CoandaCMS\Coanda\Pages\Exceptions\HomePageAlreadyExists
+	 */
+	public function createHome($type, $user_id)
+	{
+		return $this->createNewPage($type, true, $user_id);
+	}
+
+
+	/**
      * @param $type
      * @param $user_id
      * @param bool $parent_page_id
@@ -274,10 +286,28 @@ class EloquentPageRepository implements PageRepositoryInterface {
         return $this->createNewPage($type, false, $user_id, $parent_page_id);
 	}
 
-    /**
+	/**
+	 * @param $type
+	 * @param $user_id
+	 * @param $page_data
+	 * @return mixed
+	 */
+	public function createAndPublishHome($type, $user_id, $page_data)
+	{
+		$page = $this->createHome($type, $user_id);
+		$version = $page->currentVersion();
+
+		$this->saveDraftVersion($version, $page_data);
+		$this->publishVersion($version, $user_id, $this->urlRepository);
+
+		return $page;
+	}
+
+
+	/**
      * @param $type
      * @param $user_id
-     * @param $parent_location_id
+     * @param $parent_page_id
      * @param $page_data
      * @return mixed
      */
@@ -346,42 +376,6 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		$version->is_hidden = true;
 
 		$this->publishVersion($version, $user_id, $this->urlRepository);
-	}
-
-    /**
-     * @param $type
-     * @param $user_id
-     * @return mixed
-     * @throws \CoandaCMS\Coanda\Pages\Exceptions\HomePageAlreadyExists
-     */
-    public function createHome($type, $user_id)
-	{
-		// Check we don't already have a home page...
-		$home = $this->getHomePage();
-
-		if (!$home)
-		{
-			return $this->createNewPage($type, true, $user_id);	
-		}
-
-		throw new HomePageAlreadyExists('You already have a home page defined');
-	}
-
-    /**
-     * @param $type
-     * @param $user_id
-     * @param $page_data
-     * @return mixed
-     */
-    public function createAndPublishHome($type, $user_id, $page_data)
-	{
-		$page = $this->createHome($type, $user_id);
-		$version = $page->currentVersion();
-
-		$this->saveDraftVersion($version, $page_data);
-		$this->publishVersion($version, $user_id, $this->urlRepository);
-
-		return $page;
 	}
 
     /**
@@ -500,20 +494,23 @@ class EloquentPageRepository implements PageRepositoryInterface {
 
     private function saveSlug($version, $data, $failed)
     {
-        $version->slug = $data['slug'];
+		if (!$version->page->is_home)
+		{
+			$version->slug = $data['slug'];
 
-        try
-        {
-            if (!$this->urls->canUse($version->full_slug, 'page', $version->page->id))
-            {
-                $failed['slug'] = 'Slug is already in use.';
-            }
+			try
+			{
+				if (!$this->urls->canUse($version->full_slug, 'page', $version->page->id))
+				{
+					$failed['slug'] = 'Slug is already in use.';
+				}
 
-        }
-        catch (InvalidSlug $exception)
-        {
-            $failed['slug'] = 'Slug is not valid';
-        }
+			}
+			catch (InvalidSlug $exception)
+			{
+				$failed['slug'] = 'Slug is not valid';
+			}
+		}
 
         return [$data, $failed];
     }
@@ -834,9 +831,8 @@ class EloquentPageRepository implements PageRepositoryInterface {
 
 		if ($permanent)
 		{
-			$this->deleteSubPages($page, true);			
-
-			// Finally, we can remove this page
+			$this->deleteSubPages($page, true);
+			$this->urls->delete('page', $page->id);
 			$page->delete();
 
 			$this->logHistory('deleted', $page->id);
@@ -880,41 +876,28 @@ class EloquentPageRepository implements PageRepositoryInterface {
     private function deleteSubPages($page, $permanent = false)
 	{
 		// Loop through the locations and set the sub pages to be deleted
-		if ($page->locations->count() > 0)
+		$base_path = $page->path == '' ? '/' : $page->path;
+
+		$sub_page_ids = $this->page_model->where('path', 'like', $base_path . $page->id . '/%')->lists('id');
+
+		if (count($sub_page_ids) > 0)
 		{
-			foreach ($page->locations as $location)
+			if ($permanent)
 			{
-				$base_path = $location->path == '' ? '/' : $location->path;
-
-				$sub_page_ids = $this->page_location_model->where('path', 'like', $base_path . $location->id . '/%')->lists('page_id');
-
-				if (count($sub_page_ids) > 0)
+				foreach ($sub_page_ids as $sub_page_id)
 				{
-					if ($permanent)
-					{
-						foreach ($sub_page_ids as $sub_page_id)
-						{
-							$page = $this->page_model->find($sub_page_id);
+					$page = $this->page_model->find($sub_page_id);
 
-							if ($page)
-							{
-								if ($page->locations->count() > 0)
-								{
-									foreach ($page->locations as $location)
-									{
-										$this->deleteLocation($location);
-									}
-								}
-
-								$page->delete();
-							}
-						}
-					}
-					else
+					if ($page)
 					{
-						$this->page_model->whereIn('id', $sub_page_ids)->update(['is_trashed' => true]);
+						$this->urls->delete('page', $page->id);
+						$page->delete();
 					}
 				}
+			}
+			else
+			{
+				$this->page_model->whereIn('id', $sub_page_ids)->update(['is_trashed' => true]);
 			}
 		}
 	}
@@ -927,13 +910,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		return $this->page_model->whereIsTrashed(true)->get();
 	}
 
-    /**
-     * @param $page_id
-     * @param array $restore_sub_pages
-     * @return mixed|void
-     * @throws \CoandaCMS\Coanda\Pages\Exceptions\PageNotFound
-     */
-    public function restore($page_id, $restore_sub_pages = [])
+    public function restore($page_id, $restore_sub_pages = true)
 	{
 		$page = $this->page_model->find($page_id);
 
@@ -945,31 +922,23 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		$page->is_trashed = false;
 		$page->save();
 
-		if ($page->locations->count() > 0)
+		if ($page->parent)
 		{
-			foreach ($page->locations as $location)
+			if ($page->parent->is_trashed)
 			{
-				// Is the parent page trashed? If so, we need to restore that - which will be recursive if its parent is trashed...
-				if ($location->parent)
-				{
-					if ($location->parent->page->is_trashed)
-					{
-						$this->restore($location->parent->page->id);
-					}
-				}
+				$this->restore($page->parent->id);
+			}
+		}
 
-				// Are we restoring the sub pages?
-				if (in_array($location->id, $restore_sub_pages))
-				{
-					$base_path = $location->path == '' ? '/' : $location->path;
+		if ($restore_sub_pages)
+		{
+			$base_path = $page->path == '' ? '/' : $page->path;
 
-					$sub_page_ids = $this->page_location_model->where('path', 'like', $base_path . $location->id . '/%')->lists('page_id');
+			$sub_page_ids = $this->page_model->where('path', 'like', $base_path . $page->id . '/%')->lists('id');
 
-					if (count($sub_page_ids) > 0)
-					{
-						$this->page_model->whereIn('id', $sub_page_ids)->update(['is_trashed' => false]);
-					}			
-				}
+			if (count($sub_page_ids) > 0)
+			{
+				$this->page_model->whereIn('id', $sub_page_ids)->update(['is_trashed' => false]);
 			}
 		}
 

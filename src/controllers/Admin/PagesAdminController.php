@@ -12,10 +12,6 @@ use CoandaCMS\Coanda\Pages\Exceptions\HomePageAlreadyExists;
 use CoandaCMS\Coanda\Pages\Exceptions\SubPagesNotAllowed;
 use CoandaCMS\Coanda\Controllers\BaseController;
 
-/**
- * Class PagesAdminController
- * @package CoandaCMS\Coanda\Controllers\Admin
- */
 class PagesAdminController extends BaseController {
 
     /**
@@ -130,52 +126,11 @@ class PagesAdminController extends BaseController {
 		}
 	}
 
-    /**
-     * @param $id
-     * @return mixed
-     * @throws \CoandaCMS\Coanda\Exceptions\PermissionDenied
-     */
-    public function getLocation($id)
-	{
-		if ($id == 0)
-		{
-			return Redirect::to(Coanda::adminUrl('pages'));
-		}
-
-		try
-		{
-			$location = $this->manager->getLocation($id);
-
-			$this->__checkLocationPermission($location);
-
-            $page = $location->page;
-
-            $per_page = 10;
-
-			return View::make('coanda::admin.modules.pages.location', [
-					'pagelocation' => $location,
-					'page' => $page,
-                    'versions' => $this->manager->getVersionsForPagePaginated($page->id, $per_page, (int) Input::get('versions_page', 1)),
-					'children' => $this->manager->getAdminSubLocations($location->id, (int) Input::get('page', 1), $per_page),
-					'history' => $this->manager->pageHistory($location->page->id, 5),
-					'contributors' => $this->manager->pageContributors($location->page->id)
-			]);
-		}
-		catch (PageNotFound $exception)
-		{
-			App::abort('404');
-		}
-	}
-
-    /**
-     * @param $id
-     * @return mixed
-     */
-    public function postLocation($id)
+	public function postView($id)
 	{
 		if (Input::has('delete_selected') && Input::get('delete_selected') == 'true' && count(Input::get('remove_page_list', [])) > 0)
 		{
-			return Redirect::to(Coanda::adminUrl('pages/confirm-delete'))->with('remove_page_list', Input::get('remove_page_list'))->with('previous_location_id', $id);
+			return Redirect::to(Coanda::adminUrl('pages/confirm-delete'))->with('remove_page_list', Input::get('remove_page_list'))->with('previous_page_id', $id);
 		}
 
 		if (Input::get('update_order', false) == 'true')
@@ -193,16 +148,16 @@ class PagesAdminController extends BaseController {
      */
     public function getConfirmDelete()
 	{
-		$redirect_location_id = Session::get('previous_location_id', 0);
+		$previous_page_id = Session::get('previous_page_id', 0);
 
 		if (!Session::has('remove_page_list') || count(Session::get('remove_page_list')) == 0)
 		{
-			return Redirect::to(Coanda::adminUrl('pages/location/' . $redirect_location_id));
+			return Redirect::to(Coanda::adminUrl('pages/view/' . $previous_page_id));
 		}
 
 		return View::make('coanda::admin.modules.pages.confirmdelete', [
 				'pages' => $this->manager->getPages(Session::get('remove_page_list')),
-				'previous_location_id' => $redirect_location_id
+				'previous_page_id' => $previous_page_id
 			]);
 
 	}
@@ -214,12 +169,12 @@ class PagesAdminController extends BaseController {
 	{
 		if (!Input::has('confirmed_remove_list') || count(Input::get('confirmed_remove_list')) == 0)
 		{
-			return Redirect::to(Coanda::adminUrl('pages/location/' . Input::get('previous_location_id', 0)));
+			return Redirect::to(Coanda::adminUrl('pages/view/' . Input::get('previous_page_id', 0)));
 		}
 
 		$this->manager->deletePages(Input::get('confirmed_remove_list'), (Input::get('permanent_delete', false) == 'true'));
 
-		return Redirect::to(Coanda::adminUrl('pages/location/' . Input::get('previous_location_id', 0)));
+		return Redirect::to(Coanda::adminUrl('pages/view/' . Input::get('previous_page_id', 0)));
 	}
 
     /**
@@ -253,13 +208,11 @@ class PagesAdminController extends BaseController {
      */
     public function getCreateHome($page_type)
 	{
-        dd('create home');
 		Coanda::checkAccess('pages', 'create', ['page_type' => $page_type]);
 
 		try
 		{
-			$type = Coanda::module('pages')->getHomePageType($page_type);
-			$page = $this->pageRepository->createHome($type, Coanda::currentUser()->id);
+			$page = $this->manager->createHomePage($page_type);
 
 			// Redirect to edit (version 1 - which should be the only version, give this is the create method!)
 			return Redirect::to(Coanda::adminUrl('pages/editversion/' . $page->id . '/1'));
@@ -270,7 +223,9 @@ class PagesAdminController extends BaseController {
 		}
 		catch (HomePageAlreadyExists $exception)
 		{
-			return Redirect::to(Coanda::adminUrl('pages'));	
+			dd('home page already exists');
+
+			return Redirect::to(Coanda::adminUrl('pages'));
 		}
 	}
 
@@ -547,7 +502,7 @@ class PagesAdminController extends BaseController {
 	{
 		try
 		{
-			$page = $this->pageRepository->find($page_id);
+			$page = $this->manager->getPage($page_id);
 
 			Coanda::checkAccess('pages', 'remove', ['page_id' => $page->id, 'page_type' => $page->type]);
 
@@ -567,7 +522,7 @@ class PagesAdminController extends BaseController {
 	{
 		try
 		{
-			$page = $this->pageRepository->find($page_id);
+			$page = $this->manager->getPage($page_id);
 			$parent_page_id = $page->parent_page_id;
 
 			Coanda::checkAccess('pages', 'remove', ['page_id' => $page->id, 'page_type' => $page->type]);
@@ -579,7 +534,7 @@ class PagesAdminController extends BaseController {
 				$permanent = true;
 			}
 
-			$this->pageRepository->deletePage($page_id, $permanent);
+			$this->manager->deletePage($page_id, $permanent);
 
 			if ($permanent)
 			{
@@ -601,9 +556,7 @@ class PagesAdminController extends BaseController {
 	{
 		Coanda::checkAccess('pages', 'remove');
 
-		$pages = $this->pageRepository->trashed();
-
-		return View::make('coanda::admin.modules.pages.trash', ['pages' => $pages ]);
+		return View::make('coanda::admin.modules.pages.trash', ['pages' => $this->manager->getTrashedPages() ]);
 	}
 
     /**
@@ -663,8 +616,7 @@ class PagesAdminController extends BaseController {
 	{
 		try
 		{
-			// Get the page to be restored
-			$page = $this->pageRepository->find($page_id);
+			$page = $this->manager->getPage($page_id);
 
 			Coanda::checkAccess('pages', 'remove');
 
@@ -691,7 +643,7 @@ class PagesAdminController extends BaseController {
 		{
 			Coanda::checkAccess('pages', 'remove');
 
-			$this->pageRepository->restore($page_id, Input::has('restore_sub_pages') ? Input::get('restore_sub_pages') : []);
+			$this->manager->restorePage($page_id, Input::has('restore_sub_pages') ? Input::get('restore_sub_pages') : []);
 
 			return Redirect::to(Coanda::adminUrl('pages/view/' . $page_id));
 		}

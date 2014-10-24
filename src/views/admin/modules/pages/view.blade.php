@@ -37,9 +37,9 @@
 				@if ($page->is_draft)
 					<i class="fa fa-circle-o"></i>
 				@else
-					<i class="fa {{ $page->pageType()->icon() }}"></i>
+					<i class="fa {{ $page->type_icon }}"></i>
 				@endif
-				{{ $page->type }}
+				{{ $page->type_name }}
 			</small>
 		</h1>
 		<div class="page-status pull-right">
@@ -167,7 +167,7 @@
 					<li @if (!Input::has('versions_page')) class="active" @endif><a href="#subpages" data-toggle="tab">Sub pages ({{ $children->getTotal() }})</a></li>
 				@endif
 
-				<li><a href="#content" data-toggle="tab">Content</a></li>
+				<li @if ($page->is_home && !Input::has('versions_page')) class="active" @endif ><a href="#content" data-toggle="tab">Content</a></li>
 				<li @if (Input::has('versions_page')) class="active" @endif><a href="#versions" data-toggle="tab">Versions ({{ $versions->getTotal() }})</a></li>
 			</ul>
 			<div class="tab-content">
@@ -232,7 +232,7 @@
 					</div>
 				@endif
 
-				<div class="tab-pane" id="content">
+				<div class="tab-pane @if ($page->is_home && !Input::has('versions_page')) active @endif " id="content">
 					<table class="table table-striped">
 						@foreach ($page->attributes as $attribute)
 						<tr>

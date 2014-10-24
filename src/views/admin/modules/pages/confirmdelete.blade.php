@@ -50,23 +50,16 @@
 									@else
 										<i class="fa {{ $page->pageType()->icon() }}"></i>
 									@endif
-									{{ $page->present()->name }}
+									{{ $page->name }}
 								</td>
-								<td>{{ $page->present()->type }}</td>
 								<td>
-									@if ($page->locations->count() > 0)
-										@foreach ($page->locations as $location)
-											<p>
-												@foreach ($location->parents() as $parent)
-													{{ $parent->page->present()->name }} /
-												@endforeach
+									@foreach ($page->parents() as $parent)
+										{{ $parent->name }} /
+									@endforeach
 
-												{{ $page->present()->name }}
+									{{ $page->name }}
 
-												<span class="pull-right">{{ $location->subTreeCount() }} sub pages will also be removed.</span>
-											</p>
-										@endforeach
-									@endif
+									<span class="pull-right">{{ $page->subTreeCount() }} sub pages will also be removed.</span>
 								</td>
 							</tr>
 						@endforeach
@@ -79,10 +72,10 @@
 							</label>
 						</div>
 
-						<input type="hidden" name="previous_location_id" value="{{ $previous_location_id }}">
+						<input type="hidden" name="previous_page_id" value="{{ $previous_page_id }}">
 
 						{{ Form::button('I understand, please delete them', ['name' => 'permanent_remove', 'value' => 'true', 'type' => 'submit', 'class' => 'btn btn-danger']) }}
-						<a class="btn btn-default" href="{{ Coanda::adminUrl('pages/location/' . $previous_location_id) }}">Cancel</a>
+						<a class="btn btn-default" href="{{ Coanda::adminUrl('pages/view/' . $previous_page_id) }}">Cancel</a>
 
 					@endif
 				</div>

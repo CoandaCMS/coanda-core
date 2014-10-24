@@ -77,10 +77,10 @@
 											@if ($home_page->is_draft)
 												<i class="fa fa-circle-o"></i>
 											@else
-												<i class="fa {{ $home_page->pageType()->icon() }}"></i>
+												<i class="fa {{ $home_page->type_icon }}"></i>
 											@endif
 
-											<a href="{{ Coanda::adminUrl('pages/view/' . $home_page->id) }}">{{ $home_page->present()->name }}</a>
+											<a href="{{ Coanda::adminUrl('pages/view/' . $home_page->id) }}">{{ $home_page->name }}</a>
 										</td>
 										<td class="tight">
 											@if ($home_page->is_draft)

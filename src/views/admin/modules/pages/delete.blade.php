@@ -8,14 +8,14 @@
 	<div class="breadcrumb-nav">
 		<ul class="breadcrumb">
 			<li><a href="{{ Coanda::adminUrl('pages') }}">Pages</a></li>
-			<li>{{ $page->present()->name }}</li>
+			<li>{{ $page->name }}</li>
 		</ul>
 	</div>
 </div>
 
 <div class="row">
 	<div class="page-name col-md-12">
-		<h1 class="pull-left">{{ $page->present()->name }} <small>{{ $page->present()->type }}</small></h1>
+		<h1 class="pull-left">{{ $page->name }} <small>{{ $page->type }}</small></h1>
 	</div>
 </div>
 
@@ -31,35 +31,27 @@
 			<i class="fa fa-exclamation-triangle"></i> Are you sure you want to remove this page?
 		</div>
 
-		@if ($page->locations->count() > 0)
+		<table class="table table-striped">
+			<tr>
+				<td>
+					@foreach ($page->parents() as $parent)
+						{{ $parent->name }} /
+					@endforeach
 
-			<p><i class="fa fa-info-circle"></i> The page will be removed from the following locations.</p>
+					{{ $page->name }}
+				</td>
+				<td>
+					{{ $page->subTreeCount() }} sub page{{ $page->subTreeCount() != 1 ? 's' : '' }} will also be deleted.
+				</td>
+			</tr>
+		</table>
 
-			<table class="table table-striped">
-				@foreach ($page->locations as $location)
-					<tr>
-						<td>
-							@foreach ($location->parents() as $parent)
-								{{ $parent->page->present()->name }}</a> /
-							@endforeach
-
-							{{ $location->page->present()->name }}
-						</td>
-						<td>
-							{{ $location->subTreeCount() }} sub page{{ $location->subTreeCount() != 1 ? 's' : '' }} will also be deleted.
-						</td>
-					</tr>
-				@endforeach
-			</table>
-
-			<div class="checkbox">
-				<label>
-					<input type="checkbox" id="permanent_delete" name="permanent_delete" value="true">
-					Delete permanently
-				</label>
-			</div>
-
-		@endif
+		<div class="checkbox">
+			<label>
+				<input type="checkbox" id="permanent_delete" name="permanent_delete" value="true">
+				Delete permanently
+			</label>
+		</div>
 
 		<div class="row">
 			<div class="col-md-12">
