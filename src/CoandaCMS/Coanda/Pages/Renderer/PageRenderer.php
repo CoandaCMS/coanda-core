@@ -3,6 +3,8 @@
 use Coanda;
 use CoandaCMS\Coanda\Pages\PageStaticCacher;
 use CoandaCMS\Coanda\Pages\PageManager;
+use Illuminate\Foundation\Application;
+use Illuminate\View\Factory;
 
 class PageRenderer {
 
@@ -10,10 +12,6 @@ class PageRenderer {
      * @var
      */
     private $page;
-    /**
-     * @var
-     */
-    private $location;
     /**
      * @var
      */
@@ -39,22 +37,22 @@ class PageRenderer {
      */
     private $manager;
     /**
-     * @var \Illuminate\View\Factory
+     * @var Factory
      */
     private $view;
 
     /**
-     * @var \Illuminate\Foundation\Application
+     * @var Application
      */
     private $app;
 
     /**
      * @param PageStaticCacher $cacher
      * @param PageManager $manager
-     * @param \Illuminate\View\Factory $view
-     * @param \Illuminate\Foundation\Application $app
+     * @param Factory $view
+     * @param Application $app
      */
-    public function __construct(PageStaticCacher $cacher, PageManager $manager, \Illuminate\View\Factory $view, \Illuminate\Foundation\Application $app)
+    public function __construct(PageStaticCacher $cacher, PageManager $manager, Factory $view, Application $app)
     {
         $this->cacher = $cacher;
         $this->manager = $manager;
@@ -82,25 +80,24 @@ class PageRenderer {
     }
 
     /**
-     * @param $location_id
+     * @param $page_id
      * @return mixed
      */
-    public function renderLocation($location_id)
+    public function renderPage($page_id)
     {
         // Does the cache have this location?
-        if ($this->cacher->hasLocationCache($location_id))
-        {
-            return $this->cacher->getLocationCache($location_id);
-        }
+//        if ($this->cacher->hasLocationCache($page_id))
+//        {
+//            return $this->cacher->getLocationCache($location_id);
+//        }
 
-        $this->location = $this->manager->getLocation($location_id);
-        $this->page = $this->location->page;
+        $this->page = $this->manager->getPage($page_id);
 
         $content = $this->render();
 
         if ($this->canStaticCache())
         {
-            $this->cacher->putLocationCache($this->location->id, $content);
+//            $this->cacher->putLocationCache($this->location->id, $content);
         }
 
         return $content;
@@ -123,13 +120,13 @@ class PageRenderer {
 
         $this->getTemplate();
 
-        return $this->mergeWithLayout($this->renderPage());
+        return $this->mergeWithLayout($this->renderContent());
     }
 
     /**
      * @return mixed
      */
-    private function renderPage()
+    private function renderContent()
     {
         if (!$this->view->exists($this->template))
         {
@@ -201,7 +198,7 @@ class PageRenderer {
                 'layout' => $this->layout,
                 'content' => $rendered_content,
                 'meta' => $this->meta,
-                'breadcrumb' => ($this->location ? $this->location->breadcrumb() : []),
+                'breadcrumb' => $this->page->breadcrumb(),
                 'module' => 'pages',
                 'module_identifier' => $this->page->id
             ]);
@@ -249,7 +246,7 @@ class PageRenderer {
      */
     private function renderAttributes()
     {
-        return $this->page->renderAttributes($this->location);
+        return $this->page->renderAttributes();
     }
 
     /**
@@ -260,12 +257,11 @@ class PageRenderer {
         $this->data = [
             'page_id' => $this->page->id,
             'version' => $this->page->current_version,
-            'location_id' => ($this->location ? $this->location->id : false),
-            'parent' => ($this->location ? $this->location->parent : false),
+            'parent' => $this->page->parent,
             'page' => $this->page,
             'attributes' => $this->renderAttributes(),
             'meta' => $this->meta,
-            'slug' => $this->location ? $this->location->slug : '',
+            'slug' => $this->page->slug,
         ];
     }
 
@@ -277,7 +273,7 @@ class PageRenderer {
         $meta_title = $this->page->meta_page_title;
 
         $this->meta = [
-            'title' => $meta_title !== '' ? $meta_title : $this->page->present()->name,
+            'title' => $meta_title !== '' ? $meta_title : $this->page->name,
             'description' => $this->page->meta_description
         ];
     }

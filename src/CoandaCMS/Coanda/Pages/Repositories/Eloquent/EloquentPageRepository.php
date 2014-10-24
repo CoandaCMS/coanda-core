@@ -8,7 +8,6 @@ use CoandaCMS\Coanda\Exceptions\AttributeValidationException;
 use CoandaCMS\Coanda\Exceptions\ValidationException;
 
 use CoandaCMS\Coanda\Pages\Exceptions\HomePageAlreadyExists;
-use CoandaCMS\Coanda\Pages\Exceptions\SubPagesNotAllowed;
 
 use CoandaCMS\Coanda\Pages\Repositories\Eloquent\Queries\QueryHandler;
 use CoandaCMS\Coanda\Urls\Exceptions\InvalidSlug;
@@ -33,22 +32,16 @@ class EloquentPageRepository implements PageRepositoryInterface {
      * @var Models\Page
      */
     private $page_model;
+
     /**
      * @var Models\PageVersion
      */
     private $page_version_model;
+
     /**
      * @var Models\PageAttribute
      */
     private $page_attribute_model;
-    /**
-     * @var Models\PageLocation
-     */
-    private $page_location_model;
-    /**
-     * @var Models\PageVersionSlug
-     */
-    private $page_version_slug_model;
 
     /**
      * @var Models\PageVersionComment
@@ -58,34 +51,33 @@ class EloquentPageRepository implements PageRepositoryInterface {
     /**
      * @var \CoandaCMS\Coanda\Urls\Repositories\UrlRepositoryInterface
      */
-    private $urlRepository;
+    private $urls;
     /**
      * @var \CoandaCMS\Coanda\History\Repositories\HistoryRepositoryInterface
      */
     private $historyRepository;
 
     /**
-     * @param PageLocationModel $page_location_model
      * @param PageModel $page_model
      * @param PageVersionModel $page_version_model
      * @param PageAttributeModel $page_attribute_model
-     * @param PageVersionSlugModel $page_version_slug_model
      * @param Models\PageVersionComment $page_version_comment_model
      * @param \CoandaCMS\Coanda\Urls\Repositories\UrlRepositoryInterface $urlRepository
-     * @param \CoandaCMS\Coanda\History\Repositories\HistoryRepositoryInterface $historyRepository
      */
-    public function __construct(PageLocationModel $page_location_model, PageModel $page_model, PageVersionModel $page_version_model, PageAttributeModel $page_attribute_model, PageVersionSlugModel $page_version_slug_model, PageVersionCommentModel $page_version_comment_model, \CoandaCMS\Coanda\Urls\Repositories\UrlRepositoryInterface $urlRepository, \CoandaCMS\Coanda\History\Repositories\HistoryRepositoryInterface $historyRepository)
+    public function __construct(PageModel $page_model, PageVersionModel $page_version_model, PageAttributeModel $page_attribute_model, PageVersionCommentModel $page_version_comment_model, \CoandaCMS\Coanda\Urls\Repositories\UrlRepositoryInterface $urlRepository)
 	{
-		$this->page_location_model = $page_location_model;
 		$this->page_version_model = $page_version_model;
 		$this->page_attribute_model = $page_attribute_model;
-		$this->page_version_slug_model = $page_version_slug_model;
 		$this->page_version_comment_model = $page_version_comment_model;
 		$this->page_model = $page_model;
 		
-		$this->urlRepository = $urlRepository;
-		$this->historyRepository = $historyRepository;
+		$this->urls = $urlRepository;
 	}
+
+    public function getPageModel()
+    {
+        return $this->page_model;
+    }
 
     /**
      * @param $what
@@ -107,16 +99,8 @@ class EloquentPageRepository implements PageRepositoryInterface {
             }
 		}
 
-		$this->historyRepository->add('pages', $identifier, $user_id, $what, $data);
+        \Event::fire('history.log', ['pages', $identifier, $user_id, $what, $data]);
 	}
-
-    /**
-     * @return PageLocationModel
-     */
-    public function getPageLocationModel()
-    {
-    	return $this->page_location_model;
-    }
 
     /**
      * @param $id
@@ -146,35 +130,18 @@ class EloquentPageRepository implements PageRepositoryInterface {
 	}
 
     /**
-     * @param $id
-     * @return mixed
-     * @throws \CoandaCMS\Coanda\Pages\Exceptions\PageNotFound
-     */
-    public function locationById($id)
-	{
-		$location = $this->page_location_model->find($id);
-
-		if (!$location)
-		{
-			throw new PageNotFound('Page Location #' . $id . ' not found');
-		}
-
-		return $location;
-	}
-
-    /**
      * @param $slug
      * @return bool|mixed
      */
-    public function locationBySlug($slug)
+    public function findBySlug($slug)
 	{
 		try
 		{
 			$url = $this->urlRepository->findBySlug($slug);
 
-			if ($url->type == 'pagelocation')
+			if ($url->type == 'page')
 			{
-				return $this->locationById($url->type_id);
+				return $this->findById($url->type_id);
 			}
 		}
 		catch (UrlNotFound $exception)
@@ -199,35 +166,6 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		}
 		
 		return $page;
-	}
-
-    /**
-     * @param $remote_id
-     * @return mixed
-     * @throws \CoandaCMS\Coanda\Pages\Exceptions\PageNotFound
-     */
-    public function getLocationByRemoteId($remote_id)
-	{
-		$page = $this->page_model->whereRemoteId($remote_id)->first();
-
-		if (!$page)
-		{
-			throw new PageNotFound('Page with remote id: ' . $remote_id . ' not found');
-		}
-
-		$location = $page->locations()->first();
-
-		return $location;
-	}
-
-    /**
-     * @param $limit
-     * @param $offset
-     * @return mixed
-     */
-    public function locations($limit, $offset)
-	{
-		return $this->page_location_model->take($limit)->skip($offset)->get();
 	}
 
     /**
@@ -257,18 +195,19 @@ class EloquentPageRepository implements PageRepositoryInterface {
 	}
 
     /**
-     * @param $parent_location_id
+     * @param $parent_page_id
      * @param $current_page
      * @param int $per_page
      * @param array $parameters
+     * @internal param $parent_location_id
      * @return mixed
      */
-    private function subLocations($parent_location_id, $current_page, $per_page = 10, $parameters = [])
+    public function subPages($parent_page_id, $current_page, $per_page = 10, $parameters = [])
 	{
 		$query = new QueryHandler($this);
 
-		return $query->subLocations([
-				'parent_location_id' => $parent_location_id,
+		return $query->subPages([
+				'parent_page_id' => $parent_page_id,
 				'current_page' => $current_page,
 				'per_page' => $per_page,
 				'parameters' => $parameters
@@ -276,84 +215,45 @@ class EloquentPageRepository implements PageRepositoryInterface {
 	}
 
     /**
-     * @param $location_id
-     * @param $current_page
-     * @param $per_page
-     * @param array $parameters
-     * @return mixed
-     */
-    public function subPages($location_id, $current_page, $per_page, $parameters = [])
-	{
-		return $this->subLocations($location_id, $current_page, $per_page, $parameters);
-	}
-
-    /**
      * @param $type
      * @param $is_home
      * @param $user_id
-     * @param bool $parent_pagelocation_id
+     * @param bool $parent_page_id
      * @return mixed
      */
-    private function createNewPage($type, $is_home, $user_id, $parent_pagelocation_id = false)
+    private function createNewPage($type, $is_home, $user_id, $parent_page_id = false)
 	{
-		// Create the page...
-		$page_data = [
-			'is_home' => $is_home,
-			'type' => $type->identifier(),
-			'created_by' => $user_id,
-			'edited_by' => $user_id,
-			'current_version' => 1
-		];
+		$page = $this->page_model->create([
+            'parent_page_id' => $parent_page_id ? $parent_page_id : 0,
+            'is_home' => $is_home,
+            'type' => $type->identifier(),
+            'created_by' => $user_id,
+            'edited_by' => $user_id,
+            'current_version' => 1
+        ]);
 
-		$page = $this->page_model->create($page_data);
+		$version = $this->page_version_model->create([
+            'page_id' => $page->id,
+            'version' => 1,
+            'status' => 'draft',
+            'created_by' => $user_id,
+            'edited_by' => $user_id,
+        ]);
 
-		// Create the version...
-		$version_data = [
-			'page_id' => $page->id,
-			'version' => 1,
-			'status' => 'draft',
-			'created_by' => $user_id,
-			'edited_by' => $user_id,
-		];
-
-		$version = $this->page_version_model->create($version_data);
-
-		// Create all the attributes...
 		$index = 1;
 
 		foreach ($type->attributes() as $type_attribute_identifier => $type_attribute)
 		{
 			$page_attribute_type = Coanda::getAttributeType($type_attribute['type']);
 
-			$attribute_data = [
-				'page_version_id' => $version->id,
-				'identifier' => $type_attribute_identifier,
-				'type' => $page_attribute_type->identifier(),
-				'order' => $index
-			];
-
-			$this->page_attribute_model->create($attribute_data);
+			$this->page_attribute_model->create([
+                'page_version_id' => $version->id,
+                'identifier' => $type_attribute_identifier,
+                'type' => $page_attribute_type->identifier(),
+                'order' => $index
+            ]);
 
 			$index ++;
-		}
-
-		// If we are dealing with the home page, then we don't need to add a location
-		if (!$is_home)
-		{
-			$location_data = [
-				'page_id' => $page->id,
-				'parent_page_id' => $parent_pagelocation_id ? $parent_pagelocation_id : 0
-			];
-
-			$this->page_location_model->create($location_data);
-
-			$version_slug_data = [
-				'version_id' => $version->id,
-				'page_location_id' => $parent_pagelocation_id ? $parent_pagelocation_id : 0,
-				'slug' => ''
-			];
-
-			$this->page_version_slug_model->create($version_slug_data);
 		}
 
 		// Log the history
@@ -365,27 +265,13 @@ class EloquentPageRepository implements PageRepositoryInterface {
     /**
      * @param $type
      * @param $user_id
-     * @param bool $parent_location_id
+     * @param bool $parent_page_id
      * @return mixed
      * @throws \CoandaCMS\Coanda\Pages\Exceptions\SubPagesNotAllowed
      */
-    public function create($type, $user_id, $parent_location_id = false)
+    public function create($type, $user_id, $parent_page_id = false)
 	{
-		if ($parent_location_id)
-		{
-			$parent_location = $this->locationById($parent_location_id);
-
-			if ($parent_location->page->pageType()->allowsSubPages())
-			{
-				return $this->createNewPage($type, false, $user_id, $parent_location->id);
-			}			
-
-			throw new SubPagesNotAllowed('This page type does not allow sub pages');
-		}
-		else
-		{
-			return $this->createNewPage($type, false, $user_id, $parent_location_id);
-		}
+        return $this->createNewPage($type, false, $user_id, $parent_page_id);
 	}
 
     /**
@@ -395,22 +281,14 @@ class EloquentPageRepository implements PageRepositoryInterface {
      * @param $page_data
      * @return mixed
      */
-    public function createAndPublish($type, $user_id, $parent_location_id, $page_data)
+    public function createAndPublish($type, $user_id, $parent_page_id, $page_data)
 	{
 		if (is_string($type))
 		{
 			$type = Coanda::module('pages')->getPageType($type);
 		}
 
-		$additional_locations = [];
-
-		if (is_array($parent_location_id))
-		{
-			$additional_locations = $parent_location_id;
-			$parent_location_id = array_shift($additional_locations);
-		}
-
-		$page = $this->create($type, $user_id, $parent_location_id);
+		$page = $this->create($type, $user_id, $parent_page_id);
 
 		if (isset($page_data['remote_id']))
 		{
@@ -419,67 +297,19 @@ class EloquentPageRepository implements PageRepositoryInterface {
 
 		$version = $page->currentVersion();
 
-		if (count($additional_locations))
-		{
-			foreach ($additional_locations as $additional_location)
-			{
-				$this->addNewVersionSlug($version->id, $additional_location);	
-			}
-		}
-
-		// Add the slug data
-		if (isset($page_data['slug']))
-		{
-			foreach ($version->slugs as $slug)
-			{
-				$page_data['slug_' . $slug->id] = $page_data['slug'];
-			}			
-		}
-
 		$this->saveDraftVersion($version, $page_data);
-		$this->publishVersion($version, $user_id, $this->urlRepository, $this->historyRepository);
+		$this->publishVersion($version, $user_id, $this->urlRepository);
 
 		$page = $this->find($page->id);
 
 		// Add the slug data
 		if (isset($page_data['order']))
 		{
-			foreach ($page->locations as $location)
-			{
-				$location->order = $page_data['order'];
-				$location->save();
-			}
+            $page->order = $page_data['order'];
+            $page->save();
 		}
 
 		return $page;
-	}
-
-    /**
-     * @param $version
-     * @param $locations
-     */
-    private function syncVersionLocations($version, $locations)
-	{
-		$existing_locations = [];
-
-		foreach ($version->slugs as $slug)
-		{
-			if (!in_array($slug->page_location_id, $locations))
-			{
-				$this->removeVersionSlug($version->id, $slug->id);
-			}
-			else
-			{
-				$existing_locations[] = $slug->page_location_id;
-			}
-		}
-
-		$new_locations = array_diff($locations, $existing_locations);
-
-		foreach ($new_locations as $new_location)
-		{
-			$this->addNewVersionSlug($version->id, $new_location);
-		}
 	}
 
     /**
@@ -494,29 +324,10 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		$version_number = $this->createNewVersion($page->id, $user_id);
 		$version = $page->getVersion($version_number);
 
-		if (!is_array($parent_page_id))
-		{
-			$locations = [];
-			$locations[] = $parent_page_id;
-
-			$parent_page_id = $locations;
-		}
-
-		$this->syncVersionLocations($version, $parent_page_id);
-
 		$version = $this->getVersionById($version->id);
 
-		// Add the slug data
-		if (isset($page_data['slug']))
-		{
-			foreach ($version->slugs as $slug)
-			{
-				$page_data['slug_' . $slug->id] = $page_data['slug'];
-			}			
-		}
-
-		$this->saveDraftVersion($version, $page_data);		
-		$this->publishVersion($version, $user_id, $this->urlRepository, $this->historyRepository);
+		$this->saveDraftVersion($version, $page_data);
+		$this->publishVersion($version, $user_id, $this->urlRepository);
 
 		$page = $this->find($page->id);
 
@@ -534,7 +345,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 
 		$version->is_hidden = true;
 
-		$this->publishVersion($version, $user_id, $this->urlRepository, $this->historyRepository);
+		$this->publishVersion($version, $user_id, $this->urlRepository);
 	}
 
     /**
@@ -568,49 +379,9 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		$version = $page->currentVersion();
 
 		$this->saveDraftVersion($version, $page_data);
-		$this->publishVersion($version, $user_id, $this->urlRepository, $this->historyRepository);
+		$this->publishVersion($version, $user_id, $this->urlRepository);
 
 		return $page;
-	}
-
-    /**
-     * @param $version_id
-     * @param $page_location_id
-     * @return mixed|void
-     */
-    public function addNewVersionSlug($version_id, $page_location_id)
-	{
-		$version = $this->getVersionById($version_id);
-
-		$existing = $version->slugs()->wherePageLocationId($page_location_id)->first();
-
-		if (!$existing)
-		{
-			$version_slug_data = [
-				'version_id' => $version->id,
-				'page_location_id' => $page_location_id,
-				'slug' => ''
-			];
-
-			$this->page_version_slug_model->create($version_slug_data);
-		}
-	}
-
-    /**
-     * @param $version_id
-     * @param $slug_id
-     * @return mixed|void
-     */
-    public function removeVersionSlug($version_id, $slug_id)
-	{
-		$version = $this->getVersionById($version_id);
-
-		$slug = $version->slugs()->whereId($slug_id)->first();
-
-		if ($slug)
-		{
-			$slug->delete();
-		}
 	}
 
     /**
@@ -676,13 +447,6 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		return $version;
 	}
 
-
-    /**
-     * @param $page_id
-     * @param $limit
-     * @param $offset
-     * @throws PageNotFound
-     */
     public function getVersionsForPage($page_id, $limit, $offset)
     {
         $page = $this->page_model->find($page_id);
@@ -695,10 +459,6 @@ class EloquentPageRepository implements PageRepositoryInterface {
         throw new PageNotFound('Page #' . $page_id . ' not found.');
     }
 
-    /**
-     * @param $page_id
-     * @throws PageNotFound
-     */
     public function getVersionCountForPage($page_id)
     {
         $page = $this->page_model->find($page_id);
@@ -722,68 +482,13 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		$failed = [];
 
         list($data, $failed) = $this->saveAttributes($version, $data, $failed);
-
-        // If we are dealing with the home page, then the slug doesn't matter
-		if (!$version->page->is_home)
-		{
-            list($data, $failed) = $this->saveVersionSlugs($version, $data, $failed);
-        }
-
-		// Get the meta
-		if ($version->page->show_meta)
-		{
-			$version->meta_page_title = isset($data['meta_page_title']) ? $data['meta_page_title'] : '';
-			$version->meta_description = isset($data['meta_description']) ? $data['meta_description'] : '';
-		}
-
         list($data, $failed) = $this->saveVisibleDates($version, $data, $failed);
+        list($data, $failed) = $this->saveSlug($version, $data, $failed);
 
-		if (isset($data['template_identifier']))
-		{
-			if ($data['template_identifier'] !== '')
-			{
-				$version->template_identifier = $data['template_identifier'];
-			}
-			else
-			{
-				$version->template_identifier = '';
-			}
-		}
-
-		if (isset($data['layout_identifier']))
-		{
-			if ($data['layout_identifier'] !== '')
-			{
-				$layout = Coanda::module('layout')->layoutByIdentifier($data['layout_identifier']);
-
-				if ($layout)
-				{
-					$version->layout_identifier = $data['layout_identifier'];
-				}
-			}
-			else
-			{
-				$version->layout_identifier = '';
-			}
-		}
-
-		if (isset($data['is_hidden']) && ($data['is_hidden'] == 'yes' || $data['is_hidden'] === true))
-		{
-			$version->is_hidden = true;
-		}
-		else
-		{
-			$version->is_hidden = false;
-		}
-
-		if (isset($data['is_hidden_navigation']) && ($data['is_hidden_navigation'] == 'yes' || $data['is_hidden_navigation'] === true))
-		{
-			$version->is_hidden_navigation = true;
-		}
-		else
-		{
-			$version->is_hidden_navigation = false;
-		}
+        $this->saveMeta($version, $data);
+        $this->saveTemplate($version, $data);
+        $this->saveLayout($version, $data);
+        $this->saveVisibility($version, $data);
 
 		$version->save();
 
@@ -792,6 +497,65 @@ class EloquentPageRepository implements PageRepositoryInterface {
 			throw new ValidationException($failed, $version->id);
 		}
 	}
+
+    private function saveSlug($version, $data, $failed)
+    {
+        $version->slug = $data['slug'];
+
+        try
+        {
+            if (!$this->urls->canUse($version->full_slug, 'page', $version->page->id))
+            {
+                $failed['slug'] = 'Slug is already in use.';
+            }
+
+        }
+        catch (InvalidSlug $exception)
+        {
+            $failed['slug'] = 'Slug is not valid';
+        }
+
+        return [$data, $failed];
+    }
+
+
+    private function saveMeta($version, $data)
+    {
+        // Get the meta
+        if ($version->page->show_meta)
+        {
+            $version->meta_page_title = isset($data['meta_page_title']) ? $data['meta_page_title'] : '';
+            $version->meta_description = isset($data['meta_description']) ? $data['meta_description'] : '';
+        }
+
+        return $version;
+    }
+
+    private function saveTemplate($version, $data)
+    {
+		if (isset($data['template_identifier']))
+		{
+            $version->template_identifier = ($data['template_identifier'] !== '') ? $data['template_identifier'] : '';
+		}
+
+        return $version;
+    }
+
+    private function saveLayout($version, $data)
+    {
+        if (isset($data['layout_identifier']))
+        {
+            $version->layout_identifier = ($data['layout_identifier'] !== '') ? $data['layout_identifier'] : '';
+        }
+
+        return $version;
+    }
+
+    private function saveVisibility($version, $data)
+    {
+        $version->is_hidden = (isset($data['is_hidden']) && ($data['is_hidden'] == 'yes' || $data['is_hidden'] === true)) ? true : false;
+        $version->is_hidden_navigation = (isset($data['is_hidden_navigation']) && ($data['is_hidden_navigation'] == 'yes' || $data['is_hidden_navigation'] === true)) ? true : false;
+    }
 
     /**
      * @param $version
@@ -832,14 +596,19 @@ class EloquentPageRepository implements PageRepositoryInterface {
      * @param $version
      * @param $user_id
      * @param $urlRepository
-     * @param $historyRepository
      * @return mixed|void
      */
-    public function publishVersion($version, $user_id, $urlRepository, $historyRepository)
+    public function publishVersion($version, $user_id, $urlRepository)
 	{
 		$page = $version->page;
 
-		if ((int)$version->version !== 1)
+        // First up, make sure the URL is OK...
+        if (!$version->page->is_home)
+        {
+            $urlRepository->register($version->full_slug, 'page', $version->page->id);
+        }
+
+		if ((int) $version->version !== 1)
 		{
 			// set the current published version to be archived
 			$page->currentVersion()->status = 'archived';
@@ -855,72 +624,30 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		$page->current_version = $version->version;
 		$page->save();
 
-		// If we are dealing with the home page, not need to worry about the URL...
-		if (!$version->page->is_home)
-		{
-			$version_locations = $version->slugs()->lists('page_location_id');
-
-			// Work out if we need to remove any locations...
-			foreach ($page->locations as $location)
-			{
-				if (!in_array($location->parent_page_id, $version_locations))
-				{
-					$urlRepository->delete('pagelocation', $location->id);
-
-					$this->unRegisterLocationWithSearchProvider($location);
-
-					$location->delete();
-				}
-			}
-
-			foreach ($version->slugs as $slug)
-			{
-				// Is the location already registered for this page?
-				$location = $page->locations()->whereParentPageId($slug->page_location_id)->first();
-
-				if (!$location)
-				{
-					$location_data = [
-						'page_id' => $page->id,
-						'parent_page_id' => $slug->page_location_id ? $slug->page_location_id : 0
-					];
-
-					$location = $this->page_location_model->create($location_data);
-				}
-
-				$urlRepository->register($slug->full_slug, 'pagelocation', $location->id);
-			}
-		}
-
 		// Log the history
 		$this->logHistory('publish_version', $page->id, ['version' => (int)$version->version], $user_id);
 
-		// Tell the search engine about it!
-		foreach ($page->locations as $location)
-		{
-			if ($version->is_hidden)
-			{
-				$this->unRegisterLocationWithSearchProvider($location);
-			}
-			else
-			{
-				$this->registerLocationWithSearchProvider($location);	
-			}
-		}
+        if ($version->is_hidden)
+        {
+            $this->unRegisterPageWithSearchProvider($page);
+        }
+        else
+        {
+            $this->registerPageWithSearchProvider($page);
+        }
 	}
 
 
     /**
-     * @param $location
+     * @param $page
      */
-    public function registerLocationWithSearchProvider($location)
+    public function registerPageWithSearchProvider($page)
 	{
-		$page = $location->page;
 		$version = $page->currentVersion();
 
 		$search_data = [
 			'page_type' => $page->type,
-			'name' => $page->present()->name
+			'name' => $page->name
 		];
 
 		$visible_from = (string) $version->visible_from;
@@ -939,18 +666,18 @@ class EloquentPageRepository implements PageRepositoryInterface {
 
 		foreach ($page->attributes as $attribute)
 		{
-			$search_data[$attribute->identifier] = $attribute->render($page, $location, true);
+			$search_data[$attribute->identifier] = $attribute->render($page);
 		}
 
-		Coanda::search()->register('pages', $location->id, $location->slug, $search_data);
+		Coanda::search()->register('pages', $page->id, $page->slug, $search_data);
 	}
 
     /**
-     * @param $location
+     * @param $page
      */
-    public function unRegisterLocationWithSearchProvider($location)
+    public function unRegisterPageWithSearchProvider($page)
 	{
-		Coanda::search()->unRegister('pages', $location->id);
+		Coanda::search()->unRegister('pages', $page->id);
 	}
 
     /**
@@ -961,18 +688,13 @@ class EloquentPageRepository implements PageRepositoryInterface {
      */
     public function executePublishHandler($version, $publish_handler, $data)
 	{
-		$publish_handler = Coanda::module('pages')->getPublishHandler($publish_handler);
+        $version->publish_handler = $publish_handler->identifier;
 
-		if ($publish_handler)
-		{
-			$version->publish_handler = $publish_handler->identifier;
+        // Validate the publish handler - this can throw an exception if needs be!
+        $publish_handler->validate($version, $data);
 
-			// Validate the publish handler - this can throw an exception if needs be!
-			$publish_handler->validate($version, $data);
-
-			// Return the result of the publish handler - this should be a redirect URL of null/false as required.
-			return $publish_handler->execute($version, $data, $this, $this->urlRepository, $this->historyRepository);
-		}
+        // Return the result of the publish handler - this should be a redirect URL of null/false as required.
+        return $publish_handler->execute($version, $data, $this, $this->urls);
 	}
 
     /**
@@ -1008,6 +730,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		// Create the new version...
 		$version_data = [
 			'page_id' => $page->id,
+            'slug' => $current_version->slug,
 			'version' => $new_version_number,
 			'status' => 'draft',
 			'is_hidden' => $current_version->is_hidden,
@@ -1023,18 +746,6 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		];
 
 		$version = $this->page_version_model->create($version_data);
-
-		// Now lets replicate the slugs
-		foreach ($current_version->slugs as $slug)
-		{
-			$version_slug_data = [
-				'version_id' => $version->id,
-				'page_location_id' => $slug->page_location_id,
-				'slug' => $slug->slug
-			];
-
-			$this->page_version_slug_model->create($version_slug_data);
-		}
 
 		// Add all the attributes..
 		$index = 1;
@@ -1125,11 +836,6 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		{
 			$this->deleteSubPages($page, true);			
 
-			foreach ($page->locations as $location)
-			{
-				$this->deleteLocation($location);
-			}
-
 			// Finally, we can remove this page
 			$page->delete();
 
@@ -1147,17 +853,8 @@ class EloquentPageRepository implements PageRepositoryInterface {
 				$this->logHistory('trashed', $page->id);
 			}
 		}
-	}
 
-    /**
-     * @param $location
-     */
-    public function deleteLocation($location)
-	{
-		$this->urlRepository->delete('pagelocation', $location->id);
-		$this->unRegisterLocationWithSearchProvider($location);
-
-		$location->delete();
+        $this->unRegisterPageWithSearchProvider($page);
 	}
 
     /**
@@ -1206,7 +903,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 									foreach ($page->locations as $location)
 									{
 										$this->deleteLocation($location);
-									}									
+									}
 								}
 
 								$page->delete();
@@ -1215,7 +912,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 					}
 					else
 					{
-						$this->page_model->whereIn('id', $sub_page_ids)->update(['is_trashed' => true]);	
+						$this->page_model->whereIn('id', $sub_page_ids)->update(['is_trashed' => true]);
 					}
 				}
 			}
@@ -1280,14 +977,14 @@ class EloquentPageRepository implements PageRepositoryInterface {
 	}
 
     /**
-     * @param $location_id
+     * @param $page_id
      * @param $new_order
      * @return mixed|void
      * @internal param $new_orders
      */
-    public function updateLocationOrder($location_id, $new_order)
+    public function updatePageOrder($page_id, $new_order)
 	{
-		$this->page_location_model->whereId($location_id)->update(['order' => $new_order]);
+		$this->page_model->whereId($page_id)->update(['order' => $new_order]);
 	}
 
     /**
@@ -1459,52 +1156,6 @@ class EloquentPageRepository implements PageRepositoryInterface {
             {
                 $failed['attributes'][$attribute->identifier] = $exception->getMessage();
             }
-        }
-
-        return [$data, $failed];
-    }
-
-    /**
-     * @param $version
-     * @param $data
-     * @param $failed
-     * @return array
-     */
-    private function saveVersionSlugs($version, $data, $failed)
-    {
-        if ($version->slugs()->count() > 0)
-        {
-            // Check each of the locations to see if the slug is OK
-            foreach ($version->slugs as $version_slug)
-            {
-                try
-                {
-                    $location_id = $version_slug->location ? $version_slug->location->id : 0;
-                    $slug = isset($data['slug_' . $version_slug->id]) ? $data['slug_' . $version_slug->id] : false;
-
-                    if (!$slug || $slug == '')
-                    {
-                        $slug = $this->generateSlug($version, $version_slug->base_slug, $location_id);
-                    }
-
-                    $this->urlRepository->canUse($version_slug->base_slug . '/' . $slug, 'pagelocation', $location_id);
-
-                    $version_slug->slug = $slug;
-                    $version_slug->save();
-                }
-                catch (InvalidSlug $exception)
-                {
-                    $failed['slug_' . $version_slug->id] = 'The slug is not valid';
-                }
-                catch (UrlAlreadyExists $exception)
-                {
-                    $failed['slug_' . $version_slug->id] = 'The slug is already in use';
-                }
-            }
-        }
-        else
-        {
-            $failed['slugs'] = 'Please choose at least one location';
         }
 
         return [$data, $failed];

@@ -4,6 +4,7 @@ use CoandaCMS\Coanda\History\Repositories\HistoryRepositoryInterface;
 use CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface;
 use CoandaCMS\Coanda\Users\UserManager;
 use Illuminate\Pagination\Factory;
+use CoandaCMS\Coanda\Pages\Exceptions\SubPagesNotAllowed;
 
 class PageManager {
 
@@ -100,33 +101,24 @@ class PageManager {
 	}
 
     /**
-     * @param $id
-     * @return mixed
-     */
-    public function getLocation($id)
-	{
-		return $this->repository->locationById($id);
-	}
-
-    /**
      * @param $current_page
      * @param $per_page
      * @return mixed
      */
     public function getTopLevelPages($current_page, $per_page)
 	{
-		return $this->getAdminSubLocations(0, $current_page, $per_page);
+		return $this->getAdminSubPages(0, $current_page, $per_page);
 	}
 
     /**
-     * @param $parent_location_id
+     * @param $parent_page_id
      * @param $current_page
      * @param $per_page
      * @return mixed
      */
-    public function getAdminSubLocations($parent_location_id, $current_page, $per_page)
+    public function getAdminSubPages($parent_page_id, $current_page, $per_page)
 	{
-		return $this->repository->subPages($parent_location_id, $current_page, $per_page, [
+		return $this->repository->subPages($parent_page_id, $current_page, $per_page, [
 			'include_drafts' => true,
 			'include_invisible' => true,
 			'include_hidden' => true
@@ -136,11 +128,12 @@ class PageManager {
     /**
      * @param $orders
      */
-    public function updateLocationOrders($orders)
+    public function updatePageOrders($orders)
 	{
-		foreach ($orders as $location_id => $new_order)
+		foreach ($orders as $page_id => $new_order)
 		{
-			$this->repository->updateLocationOrder($location_id, $new_order);
+            dd('hmmmm');
+			$this->repository->updatePageOrder($page_id, $new_order);
 		}
 	}
 
@@ -155,14 +148,25 @@ class PageManager {
 
     /**
      * @param $page_type
-     * @param $parent_location_id
+     * @param $parent_page_id
      * @return mixed
+     * @throws SubPagesNotAllowed
      */
-    public function createNewPage($page_type, $parent_location_id)
+    public function createNewPage($page_type, $parent_page_id)
 	{
 		$type = $this->callModuleMethod('getPageType', [$page_type]);
 
-		return $this->repository->create($type, $this->getCurrentUserId(), $parent_location_id);
+        if ($parent_page_id)
+        {
+            $parent = $this->getPage($parent_page_id);
+
+            if (!$parent->pageType()->allowsSubPages())
+            {
+                throw new SubPagesNotAllowed('This page type does not allow sub pages');
+            }
+        }
+
+		return $this->repository->create($type, $this->getCurrentUserId(), $parent_page_id);
 	}
 
     /**
@@ -208,15 +212,6 @@ class PageManager {
 		$version = $this->getVersionForPage($page_id, $version_number);
 
 		$this->repository->saveDraftVersion($version, $input);
-	}
-
-    /**
-     * @param $version_id
-     * @param $slug_id
-     */
-    public function removeSlugFromVersion($version_id, $slug_id)
-	{
-		$this->repository->removeVersionSlug($version_id, $slug_id);
 	}
 
     /**
@@ -309,4 +304,15 @@ class PageManager {
     {
         return $this->repository->getVersionCountForPage($page_id);
     }
+
+    public function executePublishHandler($version, $publish_handler, $data)
+    {
+        $publish_handler = $this->callModuleMethod('getPublishHandler', [$publish_handler]);
+
+        if ($publish_handler)
+        {
+            return $this->repository->executePublishHandler($version, $publish_handler, $data);
+        }
+    }
 }
+

@@ -1,16 +1,19 @@
 <?php namespace CoandaCMS\Coanda\Pages\Repositories\Eloquent\Queries;
 
+use CoandaCMS\Coanda\Pages\Repositories\Eloquent\Queries\SubPageQuery;
+use CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface;
+
 class QueryHandler {
 
     /**
-     * @var \CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface
+     * @var PageRepositoryInterface
      */
     private $repository;
 
     /**
-     * @param \CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface $repository
+     * @param PageRepositoryInterface $repository
      */
-    public function __construct(\CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface $repository)
+    public function __construct(PageRepositoryInterface $repository)
 	{
 		$this->repository = $repository;
 	}
@@ -19,9 +22,9 @@ class QueryHandler {
      * @param $parameters
      * @return mixed
      */
-    public function subLocations($parameters)
+    public function subPages($parameters)
 	{
-		$query = new \CoandaCMS\Coanda\Pages\Repositories\Eloquent\Queries\SubPageQuery($this->repository);
+		$query = new SubPageQuery($this->repository);
 
 		return $query->execute($parameters);
 	}

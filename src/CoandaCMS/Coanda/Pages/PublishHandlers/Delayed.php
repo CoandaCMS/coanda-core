@@ -1,13 +1,9 @@
 <?php namespace CoandaCMS\Coanda\Pages\PublishHandlers;
 
-use Coanda;
+use CoandaCMS\Coanda\Pages\Exceptions\PageVersionNotFound;
 use CoandaCMS\Coanda\Pages\Exceptions\PublishHandlerException;
 use Carbon\Carbon;
 
-/**
- * Class Delayed
- * @package CoandaCMS\Coanda\Pages\PublishHandlers
- */
 class Delayed implements PublishHandlerInterface {
 
     /**
@@ -24,6 +20,14 @@ class Delayed implements PublishHandlerInterface {
      */
     public $template = 'coanda::admin.modules.pages.publishoptions.delayed';
 
+    public function display($data)
+    {
+        $handler_data = json_decode($data, true);
+        $publish_date = Carbon::createFromFormat($handler_data['format'], $handler_data['date'], $handler_data['timezone']);
+
+        return 'Delayed until: ' . $publish_date;
+    }
+
     /**
      * @param $version
      * @param $data
@@ -34,7 +38,7 @@ class Delayed implements PublishHandlerInterface {
 	{
 		if (!isset($data['delayed_publish_date']) || $data['delayed_publish_date'] == '')
 		{
-			throw new PublishHandlerException(['delayed_publish_date' => 'Please specfiy a date']);
+			throw new PublishHandlerException(['delayed_publish_date' => 'Please specify a date']);
 		}
 
 		$format = isset($data['date_format']) ? $data['date_format'] : false;
@@ -48,57 +52,49 @@ class Delayed implements PublishHandlerInterface {
 				throw new PublishHandlerException(['delayed_publish_date' => 'The specified date is in past']);
 			}
 		}
-		catch(\InvalidArgumentException $exception)
+		catch (\InvalidArgumentException $exception)
 		{
 			throw new PublishHandlerException(['delayed_publish_date' => 'The specified date is invalid']);
 		}
 	}
 
-    /**
-     * @param $version
-     * @param $data
-     * @param $pageRepository
-     * @param $urlRepository
-     * @param $historyRepository
-     */
-    public function execute($version, $data, $pageRepository, $urlRepository, $historyRepository)
+    public function execute($version, $data, $pageRepository, $urlRepository)
 	{
-		$page = $version->page;
-
 		$format = isset($data['date_format']) ? $data['date_format'] : false;
-		$date = Carbon::createFromFormat($format, $data['delayed_publish_date'], date_default_timezone_get());
 
 		$handler_data = [
-			'date' => $date
+            'format' => $format,
+			'date' => $data['delayed_publish_date'],
+            'timezone' => date_default_timezone_get()
 		];
 
-		$current_version_slug = $page->currentVersion()->slug;
-
-		if ($version->slug !== $current_version_slug)
-		{
-			// Register the URL for this for a pendingpage, so it doesn't get used by someone else
-			$url = $urlRepository->register($version->base_slug . $version->slug, 'pendingversion', $version->id);
-
-			$handler_data['reserved_url'] = $url->id;
-		}
+        $handler_data = $this->reserveNewSlug($handler_data, $version, $urlRepository);
 
 		$version->publish_handler_data = json_encode($handler_data);
-
-		// Set the version to be pending...
 		$version->status = 'pending';
 		$version->save();
-
-		// Log the history
-		$historyRepository->add('pages', $page->id, Coanda::currentUser()->id, 'publish_version_delayed', ['version' => (int)$version->version, 'date' => $date]);
 	}
+
+    private function reserveNewSlug($handler_data, $version, $urlRepository)
+    {
+        $current_slug = $version->page->slug;
+
+        if ($version->full_slug !== $current_slug)
+        {
+            $url = $urlRepository->register($version->full_slug, 'pendingversion', $version->id);
+
+            $handler_data['reserved_url'] = $url->id;
+        }
+
+        return $handler_data;
+    }
 
     /**
      * @param $command
      * @param $pageRepository
      * @param $urlRepository
-     * @param $historyRepository
      */
-    public static function executeFromCommand($command, $pageRepository, $urlRepository, $historyRepository)
+    public static function executeFromCommand($command, $pageRepository, $urlRepository)
 	{
 		$offset = 0;
 		$limit = 5;
@@ -120,21 +116,17 @@ class Delayed implements PublishHandlerInterface {
 	        foreach ($pending_versions as $pending_version)
 	        {
 	            // Do this version need to be published?
-	            $handler_data = json_decode($pending_version->publish_handler_data);
+	            $handler_data = json_decode($pending_version->publish_handler_data, true);
+                $publish_date = Carbon::createFromFormat($handler_data['format'], $handler_data['date'], $handler_data['timezone']);
 
-	            if (isset($handler_data->date))
-	            {
-	            	$publish_date = Carbon::createFromFormat('Y-m-d H:i:s', $handler_data->date->date, $handler_data->date->timezone);
-
-	            	if ($publish_date->isPast())
-	            	{
-	            		$publish_version_list[] = $pending_version->id;
-	            	}
-	            	else
-	            	{
-	            		$command->error('Version id: ' . $pending_version->id . ' is not due to be published yet.');
-	            	}
-	            }
+                if ($publish_date->isPast())
+                {
+                    $publish_version_list[] = $pending_version->id;
+                }
+                else
+                {
+                    $command->info('Version #' . $pending_version->version . ' of page #' . $pending_version->page->id . ' is not due to be published yet.');
+                }
 	        }
 
 	        $offset += $limit;
@@ -146,26 +138,26 @@ class Delayed implements PublishHandlerInterface {
 			{
 				$version = $pageRepository->getVersionById($publish_version_id);
 
-	            $handler_data = json_decode($version->publish_handler_data);
+	            $handler_data = json_decode($version->publish_handler_data, true);
 
 				// Remove the 'reserved' url....
-	            if (isset($handler_data->reserved_url))
+	            if (isset($handler_data['reserved_url']))
 	            {
 	            	$url = $urlRepository->findFor('pendingversion', $version->id);
 
 	            	// Just double check that we still have the right reserved url...
-	            	if ($url->id == $handler_data->reserved_url)
+	            	if ($url->id == $handler_data['reserved_url'])
 	            	{
 	            		// Delete the URL - so that the publish routine, below, can use it.
 	            		$url->delete();
 	            	}
 	            }
 
-				$pageRepository->publishVersion($version, false, $urlRepository, $historyRepository);
+				$pageRepository->publishVersion($version, $version->edited_by, $urlRepository);
 
 				$command->info('Version #' . $version->version . ' of page #' . $version->page->id . ' published');
 			}
-			catch (\CoandaCMS\Coanda\Pages\Exceptions\PageVersionNotFound $exception)
+			catch (PageVersionNotFound $exception)
 			{
 				$command->error('Page version id: ' . $publish_version_id . ' not found');
 			}

@@ -1,20 +1,10 @@
 <?php namespace CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models;
 
-use Eloquent, Coanda, App;
-use Carbon\Carbon;
+use Eloquent;
+use Coanda;
+use App;
 
-/**
- * Class PageVersionComment
- * @package CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models
- */
 class PageVersionComment extends Eloquent {
-
-    use \CoandaCMS\Coanda\Core\Presenters\PresentableTrait;
-
-    /**
-     * @var string
-     */
-    protected $presenter = 'CoandaCMS\Coanda\Pages\Repositories\Eloquent\Presenters\PageVersionComment';
 
     /**
      * @var string

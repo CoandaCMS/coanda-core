@@ -1,22 +1,23 @@
 <?php namespace CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models;
 
-use Eloquent, Coanda, App;
+use Coanda;
+use App;
+use Lang;
 use Carbon\Carbon;
+use CoandaCMS\Coanda\Core\BaseEloquentModel;
 
-class Page extends Eloquent {
-
-	use \CoandaCMS\Coanda\Core\Presenters\PresentableTrait;
-
-    /**
-     * @var string
-     */
-    protected $presenter = 'CoandaCMS\Coanda\Pages\Repositories\Eloquent\Presenters\Page';
+class Page extends BaseEloquentModel {
 
     /**
      * @var array
      */
-    protected $fillable = ['is_home', 'type', 'created_by', 'edited_by', 'current_version'];
-    
+    protected $fillable = ['is_home', 'parent_page_id', 'type', 'created_by', 'edited_by', 'current_version'];
+
+    /**
+     * @var
+     */
+    private $cached_slug;
+
     /**
      * @var
      */
@@ -24,19 +25,43 @@ class Page extends Eloquent {
     /**
      * @var
      */
-    private $currentVersion;
+    private $currentVersionModel;
 
     /**
      * @var
      */
     private $renderedAttributes;
 
-	/**
-	 * The database table used by the model.
-	 *
-	 * @var string
-	 */
-	protected $table = 'pages';
+    /**
+     * @var
+     */
+    private $parents;
+    /**
+     * @var
+     */
+    private $sub_tree_count;
+
+    /**
+     * @var
+     */
+    private $can_edit;
+    /**
+     * @var
+     */
+    private $can_view;
+    /**
+     * @var
+     */
+    private $can_remove;
+    /**
+     * @var
+     */
+    private $can_create;
+
+    /**
+     * @var string
+     */
+    protected $table = 'pages';
 
     /**
      *
@@ -52,20 +77,51 @@ class Page extends Eloquent {
 	}
 
     /**
-     * @return mixed
+     * @param array $options
      */
-    public function locations()
-	{
-		return $this->hasMany('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageLocation');
-	}
+    public function save(array $options = [])
+    {
+        if ($this->path == '')
+        {
+            $this->setPath();
+        }
+
+        parent::save($options);
+    }
 
     /**
-     * @return mixed
+     * @param $name
+     * @return string
      */
-    public function firstLocation()
-	{
-		return $this->locations()->first();
-	}
+    public function getNameAttribute($name)
+    {
+        if ($name !== '')
+        {
+            return htmlspecialchars($name);
+        }
+
+        $generated_name = $this->pageType()->generateName($this->currentVersion());
+
+        if ($generated_name !== '')
+        {
+            return htmlspecialchars($generated_name);
+        }
+
+        return \Lang::get('coanda::pages.page_name_not_set');
+    }
+
+    /**
+     *
+     */
+    private function setPath()
+    {
+        $parent = $this->find($this->parent_page_id);
+
+        if ($parent)
+        {
+            $this->path = ($parent->path == '' ? '/' : $parent->path) . $parent->id . '/';
+        }
+    }
 
 	/**
 	 * Get the versions for this page
@@ -84,11 +140,10 @@ class Page extends Eloquent {
 		return $this->versions()->whereVersion($version)->first();
 	}
 
-	/**
-	 * Get the page type for this page
-	 * @return CoandaCMS\Coanda\Pages\PageTypeInterface [description]
-	 */
-	public function pageType()
+    /**
+     * @return \CoandaCMS\Coanda\Pages\PageTypes\MissingPageType
+     */
+    public function pageType()
 	{
         try
         {
@@ -112,21 +167,12 @@ class Page extends Eloquent {
         return $this->pageType;
 	}
 
-    /**
-     * @return mixed
-     */
-    public function typeName()
-	{
-		return $this->pageType()->name;
-	}
-
 	/**
-	 * Calls the typeName method
 	 * @return string
 	 */
 	public function getTypeNameAttribute()
 	{
-		return $this->typeName();
+        return $this->pageType()->name;
 	}
 
     /**
@@ -134,41 +180,50 @@ class Page extends Eloquent {
      */
     private function getPageTypeDefinition()
 	{
-		$pageType = $this->pageType();
-		
-		return $pageType->attributes();
+		return $this->pageType()->attributes();
 	}
 
-	/**
-	 * Returns the current version object for this page
-	 * @return CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageVersion
-	 */
-	public function currentVersion()
+    /**
+     * @return mixed
+     */
+    public function currentVersion()
 	{
-		if (!$this->currentVersion)
-		{
-			$this->currentVersion = $this->versions()->whereVersion($this->current_version)->first();
-		}
+        if (!$this->currentVersionModel)
+        {
+            $this->currentVersionModel = $this->getVersion($this->current_version);
+        }
 
-		return $this->currentVersion;
+        return $this->currentVersionModel;
 	}
 
-	/**
-	 * Get the status of the current version
-	 * @return string
-	 */
-	public function getStatusAttribute()
+    /**
+     * @return mixed
+     */
+    public function getStatusAttribute()
 	{
 		return $this->currentVersion()->status;
 	}
+
+    /**
+     * @return string
+     */
+    public function getStatusTextAttribute()
+    {
+        if ($this->is_trashed)
+        {
+            return 'Trashed';
+        }
+
+        return Lang::get('coanda::pages.status_' . $this->status);
+    }
 
     /**
      * @return bool
      */
     public function getIsVisibleAttribute()
 	{
-		$from = $this->getVisibleFromAttribute();
-		$to = $this->getVisibleToAttribute();
+		$from = $this->visible_from;
+		$to = $this->visible_to;
 
 		if (!$from && !$to)
 		{
@@ -211,40 +266,48 @@ class Page extends Eloquent {
 	}
 
     /**
-     * @return bool|Carbon
+     * @return mixed
      */
     public function getVisibleFromAttribute()
 	{
-		$date = $this->currentVersion()->visible_from;
-
-		if ($date && $date !== '')
-		{
-			return new Carbon($date, date_default_timezone_get());
-		}
-
-		return false;
+		return $this->currentVersion()->visible_from;
 	}
 
     /**
-     * @return bool|Carbon
+     * @return mixed
      */
     public function getVisibleToAttribute()
 	{
-		$date = $this->currentVersion()->visible_to;
-
-		if ($date && $date !== '')
-		{
-			return new Carbon($date, date_default_timezone_get());
-		}
-
-		return false;
+		return $this->currentVersion()->visible_to;
 	}
 
-	/**
-	 * Return all the attributes for the current version
-	 * @return Illuminate\Database\Eloquent\Collection
-	 */
-	public function getAttributesAttribute()
+    /**
+     * @return string
+     */
+    public function getVisibleDatesTextAttribute()
+    {
+        $visible_from = $this->visible_from;
+        $visible_to = $this->visible_to;
+
+        $text = '';
+
+        if ($visible_from)
+        {
+            $text .= 'from ' . $visible_from;
+        }
+
+        if ($visible_to)
+        {
+            $text .= ' until ' . $visible_to;
+        }
+
+        return $text;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAttributesAttribute()
 	{
 		return $this->attributes();
 	}
@@ -317,16 +380,15 @@ class Page extends Eloquent {
 	}
 
     /**
-     * @param $location
      * @return \stdClass
      */
-    public function renderAttributes($location)
+    public function renderAttributes()
 	{
 		if (!$this->renderedAttributes)
 		{
 			$this->renderedAttributes = new \stdClass;
 
-			$this->renderCurrentAttributes($this->renderedAttributes, $location);
+			$this->renderCurrentAttributes($this->renderedAttributes);
 			$this->addMissingAttributes($this->renderedAttributes);
 		}
 
@@ -335,14 +397,13 @@ class Page extends Eloquent {
 
     /**
      * @param $attributes
-     * @param $location
      * @return mixed
      */
-    private function renderCurrentAttributes($attributes, $location)
+    private function renderCurrentAttributes($attributes)
 	{
 		foreach ($this->attributes() as $attribute)
 		{
-			$attributes->{$attribute->identifier} = $attribute->render($this, $location);
+			$attributes->{$attribute->identifier} = $attribute->render($this);
 		}
 
 		return $attributes;
@@ -356,48 +417,13 @@ class Page extends Eloquent {
 		// Add any attributes which are on the definition, but not in the object..
 		$attribute_definition_list = $this->getPageTypeDefinition();
 
-		foreach ($attribute_definition_list as $attribute_definition_identfier => $attribute_definition)
+		foreach ($attribute_definition_list as $attribute_definition_identifier => $attribute_definition)
 		{
-			if (!property_exists($this->renderedAttributes, $attribute_definition_identfier))
+			if (!property_exists($this->renderedAttributes, $attribute_definition_identifier))
 			{
-				$this->renderedAttributes->{$attribute_definition_identfier} = isset($attribute_definition['default']) ? $attribute_definition['default'] : '';
+				$this->renderedAttributes->{$attribute_definition_identifier} = isset($attribute_definition['default']) ? $attribute_definition['default'] : '';
 			}
 		}			
-	}
-
-    /**
-     * @return bool
-     */
-    public function getCanEditAttribute()
-	{
-        if ($this->is_home)
-        {
-            return Coanda::canView('pages', 'home_page', [ 'page_id' => $this->id ]);
-        }
-
-		$can_edit = false;
-
-		foreach ($this->locations as $location)
-		{
-			$can_edit = $location->can_edit;
-		}
-
-		return $can_edit;
-	}
-
-    /**
-     * @return bool
-     */
-    public function getCanViewAttribute()
-	{
-		$location = $this->firstLocation();
-		
-		if ($location)
-		{
-			return $location->can_view;
-		}
-
-		return false;
 	}
 
     /**
@@ -414,6 +440,330 @@ class Page extends Eloquent {
     public function getMetaDescriptionAttribute()
     {
         return $this->currentVersion()->meta_description;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function parent()
+    {
+        return $this->belongsTo('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\Page', 'parent_page_id');
+    }
+
+    /**
+     * @return mixed
+     */
+    public function children()
+    {
+        return $this->hasMany('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\Page', 'parent_page_id');
+    }
+
+    /**
+     * @return mixed
+     */
+    public function childCount()
+    {
+        return $this->children()->where('is_trashed', '=', '0')->count();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function subTreeCount()
+    {
+        if (!$this->sub_tree_count)
+        {
+            $path = $this->path == '' ? '/' : $this->path;
+            $this->sub_tree_count = $this->where('path', 'like', $path . $this->id . '/%')->count();
+        }
+
+        return $this->sub_tree_count;
+    }
+
+    /**
+     * @return array
+     */
+    public function pathArray()
+    {
+        return explode('/', $this->path);
+    }
+
+    /**
+     * @return int
+     */
+    public function getDepthAttribute()
+    {
+        return count($this->pathArray());
+    }
+
+    /**
+     * @return Collection
+     */
+    public function parents()
+    {
+        if (!$this->parents)
+        {
+            $this->generateParents();
+        }
+
+        return $this->parents;
+    }
+
+    /**
+     *
+     */
+    private function generateParents()
+    {
+        $this->parents = new \Illuminate\Support\Collection;
+
+        foreach ($this->pathArray() as $parent_id)
+        {
+            $parent = $this->find($parent_id);
+
+            if ($parent)
+            {
+                $this->parents->push($parent);
+            }
+        }
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getParentsAttribute()
+    {
+        return $this->parents();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAllowsSubPagesAttribute()
+    {
+        return $this->pageType()->allowsSubPages();
+    }
+
+    /**
+     * @return string
+     */
+    public function getFullPathAttribute()
+    {
+        return ($this->path == '' ? '/' : '') . $this->path . $this->id . '/';
+    }
+
+    /**
+     * @return string
+     */
+    public function getSlugAttribute()
+    {
+        if (!$this->is_home)
+        {
+            if (!$this->cached_slug)
+            {
+                $urlRepository = App::make('CoandaCMS\Coanda\Urls\Repositories\UrlRepositoryInterface');
+
+                $url = $urlRepository->findFor('page', $this->id);
+
+                if ($url)
+                {
+                    $this->cached_slug = $url->slug;
+                }
+            }
+
+            return $this->cached_slug;
+        }
+
+        return '';
+    }
+
+    /**
+     * @return string
+     */
+    public function getParentSlugAttribute()
+    {
+        $parent = $this->parent;
+
+        if ($parent)
+        {
+            return $parent->slug;
+        }
+
+        return '';
+    }
+
+    /**
+     * @param bool $link_self
+     * @return array
+     */
+    public function breadcrumb($link_self = false)
+    {
+        $parents = $this->parents();
+
+        $breadcrumb = [];
+
+        foreach ($parents as $parent)
+        {
+            $breadcrumb[] = [
+                'identifier' => 'pages:page-' . $parent->id,
+                'url' => $parent->slug,
+                'name' => $parent->name,
+            ];
+        }
+
+        $breadcrumb[] = [
+            'identifier' => 'pages:page-' . $this->id,
+            'url' => $link_self ? $this->slug : false,
+            'name' => $this->name,
+        ];
+
+        return $breadcrumb;
+    }
+
+    /**
+     * @return array
+     */
+    public function toArray()
+    {
+        return [
+            'id' => $this->id,
+            'parent_page_id' => $this->parent_page_id,
+            'allows_sub_pages' => $this->pageType()->allowsSubPages(),
+            'name' => $this->name,
+            'path' => $this->path,
+//            'path_string' => $this->present()->path
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    private function getPermissionData()
+    {
+        return [
+            'id' => $this->id,
+            'page_type' => $this->type,
+        ];
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCanRemoveAttribute()
+    {
+        if (!$this->can_remove)
+        {
+            $this->can_remove = Coanda::canView('pages', 'remove', $this->getPermissionData());
+        }
+
+        return $this->can_remove;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCanEditAttribute()
+    {
+        if (!$this->can_edit)
+        {
+            $this->can_edit = Coanda::canView('pages', 'edit', $this->getPermissionData());
+        }
+
+        return $this->can_edit;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCanViewAttribute()
+    {
+        if (!$this->can_view)
+        {
+            $this->can_view = Coanda::canView('pages', 'view', $this->getPermissionData());
+        }
+
+        return $this->can_view;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCanCreateAttribute()
+    {
+        if (!$this->can_create)
+        {
+            $this->can_create = Coanda::canView('pages', 'create', $this->getPermissionData());
+        }
+
+        return $this->can_create;
+    }
+
+//    public function visible_dates()
+//    {
+//        $from = $this->visible_from;
+//        $to = $this->visible_to;
+//
+//        $now = Carbon::now(date_default_timezone_get());
+//
+//        $visibility_text = 'Visible';
+//
+//        if ($from)
+//        {
+//            if ($from->gt($now))
+//            {
+//                $visibility_text .= ' from ' . $from->format('d/m/Y H:i');
+//            }
+//        }
+//
+//        if ($to)
+//        {
+//            $visibility_text .= ' until ' . $to->format('d/m/Y H:i');
+//        }
+//
+//        return $visibility_text;
+//    }
+
+//    public function visible_dates_short()
+//    {
+//        $from = $this->visible_from;
+//        $to = $this->visible_to;
+//
+//        $now = Carbon::now(date_default_timezone_get());
+//
+//        $visibility_text = '';
+//
+//        if ($from)
+//        {
+//            if ($from->gt($now))
+//            {
+//                $visibility_text .= ' from ' . $from->format('d/m/Y H:i');
+//            }
+//        }
+//
+//        if ($to)
+//        {
+//            if ($to->gt($now))
+//            {
+//                $visibility_text .= ' until ' . $to->format('d/m/Y H:i');
+//            }
+//        }
+//
+//        return $visibility_text;
+//    }
+
+    /**
+     * @return string
+     */
+    public function visibility()
+    {
+        return $this->is_visible ? 'Visible' : 'Hidden';
+    }
+
+    /**
+     * @return string
+     */
+    public function type()
+    {
+        return $this->pageType()->name();
     }
 
 }

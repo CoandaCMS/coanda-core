@@ -11,7 +11,7 @@ class SubPageQuery {
     /**
      * @var int
      */
-    private $parent_location_id = 0;
+    private $parent_page_id = 0;
     /**
      * @var int
      */
@@ -35,7 +35,7 @@ class SubPageQuery {
      */
     public function execute($query_parameters)
 	{
-		$this->parent_location_id = $query_parameters['parent_location_id'];
+		$this->parent_page_id = $query_parameters['parent_page_id'];
 		$this->per_page = isset($query_parameters['per_page']) ? $query_parameters['per_page'] : 10;
 		$this->current_page = isset($query_parameters['current_page']) ? $query_parameters['current_page'] : 1;
 
@@ -70,7 +70,7 @@ class SubPageQuery {
      */
     private function getPaginatedResults($query)
 	{
-		$count = $query->count('pagelocations.id');
+		$count = $query->count('pages.id');
 
 		$query = $this->addOrdering($query);
 
@@ -94,20 +94,14 @@ class SubPageQuery {
      */
     private function baseQuery()
 	{
-		$page_location_model = $this->repository->getPageLocationModel();
+		$page_model = $this->repository->getPageModel();
 
-		$query = $page_location_model
-					->with('page')
-					->where('parent_page_id', $this->parent_location_id)
-					->whereHas('page', function ($query) {
+		$query = $page_model
+                    ->select('pages.*')
+					->where('parent_page_id', $this->parent_page_id)
+					->where('is_trashed', '=', '0');
 
-						$query->where('is_trashed', '=', '0'); 
-
-					});
-
-		$query->select('pagelocations.*')->distinct();
-		$query->join('pages', 'pagelocations.page_id', '=', 'pages.id');
-		$query->join('pageversions', 'pagelocations.page_id', '=', 'pageversions.page_id');
+		$query->join('pageversions', 'pages.id', '=', 'pageversions.page_id');
 		$query->where('pageversions.version', '=', \DB::raw('pages.current_version'));
 
 		return $query;
@@ -160,7 +154,23 @@ class SubPageQuery {
 	{
 		if (!$value)
 		{
-			$query->visible();
+			$query->where( function ($query) {
+
+				$query->where( function ($query) {
+
+					$query->whereNull('pageversions.visible_from');
+					$query->orWhere('pageversions.visible_from', '<', \DB::raw('NOW()'));
+
+				});
+
+				$query->where( function ($query) {
+
+					$query->whereNull('pageversions.visible_to');
+					$query->orWhere('pageversions.visible_to', '>', \DB::raw('NOW()'));
+
+				});
+
+			});
 		}
 
 		return $query;
@@ -177,7 +187,32 @@ class SubPageQuery {
 		{
 			$query->join('pageattributes', 'pageattributes.page_version_id', '=', 'pageversions.id');
 
-			$query->attributeFilter($filters);
+			$query->where( function ($query) use ($filters) {
+
+				foreach ($filters as $filter)
+				{
+					$query->where( function ($query) use ($filter) {
+
+						$value = $filter['value'];
+
+						if (!is_numeric($value))
+						{
+							$value = DB::connection()->getPdo()->quote($value);
+						}
+
+						$nested_query = "select count(*)
+							from pageattributes
+							where page_version_id=pageversions.id
+							and identifier='" . $filter['attribute'] . "'
+							and attribute_data " . $filter['type'] . ' ' . $value;
+
+						$nested_query = preg_replace('/\n/', '', $nested_query);
+
+						$query->where(DB::raw('(' . $nested_query . ')'), '>=', 1);
+
+					});
+				}
+			});
 		}
 
 		return $query;
@@ -192,7 +227,12 @@ class SubPageQuery {
 	{
 		if (!$value)
 		{
-			$query->notHidden();
+			$query->where( function ($query) {
+
+				$query->where('pageversions.is_hidden', '=', 0);
+				$query->where('pageversions.is_hidden_navigation', '=', 0);
+
+			});
 		}
 
 		return $query;
@@ -236,13 +276,13 @@ class SubPageQuery {
 	{
 		$order = 'manual';
 
-		if ($this->parent_location_id != 0)
+		if ($this->parent_page_id != 0)
 		{
-			$parent = $this->repository->locationById($this->parent_location_id);
+			$parent = $this->repository->findById($this->parent_page_id);
 
 			if ($parent)
 			{
-				$order = $parent->sub_location_order;
+				$order = $parent->sub_page_order;
 			}
 		}
 
@@ -274,8 +314,8 @@ class SubPageQuery {
      */
     private function orderManual($query)
 	{
-		$query->orderBy('pagelocations.order', 'asc');
-		$query->orderBy('pagelocations.id', 'asc');
+		$query->orderBy('pages.order', 'asc');
+		$query->orderBy('pages.id', 'asc');
 
 		return $query;
 	}
@@ -286,7 +326,7 @@ class SubPageQuery {
      */
     private function orderAlphaAsc($query)
 	{
-		$query->orderByPageName('asc');
+		$query->orderBy('pages.name', 'asc');
 
 		return $query;
 	}
@@ -297,7 +337,7 @@ class SubPageQuery {
      */
     private function orderAlphaDesc($query)
 	{
-		$query->orderByPageName('desc');
+		$query->orderBy('pages.name', 'desc');
 
 		return $query;
 	}
@@ -308,7 +348,7 @@ class SubPageQuery {
      */
     private function orderCreatedAsc($query)
 	{
-		$query->orderByPageCreated('asc');
+		$query->orderBy('pages.created_at', 'asc');
 
 		return $query;
 	}
@@ -319,7 +359,7 @@ class SubPageQuery {
      */
     private function orderCreatedDesc($query)
 	{
-		$query->orderByPageCreated('desc');
+		$query->orderBy('pages.created_at', 'desc');
 
 		return $query;
 	}

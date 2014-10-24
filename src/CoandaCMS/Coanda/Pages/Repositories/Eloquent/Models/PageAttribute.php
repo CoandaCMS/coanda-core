@@ -1,7 +1,7 @@
 <?php namespace CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models;
 
-use Eloquent, Coanda;
-
+use Eloquent;
+use Coanda;
 use CoandaCMS\Coanda\Core\Attributes\Exceptions\AttributeTypeNotFound;
 
 class PageAttribute extends Eloquent {
@@ -40,36 +40,32 @@ class PageAttribute extends Eloquent {
 	}
 
 	/**
-	 * Returns the version for this attribute
-	 * @return CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageVersion
-	 */
+	 * @return mixed
+     */
 	public function version()
 	{
 		return $this->belongsTo('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageVersion', 'page_version_id');
 	}
 
 	/**
-	 * Returns the page for this attribute
-	 * @return CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\Page
-	 */
+	 * @return mixed
+     */
 	public function page()
 	{
 		return $this->version->page;
 	}
 
 	/**
-	 * Returns the type for the page
-	 * @return CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\Page
-	 */
+	 * @return mixed
+     */
 	public function pageType()
 	{
 		return $this->page()->pageType();
 	}
 
 	/**
-	 * Returns the name for this attribute, via the type definition
-	 * @return string
-	 */
+	 * @return mixed
+     */
 	public function name()
 	{
 		$attributes = $this->pageType()->attributes();
@@ -78,9 +74,8 @@ class PageAttribute extends Eloquent {
 	}
 
 	/**
-	 * Returns if the attribute is required
-	 * @return boolean
-	 */
+	 * @return bool
+     */
 	public function isRequired()
 	{
 		$attributes = $this->pageType()->attributes();
@@ -88,10 +83,10 @@ class PageAttribute extends Eloquent {
 		return isset($attributes[$this->identifier]['required']) ? $attributes[$this->identifier]['required'] : false;
 	}
 
-    /**
-     * @return bool
+	/**
+	 * @return bool
      */
-    public function generatesSlug()
+	public function generatesSlug()
 	{
 		$attributes = $this->pageType()->attributes();
 
@@ -100,41 +95,38 @@ class PageAttribute extends Eloquent {
 			return false;
 		}
 
-		$attribute_definition = $attributes[$this->identifier];
-
-		return isset($attribute_definition['generates_slug']) && $attribute_definition['generates_slug'] == true;
+		return isset($attributes[$this->identifier]['generates_slug']) && $attributes[$this->identifier]['generates_slug'] == true;
 	}
 
-    /**
-     * @return bool
+	/**
+	 * @return bool
      */
-    public function getGeneratesSlugAttribute()
+	public function getGeneratesSlugAttribute()
 	{
 		return $this->generatesSlug();
 	}
 
+
 	/**
-	 * Calls the isRequired method
-	 * @return boolean
-	 */
+	 * @return bool
+     */
 	public function getIsRequiredAttribute()
 	{
 		return $this->isRequired();
 	}
 
 	/**
-	 * Calls the name method
-	 * @return string
-	 */
+	 * @return mixed
+     */
 	public function getNameAttribute()
 	{
 		return $this->name();
 	}
 
-    /**
-     * @return mixed
+	/**
+	 * @return bool
      */
-    public function type()
+	public function type()
 	{
 		try
 		{
@@ -147,9 +139,8 @@ class PageAttribute extends Eloquent {
 	}
 
 	/**
-	 * Get the data from the type
-	 * @return mixed
-	 */
+	 * @return bool
+     */
 	public function typeData()
 	{
 		// Let the type do whatever with the attribute to return the data required...
@@ -169,25 +160,26 @@ class PageAttribute extends Eloquent {
 		return false;
 	}
 
+	/**
+	 * @return bool
+     */
 	public function getContentAttribute()
 	{
 		return $this->typeData();
 	}
 
 	/**
-	 * Calls the typeData method
-	 * @return array
-	 */
+	 * @return bool
+     */
 	public function getTypeDataAttribute()
 	{
 		return $this->typeData();
 	}
 
 	/**
-	 * Stores the data provided
-	 * @param  array $data
-	 * @return void
-	 */
+	 * @param $data
+	 * @param $data_key
+     */
 	public function store($data, $data_key)
 	{
 		// Let the type do whatever with the attribute to return the data required...
@@ -263,6 +255,9 @@ class PageAttribute extends Eloquent {
 		return false;
 	}
 
+	/**
+	 * @return bool
+     */
 	public function getDefinitionAttribute()
 	{
         $definition = $this->pageType()->attributes();

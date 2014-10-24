@@ -15,7 +15,7 @@
 
 <div class="row">
 	<div class="page-name col-md-12">
-		<h1 class="pull-left">Choose drafts for "<a href="{{ Coanda::adminUrl('pages/view/' . $page->id) }}">{{ $page->present()->name }}</a>"</h1>
+		<h1 class="pull-left">Choose drafts for "<a href="{{ Coanda::adminUrl('pages/view/' . $page->id) }}">{{ $page->name }}</a>"</h1>
 	</div>
 </div>
 
@@ -36,7 +36,7 @@
 				@foreach ($drafts as $version)
 					<tr>
 						<td class="tight">#{{ $version->version }}</td>
-						<td>Last updated {{ $version->present()->updated_at }}</td>
+						<td>Last updated {{ $version->updated_at }}</td>
 						<td class="tight">
 							@if ($version->status == 'draft')
 								<a href="{{ Coanda::adminUrl('pages/editversion/' . $page->id . '/' . $version->version) }}"><i class="fa fa-pencil-square-o"></i></a>

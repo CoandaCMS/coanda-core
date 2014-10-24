@@ -52,10 +52,10 @@ class PagesModuleProvider implements CoandaModuleProvider {
     private function loadRouter($coanda)
 	{
 		// Add the router to handle slug views
-		$coanda->addRouter('pagelocation', function ($url) use ($coanda) {
+		$coanda->addRouter('page', function ($url) use ($coanda) {
 
             $renderer = App::make('CoandaCMS\Coanda\Pages\Renderer\PageRenderer');
-            return $renderer->renderLocation($url->type_id);
+            return $renderer->renderPage($url->type_id);
 
 		});
 	}
@@ -455,22 +455,6 @@ class PagesModuleProvider implements CoandaModuleProvider {
 	}
 
     /**
-     * @param $location_id
-     * @return bool
-     */
-    public function getLocation($location_id)
-	{
-		try
-		{
-			return $this->getPageRepository()->locationById($location_id);
-		}
-		catch (PageNotFound $exception)
-		{
-			return false;
-		}
-	}
-
-    /**
      * @param $slug
      * @return bool
      */
@@ -478,23 +462,7 @@ class PagesModuleProvider implements CoandaModuleProvider {
 	{
 		try
 		{
-			return $this->getPageRepository()->locationBySlug($slug);
-		}
-		catch (PageNotFound $exception)
-		{
-			return false;
-		}
-	}
-
-    /**
-     * @param $remote_id
-     * @return bool
-     */
-    public function getLocationByRemoteId($remote_id)
-	{
-		try
-		{
-			return $this->getPageRepository()->getLocationByRemoteId($remote_id);
+			return $this->getPageRepository()->findBySlug($slug);
 		}
 		catch (PageNotFound $exception)
 		{
@@ -533,6 +501,8 @@ class PagesModuleProvider implements CoandaModuleProvider {
      */
     public function locationByPath($path)
 	{
+        dd('locationByPath');
+
 		$path_parts = explode('/', trim($path, '/'));
 
 		if (count($path_parts) > 0)
@@ -551,22 +521,4 @@ class PagesModuleProvider implements CoandaModuleProvider {
 
 		return false;
 	}
-
-
-    /**
-     * @param $slug
-     * @return bool
-     */
-    public function locationBySlug($slug)
-    {
-        try
-        {
-            return $this->getPageRepository()->locationBySlug($slug);
-        }
-        catch (PageNotFound $exception)
-        {
-            return false;
-        }
-    }
-
 }

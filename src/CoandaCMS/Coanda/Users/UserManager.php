@@ -345,11 +345,18 @@ class UserManager {
 
         foreach ($ids as $id)
         {
-            $user = $this->getUserById($id);
-
-            if ($user)
+            try
             {
-                $users->add($user);
+                $user = $this->getUserById($id);
+
+                if ($user)
+                {
+                    $users->add($user);
+                }
+            }
+            catch (\CoandaCMS\Coanda\Users\Exceptions\UserNotFound $exception)
+            {
+
             }
         }
 

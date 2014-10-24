@@ -39,6 +39,8 @@ class Reindex extends Command {
      */
     public function fire()
     {
+        dd('reindex pages');
+
         $go = $this->ask('Are you sure you want to reindex all pages? Y/N (default: N)');
 
         if ($go !== 'Y')

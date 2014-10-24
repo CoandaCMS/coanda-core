@@ -105,7 +105,7 @@
 								</div>
 							@endif
 
-							@include('coanda::admin.modules.pages.includes.sublocations', [ 'location' => false, 'children' => $pages ])
+							@include('coanda::admin.modules.pages.includes.subpages', [ 'page' => false, 'children' => $pages ])
 
 							{{ $pages->links() }}
 

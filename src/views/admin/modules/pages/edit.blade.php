@@ -19,7 +19,7 @@
 			Edit page (version #{{ $version->version }})
 			<small>
 				<i class="fa {{ $version->page->pageType()->icon() }}"></i>
-				{{ $version->page->present()->type }}
+				{{ $version->page->pageType()->name() }}
 			</small>
 		</h1>
 	</div>
@@ -233,46 +233,22 @@
 							</div>
 						</div>
 
-						@set('locations_allowed', $version->page->pageType()->allowsMultipleLocations())
+                        <div class="well well-sm slug-box">
+                            <div class="form-group @if (isset($invalid_fields['slug'])) has-error @endif">
 
-						@if ($version->slugs()->count() > 0)
-							@foreach ($version->slugs as $slug)
-							<div class="well well-sm slug-box">
-								<div class="form-group @if (isset($invalid_fields['slug_' . $slug->id])) has-error @endif">
+                                <p><em>{{ $version->page->parent_slug }}/</em></p>
 
-									<p>@if ($locations_allowed)Location: @endif<em>{{ $slug->base_slug }}/</em></p>
+                                <div class="input-group">
+                                    <input type="text" class="form-control slugiwugy" id="slug" name="slug" value="{{ (Input::old('slug') && Input::old('slug') !== '') ? Input::old('slug') : $version->slug }}">
+                                    <span class="input-group-addon refresh-slug"><i class="fa fa-refresh"></i></span>
+                                </div>
 
-									<div class="input-group">
-										@if ($locations_allowed)
-								    		<span class="input-group-addon"><input type="checkbox" name="remove_slug_list[]" value="{{ $slug->id }}"></span>
-								    	@endif
-								    	<input type="text" class="form-control slugiwugy" id="slug_{{ $slug->id }}" name="slug_{{ $slug->id }}" value="{{ (Input::old('slug_' . $slug->id) && Input::old('slug_' . $slug->id) !== '') ? Input::old('slug_' . $slug->id) : $slug->slug }}">
-								    	<span class="input-group-addon refresh-slug"><i class="fa fa-refresh"></i></span>
-									</div>
+                                @if (isset($invalid_fields['slug']))
+                                    <span class="help-block">{{ $invalid_fields['slug'] }}</span>
+                                @endif
 
-								    @if (isset($invalid_fields['slug_' . $slug->id]))
-								    	<span class="help-block">{{ $invalid_fields['slug_' . $slug->id] }}</span>
-								    @endif
-
-								</div>
-							</div>
-							@endforeach
-						@else
-							<div class="form-group @if (isset($invalid_fields['slugs'])) has-error @endif">
-								<p>No locations for this page.</p>
-
-							    @if (isset($invalid_fields['slugs']))
-							    	<span class="help-block">{{ $invalid_fields['slugs'] }}</span>
-							    @endif
-							</div>
-						@endif
-
-						@if ($locations_allowed)
-							<div class="form-group">
-								{{ Form::button('Add location', ['name' => 'add_location', 'value' => 'true', 'type' => 'submit', 'class' => 'btn btn-default btn-sm pull-right']) }}
-								{{ Form::button('Remove selected', ['name' => 'remove_locations', 'value' => 'true', 'type' => 'submit', 'class' => 'btn btn-default btn-sm']) }}
-							</div>
-						@endif
+                            </div>
+                        </div>
 					@endif
 
 					@set('visible_dates_old', Input::old('visible_dates'))
@@ -281,9 +257,9 @@
 						<input type="hidden" name="date_format" value="d/m/Y H:i">
 						<div class="col-md-6">
 							<div class="form-group @if (isset($invalid_fields['visible_dates_from'])) has-error @endif">
-								<label class="control-label" for="visible_dates_from">Visibile from</label>
+								<label class="control-label" for="visible_dates_from">Visible from</label>
 								<div class="input-group datetimepicker" data-date-format="DD/MM/YYYY HH:mm">
-									<input type="text" class="date-field form-control" id="visible_dates_from" name="visible_dates[from]" value="{{ isset($visible_dates_old['from']) ? $visible_dates_old['from'] : $version->present()->visible_from }}">
+									<input type="text" class="date-field form-control" id="visible_dates_from" name="visible_dates[from]" value="{{ isset($visible_dates_old['from']) ? $visible_dates_old['from'] : $version->format('visible_from') }}">
 									<span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
 								</div>
 							    @if (isset($invalid_fields['visible_dates_from']))
@@ -293,9 +269,9 @@
 						</div>
 						<div class="col-md-6">
 							<div class="form-group @if (isset($invalid_fields['visible_dates_to'])) has-error @endif">
-								<label class="control-label" for="visible_dates_to">Visibile to</label>
+								<label class="control-label" for="visible_dates_to">Visible to</label>
 								<div class="input-group datetimepicker" data-date-format="DD/MM/YYYY HH:mm">
-									<input type="text" class="date-field form-control" id="visible_dates_to" name="visible_dates[to]" value="{{ isset($visible_dates_old['to']) ? $visible_dates_old['to'] : $version->present()->visible_to }}">
+									<input type="text" class="date-field form-control" id="visible_dates_to" name="visible_dates[to]" value="{{ isset($visible_dates_old['to']) ? $visible_dates_old['to'] : $version->format('visible_to') }}">
 									<span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
 								</div>
 							    @if (isset($invalid_fields['visible_dates_to']))
@@ -310,8 +286,8 @@
 					<div class="form-group">
 						<label class="control-label" for="preview">Preview URL</label>
 						<div class="input-group">
-							<input type="text" class="form-control select-all" id="preview" name="preview" value="{{ url($version->present()->preview_url) }}" readonly>
-							<span class="input-group-addon"><a class="new-window" href="{{ url($version->present()->preview_url) }}"><i class="fa fa-share-square-o"></i></a></span>
+							<input type="text" class="form-control select-all" id="preview" name="preview" value="{{ url($version->preview_url) }}" readonly>
+							<span class="input-group-addon"><a class="new-window" href="{{ url($version->preview_url) }}"><i class="fa fa-share-square-o"></i></a></span>
 						</div>
 					</div>
 

@@ -50,14 +50,14 @@ class EloquentUrlRepository implements UrlRepositoryInterface {
      */
     public function findFor($for, $for_id)
 	{
-		$url = $this->model->whereType($for)->whereTypeId($for_id)->first();
-
-		if ($url)
-		{
-			return $url;
-		}
-
-		throw new UrlNotFound('Url not found (findFor)');
+		return $this->model->whereType($for)->whereTypeId($for_id)->first();
+//
+//		if ($url)
+//		{
+//			return $url;
+//		}
+//
+//		throw new UrlNotFound('Url not found (findFor)');
 	}
 
     /**
@@ -129,7 +129,7 @@ class EloquentUrlRepository implements UrlRepositoryInterface {
 		// Is this a valid slug?
 		if (!$this->slugifier->validate($slug))
 		{
-			throw new InvalidSlug('The requested slug is not valid');
+			throw new InvalidSlug('The requested slug is not valid: '. $slug);
 		}
 
 		// do we already have a record for this slug?
@@ -233,16 +233,16 @@ class EloquentUrlRepository implements UrlRepositoryInterface {
 				if ($existing->type == $for && $existing->type_id == $for_id)
 				{
 					return true;
-				}				
+				}
 			}
 
-			// If the exisitng type is a url, then it can be overwritten (otherwise this would be 'reserved' forever)
+			// If the existing type is a url, then it can be overwritten (otherwise this would be 'reserved' forever)
 			if ($existing->type == 'wildcard')
 			{
 				return true;
 			}
 
-			throw new UrlAlreadyExists('The requested URL is already in use.');
+			return false;
 		}
 
 		return true;

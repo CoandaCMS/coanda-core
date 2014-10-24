@@ -1,16 +1,11 @@
 <?php namespace CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models;
 
-use Eloquent;
 use Coanda;
+use CoandaCMS\Coanda\Core\BaseEloquentModel;
 use CoandaCMS\Coanda\Exceptions\AttributeValidationException;
+use CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageAttribute as PageAttributeModel;
 
-/**
- * Class PageVersion
- * @package CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models
- */
-class PageVersion extends Eloquent {
-
-	use \CoandaCMS\Coanda\Core\Presenters\PresentableTrait;
+class PageVersion extends BaseEloquentModel {
 
     /**
      * @var array
@@ -20,24 +15,17 @@ class PageVersion extends Eloquent {
     /**
      * @var array
      */
-    protected $fillable = ['page_id', 'version', 'status', 'created_by', 'edited_by', 'meta_page_title', 'meta_description', 'visible_from', 'visible_to', 'template_identifier', 'layout_identifier', 'is_hidden', 'is_hidden_navigation'];
-
-    /**
-     * @var string
-     */
-    protected $presenter = 'CoandaCMS\Coanda\Pages\Repositories\Eloquent\Presenters\PageVersion';
+    protected $fillable = ['page_id', 'slug', 'version', 'status', 'created_by', 'edited_by', 'meta_page_title', 'meta_description', 'visible_from', 'visible_to', 'template_identifier', 'layout_identifier', 'is_hidden', 'is_hidden_navigation'];
 
 	/**
-	 * The database table used by the model.
-	 *
 	 * @var string
-	 */
+     */
 	protected $table = 'pageversions';
 
-    /**
-     * @param array $options
+	/**
+	 * @param array $options
      */
-    public function save(array $options = [])
+	public function save(array $options = [])
 	{
 		if (!$this->preview_key)
 		{
@@ -47,88 +35,56 @@ class PageVersion extends Eloquent {
 		parent::save($options);
 	}
 
-    /**
-     *
+	/**
+	 *
      */
-    public function delete()
+	public function delete()
 	{
 		foreach ($this->attributes()->get() as $attribute)
 		{
 			$attribute->delete();
 		}
 
-		foreach ($this->slugs as $slug)
-		{
-			$slug->delete();
-		}
-
 		parent::delete();
 	}
 
 	/**
-	 * Returns all the attributes for the page
-	 * @return
-	 */
+	 * @return mixed
+     */
 	public function attributes()
 	{
 		return $this->hasMany('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageAttribute')->orderBy('order', 'asc');
 	}
 
-    /**
-     * @return mixed
+	/**
+	 * @return mixed
      */
-    public function slugs()
-	{
-		return $this->hasMany('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageVersionSlug', 'version_id');
-	}
-
-    /**
-     * @return mixed
-     */
-    public function comments()
+	public function comments()
 	{
 		return $this->hasMany('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageVersionComment', 'version_id')->orderBy('created_at', 'desc');;
 	}
 
-    /**
-     * @param $page_location_id
-     * @return string
-     */
-    public function slugForLocation($page_location_id)
-	{
-		$slug = $this->slugs()->wherePageLocationId($page_location_id)->first();
-
-		if ($slug)
-		{
-			return $slug->slug;
-		}
-
-		return '';
-	}
-
 	/**
-	 * Returns a specific attribute by the identifier
-	 * @param  string $identifier The attribute you would like
-	 * @return
-	 */
+	 * @param $identifier
+	 * @return mixed
+     */
 	public function getAttributeByIdentifier($identifier)
 	{
 		return $this->attributes()->whereIdentifier($identifier)->first();
 	}
 
 	/**
-	 * Gets the page for this version
-	 * @return CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\Page The page
-	 */
+	 * @return mixed
+     */
 	public function page()
 	{
 		return $this->belongsTo('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\Page');
 	}
 
-    /**
-     *
+	/**
+	 *
      */
-    public function checkAttributes()
+	public function checkAttributes()
 	{
 		$pageType = $this->page->pageType();
 		$attribute_definition_list = $pageType->attributes();
@@ -158,7 +114,7 @@ class PageVersion extends Eloquent {
 				// We need to add this new attribute
 				$page_attribute_type = Coanda::getAttributeType($definition['type']);
 
-				$new_attribute = new \CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageAttribute;
+				$new_attribute = new PageAttributeModel;
 
 				$new_attribute->type = $page_attribute_type->identifier();
 				$new_attribute->identifier = $attribute_identifier;
@@ -190,10 +146,10 @@ class PageVersion extends Eloquent {
 		}
 	}
 
-    /**
-     * @return bool
+	/**
+	 * @return bool
      */
-    public function layout()
+	public function layout()
     {
         if ($this->layout_identifier !== '')
         {
@@ -203,20 +159,47 @@ class PageVersion extends Eloquent {
         return false;
     }
 
-    /**
-     * @return bool
+	/**
+	 * @return bool
      */
-    public function getLayoutAttribute()
+	public function getLayoutAttribute()
     {
         return $this->layout();
     }
 
-    /**
-     * @return mixed
+	/**
+	 * @return mixed
      */
-    public function availableTemplates()
+	public function availableTemplates()
     {
     	return $this->page->availableTemplates();
     }
 
+	/**
+	 * @return string
+     */
+	public function getFullSlugAttribute()
+    {
+        $parent_slug = $this->page->parent_slug;
+
+        return (($parent_slug !== '') ? ($parent_slug . '/') : '') . $this->slug;
+    }
+
+	/**
+	 * @return mixed
+     */
+	public function getPendingDisplayTextAttribute()
+    {
+        $publish_handler = Coanda::pages()->getPublishHandler($this->publish_handler);
+
+        return $publish_handler->display($this->publish_handler_data);
+    }
+
+	/**
+	 * @return string
+     */
+	public function getPreviewUrlAttribute()
+    {
+        return 'pages/preview/' . $this->preview_key;
+    }
 }

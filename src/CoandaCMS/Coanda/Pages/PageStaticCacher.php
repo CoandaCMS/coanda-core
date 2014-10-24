@@ -1,5 +1,9 @@
 <?php namespace CoandaCMS\Coanda\Pages;
 
+use Illuminate\Cache\Repository as CacheRepository;
+use Illuminate\Config\Repository as ConfigRepository;
+use Illuminate\Http\Request;
+
 class PageStaticCacher {
 
     /**
@@ -7,24 +11,19 @@ class PageStaticCacher {
      */
     private $enabled = false;
     /**
-     * @var Cache
+     * @var CacheRepository
      */
     private $cache;
     /**
-     * @var \Illuminate\Http\Request
+     * @var Request
      */
     private $request;
     /**
-     * @var \Illuminate\Config\Repository
+     * @var ConfigRepository
      */
     private $config;
 
-    /**
-     * @param \Illuminate\Cache\Repository $cache
-     * @param \Illuminate\Http\Request $request
-     * @param \Illuminate\Config\Repository $config
-     */
-    public function __construct(\Illuminate\Cache\Repository $cache, \Illuminate\Http\Request $request, \Illuminate\Config\Repository $config)
+    public function __construct(CacheRepository $cache, Request $request, ConfigRepository $config)
     {
         $this->cache = $cache;
         $this->request = $request;
@@ -34,30 +33,30 @@ class PageStaticCacher {
     }
 
     /**
-     * @param $location_id
+     * @param $page_id
      * @return bool
      */
-    public function hasLocationCache($location_id)
+    public function hasPageCache($page_id)
     {
-        return $this->has($this->generateLocationCacheKey($location_id));
+        return $this->has($this->generatePageCacheKey($page_id));
     }
 
     /**
-     * @param $location_id
+     * @param $page_id
      * @return mixed
      */
-    public function getLocationCache($location_id)
+    public function getPageCache($page_id)
     {
-        return $this->get($this->generateLocationCacheKey($location_id));
+        return $this->get($this->generatePageCacheKey($page_id));
     }
 
     /**
-     * @param $location_id
+     * @param $page_id
      * @param $content
      */
-    public function putLocationCache($location_id, $content)
+    public function putPageCache($page_id, $content)
     {
-        $this->put($this->generateLocationCacheKey($location_id), $content);
+        $this->put($this->generatePageCacheKey($page_id), $content);
     }
 
     /**
@@ -106,12 +105,12 @@ class PageStaticCacher {
     }
 
     /**
-     * @param $location_id
+     * @param $page_id
      * @return string
      */
-    private function generateLocationCacheKey($location_id)
+    private function generatePageCacheKey($page_id)
     {
-        return 'location-' . $location_id . '-' . md5(var_export($this->getInput(), true));
+        return 'page-' . $page_id . '-' . md5(var_export($this->getInput(), true));
     }
 
     /**

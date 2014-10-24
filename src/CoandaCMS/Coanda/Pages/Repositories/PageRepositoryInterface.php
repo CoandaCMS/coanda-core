@@ -19,16 +19,10 @@ interface PageRepositoryInterface {
     public function findById($id);
 
     /**
-     * @param $id
-     * @return mixed
-     */
-    public function locationById($id);
-
-    /**
      * @param $slug
      * @return mixed
      */
-    public function locationBySlug($slug);
+    public function findBySlug($slug);
 
     /**
      * @param $remote_id
@@ -36,13 +30,6 @@ interface PageRepositoryInterface {
      * @return mixed
      */
     public function getByRemoteId($remote_id);
-
-    /**
-     * @param $limit
-     * @param $offset
-     * @return mixed
-     */
-    public function locations($limit, $offset);
 
     /**
      * @param $ids
@@ -141,20 +128,6 @@ interface PageRepositoryInterface {
     public function saveDraftVersion($version, $data);
 
     /**
-     * @param $version_id
-     * @param $page_location_id
-     * @return mixed
-     */
-    public function addNewVersionSlug($version_id, $page_location_id);
-
-    /**
-     * @param $version_id
-     * @param $slug_id
-     * @return mixed
-     */
-    public function removeVersionSlug($version_id, $slug_id);
-
-    /**
      * @param $version
      * @param $user_id
      * @return mixed
@@ -172,10 +145,9 @@ interface PageRepositoryInterface {
      * @param $version
      * @param $user_id
      * @param $urlRepository
-     * @param $historyRepository
      * @return mixed
      */
-    public function publishVersion($version, $user_id, $urlRepository, $historyRepository);
+    public function publishVersion($version, $user_id, $urlRepository);
 
     /**
      * @param $version
@@ -219,11 +191,11 @@ interface PageRepositoryInterface {
     public function restore($page_id, $restore_sub_pages);
 
     /**
-     * @param $location_id
+     * @param $page_id
      * @param $new_order
      * @return mixed
      */
-    public function updateLocationOrder($location_id, $new_order);
+    public function updatePageOrder($page_id, $new_order);
 
     /**
      * @param $offset

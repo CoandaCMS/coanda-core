@@ -2,10 +2,6 @@
 
 use Coanda;
 
-/**
- * Class Immediate
- * @package CoandaCMS\Coanda\Pages\PublishHandlers
- */
 class Immediate implements PublishHandlerInterface {
 
     /**
@@ -22,14 +18,17 @@ class Immediate implements PublishHandlerInterface {
      */
     public $template = 'coanda::admin.modules.pages.publishoptions.immediate';
 
+    public function display($data)
+    {
+        return 'Published immediately';
+    }
+
     /**
      * @param $version
      * @param $data
-     * @return mixed|void
      */
     public function validate($version, $data)
 	{
-		// Nothing to validate on this one
 	}
 
     /**
@@ -37,11 +36,9 @@ class Immediate implements PublishHandlerInterface {
      * @param $data
      * @param $pageRepository
      * @param $urlRepository
-     * @param $historyRepository
-     * @return mixed|void
      */
-    public function execute($version, $data, $pageRepository, $urlRepository, $historyRepository)
+    public function execute($version, $data, $pageRepository, $urlRepository)
 	{
-		$pageRepository->publishVersion($version, Coanda::currentUser()->id, $urlRepository, $historyRepository);
+		$pageRepository->publishVersion($version, Coanda::currentUser()->id, $urlRepository);
 	}
 }
