@@ -950,6 +950,11 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		return $this->page_model->whereIsTrashed(true)->get();
 	}
 
+	/**
+	 * @param $page_id
+	 * @param bool $restore_sub_pages
+	 * @throws PageNotFound
+     */
 	public function restore($page_id, $restore_sub_pages = true)
 	{
 		$page = $this->page_model->find($page_id);
@@ -996,6 +1001,10 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		$this->page_model->whereId($page_id)->update(['order' => $new_order]);
 	}
 
+	/**
+	 * @param $page_id
+	 * @param $new_sub_page_order
+     */
 	public function updateSubPageOrder($page_id, $new_sub_page_order)
 	{
 		$this->page_model->whereId($page_id)->update(['sub_page_order' => $new_sub_page_order]);

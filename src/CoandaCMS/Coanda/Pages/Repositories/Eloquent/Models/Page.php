@@ -167,11 +167,17 @@ class Page extends BaseEloquentModel {
         return $this->pageType;
 	}
 
+    /**
+     * @return null
+     */
     public function getTypeNameAttribute()
     {
         return $this->pageType()->name;
     }
 
+    /**
+     * @return null
+     */
     public function getTypeIconAttribute()
     {
         return $this->pageType()->icon;
@@ -699,67 +705,9 @@ class Page extends BaseEloquentModel {
         return $this->can_create;
     }
 
-//    public function visible_dates()
-//    {
-//        $from = $this->visible_from;
-//        $to = $this->visible_to;
-//
-//        $now = Carbon::now(date_default_timezone_get());
-//
-//        $visibility_text = 'Visible';
-//
-//        if ($from)
-//        {
-//            if ($from->gt($now))
-//            {
-//                $visibility_text .= ' from ' . $from->format('d/m/Y H:i');
-//            }
-//        }
-//
-//        if ($to)
-//        {
-//            $visibility_text .= ' until ' . $to->format('d/m/Y H:i');
-//        }
-//
-//        return $visibility_text;
-//    }
-
-//    public function visible_dates_short()
-//    {
-//        $from = $this->visible_from;
-//        $to = $this->visible_to;
-//
-//        $now = Carbon::now(date_default_timezone_get());
-//
-//        $visibility_text = '';
-//
-//        if ($from)
-//        {
-//            if ($from->gt($now))
-//            {
-//                $visibility_text .= ' from ' . $from->format('d/m/Y H:i');
-//            }
-//        }
-//
-//        if ($to)
-//        {
-//            if ($to->gt($now))
-//            {
-//                $visibility_text .= ' until ' . $to->format('d/m/Y H:i');
-//            }
-//        }
-//
-//        return $visibility_text;
-//    }
-
     /**
-     * @return string
+     * @return mixed
      */
-    public function visibility()
-    {
-        return $this->is_visible ? 'Visible' : 'Hidden';
-    }
-
     public function getSubPageOrderTextAttribute()
     {
         $order_names = [

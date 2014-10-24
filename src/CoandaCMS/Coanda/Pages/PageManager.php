@@ -137,6 +137,10 @@ class PageManager {
 		}
 	}
 
+    /**
+     * @param $page_id
+     * @param $new_order
+     */
     public function updateSubPageOrder($page_id, $new_order)
     {
         $this->repository->updateSubPageOrder($page_id, $new_order);
