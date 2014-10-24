@@ -317,13 +317,14 @@ class Page extends BaseEloquentModel {
      */
     public function getAttributesAttribute()
 	{
-		return $this->attributes();
+        return $this->renderAttributes();
+//		return $this->attributes();
 	}
 
     /**
      * @return mixed
      */
-    public function attributes()
+    public function currentVersionAttributes()
 	{
 		return $this->currentVersion()->attributes()->with('version')->get();
 	}
@@ -409,7 +410,7 @@ class Page extends BaseEloquentModel {
      */
     private function renderCurrentAttributes($attributes)
 	{
-		foreach ($this->attributes() as $attribute)
+		foreach ($this->currentVersionAttributes() as $attribute)
 		{
 			$attributes->{$attribute->identifier} = $attribute->render($this);
 		}
@@ -613,6 +614,7 @@ class Page extends BaseEloquentModel {
         {
             $breadcrumb[] = [
                 'identifier' => 'pages:page-' . $parent->id,
+                'page_id' => $parent->id,
                 'url' => $parent->slug,
                 'name' => $parent->name,
             ];
@@ -620,6 +622,7 @@ class Page extends BaseEloquentModel {
 
         $breadcrumb[] = [
             'identifier' => 'pages:page-' . $this->id,
+            'page_id' => $this->id,
             'url' => $link_self ? $this->slug : false,
             'name' => $this->name,
         ];

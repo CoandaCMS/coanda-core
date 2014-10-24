@@ -146,7 +146,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 	{
 		try
 		{
-			$url = $this->urlRepository->findBySlug($slug);
+			$url = $this->urls->findBySlug($slug);
 
 			if ($url->type == 'page')
 			{
@@ -307,7 +307,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		$version = $page->currentVersion();
 
 		$this->saveDraftVersion($version, $page_data);
-		$this->publishVersion($version, $user_id, $this->urlRepository);
+		$this->publishVersion($version, $user_id, $this->urls);
 
 		return $page;
 	}
@@ -337,7 +337,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		$version = $page->currentVersion();
 
 		$this->saveDraftVersion($version, $page_data);
-		$this->publishVersion($version, $user_id, $this->urlRepository);
+		$this->publishVersion($version, $user_id, $this->urls);
 
 		$page = $this->find($page->id);
 
@@ -366,7 +366,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		$version = $this->getVersionById($version->id);
 
 		$this->saveDraftVersion($version, $page_data);
-		$this->publishVersion($version, $user_id, $this->urlRepository);
+		$this->publishVersion($version, $user_id, $this->urls);
 
 		$page = $this->find($page->id);
 
@@ -384,7 +384,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 
 		$version->is_hidden = true;
 
-		$this->publishVersion($version, $user_id, $this->urlRepository);
+		$this->publishVersion($version, $user_id, $this->urls);
 	}
 
     /**
@@ -523,7 +523,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
     {
 		if (!$version->page->is_home)
 		{
-            if ($data['slug'] == '')
+            if (!isset($data['slug']) || $data['slug'] == '')
             {
                 $version->slug = $this->generateSlug($version);
             }
@@ -620,7 +620,8 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		// If now have no versions, then remove the page too
 		if ($page->versions->count() == 0)
 		{
-			$page->delete();
+            $this->urls->delete('page', $page->id);
+            $page->delete();
 		}
 	}
 
@@ -714,7 +715,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 			$search_data['visible_to'] = $visible_to;
 		}
 
-		foreach ($page->attributes as $attribute)
+		foreach ($page->currentVersionAttributes() as $attribute)
 		{
 			$search_data[$attribute->identifier] = $attribute->render($page, true);
 		}

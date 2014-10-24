@@ -166,7 +166,7 @@ class PageQuery {
 			'order_query' => $this->order_query
 		];
 
-		return $this->pageRepository->subPages($this->page_id, $this->page, $this->limit, $parameters);
+        return $this->pageRepository->subPages($this->page_id, $this->page, $this->limit, $parameters);
 	}
 
 }

@@ -232,9 +232,9 @@
 					</div>
 				@endif
 
-				<div class="tab-pane @if ($page->is_home && !Input::has('versions_page')) active @endif " id="content">
+				<div class="tab-pane @if ((!$page->is_home || $page->pageType()->allowsSubPages()) && !Input::has('versions_page')) active @endif " id="content">
 					<table class="table table-striped">
-						@foreach ($page->attributes as $attribute)
+						@foreach ($page->currentVersionAttributes() as $attribute)
 						<tr>
 							<td>{{ $attribute->name }}</td>
 							<td>
