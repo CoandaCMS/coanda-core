@@ -760,4 +760,17 @@ class Page extends BaseEloquentModel {
         return $this->is_visible ? 'Visible' : 'Hidden';
     }
 
+    public function getSubPageOrderTextAttribute()
+    {
+        $order_names = [
+            'manual' => 'Manual',
+            'alpha:asc' => 'Alpabetical (A-Z)',
+            'alpha:desc' => 'Alpabetical (Z-A)',
+            'created:desc' => 'Created date (Newest-Oldest)',
+            'created:asc' => 'Created date (Oldest-Newest)',
+        ];
+
+        return $order_names[$this->sub_page_order];
+    }
+
 }

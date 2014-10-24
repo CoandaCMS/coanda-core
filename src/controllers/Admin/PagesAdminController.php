@@ -687,11 +687,11 @@ class PagesAdminController extends BaseController {
     {
  		try
 		{
-			$page = $this->pageRepository->find($page_id);
+			$page = $this->manager->getPage($page_id);
 
 			Coanda::checkAccess('pages', 'view', ['page_id' => $page->id, 'page_type' => $page->type]);
 
-			$this->pageRepository->updateSubPageOrder($page->id, $new_sub_page_order);
+			$this->manager->updateSubPageOrder($page->id, $new_sub_page_order);
 
 			return Redirect::to(Coanda::adminUrl('pages/view/' . $page_id));
 		}

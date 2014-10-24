@@ -133,10 +133,14 @@ class PageManager {
 	{
 		foreach ($orders as $page_id => $new_order)
 		{
-            dd('hmmmm');
 			$this->repository->updatePageOrder($page_id, $new_order);
 		}
 	}
+
+    public function updateSubPageOrder($page_id, $new_order)
+    {
+        $this->repository->updateSubPageOrder($page_id, $new_order);
+    }
 
     /**
      * @param $id

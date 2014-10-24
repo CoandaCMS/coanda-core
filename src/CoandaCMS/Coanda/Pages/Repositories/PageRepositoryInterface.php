@@ -210,11 +210,11 @@ interface PageRepositoryInterface {
     public function getHomePage();
 
     /**
-     * @param $location_id
+     * @param $page_id
      * @param $new_sub_page_order
      * @return mixed
      */
-    public function updateLocationSubPageOrder($location_id, $new_sub_page_order);
+    public function updateSubPageOrder($page_id, $new_sub_page_order);
 
     /**
      * @param $version

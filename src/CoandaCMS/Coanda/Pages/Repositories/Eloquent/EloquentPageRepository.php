@@ -950,11 +950,6 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		return $this->page_model->whereIsTrashed(true)->get();
 	}
 
-	/**
-	 * @param $page_id
-	 * @param bool $restore_sub_pages
-	 * @throws PageNotFound
-     */
 	public function restore($page_id, $restore_sub_pages = true)
 	{
 		$page = $this->page_model->find($page_id);
@@ -1001,7 +996,12 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		$this->page_model->whereId($page_id)->update(['order' => $new_order]);
 	}
 
-    /**
+	public function updateSubPageOrder($page_id, $new_sub_page_order)
+	{
+		$this->page_model->whereId($page_id)->update(['sub_page_order' => $new_sub_page_order]);
+	}
+
+	/**
      * @param $offset
      * @param $limit
      * @return mixed
@@ -1017,19 +1017,6 @@ class EloquentPageRepository implements PageRepositoryInterface {
     public function getHomePage()
 	{
 		return $this->page_model->whereIsHome(true)->first();
-	}
-
-    /**
-     * @param $location_id
-     * @param $new_sub_page_order
-     * @return mixed|void
-     */
-    public function updateLocationSubPageOrder($location_id, $new_sub_page_order)
-	{
-		$pagelocation = $this->locationById($location_id);
-
-		$pagelocation->sub_location_order = $new_sub_page_order;
-		$pagelocation->save();
 	}
 
     /**
