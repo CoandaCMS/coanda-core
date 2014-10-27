@@ -96,6 +96,14 @@ abstract class PageType {
     }
 
     /**
+     * @return bool
+     */
+    public function isIndexable()
+    {
+        return true;
+    }
+
+    /**
      * @return array
      */
     public function allowedSubPageTypes()
