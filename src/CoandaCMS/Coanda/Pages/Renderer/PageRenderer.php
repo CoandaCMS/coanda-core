@@ -197,6 +197,7 @@ class PageRenderer {
         return $this->layout->render([
                 'layout' => $this->layout,
                 'content' => $rendered_content,
+                'page_data' => $this->data,
                 'meta' => $this->meta,
                 'breadcrumb' => $this->page->breadcrumb(),
                 'module' => 'pages',
