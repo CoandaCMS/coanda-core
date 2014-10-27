@@ -2,7 +2,7 @@ filter:
     paths: [src/*]
     excluded_paths: [vendor/*, tests/*]
 before_commands:
-    - 'composer install --dev --prefer-source'
+    - 'composer install --no-dev --prefer-source'
 checks:
     php:
         code_rating: true
