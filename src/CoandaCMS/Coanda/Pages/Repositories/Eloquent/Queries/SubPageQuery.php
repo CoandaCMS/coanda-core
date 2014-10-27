@@ -234,7 +234,7 @@ class SubPageQuery {
 
 						if (!is_numeric($value))
 						{
-							$value = DB::connection()->getPdo()->quote($value);
+							$value = \DB::connection()->getPdo()->quote($value);
 						}
 
 						$nested_query = "select count(*)
@@ -245,7 +245,7 @@ class SubPageQuery {
 
 						$nested_query = preg_replace('/\n/', '', $nested_query);
 
-						$query->where(DB::raw('(' . $nested_query . ')'), '>=', 1);
+						$query->where(\DB::raw('(' . $nested_query . ')'), '>=', 1);
 
 					});
 				}
