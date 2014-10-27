@@ -98,9 +98,13 @@ class SubPageQuery {
 
 		$query = $page_model
                     ->select('pages.*')
-					->where('parent_page_id', $this->parent_page_id)
 					->where('is_trashed', '=', '0')
 					->where('is_home', '=', '0');
+
+        if ($this->parent_page_id !== null)
+        {
+            $query->where('parent_page_id', $this->parent_page_id);
+        }
 
 		$query->join('pageversions', 'pages.id', '=', 'pageversions.page_id');
 		$query->where('pageversions.version', '=', \DB::raw('pages.current_version'));
