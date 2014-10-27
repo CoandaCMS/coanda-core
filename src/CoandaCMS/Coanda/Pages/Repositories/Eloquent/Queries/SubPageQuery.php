@@ -134,6 +134,12 @@ class SubPageQuery {
 		return $query;
 	}
 
+    /**
+     * @param $query
+     * @param $parameter
+     * @param $value
+     * @return mixed
+     */
     private function handleParameter($query, $parameter, $value)
     {
         $method = camel_case('parameter_' . $parameter);
@@ -141,6 +147,36 @@ class SubPageQuery {
         if (method_exists($this, $method))
         {
             $query = $this->$method($query, $value);
+        }
+
+        return $query;
+    }
+
+    /**
+     * @param $query
+     * @param $page_types
+     * @return mixed
+     */
+    private function parameterIncludePageTypes($query, $page_types)
+    {
+        if (is_array($page_types) && count($page_types) > 0)
+        {
+            $query->whereIn('pages.type', $page_types);
+        }
+
+        return $query;
+    }
+
+    /**
+     * @param $query
+     * @param $page_types
+     * @return mixed
+     */
+    private function parameterExcludePageTypes($query, $page_types)
+    {
+        if (is_array($page_types) && count($page_types) > 0)
+        {
+            $query->whereNotIn('pages.type', $page_types);
         }
 
         return $query;

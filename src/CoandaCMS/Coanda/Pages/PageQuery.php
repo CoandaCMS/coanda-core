@@ -17,7 +17,7 @@ class PageQuery {
     /**
      * @var
      */
-    private $page_id;
+    private $page_id = 0;
     /**
      * @var
      */
@@ -43,6 +43,15 @@ class PageQuery {
      * @var bool
      */
     private $paginate = false;
+
+    /**
+     * @var array
+     */
+    private $include_page_types = [];
+    /**
+     * @var array
+     */
+    private $exclude_page_types = [];
 
     /**
      * @var int
@@ -136,6 +145,28 @@ class PageQuery {
 	}
 
     /**
+     * @param $page_types
+     * @return $this
+     */
+    public function includePageTypes($page_types)
+    {
+        $this->include_page_types = $page_types;
+
+        return $this;
+    }
+
+    /**
+     * @param $page_types
+     * @return $this
+     */
+    public function excludePageTypes($page_types)
+    {
+        $this->exclude_page_types = $page_types;
+
+        return $this;
+    }
+
+    /**
      * @param $limit
      * @param bool $page
      * @return $this
@@ -163,6 +194,8 @@ class PageQuery {
 			'include_hidden' => $this->include_hidden,
 			'paginate' => $this->paginate,
 			'attribute_filters' => $this->attribute_filters,
+            'include_page_types' => $this->include_page_types,
+            'exclude_page_types' => $this->exclude_page_types,
 			'order_query' => $this->order_query
 		];
 
