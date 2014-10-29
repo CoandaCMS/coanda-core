@@ -2,7 +2,6 @@
 
 use View, App, Coanda, Redirect, Input, Session;
 use CoandaCMS\Coanda\Pages\PageManager;
-use CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface;
 use CoandaCMS\Coanda\Pages\Exceptions\PageNotFound;
 use CoandaCMS\Coanda\Pages\Exceptions\PageVersionNotFound;
 use CoandaCMS\Coanda\Pages\Exceptions\PageTypeNotFound;
@@ -15,23 +14,16 @@ use CoandaCMS\Coanda\Controllers\BaseController;
 class PagesAdminController extends BaseController {
 
     /**
-     * @var PageRepositoryInterface
-     */
-    private $pageRepository;
-
-    /**
      * @var \CoandaCMS\Coanda\Pages\PageManager
      */
     private $manager;
 
     /**
      * @param PageManager $manager
-     * @param PageRepositoryInterface $pageRepository
      */
-    public function __construct(PageManager $manager, PageRepositoryInterface $pageRepository)
+    public function __construct(PageManager $manager)
 	{
 		$this->manager = $manager;
-//		$this->pageRepository = $pageRepository;
 
 		$this->beforeFilter('csrf', array('on' => 'post'));
 	}
@@ -474,25 +466,25 @@ class PagesAdminController extends BaseController {
      * @return mixed
      */
     public function postExistingDrafts($page_id)
-	{
-		try
-		{
-			$page = $this->pageRepository->find($page_id);
+    {
+        try
+        {
+            $page = $this->manager->getPage($page_id);
 
-			Coanda::checkAccess('pages', 'edit', ['page_id' => $page->id, 'page_type' => $page->type]);
+            Coanda::checkAccess('pages', 'edit', ['page_id' => $page->id, 'page_type' => $page->type]);
 
-			if (Input::has('new_version') && Input::get('new_version') == 'true')
-			{
-				$new_version = $this->pageRepository->createNewVersion($page->id, Coanda::currentUser()->id);
+            if (Input::has('new_version') && Input::get('new_version') == 'true')
+            {
+                $new_version = $this->manager->createNewVersionForPage($page->id, false);
 
-				return Redirect::to(Coanda::adminUrl('pages/editversion/' . $page_id . '/' . $new_version));
-			}
-		}
-		catch (PageNotFound $exception)
-		{
-			return Redirect::to(Coanda::adminUrl('pages'));
-		}
-	}
+                return Redirect::to(Coanda::adminUrl('pages/editversion/' . $page_id . '/' . $new_version));
+            }
+        }
+        catch (PageNotFound $exception)
+        {
+            return Redirect::to(Coanda::adminUrl('pages'));
+        }
+    }
 
     /**
      * @param $page_id
