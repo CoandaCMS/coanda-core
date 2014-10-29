@@ -46,18 +46,10 @@ class EloquentUrlRepository implements UrlRepositoryInterface {
      * @param $for
      * @param $for_id
      * @return mixed
-     * @throws \CoandaCMS\Coanda\Urls\Exceptions\UrlNotFound
      */
     public function findFor($for, $for_id)
 	{
 		return $this->model->whereType($for)->whereTypeId($for_id)->first();
-//
-//		if ($url)
-//		{
-//			return $url;
-//		}
-//
-//		throw new UrlNotFound('Url not found (findFor)');
 	}
 
     /**

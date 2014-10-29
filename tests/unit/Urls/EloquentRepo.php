@@ -59,9 +59,9 @@ class EloquentRepo extends BaseTest {
 
 		$repo->delete('test', 1);
 
-		// Try to get the delete URL...
-		$this->setExpectedException('CoandaCMS\Coanda\Urls\Exceptions\UrlNotFound');
 		$url = $repo->findFor('test', 1);
+
+        $this->assertNull($url);
 	}
 
 
