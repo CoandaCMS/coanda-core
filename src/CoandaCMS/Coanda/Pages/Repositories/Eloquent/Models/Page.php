@@ -318,7 +318,6 @@ class Page extends BaseEloquentModel {
     public function getAttributesAttribute()
 	{
         return $this->renderAttributes();
-//		return $this->attributes();
 	}
 
     /**
