@@ -356,7 +356,7 @@ class UserManager {
             }
             catch (\CoandaCMS\Coanda\Users\Exceptions\UserNotFound $exception)
             {
-
+                // Do nothing if the user is not found...
             }
         }
 
