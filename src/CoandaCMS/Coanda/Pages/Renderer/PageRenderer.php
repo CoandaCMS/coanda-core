@@ -75,8 +75,7 @@ class PageRenderer {
             return $this->render();
         }
 
-        throw new \Exception('Home page not created yet!');
-
+        return 'Error: Home page has not been created yet!';
     }
 
     /**
