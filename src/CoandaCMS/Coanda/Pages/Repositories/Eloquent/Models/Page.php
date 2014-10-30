@@ -619,12 +619,15 @@ class Page extends BaseEloquentModel {
             ];
         }
 
-        $breadcrumb[] = [
-            'identifier' => 'pages:page-' . $this->id,
-            'page_id' => $this->id,
-            'url' => $link_self ? $this->slug : false,
-            'name' => $this->name,
-        ];
+        if (!$this->is_home)
+        {
+            $breadcrumb[] = [
+                'identifier' => 'pages:page-' . $this->id,
+                'page_id' => $this->id,
+                'url' => $link_self ? $this->slug : false,
+                'name' => $this->name,
+            ];
+        }
 
         return $breadcrumb;
     }
