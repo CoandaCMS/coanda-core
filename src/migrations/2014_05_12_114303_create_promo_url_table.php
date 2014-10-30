@@ -15,7 +15,7 @@ class CreatePromoUrlTable extends Migration {
 		Schema::create('promourls', function ($table) {
 
 			$table->increments('id');
-			$table->text('destination')->default('');
+			$table->text('destination');
 			$table->integer('counter');
 
 			$table->timestamps();
