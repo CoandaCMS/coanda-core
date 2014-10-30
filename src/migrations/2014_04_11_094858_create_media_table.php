@@ -16,15 +16,15 @@ class CreateMediaTable extends Migration {
 	    {
 	        $table->increments('id');
 
-			$table->string('original_filename');	        
-	        $table->string('extension');
-	        $table->string('mime');
+			$table->string('original_filename')->default('');
+	        $table->string('extension')->default('');
+	        $table->string('mime')->default('');
 	        $table->integer('size');
 
 	        $table->integer('width');
 	        $table->integer('height');
 
-	        $table->string('filename');
+	        $table->string('filename')->default('');
 
 	        $table->timestamps();
 	    });

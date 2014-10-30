@@ -15,8 +15,8 @@ class CreateUsergroupsTable extends Migration {
 		Schema::create('user_groups', function($table)
 		{
 			$table->increments('id');
-	        $table->string('name');
-	        $table->text('permissions');
+	        $table->string('name')->default('');
+	        $table->text('permissions')->nullable();
 			$table->timestamps();
 		});
 

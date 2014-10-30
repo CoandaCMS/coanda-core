@@ -15,9 +15,9 @@ class CreateUrlTable extends Migration {
 		Schema::create('urls', function ($table) {
 
 			$table->increments('id');
-			$table->text('slug');
+			$table->text('slug')->default('');
 
-			$table->string('type');
+			$table->string('type')->default('');
 			$table->integer('type_id');
 
 			$table->timestamps();

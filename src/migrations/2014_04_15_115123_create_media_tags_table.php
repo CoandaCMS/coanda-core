@@ -15,7 +15,7 @@ class CreateMediaTagsTable extends Migration {
 		Schema::create('mediatags', function($table)
 	    {
 	        $table->increments('id');
-			$table->string('tag');	        
+			$table->string('tag')->default('');
 
 	        $table->timestamps();
 	    });

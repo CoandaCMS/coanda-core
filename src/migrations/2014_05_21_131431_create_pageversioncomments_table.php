@@ -18,8 +18,8 @@ class CreatePageversioncommentsTable extends Migration {
 			
 			$table->integer('version_id');
 
-			$table->string('name');
-			$table->text('comment');
+			$table->string('name')->default('');
+			$table->text('comment')->default('');
 
 			$table->timestamps();
 
