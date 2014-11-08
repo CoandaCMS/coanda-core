@@ -686,6 +686,9 @@ class EloquentPageRepository implements PageRepositoryInterface {
         {
             $this->registerPageWithSearchProvider($page);
         }
+
+		// Update our global last edit time...
+		\Cache::forever('last_page_edit_time', time());
 	}
 
 

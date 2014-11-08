@@ -110,7 +110,9 @@ class PageStaticCacher {
      */
     private function generatePageCacheKey($page_id)
     {
-        return 'page-' . $page_id . '-' . md5(var_export($this->getInput(), true));
+        $last_edit_key = $this->cache->get('last_page_edit_time', 0);
+
+        return $last_edit_key . '_' . 'page-' . $page_id . '-' . md5(var_export($this->getInput(), true));
     }
 
     /**
