@@ -19,6 +19,11 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
     protected $presenter = 'CoandaCMS\Coanda\Users\Presenters\User';
 
 	/**
+	 * @var array
+     */
+	protected $dates = ['last_login'];
+
+	/**
 	 * The database table used by the model.
 	 *
 	 * @var string
@@ -63,16 +68,25 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	}
 
 
+	/**
+	 * @return mixed
+     */
 	public function getRememberToken()
 	{
 	    return $this->remember_token;
 	}
 
+	/**
+	 * @param string $value
+     */
 	public function setRememberToken($value)
 	{
 	    $this->remember_token = $value;
 	}
 
+	/**
+	 * @return string
+     */
 	public function getRememberTokenName()
 	{
 	    return 'remember_token';

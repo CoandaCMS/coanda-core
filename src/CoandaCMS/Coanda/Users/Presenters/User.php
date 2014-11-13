@@ -16,4 +16,12 @@ class User extends \CoandaCMS\Coanda\Core\Presenters\Presenter {
 		return $this->model->first_name . ' ' . $this->model->last_name;
 	}
 
+	/**
+	 * @return string
+     */
+	public function last_login()
+	{
+		return $this->format_date('last_login');
+	}
+
 }

@@ -56,6 +56,9 @@
 										<a href="{{ Coanda::adminUrl('users/user/' . $user->id) }}">{{ $user->present()->name }}</a>
 									</td>
 									<td>{{ $user->present()->email }}</td>
+									<td>
+										{{ $user->last_login !== NULL ? 'Last login: ' . $user->present()->last_login : '' }}
+									</td>
 									<td class="tight">
 										@if (Coanda::canView('users', 'edit'))
 											<a href="{{ Coanda::adminUrl('users/edit-user/' . $user->id) }}"><i class="fa fa-pencil-square-o"></i></a>

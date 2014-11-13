@@ -22,6 +22,13 @@ class CoandaServiceProvider extends ServiceProvider {
 	 */
 	public function boot()
 	{
+		\Event::listen('auth.login', function ($user) {
+
+			$user->last_login = new \DateTime;
+			$user->save();
+
+		});
+
 		$this->package('coandacms/coanda-core', 'coanda');
 
 		$coanda = $this->app->make('coanda');
