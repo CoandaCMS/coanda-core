@@ -94,8 +94,8 @@
 								<div class="col-xs-10">
 									<select name="template_identifier" id="template_identifier" class="form-control">
 										<option value=""></option>
-										@foreach ($version->availableTemplates() as $template)
-											<option @if ($version->template_identifier == $template['identifier']) selected="selected" @endif value="{{ $template['identifier'] }}">{{ $template['name'] }}</option>
+										@foreach ($version->availableTemplates() as $template_identifier => $template_name)
+											<option @if ($version->template_identifier == $template_identifier) selected="selected" @endif value="{{ $template_identifier }}">{{ $template_name }}</option>
 										@endforeach
 									</select>
 								</div>
