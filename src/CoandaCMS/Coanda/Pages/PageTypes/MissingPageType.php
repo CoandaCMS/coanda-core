@@ -2,35 +2,12 @@
 
 class MissingPageType extends \CoandaCMS\Coanda\Pages\PageType {
 
-    public function identifier()
-    {
-        return 'missing';
-    }
+    protected $name = 'Missing Page Type';
+    protected $identifier = 'missing';
+    protected $icon = 'fa-question-circle';
 
-    public function name()
-    {
-        return 'Missing Page Type';
-    }
+    protected $schema = [
+        'name' => 'Name|textline|required|generates_slug'
+    ];
 
-    public function icon()
-    {
-        return 'fa-question-circle';
-    }
-
-    public function attributes()
-    {
-        return [
-            'question' => [
-                'name' => 'Name',
-                'type' => 'textline',
-                'required' => true,
-                'generates_slug' => true
-                ]
-            ];
-    }
-
-    public function generateName($version)
-    {
-        return '';
-    }
 }
