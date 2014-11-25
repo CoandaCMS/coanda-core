@@ -319,11 +319,14 @@ class SubPageQuery {
 
 		if ($this->parent_page_id != 0)
 		{
-			$parent = $this->repository->findById($this->parent_page_id);
-
-			if ($parent)
+			try
 			{
+				$parent = $this->repository->findById($this->parent_page_id);
 				$order = $parent->sub_page_order;
+			}
+			catch (\CoandaCMS\Coanda\Pages\Exceptions\PageNotFound $exception)
+			{
+				// Default to manual above...
 			}
 		}
 
