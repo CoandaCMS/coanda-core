@@ -35,7 +35,10 @@ abstract class PageType {
     /**
      * @var
      */
-    protected $schema;
+    protected $schema = [
+        'name' => 'Name|textline|required|generates_slug',
+        'content' => 'Content|html'
+    ];
     /**
      * @var array
      */
