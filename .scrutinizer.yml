@@ -1,6 +1,6 @@
 filter:
     paths: [src/*]
-    excluded_paths: [vendor/*, tests/*]
+    excluded_paths: [vendor/*, tests/*, src/migrations/*]
 checks:
     php:
         code_rating: true
