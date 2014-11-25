@@ -77,10 +77,13 @@ class PagesController extends BaseController {
             ];
 
             $data = [
-                'page' => $version->page,
+                'page' => $page,
+                'page_id' => $page->id,
                 'meta' => $meta,
                 'attributes' => $attributes
             ];
+
+            $data = $page->pageType()->preRender($data);
 
             // Make the view and pass all the render data to it...
             $rendered_version = View::make($page->pageType()->template($version, $data), $data);
