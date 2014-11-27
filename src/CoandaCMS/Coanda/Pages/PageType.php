@@ -146,16 +146,28 @@ abstract class PageType {
             {
                 $property_elements = explode(':', $property);
 
-                if(strpos($property_elements[1], ',')) {
-                    $attribute[$property_elements[0]] = $this->processArrayProperty($property_elements[1]);
-                } else {
-                    $attribute[$property_elements[0]] = $property_elements[1];
-                }
+                $attribute[$property_elements[0]] = $this->processAttributeProperty($property_elements[1]);
             }
         }
 
 
         return $attribute;
+    }
+
+    /**
+     * @param $property_elements
+     * @return mixed
+     */
+    private function processAttributeProperty($property_elements)
+    {
+        if(strpos($property_elements[1], ','))
+        {
+            return $this->processArrayProperty($property_elements[1]);
+        } 
+        else
+        {
+            return $this->processStringProperty($property_elements[1]);
+        }
     }
 
     /**
@@ -182,6 +194,15 @@ abstract class PageType {
         }
 
         return $array;
+    }
+
+    /**
+     * @param $property_element
+     * @return array
+     */
+    private function processStringProperty($property_element)
+    {
+        return $property_element;
     }
 
     /**
