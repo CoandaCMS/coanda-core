@@ -140,15 +140,20 @@ abstract class PageType {
             if ($property == 'generates_slug')
             {
                 $attribute['generates_slug'] = true;
-            }
+            }   
 
             if (strpos($property, ':'))
             {
                 $property_elements = explode(':', $property);
 
-                $attribute[$property_elements[0]] = $this->processArrayProperty($property_elements[1]);
+                if(strpos($property_elements[1], ',')) {
+                    $attribute[$property_elements[0]] = $this->processArrayProperty($property_elements[1]);
+                } else {
+                    $attribute[$property_elements[0]] = $property_elements[1];
+                }
             }
         }
+
 
         return $attribute;
     }
