@@ -62,7 +62,8 @@ class PagesAdminController extends BaseController {
 
 		return View::make('coanda::admin.modules.pages.index', [
 				'home_page' => $this->manager->getHomePage(),
-				'pages' => $this->manager->getAdminSubPages(0, (int) Input::get('page', 1), 10)
+				'pages' => $this->manager->getAdminSubPages(0, (int) Input::get('page', 1), 10),
+				'trash_total' => $this->manager->getTrashedPages()->count()
 			]);
 	}
 
