@@ -8,7 +8,13 @@
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>
 			</button>
-			<a class="navbar-brand" href="{{ Coanda::adminUrl('/') }}">{{ Coanda::siteName() }}</a>
+			<a class="navbar-brand @if (Coanda::adminLogo()) navbar-brand-logo @endif" href="{{ Coanda::adminUrl('/') }}">
+				@if (Coanda::adminLogo()) 
+					<img src="{{ Coanda::adminLogo() }}" alt="{{ Coanda::siteName() }}">
+				@else
+					{{ Coanda::siteName() }}
+				@endif
+				</a>
 		</div>
 
 		<div class="navbar-collapse collapse">

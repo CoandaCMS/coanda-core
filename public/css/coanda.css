@@ -78,6 +78,14 @@ h2
 	max-height: 1000px;
 }
 
+.navbar-brand.navbar-brand-logo {
+	padding: 5px 15px;
+}
+
+.navbar-brand-logo img {
+	max-height: 40px;
+}
+
 .btn,
 .dropdown-menu,
 .nav-pills > li > a,
@@ -144,6 +152,12 @@ h2
 .login-header
 {
 	text-align: center;
+}
+
+.login-header img 
+{
+	float: none;
+	margin: 0 auto;
 }
 
 .breadcrumb-nav
@@ -422,3 +436,4 @@ td table.table
 {
 	color: #626262;
 }
+
