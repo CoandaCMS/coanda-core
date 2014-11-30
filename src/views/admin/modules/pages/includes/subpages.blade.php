@@ -1,15 +1,25 @@
-<table class="table table-striped">
-	<tr>
-		<th></th>
-		<th>Name</th>
-		@if (!$page || $page->sub_page_order == 'manual')
+<table class="table table-striped @if (!$page || $page->sub_page_order == 'manual') sorted_table @endif">
+	<thead>
+		<tr>
+			@if (!$page || $page->sub_page_order == 'manual')
 			<th></th>
-		@endif
-		<th></th>
-	</tr>
+			@endif
+			<th></th>
+			<th>Name</th>
+			<th></th>
+		</tr>
+	</thead>
 
+	<tbody>
 	@foreach ($children as $child)
 		<tr class="status-{{ $child->status }} @if (!$child->is_visible) info @endif @if ($child->is_hidden) danger @endif @if ($child->is_hidden_navigation) warning @endif @if ($child->is_pending) info @endif">
+
+			@if (!$page || $page->sub_page_order == 'manual')
+			<td class="tight">
+				<i class="fa fa-arrows"></i>
+				<input value="{{ $child->order }}" type="hidden" name="ordering[{{ $child->id }}]" class="form-control input-sm">
+			</td>
+			@endif
 
 			@if (!$child->is_trashed)
 				<td class="tight">
@@ -52,14 +62,6 @@
 					<span class="label label-warning">Hidden from Navigation</span>
 				@endif
 			</td>
-
-			@if (!$page || $page->sub_page_order == 'manual')
-				<td class="order-column">
-					@if ($child->can_edit)
-						<input value="{{ $child->order }}" type="text" name="ordering[{{ $child->id }}]" class="form-control input-sm">
-					@endif
-				</td>
-			@endif
 			
 			@if (!$child->is_trashed)
 				<td class="tight">
@@ -76,4 +78,5 @@
 			@endif
 		</tr>
 	@endforeach
+	</tbody>
 </table>

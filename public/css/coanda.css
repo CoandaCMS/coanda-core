@@ -422,3 +422,41 @@ td table.table
 {
 	color: #626262;
 }
+
+body.dragging, body.dragging *
+{
+	cursor: move !important;
+}
+
+.dragged
+{
+	position: absolute;
+	opacity: 0.5;
+	z-index: 2000;
+}
+
+.sorted_table tr
+{
+	cursor: pointer;
+}
+
+.sorted_table tr.placeholder
+{
+	display: block;
+	position: relative;
+	margin: 0;
+	padding: 0;
+	border: none;
+}
+
+.sorted_table tr.placeholder:before
+{
+    content: "";
+    position: absolute;
+    width: 0;
+    height: 0;
+    border: 5px solid transparent;
+    margin-top: -5px;
+    left: -5px;
+    border-right: none;
+}

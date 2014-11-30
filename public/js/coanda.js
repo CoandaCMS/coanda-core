@@ -70,6 +70,14 @@ $(document).ready( function () {
 
 		$(this).parents('.option-group').find('.options').append(new_option_html);
 
-	})
+	});
+
+	// Sortable rows
+	$('.sorted_table').sortable({
+	  containerSelector: 'table',
+	  itemPath: '> tbody',
+	  itemSelector: 'tr',
+	  placeholder: '<tr class="placeholder"/>'
+	});
 
 });
