@@ -130,12 +130,13 @@ class PageManager {
      * @param $orders
      */
     public function updatePageOrders($orders)
-	{
-		foreach ($orders as $page_id => $new_order)
-		{
-			$this->repository->updatePageOrder($page_id, $new_order);
-		}
-	}
+    {
+        $o = 0;
+        foreach ($orders as $page_id => $new_order)
+        {
+            $this->repository->updatePageOrder($page_id, $o++);
+        }
+    }
 
     /**
      * @param $page_id

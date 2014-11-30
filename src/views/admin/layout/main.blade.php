@@ -34,6 +34,7 @@
 <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
 <script src="{{ asset('packages/coandacms/coanda-core/summernote/summernote.js') }}"></script>
 <script src="{{ asset('packages/coandacms/coanda-core/js/jquery.slugify.js') }}"></script>
+<script src="{{ asset('packages/coandacms/coanda-core/js/jquery.sortable.js') }}"></script>
 <script src="{{ asset('packages/coandacms/coanda-core/js/moment.min.js') }}"></script>
 <script src="{{ asset('packages/coandacms/coanda-core/datepicker/bootstrap-datetimepicker.min.js') }}"></script>
 <script src="{{ asset('packages/coandacms/coanda-core/dropzone/dropzone.min.js') }}"></script>
