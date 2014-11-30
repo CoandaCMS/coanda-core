@@ -45,3 +45,12 @@ tr.status-draft td a .fa
 	color: {{ Config::get('coanda::coanda.admin_colour') }};
 }
 
+.sorted_table tr.placeholder
+{
+  background: {{ Config::get('coanda::coanda.admin_colour') }};
+}
+
+.sorted_table tr.placeholder:before
+{
+    border-left-color: {{ Config::get('coanda::coanda.admin_colour') }};
+}
