@@ -8,9 +8,9 @@
 	<div class="breadcrumb-nav">
 		<div class="pull-right">
 			@if (Coanda::canView('pages', 'remove'))
-				<a href="{{ Coanda::adminUrl('pages/trash') }}" class="trash-icon"><i class="fa fa-trash-o"></i> Trash ({{ $trash_total }})</a>
+				<a href="{{ Coanda::adminUrl('pages/trash') }}" class="trash-icon"><i class="fa fa-trash-o"></i> Trash <span class="badge">{{ $trash_total }}</span></a>
 			@else
-				<span  class="trash-icon disabled"><i class="fa fa-trash-o"></i> Trash ({{ $trash_total }})</span>
+				<span  class="trash-icon disabled"><i class="fa fa-trash-o"></i> Trash <span class="badge">{{ $trash_total }}</span></span>
 			@endif
 		</div>
 		<ul class="breadcrumb">
