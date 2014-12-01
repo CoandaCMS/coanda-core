@@ -17,9 +17,9 @@ class UsersAdminController extends BaseController {
     /**
      * @param UserManager $manger
      */
-    public function __construct(UserManager $manger)
+    public function __construct(UserManager $manager)
 	{
-        $this->manager = $manger;
+        $this->manager = $manager;
 
 		$this->beforeFilter('csrf', array('on' => 'post'));
 	}

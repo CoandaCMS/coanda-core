@@ -552,8 +552,19 @@ class Coanda {
 		}
 	}
 
+	/**
+     * @return string
+     */
 	public function siteName()
 	{
 		return Config::get('coanda::coanda.site_name');
 	}
+
+	/**
+     * @return string
+     */
+    public function adminLogo()
+    {
+    	return Config::get('coanda::coanda.admin_logo');
+    }
 }

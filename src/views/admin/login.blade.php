@@ -8,7 +8,11 @@
     <div class="login col-md-6 col-md-offset-3">
 
         <div class="login-header">
-            <h4>{{ Coanda::siteName() }}</h4>
+            @if (Coanda::adminLogo()) 
+                <img src="{{ Coanda::adminLogo() }}" alt="{{ Coanda::siteName() }}" class="img-responsive">
+            @else
+                <h4>{{ Coanda::siteName() }}</h4>
+            @endif
         </div>
 
 		@if ($errors->count() > 0)

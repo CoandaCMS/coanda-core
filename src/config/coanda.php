@@ -16,6 +16,9 @@ return array(
 
 	'admin_colour' => '#FF6600',
 
+	// Comment this line in and define an image to use for your Admin Panel
+	'admin_logo' => asset('packages/coandacms/coanda-core/images/logo.png'),
+
 	/*
 	|--------------------------------------------------------------------------
 	| Some default settings
@@ -34,6 +37,7 @@ return array(
 	*/
 	'attribute_types' => [
 		'CoandaCMS\Coanda\Core\Attributes\Types\Textline',
+		'CoandaCMS\Coanda\Core\Attributes\Types\Textarea',
 		'CoandaCMS\Coanda\Core\Attributes\Types\HTML',
 		'CoandaCMS\Coanda\Core\Attributes\Types\Boolean',
 		'CoandaCMS\Coanda\Core\Attributes\Types\Image',
