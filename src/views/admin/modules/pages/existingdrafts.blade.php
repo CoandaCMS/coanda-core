@@ -8,6 +8,11 @@
 	<div class="breadcrumb-nav">
 		<ul class="breadcrumb">
 			<li><a href="{{ Coanda::adminUrl('pages') }}">Pages</a></li>
+
+			@foreach ($page->parents() as $parent)
+				<li><a href="{{ Coanda::adminUrl('pages/view/' . $parent->id) }}">{{ $parent->name }}</a></li>
+			@endforeach
+
 			<li>Edit page</li>
 		</ul>
 	</div>
