@@ -146,7 +146,7 @@ h2
 
 .login
 {
-	margin-top: 20px;
+	margin-top: 0;
 }
 
 .login-header
@@ -154,10 +154,11 @@ h2
 	text-align: center;
 }
 
-.login-header img 
+.login-header img
 {
 	float: none;
-	margin: 0 auto;
+	margin: 0 auto 10px auto;
+	width: 100px;
 }
 
 .breadcrumb-nav
