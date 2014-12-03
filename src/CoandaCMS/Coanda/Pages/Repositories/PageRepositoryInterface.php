@@ -184,6 +184,11 @@ interface PageRepositoryInterface {
     public function trashed();
 
     /**
+     * @return mixed
+     */
+    public function trashedCount();
+
+    /**
      * @param $page_id
      * @param $restore_sub_pages
      * @return mixed
