@@ -102,7 +102,7 @@ class Page extends BaseEloquentModel {
 
         $generated_name = $this->pageType()->generateName($this->currentVersion());
 
-        if ($generated_name !== '')
+        if ($generated_name != '')
         {
             return htmlspecialchars($generated_name);
         }
