@@ -236,6 +236,17 @@ class PageManager {
 	}
 
     /**
+     * @param $version_id
+     * @return bool|mixed
+     */
+    public function getDraftVersionById($version_id)
+    {
+        $version = $this->repository->getVersionById($version_id);
+
+        return $version->status == 'draft' ? $version : false;
+    }
+
+    /**
      * @param $page_id
      * @param $version_number
      */
