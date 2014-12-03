@@ -1,5 +1,6 @@
 <?php namespace CoandaCMS\Coanda\Controllers\Admin;
 
+use Illuminate\Http\RedirectResponse;
 use View, App, Coanda, Redirect, Input, Session;
 use CoandaCMS\Coanda\Pages\PageManager;
 use CoandaCMS\Coanda\Pages\Exceptions\PageNotFound;
@@ -360,6 +361,11 @@ class PagesAdminController extends BaseController {
 			return $redirect->with('template_chosen', true);
 		}
 
+		if (Input::get('choose_new_parent_page', false) == 'true')
+		{
+			return Redirect::to(Coanda::adminUrl('pages/browse-parent/' . $version->id . '/' . $version->parent_page_id));
+		}
+
 		if (count($invalid_fields) > 0)
 		{
 			return $redirect
@@ -437,6 +443,63 @@ class PagesAdminController extends BaseController {
 		{
 			return Redirect::to(Coanda::adminUrl('pages/view/' . $page_id));
 		}
+	}
+
+	/**
+	 * @param $version_id
+	 * @param $parent_page_id
+	 * @return mixed
+     */
+	public function getBrowseParent($version_id, $parent_page_id)
+	{
+		$data = [
+			'version_id' => $version_id,
+			'parent_page' => false,
+			'at_top' => false
+		];
+
+		$parent_page_id = (int) $parent_page_id;
+
+		if ($parent_page_id > 0)
+		{
+			$data['parent_page'] = $this->manager->getPage($parent_page_id);
+			$data['pages'] = $this->manager->getAdminSubPages($parent_page_id, (int) Input::get('page', 1), 10);
+		}
+		else
+		{
+			$data['at_top'] = true;
+			$data['pages'] = $this->manager->getTopLevelPages((int) Input::get('page', 1), 10);
+		}
+
+		return View::make('coanda::admin.modules.pages.browseparent', $data);
+	}
+
+	/**
+	 * @param $version_id
+	 * @return mixed
+     */
+	public function postBrowseParent($version_id)
+	{
+		$version = $this->manager->getDraftVersionById($version_id);
+		$redirect = Coanda::adminUrl('pages/editversion/' . $version->page_id . '/' . $version->version);
+
+		if (Input::has('cancel') && Input::get('cancel') == 'true')
+		{
+			return Redirect::to($redirect);
+		}
+
+		if (Input::has('move_to_top_level') && Input::get('move_to_top_level') == 'true')
+		{
+			$version->parent_page_id = 0;
+		}
+		else
+		{
+			$version->parent_page_id = Input::get('new_parent_page_id', 0);
+		}
+
+		$version->save();
+
+		return Redirect::to($redirect)->with('parent_changed', true);
 	}
 
     /**

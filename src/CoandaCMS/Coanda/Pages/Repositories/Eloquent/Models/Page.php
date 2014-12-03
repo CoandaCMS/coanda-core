@@ -113,13 +113,17 @@ class Page extends BaseEloquentModel {
     /**
      *
      */
-    private function setPath()
+    public function setPath()
     {
         $parent = $this->find($this->parent_page_id);
 
         if ($parent)
         {
             $this->path = ($parent->path == '' ? '/' : $parent->path) . $parent->id . '/';
+        }
+        else
+        {
+            $this->path = '';
         }
     }
 

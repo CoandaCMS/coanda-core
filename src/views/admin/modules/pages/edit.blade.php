@@ -9,7 +9,7 @@
 		<ul class="breadcrumb">
 			<li><a href="{{ Coanda::adminUrl('pages') }}">Pages</a></li>
 
-			@foreach ($version->page->parents() as $parent)
+			@foreach ($version->parents() as $parent)
 				<li><a href="{{ Coanda::adminUrl('pages/view/' . $parent->id) }}">{{ $parent->name }}</a></li>
 			@endforeach
 
@@ -239,9 +239,30 @@
 						</div>
 
                         <div class="well well-sm slug-box">
+							@if (Session::has('parent_changed'))
+								<div class="alert alert-success">
+									Parent page updated
+								</div>
+							@endif
+
+                        	<div class="form-group">
+								<label class="control-label">Parent Page</label>
+
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="parent_page_name" value="{{ $version->parent_page_id == 0 ? 'Top level' : $version->parent->name }}" disabled="disabled">
+                                    <span class="input-group-btn">
+                                    	{{ Form::button('Change', ['name' => 'choose_new_parent_page', 'value' => 'true', 'type' => 'submit', 'class' => 'btn btn-default']) }}
+									</span>
+                                </div>
+
+								<input type="hidden" name="parent_page_id" value="{{ $version->parent_page_id }}">
+                        	</div>
+
+                        	<div style="height: 5px;"></div>
+
                             <div class="form-group @if (isset($invalid_fields['slug'])) has-error @endif">
 
-                                <p><em>{{ $version->page->parent_slug }}/</em></p>
+                                <p><em>{{ $version->parent_slug }}/</em></p>
 
                                 <div class="input-group">
                                     <input type="text" class="form-control slugiwugy" id="slug" name="slug" value="{{ (Input::old('slug') && Input::old('slug') !== '') ? Input::old('slug') : $version->slug }}">

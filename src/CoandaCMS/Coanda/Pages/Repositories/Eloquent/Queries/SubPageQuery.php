@@ -103,7 +103,7 @@ class SubPageQuery {
 
         if ($this->parent_page_id !== null)
         {
-            $query->where('parent_page_id', $this->parent_page_id);
+            $query->where('pages.parent_page_id', $this->parent_page_id);
         }
 
 		$query->join('pageversions', 'pages.id', '=', 'pageversions.page_id');

@@ -1,6 +1,7 @@
 <?php namespace CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models;
 
 use Coanda;
+use Illuminate\Support\Collection;
 use Lang;
 use CoandaCMS\Coanda\Core\BaseEloquentModel;
 use CoandaCMS\Coanda\Exceptions\AttributeValidationException;
@@ -16,7 +17,7 @@ class PageVersion extends BaseEloquentModel {
     /**
      * @var array
      */
-    protected $fillable = ['page_id', 'slug', 'version', 'status', 'created_by', 'edited_by', 'meta_page_title', 'meta_description', 'visible_from', 'visible_to', 'template_identifier', 'layout_identifier', 'is_hidden', 'is_hidden_navigation'];
+    protected $fillable = ['parent_page_id', 'page_id', 'slug', 'version', 'status', 'created_by', 'edited_by', 'meta_page_title', 'meta_description', 'visible_from', 'visible_to', 'template_identifier', 'layout_identifier', 'is_hidden', 'is_hidden_navigation'];
 
 	/**
 	 * @var string
@@ -80,6 +81,30 @@ class PageVersion extends BaseEloquentModel {
 	public function page()
 	{
 		return $this->belongsTo('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\Page');
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function parent()
+	{
+		return $this->belongsTo('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\Page', 'parent_page_id');
+	}
+
+	/**
+	 * @return Collection
+	 */
+	public function parents()
+	{
+		if ($this->parent)
+		{
+			$parents = $this->parent->parents;
+			$parents->push($this->parent);
+
+			return $parents;
+		}
+
+		return new Collection([]);
 	}
 
 	/**
@@ -210,6 +235,21 @@ class PageVersion extends BaseEloquentModel {
 	public function getStatusTextAttribute()
 	{
 		return Lang::get('coanda::pages.status_' . $this->status);
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getParentSlugAttribute()
+	{
+		$parent = $this->parent;
+
+		if ($parent)
+		{
+			return $parent->slug;
+		}
+
+		return '';
 	}
 
 }

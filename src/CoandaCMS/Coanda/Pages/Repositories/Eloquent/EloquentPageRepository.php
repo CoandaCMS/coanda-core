@@ -500,6 +500,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
         list($data, $failed) = $this->saveVisibleDates($version, $data, $failed);
         list($data, $failed) = $this->saveSlug($version, $data, $failed);
 
+		$this->saveParentPageId($version, $data);
         $this->saveMeta($version, $data);
         $this->saveTemplate($version, $data);
         $this->saveLayout($version, $data);
@@ -549,6 +550,17 @@ class EloquentPageRepository implements PageRepositoryInterface {
         return [$data, $failed];
     }
 
+	/**
+	 * @param $version
+	 * @param $data
+	 * @return mixed
+     */
+	private function saveParentPageId($version, $data)
+	{
+		$version->parent_page_id = isset($data['parent_page_id']) ? $data['parent_page_id'] : '';
+
+		return $version;
+	}
 
 	/**
 	 * @param $version
@@ -643,6 +655,23 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		throw new PageNotFound;
 	}
 
+	/**
+	 * @param $page
+	 * @param $parent_page_id
+     */
+	private function setParentPageId($page, $parent_page_id)
+	{
+		$page->parent_page_id = $parent_page_id;
+
+		$previous_path = $page->full_path;
+
+		$page->setPath();
+
+		$new_path = $page->full_path;
+
+		$this->page_model->where('path', 'like', $previous_path . '%')->update(['path' => \DB::raw("REPLACE(path, '" . $previous_path . "', '" . $new_path . "')")]);
+	}
+
     /**
      * @param $version
      * @param $user_id
@@ -652,6 +681,9 @@ class EloquentPageRepository implements PageRepositoryInterface {
     public function publishVersion($version, $user_id, $urlRepository)
 	{
 		$page = $version->page;
+
+		// Set the page parent to be the same one as the version
+		$this->setParentPageId($page, $version->parent_page_id);
 
         // First up, make sure the URL is OK...
         if (!$version->page->is_home)
@@ -783,6 +815,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 
 		// Create the new version...
 		$version_data = [
+			'parent_page_id' => $page->parent_page_id,
 			'page_id' => $page->id,
             'slug' => $current_version->slug,
 			'version' => $new_version_number,
