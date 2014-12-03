@@ -405,15 +405,6 @@ class Coanda {
 		}
 	}
 
-	/**
-	 * @param $name
-	 * @return string 
-	 */
-	public function menuItemSafeName($name)
-	{
-		return Slugifier::convert($name);
-	}
-
     /**
      * @return array
      */
