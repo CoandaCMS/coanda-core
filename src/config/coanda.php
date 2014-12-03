@@ -16,6 +16,8 @@ return array(
 
 	'admin_colour' => '#FF6600',
 
+	'admin_logo' => asset('packages/coandacms/coanda-core/images/logo.png'),
+
 	/*
 	|--------------------------------------------------------------------------
 	| Some default settings

@@ -167,7 +167,15 @@ class PagesModuleProvider implements CoandaModuleProvider {
 		$coanda->addModulePermissions('pages', 'Pages', $permissions);		
 	}
 
-    /**
+	/**
+	 * @return array
+     */
+	public function allPageTypes()
+	{
+		return $this->page_types;
+	}
+
+	/**
      * @param bool $page
      * @return array
      */
@@ -479,6 +487,10 @@ class PagesModuleProvider implements CoandaModuleProvider {
 		}
 	}
 
+	/**
+	 * @param $remote_id
+	 * @return bool
+     */
 	public function byRemoteId($remote_id)
 	{
 		try

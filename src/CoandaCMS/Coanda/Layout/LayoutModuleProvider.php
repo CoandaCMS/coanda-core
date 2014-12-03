@@ -49,13 +49,32 @@ class LayoutModuleProvider implements CoandaModuleProvider {
 
 				$this->layouts[$layout->identifier()] = $layout;
 
-				foreach ($layout->pageTypes() as $page_type)
-				{
-					$this->layouts_by_page_type[$page_type][] = $layout;
-				}
+                $this->associateLayoutsWithPageTypes($layout);
 			}
 		}
 	}
+
+    /**
+     * @param $layout
+     */
+    private function associateLayoutsWithPageTypes($layout)
+    {
+        if (count($layout->pageTypes()) > 0)
+        {
+            foreach ($layout->pageTypes() as $page_type)
+            {
+                $this->layouts_by_page_type[$page_type][] = $layout;
+            }
+        }
+        else
+        {
+            foreach (Coanda::pages()->allPageTypes() as $page_type)
+            {
+                $this->layouts_by_page_type[$page_type->identifier()][] = $layout;
+            }
+        }
+    }
+
 
     /**
      * @return array

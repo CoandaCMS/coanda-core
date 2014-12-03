@@ -150,7 +150,6 @@ abstract class PageType {
             }
         }
 
-
         return $attribute;
     }
 
@@ -160,13 +159,13 @@ abstract class PageType {
      */
     private function processAttributeProperty($property_elements)
     {
-        if(strpos($property_elements[1], ','))
+        if(strpos($property_elements, ','))
         {
-            return $this->processArrayProperty($property_elements[1]);
+            return $this->processArrayProperty($property_elements);
         } 
         else
         {
-            return $this->processStringProperty($property_elements[1]);
+            return $this->processStringProperty($property_elements);
         }
     }
 
