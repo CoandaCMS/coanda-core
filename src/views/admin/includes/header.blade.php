@@ -23,8 +23,21 @@
 				@set('menu_items', Coanda::adminMenu())
 				@set('first_five', array_splice($menu_items, 0, 5))
 
-				@foreach ($first_five as $menu_item)
-					<li><a href="{{ Coanda::adminUrl($menu_item['url']) }}">{{ $menu_item['name'] }}</a></li>
+				@foreach ($first_five as $menu_name => $menu_item)
+					<li @if (count($menu_item['submenu'])) class="dropdown" @endif>
+						<a href="{{ Coanda::adminUrl($menu_item['url']) }}" @if (count($menu_item['submenu'])) class="dropdown-toggle" data-toggle="dropdown" @endif>
+							{{ $menu_item['name'] }}
+							@if (count($menu_item['submenu'])) <span class="caret"></span> @endif
+						</a>
+						@if (count($menu_item['submenu']))
+							<ul class="dropdown-menu" role="menu">
+								<li><a href="{{ Coanda::adminUrl($menu_item['url']) }}">{{ $menu_item['name'] }}</a></li>
+								@foreach($menu_item['submenu'] as $sub_menu_item)
+									<li><a href="{{  Coanda::adminUrl($sub_menu_item['url']) }}">{{ $sub_menu_item['name'] }}</a></li>
+								@endforeach
+							</ul>
+						@endif
+					</li>
 				@endforeach
 
 				{{-- Do we have any items left? --}}

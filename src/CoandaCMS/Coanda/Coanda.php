@@ -372,9 +372,37 @@ class Coanda {
      * @param $url
      * @param $name
      */
-    public function addMenuItem($url, $name)
+    public function addMenuItem($url, $name, $submenu = [])
 	{
-		$this->admin_menu[] = ['url' => $url, 'name' => $name];
+		$this->admin_menu[$url] = ['url' => $url, 'name' => $name, 'submenu' => $submenu];
+	}
+
+    /**
+     * @param $submenu
+     * @param $url
+     * @param $name
+     */
+	public function addSubMenuItem($menu, $url, $name)
+	{
+		if(array_key_exists($menu, $this->admin_menu))
+		{
+			$this->admin_menu[$menu]['submenu'][] = ['url' => $url, 'name' => $name];
+		}
+	}
+
+    /**
+     * @param $submenu
+     * @param $items
+     */
+	public function addSubMenuItems($menu, $items)
+	{
+		if(array_key_exists($menu, $this->admin_menu))
+		{
+			foreach($items as $item)
+			{
+				$this->admin_menu[$menu]['submenu'][] = ['url' => $item['url'], 'name' => $item['name']];
+			}
+		}
 	}
 
     /**
