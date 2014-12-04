@@ -996,9 +996,17 @@ class EloquentPageRepository implements PageRepositoryInterface {
      * @return mixed
      */
     public function trashed()
-	{
-		return $this->page_model->whereIsTrashed(true)->get();
-	}
+    {
+        return $this->page_model->whereIsTrashed(true)->get();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function trashedCount()
+    {
+        return $this->page_model->whereIsTrashed(true)->count();
+    }
 
 	/**
 	 * @param $page_id

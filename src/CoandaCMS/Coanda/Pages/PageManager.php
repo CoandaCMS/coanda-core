@@ -280,6 +280,14 @@ class PageManager {
     }
 
     /**
+     * @return mixed
+     */
+    public function getTrashedCount()
+    {
+        return $this->repository->trashedCount();
+    }
+
+    /**
      * @param $page_id
      * @param bool $restore_sub_pages
      */

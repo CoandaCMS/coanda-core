@@ -319,12 +319,17 @@ td.order-column .input-sm
 .trash-icon
 {
 	display: block;
-	padding: 8px 15px 0 0;
+	padding: 8px 15px 8px 0;
 }
 
 .trash-icon.disabled
 {
 	color: #ccc;
+}
+
+.trash-icon .badge
+{
+	background-color: #222;
 }
 
 .buttons
