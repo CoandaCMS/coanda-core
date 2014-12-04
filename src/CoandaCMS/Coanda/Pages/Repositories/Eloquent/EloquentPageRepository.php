@@ -242,6 +242,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
         ]);
 
 		$version = $this->page_version_model->create([
+			'parent_page_id' => $parent_page_id ? $parent_page_id : 0,
             'page_id' => $page->id,
             'version' => 1,
             'status' => 'draft',
@@ -366,6 +367,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		$version = $this->getVersionById($version->id);
 
 		$this->saveDraftVersion($version, $page_data);
+
 		$this->publishVersion($version, $user_id, $this->urls);
 
 		$page = $this->find($page->id);
@@ -557,7 +559,10 @@ class EloquentPageRepository implements PageRepositoryInterface {
      */
 	private function saveParentPageId($version, $data)
 	{
-		$version->parent_page_id = isset($data['parent_page_id']) ? $data['parent_page_id'] : '';
+		if (isset($data['parent_page_id']))
+		{
+			$version->parent_page_id = (int) $data['parent_page_id'];
+		}
 
 		return $version;
 	}
