@@ -368,17 +368,18 @@ class Coanda {
 		throw new ModuleNotFound('Module ' . $module . ' does not exist or has not been loaded.');		
 	}
 
-    /**
-     * @param $url
-     * @param $name
+	/**
+	 * @param $url
+	 * @param $name
+	 * @param array $submenu
      */
-    public function addMenuItem($url, $name, $submenu = [])
+	public function addMenuItem($url, $name, $submenu = [])
 	{
 		$this->admin_menu[$url] = ['url' => $url, 'name' => $name, 'submenu' => $submenu];
 	}
 
     /**
-     * @param $submenu
+     * @param $menu
      * @param $url
      * @param $name
      */
@@ -391,7 +392,7 @@ class Coanda {
 	}
 
     /**
-     * @param $submenu
+     * @param $menu
      * @param $items
      */
 	public function addSubMenuItems($menu, $items)
