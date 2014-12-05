@@ -10,12 +10,18 @@ class QueryHandler {
      */
     private $repository;
 
+	/**
+	 * @var SubPageQuery
+     */
+	private $subPageQuery;
+
     /**
      * @param PageRepositoryInterface $repository
      */
-    public function __construct(PageRepositoryInterface $repository)
+    public function __construct(PageRepositoryInterface $repository, SubPageQuery $subPageQuery)
 	{
 		$this->repository = $repository;
+		$this->subPageQuery = $subPageQuery;
 	}
 
     /**
@@ -24,9 +30,25 @@ class QueryHandler {
      */
     public function subPages($parameters)
 	{
-		$query = new SubPageQuery($this->repository);
+		return $this->subPageQuery->execute($parameters);
+	}
 
-		return $query->execute($parameters);
+	/**
+	 * @param $parameters
+	 * @return mixed
+	 */
+	public function subPageCount($parameters)
+	{
+		return $this->subPageQuery->executeCount($parameters);
+	}
+
+	/**
+	 * @param $parameters
+	 * @return mixed
+     */
+	public function subPageList($parameters)
+	{
+		return $this->subPageQuery->executeList($parameters);
 	}
 
 }

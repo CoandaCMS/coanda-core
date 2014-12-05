@@ -29,21 +29,60 @@ class SubPageQuery {
 		$this->repository = $repository;
 	}
 
-    /**
-     * @param $query_parameters
-     * @return mixed
+	/**
+	 * @param $query_parameters
+	 * @return mixed
      */
-    public function execute($query_parameters)
+	private function setUpQuery($query_parameters)
 	{
 		$this->parent_page_id = $query_parameters['parent_page_id'];
 		$this->per_page = isset($query_parameters['per_page']) ? $query_parameters['per_page'] : 10;
 		$this->current_page = isset($query_parameters['current_page']) ? $query_parameters['current_page'] : 1;
 
 		$query = $this->baseQuery();
-		$query = $this->handleParameters($query, $query_parameters['parameters']);
+		return $this->handleParameters($query, $query_parameters['parameters']);
+	}
+
+    /**
+     * @param $query_parameters
+     * @return mixed
+     */
+    public function execute($query_parameters)
+	{
+		$query = $this->setUpQuery($query_parameters);
 
 		return $this->getResults($query, $query_parameters);
 	}
+
+	/**
+	 * @param $query_parameters
+	 * @return mixed
+     */
+	public function executeCount($query_parameters)
+	{
+		$query = $this->setUpQuery($query_parameters);
+
+		return $query->count('pages.id');
+	}
+
+	/**
+	 * @param $query_parameters
+	 * @return mixed
+     */
+	public function executeList($query_parameters)
+	{
+		$query = $this->setUpQuery($query_parameters);
+
+		if (isset($query_parameters['parameters']['offset']))
+		{
+			$query->skip($query_parameters['parameters']['offset']);
+		}
+
+		$query = $this->addOrdering($query);
+
+		return $query->take($this->per_page)->get();
+	}
+
 
     /**
      * @param $query

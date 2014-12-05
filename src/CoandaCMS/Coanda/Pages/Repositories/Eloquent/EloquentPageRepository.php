@@ -1,28 +1,21 @@
 <?php namespace CoandaCMS\Coanda\Pages\Repositories\Eloquent;
 
-use Coanda, Config, Input;
-
+use Coanda;
+use Config;
+use Input;
 use CoandaCMS\Coanda\Pages\Exceptions\PageNotFound;
 use CoandaCMS\Coanda\Pages\Exceptions\PageVersionNotFound;
 use CoandaCMS\Coanda\Exceptions\AttributeValidationException;
 use CoandaCMS\Coanda\Exceptions\ValidationException;
-
-use CoandaCMS\Coanda\Pages\Exceptions\HomePageAlreadyExists;
-
-use CoandaCMS\Coanda\Pages\Repositories\Eloquent\Queries\QueryHandler;
 use CoandaCMS\Coanda\Urls\Exceptions\InvalidSlug;
-use CoandaCMS\Coanda\Urls\Exceptions\UrlAlreadyExists;
 use CoandaCMS\Coanda\Urls\Exceptions\UrlNotFound;
-
 use CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageLocation as PageLocationModel;
 use CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\Page as PageModel;
 use CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageVersion as PageVersionModel;
 use CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageVersionSlug as PageVersionSlugModel;
 use CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageVersionComment as PageVersionCommentModel;
 use CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models\PageAttribute as PageAttributeModel;
-
 use CoandaCMS\Coanda\Pages\Repositories\PageRepositoryInterface;
-
 use Carbon\Carbon;
 use CoandaCMS\Coanda\Urls\Slugifier;
 
@@ -203,6 +196,14 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		return $pages;
 	}
 
+	/**
+	 * @return mixed
+     */
+	private function getQueryHandler()
+	{
+		return \App::make('CoandaCMS\Coanda\Pages\Repositories\Eloquent\Queries\QueryHandler');
+	}
+
     /**
      * @param $parent_page_id
      * @param $current_page
@@ -213,9 +214,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
      */
     public function subPages($parent_page_id, $current_page, $per_page = 10, $parameters = [])
 	{
-		$query = new QueryHandler($this);
-
-		return $query->subPages([
+		return $this->getQueryHandler()->subPages([
 				'parent_page_id' => $parent_page_id,
 				'current_page' => $current_page,
 				'per_page' => $per_page,
@@ -223,7 +222,35 @@ class EloquentPageRepository implements PageRepositoryInterface {
 			]);
 	}
 
-    /**
+	/**
+	 * @param $parent_page_id
+	 * @param array $parameters
+	 * @return mixed
+     */
+	public function subPageCount($parent_page_id, $parameters = [])
+	{
+		return $this->getQueryHandler()->subPageCount([
+			'parent_page_id' => $parent_page_id,
+			'parameters' => $parameters
+		]);
+	}
+
+	/**
+	 * @param $parent_page_id
+	 * @param $per_page
+	 * @param array $parameters
+	 * @return mixed
+     */
+	public function subPageList($parent_page_id, $per_page, $parameters = [])
+	{
+		return $this->getQueryHandler()->subPageList([
+			'parent_page_id' => $parent_page_id,
+			'per_page' => $per_page,
+			'parameters' => $parameters
+		]);
+	}
+
+	/**
      * @param $type
      * @param $is_home
      * @param $user_id

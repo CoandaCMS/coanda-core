@@ -26,6 +26,12 @@ class PageQuery {
      * @var
      */
     private $limit;
+
+    /**
+     * @var
+     */
+    private $offset;
+
     /**
      * @var
      */
@@ -91,6 +97,17 @@ class PageQuery {
 
 		return $this;
 	}
+
+    /**
+     * @param $offset
+     * @return $this
+     */
+    public function skip($offset)
+    {
+        $this->offset = $offset;
+
+        return $this;
+    }
 
     /**
      * @return $this
@@ -185,21 +202,46 @@ class PageQuery {
 	}
 
     /**
+     * @return array
+     */
+    private function buildParameters()
+    {
+        return [
+            'include_invisible' => $this->include_invisible,
+            'include_hidden' => $this->include_hidden,
+            'paginate' => $this->paginate,
+            'attribute_filters' => $this->attribute_filters,
+            'include_page_types' => $this->include_page_types,
+            'exclude_page_types' => $this->exclude_page_types,
+            'order_query' => $this->order_query,
+            'offset' => $this->offset
+        ];
+    }
+
+    /**
      * @return mixed
      */
     public function get()
 	{
-		$parameters = [
-			'include_invisible' => $this->include_invisible,
-			'include_hidden' => $this->include_hidden,
-			'paginate' => $this->paginate,
-			'attribute_filters' => $this->attribute_filters,
-            'include_page_types' => $this->include_page_types,
-            'exclude_page_types' => $this->exclude_page_types,
-			'order_query' => $this->order_query
-		];
-
-        return $this->pageRepository->subPages($this->page_id, $this->page, $this->limit, $parameters);
+        return $this->pageRepository->subPages($this->page_id, $this->page, $this->limit, $this->buildParameters());
 	}
+
+    /**
+     * @return mixed
+     */
+    public function count()
+    {
+        return $this->pageRepository->subPageCount($this->page_id, $this->buildParameters());
+    }
+
+    /**
+     * @return mixed
+     */
+    public function first()
+    {
+        $list = $this->pageRepository->subPageList($this->page_id, $this->limit, $this->buildParameters());
+
+        return $list->first();
+    }
 
 }
