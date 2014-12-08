@@ -391,6 +391,41 @@ class UsersAdminController extends BaseController {
 		{
 			return Redirect::to(Coanda::adminUrl('users'));
 		}
-
 	}
+
+	/**
+	 * @param $group_id
+	 * @return mixed
+     */
+	public function getRemoveGroup($group_id)
+	{
+		try
+		{
+			return View::make('coanda::admin.modules.users.removegroup', ['group' => $this->manager->getGroupById($group_id) ]);
+		}
+		catch (GroupNotFound $exception)
+		{
+			return Redirect::to(Coanda::adminUrl('users'));
+		}
+	}
+
+	/**
+	 * @param $group_id
+	 * @return mixed
+     */
+	public function postRemoveGroup($group_id)
+	{
+		try
+		{
+			$group = $this->manager->getGroupById($group_id);
+			$group_name = $group->name;
+
+			$this->manager->removeGroupById($group_id);
+
+			return Redirect::to(Coanda::adminUrl('users'))->with('group_deleted', true)->with('group_name', $group_name);
+		}
+		catch (GroupNotFound $exception)
+		{
+			return Redirect::to(Coanda::adminUrl('users'));
+		}}
 }

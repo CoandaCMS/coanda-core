@@ -30,11 +30,28 @@
 			<span class="btn btn-primary" disabled="disabled">Edit</span>
 		@endif
 
+		<div class="btn-group">
+			<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+				More
+				<span class="caret"></span>
+			</button>
+			<ul class="dropdown-menu">
+				<li>
+					@if (Coanda::canView('user', 'remove'))
+						<a href="{{ Coanda::adminUrl('users/remove-group/' . $group->id) }}">Delete</a>
+					@else
+						<span class="disabled">Delete</span>
+					@endif
+				</li>
+			</ul>
+		</div>
+
 		@if (Coanda::canView('users', 'create'))
 			<a href="{{ Coanda::adminUrl('users/create-user/' . $group->id) }}" class="btn btn-primary">New user</a>
 		@else
 			<span class="btn btn-primary" disabled="disabled">New user</span>
 		@endif
+
 	</div>
 </div>
 

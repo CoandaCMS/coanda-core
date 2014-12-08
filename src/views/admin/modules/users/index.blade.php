@@ -46,6 +46,12 @@
 						</div>
 					@endif
 
+					@if (Session::has('group_deleted'))
+						<div class="alert alert-danger">
+							{{ Session::get('group_name') }} user group was deleted
+						</div>
+					@endif
+
 					<table class="table table-striped">
 						@foreach ($groups as $group)
 							<tr>

@@ -410,4 +410,29 @@ class UserManager {
         $this->repository->createArchivedUserAccount($user);
         $user->delete();
     }
+
+    /**
+     * @param $group_id
+     * @return mixed
+     */
+    public function removeGroupById($group_id)
+    {
+        $group = $this->repository->groupById($group_id);
+
+        $users = $group->users()->get();
+
+        foreach ($users as $user)
+        {
+            $this->repository->removeUserFromGroup($user, $group);
+
+            $remaining_groups = $user->groups()->get();
+
+            if ($remaining_groups->count() == 0)
+            {
+                $this->removeUserById($user->id);
+            }
+        }
+
+        $group->delete();
+    }
 }
