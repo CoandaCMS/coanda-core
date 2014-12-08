@@ -39,6 +39,13 @@
 			</ul>
 			<div class="tab-content">
 				<div class="tab-pane active" id="subpages">
+
+					@if (Session::has('user_deleted'))
+						<div class="alert alert-danger">
+							{{ Session::get('user_name') }} deleted
+						</div>
+					@endif
+
 					<table class="table table-striped">
 						@foreach ($groups as $group)
 							<tr>

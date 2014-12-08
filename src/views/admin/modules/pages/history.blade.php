@@ -13,7 +13,7 @@
 
         <ul class="breadcrumb">
             <li><a href="{{ Coanda::adminUrl('pages') }}">Pages</a></li>
-            <li><a href="{{ Coanda::adminUrl('pages/view/' . $page->id) }}">{{ $page->present()->name }}</a></li>
+            <li><a href="{{ Coanda::adminUrl('pages/view/' . $page->id) }}">{{ $page->name }}</a></li>
             <li>History</li>
         </ul>
     </div>
@@ -21,14 +21,14 @@
 
 <div class="row">
     <div class="page-name col-md-12">
-        <h1 class="pull-left">History for "<a href="{{ Coanda::adminUrl('pages/view/' . $page->id) }}">{{ $page->present()->name }}</a>" <small>{{ $page->present()->type }}</small></h1>
+        <h1 class="pull-left">History for "<a href="{{ Coanda::adminUrl('pages/view/' . $page->id) }}">{{ $page->name }}</a>" <small>{{ $page->type_name }}</small></h1>
         <div class="page-status pull-right">
             <span class="label label-default">Version {{ $page->current_version }}</span>
 
             @if ($page->is_trashed)
-                <span class="label label-danger">{{ $page->present()->status }}</span>
+                <span class="label label-danger">{{ $page->status }}</span>
             @else
-                <span class="label @if ($page->is_draft) label-warning @else label-success @endif">{{ $page->present()->status }}</span>
+                <span class="label @if ($page->is_draft) label-warning @else label-success @endif">{{ $page->status }}</span>
             @endif
         </div>
     </div>
@@ -47,7 +47,7 @@
             <div class="tab-content">
                 <div class="tab-pane active" id="history">
 
-                    <p><i class="fa fa-level-up"></i> <a href="{{ Coanda::adminUrl('pages/view/' . $page->id) }}">Back to  {{ $page->present()->name }}</a></p>
+                    <p><i class="fa fa-level-up"></i> <a href="{{ Coanda::adminUrl('pages/view/' . $page->id) }}">Back to  {{ $page->name }}</a></p>
 
                     <table class="table table-striped table-history">
                         @foreach ($histories as $history)

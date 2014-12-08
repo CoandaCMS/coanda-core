@@ -200,7 +200,6 @@ class UserManager {
         }
     }
 
-
     /**
      * @param $user_id
      * @return mixed
@@ -354,9 +353,14 @@ class UserManager {
                     $users->add($user);
                 }
             }
-            catch (\CoandaCMS\Coanda\Users\Exceptions\UserNotFound $exception)
+            catch (UserNotFound $exception)
             {
-                // Do nothing if the user is not found...
+                $archived_user = $this->repository->findArchivedUser($id);
+
+                if ($archived_user)
+                {
+                    $users->add($archived_user);
+                }
             }
         }
 
@@ -387,5 +391,23 @@ class UserManager {
         }
 
         return [$user, $group];
+    }
+
+    /**
+     * @param $user_id
+     * @return mixed
+     */
+    public function removeUserById($user_id)
+    {
+        $user = $this->repository->find($user_id);
+        $groups = $user->groups()->get();
+
+        foreach ($groups as $group)
+        {
+            $this->repository->removeUserFromGroup($user, $group);
+        }
+
+        $this->repository->createArchivedUserAccount($user);
+        $user->delete();
     }
 }

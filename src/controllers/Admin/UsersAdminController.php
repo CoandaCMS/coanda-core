@@ -357,4 +357,40 @@ class UsersAdminController extends BaseController {
 			return Redirect::to(Coanda::adminUrl('users/edit-profile'))->with('error', true)->with('invalid_fields', $exception->getInvalidFields())->withInput();
 		}
 	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getRemoveUser($user_id)
+	{
+		try
+		{
+			return View::make('coanda::admin.modules.users.removeuser', ['user' => $this->manager->getUserById($user_id) ]);
+		}
+		catch (UserNotFound $exception)
+		{
+			return Redirect::to(Coanda::adminUrl('users'));
+		}
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function postRemoveUser($user_id)
+	{
+		try
+		{
+			$user = $this->manager->getUserById($user_id);
+			$user_name = $user->present()->name;
+
+			$this->manager->removeUserById($user_id);
+
+			return Redirect::to(Coanda::adminUrl('users'))->with('user_deleted', true)->with('user_name', $user_name);
+		}
+		catch (UserNotFound $exception)
+		{
+			return Redirect::to(Coanda::adminUrl('users'));
+		}
+
+	}
 }

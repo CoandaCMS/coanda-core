@@ -5,34 +5,44 @@ use CoandaCMS\Coanda\Users\Exceptions\GroupNotFound;
 use CoandaCMS\Coanda\Users\Exceptions\UserNotFound;
 use CoandaCMS\Coanda\Users\Repositories\Eloquent\Models\User;
 use CoandaCMS\Coanda\Users\Repositories\Eloquent\Models\UserGroup;
+use CoandaCMS\Coanda\Users\Repositories\Eloquent\Models\ArchivedUser;
 use CoandaCMS\Coanda\Users\Repositories\UserRepositoryInterface;
 use Illuminate\Hashing\HasherInterface;
 
 class EloquentUserRepository implements UserRepositoryInterface {
 
-    /**
-     * @var Models\User
+
+	/**
+	 * @var User
      */
-    private $user_model;
-    /**
-     * @var Models\UserGroup
+	private $user_model;
+
+	/**
+	 * @var UserGroup
      */
-    private $user_group_model;
+	private $user_group_model;
+
+	/**
+	 * @var ArchivedUser
+     */
+	private $archived_user_model;
 
     /**
      * @var HasherInterface
      */
     private $hasher;
 
-    /**
-     * @param Models\User $user_model
-     * @param Models\UserGroup $user_group_model
-     * @param HasherInterface $hasher
+	/**
+	 * @param User $user_model
+	 * @param UserGroup $user_group_model
+	 * @param ArchivedUser $archived_user_model
+	 * @param HasherInterface $hasher
      */
-    public function __construct(User $user_model, UserGroup $user_group_model, HasherInterface $hasher)
+	public function __construct(User $user_model, UserGroup $user_group_model, ArchivedUser $archived_user_model, HasherInterface $hasher)
 	{
 		$this->user_model = $user_model;
         $this->user_group_model = $user_group_model;
+		$this->archived_user_model = $archived_user_model;
         $this->hasher = $hasher;
 	}
 
@@ -51,6 +61,15 @@ class EloquentUserRepository implements UserRepositoryInterface {
 		}
 		
 		return $user;
+	}
+
+	/**
+	 * @param $id
+	 * @return mixed
+     */
+	public function findArchivedUser($id)
+	{
+		return $this->archived_user_model->whereUserId($id)->first();
 	}
 
     /**
@@ -242,4 +261,18 @@ class EloquentUserRepository implements UserRepositoryInterface {
 	{
 		$group->users()->detach($user->id);
 	}
+
+	/**
+	 * @param $user
+	 * @return mixed
+     */
+	public function createArchivedUserAccount($user)
+	{
+		return $this->archived_user_model->create([
+			'user_id' => $user->id,
+			'name' => $user->present()->name,
+			'email' => $user->email
+		]);
+	}
+
 }
