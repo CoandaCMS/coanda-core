@@ -54,7 +54,7 @@
                             <table class="table table-striped">
                                 @foreach ($pages as $page)
                                     <tr>
-                                        @if ($page->pageType()->allowsSubPages())
+                                        @if ($page->pageType()->allowsSubPages() && $page->id != $page_id)
                                             <td class="tight">
                                                 <input type="radio" name="new_parent_page_id" value="{{ $page->id }}">
                                             </td>
