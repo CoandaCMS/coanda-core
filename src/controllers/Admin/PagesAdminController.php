@@ -453,7 +453,10 @@ class PagesAdminController extends BaseController {
      */
 	public function getBrowseParent($version_id, $parent_page_id)
 	{
+		$version = $this->manager->getDraftVersionById($version_id);
+
 		$data = [
+			'page_id' => $version->page->id,
 			'version_id' => $version_id,
 			'parent_page' => false,
 			'at_top' => false
