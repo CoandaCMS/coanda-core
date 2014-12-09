@@ -59,7 +59,7 @@
 					<ul class="dropdown-menu" role="menu">
 						<li><a href="{{ Coanda::adminUrl('users/profile') }}">My Profile</a></li>
 						<li class="divider"></li>
-						<li><a href="#" data-toggle="modal" data-target=".bs-example-modal-sm"><i class="fa fa-power-off"></i> Log out</a></li>
+						<li><a href="#" data-toggle="modal" data-target=".nav-log-out-modal"><i class="fa fa-power-off"></i> Log out</a></li>
 					</ul>
 				</li>
 			</ul>
@@ -75,7 +75,7 @@
 	</div>
 </div>
 
-<div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+<div class="modal fade nav-log-out-modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
 	<div class="modal-dialog modal-sm">
 		<div class="modal-content">
 			<div class="modal-header">
