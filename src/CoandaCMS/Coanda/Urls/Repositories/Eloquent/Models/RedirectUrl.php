@@ -17,10 +17,6 @@ class RedirectUrl extends Eloquent {
      * @var array
      */
     protected $fillable = ['destination', 'redirect_type'];
-    /**
-     * @var
-     */
-    private $counter;
 
     /**
      *
