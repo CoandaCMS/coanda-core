@@ -40,6 +40,7 @@ return array(
 		'CoandaCMS\Coanda\Core\Attributes\Types\HTML',
 		'CoandaCMS\Coanda\Core\Attributes\Types\Boolean',
 		'CoandaCMS\Coanda\Core\Attributes\Types\Image',
+		'CoandaCMS\Coanda\Core\Attributes\Types\File',
 		'CoandaCMS\Coanda\Core\Attributes\Types\Date',
 		'CoandaCMS\Coanda\Core\Attributes\Types\Dropdown',
 		'CoandaCMS\Coanda\Core\Attributes\Types\Integer',
