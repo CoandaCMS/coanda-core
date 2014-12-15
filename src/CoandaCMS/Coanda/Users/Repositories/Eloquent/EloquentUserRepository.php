@@ -64,6 +64,14 @@ class EloquentUserRepository implements UserRepositoryInterface {
 	}
 
 	/**
+	 * @return mixed
+     */
+	public function totalUserCount()
+	{
+		return $this->user_model->count();
+	}
+
+	/**
 	 * @param $id
 	 * @return mixed
      */
@@ -275,4 +283,13 @@ class EloquentUserRepository implements UserRepositoryInterface {
 		]);
 	}
 
+	/**
+	 * @return mixed
+     */
+	public function getCurrentlyOnlineUsers($current_user_id)
+	{
+		$now = new \Carbon\Carbon;
+
+		return $this->user_model->where('id', '!=', $current_user_id)->where('last_seen', '>', $now->subMinutes(30))->take(10)->orderBy('last_seen', 'desc')->get();
+	}
 }

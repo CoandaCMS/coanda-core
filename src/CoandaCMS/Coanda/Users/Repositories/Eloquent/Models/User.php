@@ -21,7 +21,7 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	/**
 	 * @var array
      */
-	protected $dates = ['last_login'];
+	protected $dates = ['last_login', 'last_seen'];
 
 	/**
 	 * The database table used by the model.
@@ -151,5 +151,14 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	public function getFullNameAttribute()
 	{
 		return $this->first_name . ' ' . $this->last_name;
+	}
+
+	/**
+	 *
+     */
+	public function updateLastSeen()
+	{
+		$this->last_seen = new \DateTime;
+		$this->save();
 	}
 }

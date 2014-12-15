@@ -9,6 +9,10 @@ interface UserRepositoryInterface {
     public function find($id);
 
     /**
+     * @return mixed
+     */
+    public function totalUserCount();
+
      * @param $email
      * @return mixed
      */
@@ -65,5 +69,10 @@ interface UserRepositoryInterface {
      * @return mixed
      */
     public function updateGroup($group_id, $data);
-    
+
+    /**
+     * @param $current_user_id
+     * @return mixed
+     */
+    public function getCurrentlyOnlineUsers($current_user_id);
 }

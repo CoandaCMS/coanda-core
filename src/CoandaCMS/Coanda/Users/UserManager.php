@@ -103,6 +103,31 @@ class UserManager {
     }
 
     /**
+     * @return bool
+     * @throws NotLoggedIn
+     */
+    public function currentUserId()
+    {
+        if ($this->isLoggedIn())
+        {
+            return $this->currentUser()->id;
+        }
+
+        return false;
+    }
+
+    /**
+     *
+     */
+    public function updateLastSeen()
+    {
+        if ($this->isLoggedIn())
+        {
+            $this->auth->user()->updateLastSeen();
+        }
+    }
+
+    /**
      * @return array
      * @throws NotLoggedIn
      */
@@ -434,5 +459,22 @@ class UserManager {
         }
 
         $group->delete();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCurrentlyOnlineUsers()
+    {
+        return $this->repository->getCurrentlyOnlineUsers($this->currentUserId());
+
+    }
+
+    /**
+     * @return mixed
+     */
+    public function totalUserCount()
+    {
+        return $this->repository->totalUserCount();
     }
 }
