@@ -97,6 +97,7 @@ class UsersModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
 
     /**
      * @param $coanda
+     * @return mixed|void
      */
     public function buildAdminMenu($coanda)
     {
@@ -106,6 +107,10 @@ class UsersModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
         }
     }
 
+    /**
+     * @param $id
+     * @return string
+     */
     public function getUserNameFromId($id)
     {
         $repository = App::make('CoandaCMS\Coanda\Users\Repositories\UserRepositoryInterface');
@@ -118,9 +123,40 @@ class UsersModuleProvider implements \CoandaCMS\Coanda\CoandaModuleProvider {
         }
 
         return '';
+   }
 
-
-
+    /**
+     * @return string
+     */
+    public function buildAdminDashboard($coanda)
+    {
+        if ($coanda->canViewModule('users'))
+        {
+            $coanda->addDashBoardWidgetTemplate('coanda::admin.modules.users.dashboard.users');
+        }
     }
 
+    /**
+     * @return mixed
+     */
+    private function getUserManager()
+    {
+        return App::make('CoandaCMS\Coanda\Users\UserManager');
+    }
+
+    /**
+     * @return mixed
+     */
+    public function currentlyOnline()
+    {
+        return $this->getUserManager()->getCurrentlyOnlineUsers();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function userCount()
+    {
+        return $this->getUserManager()->totalUserCount();
+    }
 }

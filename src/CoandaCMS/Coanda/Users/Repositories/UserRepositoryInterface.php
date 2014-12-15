@@ -13,6 +13,13 @@ interface UserRepositoryInterface {
      */
     public function totalUserCount();
 
+    /**
+     * @param $id
+     * @return mixed
+     */
+    public function findArchivedUser($id);
+
+    /**
      * @param $email
      * @return mixed
      */

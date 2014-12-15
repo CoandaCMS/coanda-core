@@ -21,6 +21,7 @@ class Coanda {
      * @var array
      */
     private $modules = [];
+
     /**
      * @var array
      */
@@ -30,6 +31,12 @@ class Coanda {
      * @var array
      */
     private $admin_menu = [];
+
+	/**
+	 * @var array
+     */
+	private $admin_dashboard_templates = [];
+
     /**
      * @var
      */
@@ -421,6 +428,30 @@ class Coanda {
 		return $this->admin_menu;
 	}
 
+	/**
+	 * @return array
+     */
+	public function dashboardWidgetTemplates()
+	{
+		foreach ($this->modules as $module)
+		{
+			if (method_exists($module, 'buildAdminDashboard'))
+			{
+				$module->buildAdminDashboard($this);
+			}
+		}
+
+		return $this->admin_dashboard_templates;
+	}
+
+	/**
+	 * @param $template
+     */
+	public function addDashBoardWidgetTemplate($template)
+	{
+		$this->admin_dashboard_templates[] = $template;
+	}
+
     /**
      * @param $for
      * @param $closure
@@ -536,7 +567,7 @@ class Coanda {
     public function getHistory($module, $module_identifier, $limit)
 	{
 		$history_repository = \App::make('CoandaCMS\Coanda\History\Repositories\HistoryRepositoryInterface');
-		
+
 		return $history_repository->get($module, $module_identifier, $limit);
 	}
 
@@ -548,6 +579,10 @@ class Coanda {
 		return $this->search_provider;
 	}
 
+	/**
+	 * @param $query
+	 * @return mixed
+     */
 	public function handleAdminSearch($query)
 	{
 		// Ideally this would allow other modules to add results and some how collate them, but for the moment lets just pass it to the pages module
