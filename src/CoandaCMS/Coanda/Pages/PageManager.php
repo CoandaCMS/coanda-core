@@ -247,6 +247,15 @@ class PageManager {
     }
 
     /**
+     * @param $version_id
+     * @return mixed
+     */
+    public function getVersionById($version_id)
+    {
+        return $this->repository->getVersionById($version_id);
+    }
+
+    /**
      * @param $page_id
      * @param $version_number
      */
