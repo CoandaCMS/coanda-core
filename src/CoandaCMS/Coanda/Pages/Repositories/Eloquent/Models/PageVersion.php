@@ -1,6 +1,7 @@
 <?php namespace CoandaCMS\Coanda\Pages\Repositories\Eloquent\Models;
 
 use Coanda;
+use CoandaCMS\Coanda\Users\Exceptions\UserNotFound;
 use Illuminate\Support\Collection;
 use Lang;
 use CoandaCMS\Coanda\Core\BaseEloquentModel;
