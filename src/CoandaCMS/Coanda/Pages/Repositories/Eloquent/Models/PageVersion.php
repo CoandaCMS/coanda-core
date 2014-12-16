@@ -252,4 +252,37 @@ class PageVersion extends BaseEloquentModel {
 		return '';
 	}
 
+	/**
+	 * @return string
+     */
+	public function getCreatorNameAttribute()
+	{
+		$user = $this->creator();
+
+		if ($user)
+		{
+			return $user->full_name;
+		}
+
+		return 'Unknown';
+	}
+
+	/**
+	 * @return mixed
+     */
+	private function creator()
+	{
+		$user_manager = \App::make('CoandaCMS\Coanda\Users\UserManager');
+
+		try
+		{
+			$user = $user_manager->getUserById($this->created_by);
+		}
+		catch (UserNotFound $exception)
+		{
+			$user = $user_manager->getArchivedUserById($this->created_by);
+		}
+
+		return $user;
+	}
 }
