@@ -235,6 +235,15 @@ class UserManager {
     }
 
     /**
+     * @param $user_id
+     * @return mixed
+     */
+    public function getArchivedUserById($user_id)
+    {
+        return $this->repository->findArchivedUser($user_id);
+    }
+
+    /**
      * @param $email
      * @return mixed
      */
