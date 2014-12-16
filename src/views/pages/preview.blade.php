@@ -12,16 +12,17 @@
 	<div id="overlay-inner">
 
 		<div class="pull-left">
-			<div class="preview-text">You are previewing version #{{ $version->version }} of page "{{ $version->name }}"</div>
+			<div class="preview-text">You are previewing version #{{ $version->version }} of "{{ $version->page->name }}"</div>
 		</div>
 
-
-		<div class="pull-right">
-			@if (Session::has('comment_saved'))
-				<span class="label label-success">Comment added!</span>
-			@endif
-			<button class="btn btn-default" id="add-comment-button">Add comment</button>
-		</div>
+		@if ($version->status == 'draft')
+			<div class="pull-right">
+				@if (Session::has('comment_saved'))
+					<span class="label label-success">Comment added!</span>
+				@endif
+				<button class="btn btn-default" id="add-comment-button">Add comment</button>
+			</div>
+		@endif
 
 		<div class="clearfix"></div>
 
