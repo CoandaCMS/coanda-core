@@ -443,3 +443,12 @@ td table.table
 	color: #626262;
 }
 
+.panel
+{
+	border-radius: 0;
+}
+
+.panel-body p:last-child
+{
+	margin-bottom: 0;
+}
