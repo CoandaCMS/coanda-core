@@ -147,7 +147,15 @@ class Coanda {
 		return $this->user->currentUser();
 	}
 
-    /**
+	/**
+	 * @return mixed
+     */
+	public function currentUserId()
+	{
+		return $this->user->currentUserId();
+	}
+
+	/**
      * @return array
      */
     public function availablePermissions()
