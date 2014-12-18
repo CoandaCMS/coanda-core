@@ -13,6 +13,8 @@
                     <a href="{{ Coanda::adminUrl('users/user/' . $online_user->id) }}">{{ $online_user->present()->name }}</a>
                 </p>
             @endforeach
+        @else
+            <p>No users are online right now.</p>
         @endif
     </div>
 </div>
