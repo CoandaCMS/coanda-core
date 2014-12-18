@@ -398,11 +398,11 @@ class PagesAdminController extends BaseController {
 			{
 				try
 				{
-					$publish_handler_redirect = $this->manager->executePublishHandler($this->manager->getDraftVersionForPage($page_id, $version_number), $publish_handler, Input::all());
+					$publish_handler_result = $this->manager->executePublishHandler($this->manager->getDraftVersionForPage($page_id, $version_number), $publish_handler, Input::all());
 
-					if ($publish_handler_redirect)
+					if ($publish_handler_result && get_class($publish_handler_result) == 'Illuminate\Http\RedirectResponse')
 					{
-						return Redirect::to($publish_handler_redirect);
+						return $publish_handler_result;
 					}
 
 					return Redirect::to(Coanda::adminUrl('pages/view/' . $page_id));					
