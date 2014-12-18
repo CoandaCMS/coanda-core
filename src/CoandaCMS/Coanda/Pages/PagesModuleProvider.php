@@ -305,6 +305,31 @@ class PagesModuleProvider implements CoandaModuleProvider {
 		return $this->publish_handlers;
 	}
 
+	/**
+	 * @return array
+     */
+	public function availablePublishHandlers()
+	{
+		$permissions = Coanda::currentUserPermissions();
+
+		if (isset($permissions['pages']['publish_options']))
+		{
+			$available_publish_handlers = [];
+
+			foreach ($permissions['pages']['publish_options'] as $publish_option)
+			{
+				if (isset($this->publish_handlers[$publish_option]))
+				{
+					$available_publish_handlers[] = $this->publish_handlers[$publish_option];
+				}
+			}
+
+			return $available_publish_handlers;
+		}
+
+		return $this->publish_handlers;
+	}
+
     /**
      * @param $identifier
      * @return mixed

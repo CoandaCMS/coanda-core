@@ -274,7 +274,7 @@ class PagesAdminController extends BaseController {
 				App::abort('403');
 			}
 
-			$publish_handlers = Coanda::module('pages')->publishHandlers();
+			$publish_handlers = Coanda::module('pages')->availablePublishHandlers();
 			$default_publish_handler = array_keys($publish_handlers)[0];
 
 			return View::make('coanda::admin.modules.pages.edit', [
