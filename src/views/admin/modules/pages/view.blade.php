@@ -161,19 +161,43 @@
 <div class="row">
 	<div class="col-md-8">
 		<div class="page-tabs">
-			<ul class="nav nav-tabs">
 
-				@if (!$page->is_home && $page->pageType()->allowsSubPages())
-					<li @if (!Input::has('versions_page')) class="active" @endif><a href="#subpages" data-toggle="tab">Sub pages ({{ $children->getTotal() }})</a></li>
+			@if (Session::has('info_message'))
+				<div class="alert alert-info">
+					{{ Session::get('info_message') }}
+				</div>
+			@endif
+
+			@set('active_tab', Input::get('tab', false))
+
+			@if (!$active_tab)
+
+				@if (!$page->is_home && $page->pageType()->allowsSubPages() && !Input::has('versions_page'))
+					@set('active_tab', 'subpages')
 				@endif
 
-				<li  @if (($page->is_home || !$page->pageType()->allowsSubPages()) && !Input::has('versions_page')) class="active" @endif ><a href="#content" data-toggle="tab">Content</a></li>
-				<li @if (Input::has('versions_page')) class="active" @endif><a href="#versions" data-toggle="tab">Versions ({{ $versions->getTotal() }})</a></li>
+				@if (($page->is_home || !$page->pageType()->allowsSubPages()) && !Input::has('versions_page'))
+					@set('active_tab', 'content')
+				@endif
+
+				@if (Input::has('versions_page'))
+					@set('active_tab', 'versions')
+				@endif
+
+			@endif
+
+			<ul class="nav nav-tabs">
+				@if (!$page->is_home && $page->pageType()->allowsSubPages())
+					<li @if ($active_tab == 'subpages') class="active" @endif><a href="#subpages" data-toggle="tab">Sub pages ({{ $children->getTotal() }})</a></li>
+				@endif
+
+				<li @if ($active_tab == 'content') class="active" @endif><a href="#content" data-toggle="tab">Content</a></li>
+				<li @if ($active_tab == 'versions') class="active" @endif><a href="#versions" data-toggle="tab">Versions ({{ $versions->getTotal() }})</a></li>
 			</ul>
 			<div class="tab-content">
 
 				@if (!$page->is_home && $page->pageType()->allowsSubPages())
-					<div class="tab-pane @if (!Input::has('versions_page')) active @endif" id="subpages">
+					<div class="tab-pane @if ($active_tab == 'subpages') active @endif id="subpages">
 
 						@if (Session::has('ordering_updated'))
 							<div class="alert alert-success">
@@ -232,7 +256,7 @@
 					</div>
 				@endif
 
-				<div class="tab-pane @if (($page->is_home || !$page->pageType()->allowsSubPages()) && !Input::has('versions_page')) active @endif " id="content">
+				<div class="tab-pane @if ($active_tab == 'content') active @endif " id="content">
 					<table class="table table-striped">
 						@foreach ($page->currentVersionAttributes() as $attribute)
 						<tr>
@@ -245,7 +269,7 @@
 					</table>
 				</div>
 
-				<div class="tab-pane @if (Input::has('versions_page')) active @endif" id="versions">
+				<div class="tab-pane @if ($active_tab == 'versions') active @endif" id="versions">
 
 					<table class="table table-striped">
 						@foreach ($versions as $version)
