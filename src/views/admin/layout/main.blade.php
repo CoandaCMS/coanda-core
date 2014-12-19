@@ -19,6 +19,7 @@
 			@include('coanda::admin.css.colours')
 		</style>
 
+		@yield('custom-css')
 	</head>
 <body>
 
