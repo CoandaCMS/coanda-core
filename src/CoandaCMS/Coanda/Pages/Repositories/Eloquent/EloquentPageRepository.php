@@ -761,6 +761,11 @@ class EloquentPageRepository implements PageRepositoryInterface {
      */
     public function registerPageWithSearchProvider($page)
 	{
+		if (!$page->pageType()->isIndexable())
+		{
+			return;
+		}
+
 		$version = $page->currentVersion();
 
 		$search_data = [
