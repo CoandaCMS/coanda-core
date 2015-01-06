@@ -770,7 +770,8 @@ class EloquentPageRepository implements PageRepositoryInterface {
 
 		$search_data = [
 			'page_type' => $page->type,
-			'name' => $page->name
+			'name' => $page->name,
+			'attributes' => []
 		];
 
 		$visible_from = (string) $version->visible_from;
@@ -789,7 +790,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 
 		foreach ($page->currentVersionAttributes() as $attribute)
 		{
-			$search_data[$attribute->identifier] = $attribute->render($page, true);
+			$search_data['attributes'][$attribute->identifier] = $attribute->render($page, true);
 		}
 
 		Coanda::search()->register('pages', $page->id, $page->slug, $search_data);
