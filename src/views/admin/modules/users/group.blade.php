@@ -37,7 +37,7 @@
 			</button>
 			<ul class="dropdown-menu">
 				<li>
-					@if (Coanda::canView('user', 'remove'))
+					@if (Coanda::canView('users', 'remove'))
 						<a href="{{ Coanda::adminUrl('users/remove-group/' . $group->id) }}">Delete</a>
 					@else
 						<span class="disabled">Delete</span>
