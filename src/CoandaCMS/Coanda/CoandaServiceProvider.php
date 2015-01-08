@@ -91,13 +91,13 @@ class CoandaServiceProvider extends ServiceProvider {
 		    return new \CoandaCMS\Coanda\Pages\Artisan\Reindex($app);
 		});
 
-        $this->app->error(function(\CoandaCMS\Coanda\Exceptions\PermissionDenied $exception)
-        {
-            return \View::make('coanda::admin.permissiondenied');
-
-        });
-
 		$this->commands('coanda.reindex');
+
+		$this->app->error(function(\CoandaCMS\Coanda\Exceptions\PermissionDenied $exception)
+		{
+			return \View::make('coanda::admin.permissiondenied');
+
+		});
 	}
 
 	/**
