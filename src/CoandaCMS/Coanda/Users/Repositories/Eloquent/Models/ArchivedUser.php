@@ -20,4 +20,12 @@ class ArchivedUser extends Eloquent {
      * @var array
      */
     protected $fillable = ['user_id', 'name', 'email'];
+
+    /**
+     * @return string
+     */
+    public function getFullNameAttribute()
+    {
+        return $this->name . ' *';
+    }
 }
