@@ -963,7 +963,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 			$this->urls->delete('page', $page->id);
 			$page->delete();
 
-			$this->logHistory('deleted', $page->id);
+			$this->logHistory('deleted', $page->id, ['page_name' => $page->name]);
 		}
 		else
 		{
