@@ -93,6 +93,13 @@ class CoandaServiceProvider extends ServiceProvider {
 
 		$this->commands('coanda.reindex');
 
+		$this->app['coanda.historydigest'] = $this->app->share(function($app)
+		{
+			return new \CoandaCMS\Coanda\History\Artisan\SendDailyDigest($app);
+		});
+
+		$this->commands('coanda.historydigest');
+
 		$this->app->error(function(\CoandaCMS\Coanda\Exceptions\PermissionDenied $exception)
 		{
 			return \View::make('coanda::admin.permissiondenied');

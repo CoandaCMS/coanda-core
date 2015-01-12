@@ -123,4 +123,15 @@ return array(
 	*/
 	'page_cache_enabled' => false,
 	'page_cache_lifetime' => 10, // in minutes
+
+	/*
+	|--------------------------------------------------------------------------
+	| History Digest.
+	| If you don't plan on giving your users the option to sign up and
+	| receive a daily digest of activity on the site, then just
+	| disable this option.
+	|--------------------------------------------------------------------------
+	|
+	*/
+	'daily_digest_enabled' => false
 );

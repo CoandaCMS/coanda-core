@@ -452,3 +452,16 @@ td table.table
 {
 	margin-bottom: 0;
 }
+
+.summary-figures
+{
+	margin-top: 10px;
+}
+.figure
+{
+	text-align: center;
+}
+.figure .big-figure
+{
+	font-size: 30px;
+}

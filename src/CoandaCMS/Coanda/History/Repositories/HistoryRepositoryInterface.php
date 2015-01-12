@@ -32,4 +32,59 @@ interface HistoryRepositoryInterface {
      */
     public function getPaginated($for, $for_id, $limit);
 
+    /**
+     * @param $limit
+     * @return mixed
+     */
+    public function getAllPaginated($limit);
+
+    /**
+     * @param $from
+     * @param $to
+     * @param $limit
+     * @return mixed
+     */
+    public function getAllPaginatedByTimePeriod($from, $to, $limit);
+
+    /**
+     * @return mixed
+     */
+    public function getActivitySummaryFigures();
+
+    /**
+     * @return mixed
+     */
+    public function getDigestSummaryFigures();
+
+    /**
+     * @param $for
+     * @param $for_id
+     * @return mixed
+     */
+    public function users($for, $for_id);
+
+    /**
+     * @param $user_id
+     * @return mixed
+     */
+    public function getDigestSubscriber($user_id);
+
+    /**
+     * @param $limit
+     * @param $offset
+     * @return mixed
+     */
+    public function getDigestSubscribers($limit, $offset);
+
+    /**
+     * @param $user_id
+     * @return mixed
+     */
+    public function addDigestSubscriber($user_id);
+
+    /**
+     * @param $user_id
+     * @return mixed
+     */
+    public function removeDigestSubscriber($user_id);
 }

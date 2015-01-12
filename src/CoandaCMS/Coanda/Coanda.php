@@ -255,7 +255,8 @@ class Coanda {
 			'CoandaCMS\Coanda\Media\MediaModuleProvider',
 			'CoandaCMS\Coanda\Users\UsersModuleProvider',
 			'CoandaCMS\Coanda\Layout\LayoutModuleProvider',
-			'CoandaCMS\Coanda\Urls\UrlModuleProvider'
+			'CoandaCMS\Coanda\Urls\UrlModuleProvider',
+			'CoandaCMS\Coanda\History\HistoryModuleProvider'
 		];
 
 		$enabled_modules = $this->config->get('coanda::coanda.enabled_modules');
@@ -350,7 +351,6 @@ class Coanda {
 	public function bindings($app)
 	{
 		$app->bind('CoandaCMS\Coanda\Urls\Repositories\UrlRepositoryInterface', 'CoandaCMS\Coanda\Urls\Repositories\Eloquent\EloquentUrlRepository');
-		$app->bind('CoandaCMS\Coanda\History\Repositories\HistoryRepositoryInterface', 'CoandaCMS\Coanda\History\Repositories\Eloquent\EloquentHistoryRepository');
 
 		$search_provider = $this->config->get('coanda::coanda.search_provider');
 

@@ -577,4 +577,15 @@ class PagesModuleProvider implements CoandaModuleProvider {
 
 		return false;
 	}
+
+	/**
+	 * @param $parameters
+	 * @return mixed
+     */
+	public function generateHistoryDisplayText($parameters)
+	{
+		$presenter = \App::make('CoandaCMS\Coanda\Pages\History\PagesHistoryPresenter');
+
+		return $presenter->present($parameters);
+	}
 }

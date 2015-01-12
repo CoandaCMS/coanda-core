@@ -86,4 +86,51 @@ class History extends Eloquent {
 	{
 		return $this->actionData();
 	}
+
+	/**
+	 * @return mixed
+     */
+	public function getModuleAttribute()
+	{
+		return $this->module();
+	}
+
+	/**
+	 * @return mixed
+     */
+	public function module()
+	{
+		if (strpos($this->for, ':'))
+		{
+			return explode(':', $this->for)[0];
+		}
+
+		return $this->for;
+	}
+
+	/**
+	 * @return string
+     */
+	public function getDisplayTextAttribute()
+	{
+		return $this->display_text();
+	}
+
+	/**
+	 * @return string
+     */
+	public function display_text()
+	{
+		if (method_exists(Coanda::module($this->module()), 'generateHistoryDisplayText'))
+		{
+			return Coanda::module($this->module())->generateHistoryDisplayText([
+				'for_id' => $this->for_id,
+				'action' => $this->action,
+				'data' => $this->actionData()
+			]);
+		}
+
+		return $this->module() . ': ' . $this->action . ' #' . $this->for_id;
+	}
+
 }
