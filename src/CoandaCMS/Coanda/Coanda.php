@@ -285,6 +285,7 @@ class Coanda {
 		    if (!App::make('coanda')->isLoggedIn())
 		    {
 		    	Session::put('pre_auth_path', Request::path());
+				Session::put('pre_auth_query_string', Request::getQueryString());
 
 		    	return Redirect::to('/' . Config::get('coanda::coanda.admin_path') . '/login');
 		    }

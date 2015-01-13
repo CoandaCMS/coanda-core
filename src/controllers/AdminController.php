@@ -67,9 +67,12 @@ class AdminController extends BaseController {
 
 			if (Session::has('pre_auth_path'))
 			{
-				$redirect_path = Session::get('pre_auth_path');
+				$redirect_path = Session::pull('pre_auth_path');
 
-				Session::forget('pre_auth_path');
+				if (Session::has('pre_auth_query_string'))
+				{
+					$redirect_path .= '?' . Session::pull('pre_auth_query_string');
+				}
 
 				return Redirect::to($redirect_path);
 			}
