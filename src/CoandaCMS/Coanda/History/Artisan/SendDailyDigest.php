@@ -77,6 +77,7 @@ class SendDailyDigest extends Command {
 
                     \Mail::send('coanda::admin.modules.history.emails.dailydigest', $digest_data, function($message) use ($email) {
 
+                        $message->subject(\Config::get('coanda::coanda.daily_digest_subject'));
                         $message->from(\Config::get('coanda::coanda.site_admin_email'), \Config::get('coanda::coanda.site_name'));
                         $message->to($email);
 

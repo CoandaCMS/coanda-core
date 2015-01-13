@@ -133,5 +133,7 @@ return array(
 	|--------------------------------------------------------------------------
 	|
 	*/
-	'daily_digest_enabled' => false
+	'daily_digest_enabled' => false,
+
+	'daily_digest_subject' => 'Digest of yesterday\'s activity'
 );
