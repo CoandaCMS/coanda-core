@@ -959,11 +959,11 @@ class EloquentPageRepository implements PageRepositoryInterface {
 
 		if ($permanent)
 		{
+            $this->logHistory('deleted', $page->id, ['page_name' => $page->name]);
+
 			$this->deleteSubPages($page, true);
 			$this->urls->delete('page', $page->id);
 			$page->delete();
-
-			$this->logHistory('deleted', $page->id, ['page_name' => $page->name]);
 		}
 		else
 		{
