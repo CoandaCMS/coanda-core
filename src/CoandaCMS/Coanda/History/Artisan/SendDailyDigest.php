@@ -48,7 +48,7 @@ class SendDailyDigest extends Command {
         $offset = 0;
         $limit = 50;
 
-        $from = \Carbon\Carbon::yesterday()->subDays(20);
+        $from = \Carbon\Carbon::yesterday()->subDays(30);
         $to = \Carbon\Carbon::yesterday();
 
         $digest_data = [

@@ -37,9 +37,9 @@
 								</tr>
 							</table>
 
-							<h2 style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; margin: 10px 0 10px 0; padding: 0; font-size: 16px; font-weight: bold;">Yesterday's activity</h2>
-
 							@if ($history_list->count() > 0)
+                                <h2 style="font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6; margin: 10px 0 10px 0; padding: 0; font-size: 16px; font-weight: bold;">Recent activity</h2>
+
 								<table width="100%" border="0" cellspacing="0" cellpadding="0" style="border-top: 1px solid #ccc;">
 									@foreach ($history_list as $history)
 										<tr>
@@ -56,8 +56,6 @@
 								@if ($history_list->getTotal() > 50)
 									<p>Total <strong>{{ number_format($history_list->getTotal()) }}</strong>, <a href="{{ Coanda::adminUrl('history') . '?from=' . $from->format('d/m/Y') . '&to=' . $to->format('d/m/Y') }}">view all online</a></p>
 								@endif
-							@else
-								<p>There was no activity yesterday.</p>
 							@endif
 
 						</td>
