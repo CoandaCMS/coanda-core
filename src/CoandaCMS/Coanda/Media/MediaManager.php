@@ -22,7 +22,14 @@ class MediaManager {
      */
     public function getMediaById($id)
     {
-        return $this->repository->findById($id);
+        try
+        {
+            return $this->repository->findById($id);
+        }
+        catch (\CoandaCMS\Coanda\Media\Exceptions\MediaNotFound $exception)
+        {
+            return false;
+        }
     }
 
     /**
