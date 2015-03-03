@@ -761,7 +761,9 @@ class EloquentPageRepository implements PageRepositoryInterface {
      */
     public function registerPageWithSearchProvider($page)
 	{
-		if (!$page->pageType()->isIndexable())
+        $page = $this->find($page->id);
+
+        if (!$page->pageType()->isIndexable())
 		{
 			return;
 		}
