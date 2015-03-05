@@ -96,7 +96,10 @@ class PageRenderer {
 
         if ($this->canStaticCache())
         {
-            $this->cacher->putPageCache($this->page->id, $content);
+            if (!$this->checkForRedirect())
+            {
+                $this->cacher->putPageCache($this->page->id, $content);
+            }
         }
 
         return $content;
