@@ -117,15 +117,19 @@ class Delayed implements PublishHandlerInterface {
 	        {
 	            // Do this version need to be published?
 	            $handler_data = json_decode($pending_version->publish_handler_data, true);
-                $publish_date = Carbon::createFromFormat($handler_data['format'], $handler_data['date'], $handler_data['timezone']);
 
-                if ($publish_date->isPast())
+                if (isset($handler_data['format']) && isset($handler_data['date']) && isset($handler_data['timezone']))
                 {
-                    $publish_version_list[] = $pending_version->id;
-                }
-                else
-                {
-                    $command->info('Version #' . $pending_version->version . ' of page #' . $pending_version->page->id . ' is not due to be published yet.');
+                    $publish_date = Carbon::createFromFormat($handler_data['format'], $handler_data['date'], $handler_data['timezone']);
+
+                    if ($publish_date->isPast())
+                    {
+                        $publish_version_list[] = $pending_version->id;
+                    }
+                    else
+                    {
+                        $command->info('Version #' . $pending_version->version . ' of page #' . $pending_version->page->id . ' is not due to be published yet.');
+                    }
                 }
 	        }
 
