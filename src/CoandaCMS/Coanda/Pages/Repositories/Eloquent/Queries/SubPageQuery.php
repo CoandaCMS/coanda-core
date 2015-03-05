@@ -40,6 +40,8 @@ class SubPageQuery {
 		$this->current_page = isset($query_parameters['current_page']) ? $query_parameters['current_page'] : 1;
 
 		$query = $this->baseQuery();
+        $query->distinct();
+
 		return $this->handleParameters($query, $query_parameters['parameters']);
 	}
 
