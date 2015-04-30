@@ -414,6 +414,12 @@ class PagesAdminController extends BaseController {
 							->with('invalid_publish_handler', true)
 							->with('publish_handler_invalid_fields', $exception->getInvalidFields());
 				}
+				catch (\CoandaCMS\Coanda\Urls\Exceptions\UrlAlreadyExists $exception)
+				{
+					return $redirect
+							->with('error', true)
+							->with('invalid_fields', ['slug' => 'The reuqested URL is already in use.']);
+				}
 			}
 		}
 	}
