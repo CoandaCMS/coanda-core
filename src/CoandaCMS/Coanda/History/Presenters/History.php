@@ -20,7 +20,7 @@ class History extends \CoandaCMS\Coanda\Core\Presenters\Presenter {
 			return $user->avatar;
 		}
 
-		return 'http://www.gravatar.com/avatar/dummy?d=mm';
+		return '//www.gravatar.com/avatar/dummy?d=mm';
 	}
 
     /**
