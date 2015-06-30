@@ -742,7 +742,7 @@ class EloquentPageRepository implements PageRepositoryInterface {
 		// Log the history
 		$this->logHistory('publish_version', $page->id, ['version' => (int)$version->version], $user_id);
 
-        if ($version->is_hidden || !$page->pageType()->isIndexable())
+        if ($version->is_hidden_navigation || $version->is_hidden || !$page->pageType()->isIndexable())
         {
             $this->unRegisterPageWithSearchProvider($page);
         }
