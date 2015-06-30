@@ -62,7 +62,7 @@ class Reindex extends Command {
 
             foreach ($pages as $page)
             {
-                if ($page->is_trashed || $page->status !== 'published')
+                if ($page->currentVersion()->is_hidden || $page->currentVersion()->is_hidden_navigation || $page->is_trashed || $page->status !== 'published')
                 {
                     $this->info('Remove from index page: #' . $page->id);
                     $this->pageRepository->unRegisterPageWithSearchProvider($page);
