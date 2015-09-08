@@ -41,7 +41,7 @@ class Reindex extends Command {
     {
         $go = $this->ask('Are you sure you want to reindex all pages? Y/N (default: N)');
 
-        if ($go !== 'Y')
+        if (strcasecmp($go, 'Y') !== 0)
         {
             return;
         }
