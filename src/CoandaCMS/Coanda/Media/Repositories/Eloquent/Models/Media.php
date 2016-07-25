@@ -46,7 +46,7 @@ class Media extends Eloquent {
      */
     public function delete()
 	{
-		$original_file = base_path() . '/' . Config::get('coanda::coanda.uploads_directory') . '/' . $this->filename;
+		$original_file = Config::get('coanda::coanda.uploads_directory') . '/' . $this->filename;
 
 		if (file_exists($original_file))
 		{
