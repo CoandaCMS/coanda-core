@@ -37,6 +37,8 @@ class PageQuery {
      */
     private $order_query;
 
+    private $sort_by;
+
     /**
      * @var bool
      */
@@ -144,6 +146,16 @@ class PageQuery {
 		return $this;
 	}
 
+    public function sortBy($field, $order)
+    {
+        $this->sort_by = [
+            'field' => $field,
+            'order' => $order
+        ];
+
+        return $this;
+    }
+
     /**
      * @param $attribute_identifier
      * @param $filter
@@ -214,6 +226,7 @@ class PageQuery {
             'include_page_types' => $this->include_page_types,
             'exclude_page_types' => $this->exclude_page_types,
             'order_query' => $this->order_query,
+            'sort_by' => $this->sort_by,
             'offset' => $this->offset
         ];
     }

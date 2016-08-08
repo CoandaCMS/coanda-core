@@ -21,6 +21,8 @@ class SubPageQuery {
      */
     private $current_page = 1;
 
+    private $using_custom_order = false;
+
     /**
      * @param PageRepositoryInterface $repository
      */
@@ -350,31 +352,51 @@ class SubPageQuery {
 		return $query;
 	}
 
+    private function parameterSortBy($query, $parameters)
+    {
+        if (strpos($parameters['field'], 'attribute:') !== false) {
+
+            $attribute = str_replace('attribute:', '', $parameters['field']);
+
+            $query->join('pageattributes', 'pageattributes.page_version_id', '=', 'pageversions.id');
+
+            $query->orderBy(\DB::raw("(select attribute_data from pageattributes where pageattributes.page_version_id = pageversions.id and identifier = '".$attribute."')"), $parameters['order']);
+
+            $this->using_custom_order = true;
+        }
+
+        return $query;
+    }
+
     /**
      * @param $query
      * @return mixed
      */
     private function addOrdering($query)
-	{
-		$order = 'manual';
+    {
+        if ($this->using_custom_order) {
+            return $query;
+        }
 
-		if ($this->parent_page_id != 0)
-		{
-			try
-			{
-				$parent = $this->repository->findById($this->parent_page_id);
-				$order = $parent->sub_page_order;
-			}
-			catch (\CoandaCMS\Coanda\Pages\Exceptions\PageNotFound $exception)
-			{
-				// Default to manual above...
-			}
-		}
+        $order = 'manual';
 
-		$query = $this->handleOrder($order, $query);
+        if ($this->parent_page_id != 0)
+        {
+            try
+            {
+                $parent = $this->repository->findById($this->parent_page_id);
+                $order = $parent->sub_page_order;
+            }
+            catch (\CoandaCMS\Coanda\Pages\Exceptions\PageNotFound $exception)
+            {
+                // Default to manual above...
+            }
+        }
 
-		return $query;
-	}
+        $query = $this->handleOrder($order, $query);
+
+        return $query;
+    }
 
     /**
      * @param $order
