@@ -1383,6 +1383,11 @@
              * @return {String}
              */
             onCreateLink: function (sLinkUrl) {
+
+                if (sLinkUrl.indexOf('mailto:') === 0) {
+                    return sLinkUrl;
+                } 
+
                 if (sLinkUrl.indexOf('@') !== -1 && sLinkUrl.indexOf(':') === -1) {
                     sLinkUrl =  'mailto:' + sLinkUrl;
                 } else if (sLinkUrl.charAt(0) === '/') {
